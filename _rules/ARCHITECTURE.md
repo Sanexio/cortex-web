@@ -155,16 +155,29 @@ ins Backlog).
 
 Detail: `specs/sprint-0/README.md` + `specs/sprint-0/OPEN_DECISIONS.md`.
 
-### Sprint 1 — Rollout-Infrastruktur
-- S1.1 Staging-Setup (Subdomain bei Domainfactory oder lokal)
-- S1.2 Backup/Rollback-SOP (Duplicator + AkeebaBackup) + Pre-Deploy-Snapshot
-- S1.3 End-to-End-Mail-Test auf Staging (echte Outlook-SMTP, Anhang)
+### Sprint 1 — Rollout-Infrastruktur (⏸ PAUSIERT 2026-04-18)
 
-### Sprint 2 — Content-Migration
-- S2.1 Audit der 172 Legacy-Seiten → `phase4_audit.json`
-- S2.2 Seiten-Typologie → je Typ ein Template
-- S2.3 Migrations-Batches ≤20 Seiten mit Visual-Diff
-- (hier auch: Komponenten-Migration der 3 Card-Varianten auf `.pxz-card--dark`)
+**Pause-Grund:** SFTP-Credentials im Domainfactory-Panel nicht auffindbar. DF-Support angeschrieben. Spec (`specs/sprint-1/README.md`) bleibt freigegeben, wartet auf Credentials-Lieferung.
+
+- S1.1 Staging auf Root-Domain `westend-hausarzt.de` (Weiterleitung aufheben)
+- S1.2 Backup/Rollback-SOP (AkeebaBackup) + Pre-Deploy-Snapshot
+- S1.3 End-to-End-Mail-Test auf Staging (Outlook-SMTP, 1 PDF-Anhang an `stracke.md@me.com`)
+
+### Sprint 2 — Kernseiten-Ausbau + Design-System (vorgezogen 2026-04-18)
+
+**Kontext:** Während Sprint 1 pausiert ist, wird auf Local weitergebaut — Design + Content der Kernseiten (Praxis, Team, Sprechstunden, Fachrichtungen, Kontakt, Datenschutz, Impressum, 404). Keine DF-Credentials nötig.
+
+- S2.0 Design-Token-SSoT nachziehen (ehem. S0.3) — **Vorbedingung**, damit neue Seiten nicht erneut Token redeklarieren
+- S2.1 Seiten-Inventar & Content-Audit (welche Seiten braucht die neue Site mindestens?)
+- S2.2 Template-Typologie (Standard-Textseite, Fachrichtung, Team-Einzelseite)
+- S2.3 Implementierung Kernseiten in Batches à 2–3 Seiten
+- S2.4 Menü „Hauptnavigation" befüllen (alter HANDOFF-Task 4)
+- S2.5 QA-Audit gegen `DESIGN_GUIDELINES.md` §13–§16
+
+### Sprint 2b — Legacy-Content-Migration (verschoben nach Sprint 4 oder separat)
+- Audit der 172 Legacy-Seiten → `phase4_audit.json`
+- Migrations-Batches ≤20 Seiten mit Visual-Diff
+- Komponenten-Migration der 3 Card-Varianten auf `.pxz-card--dark`
 
 ### Sprint 3 — Mehrsprachigkeit
 - S3.1 WPML-Homepage-Duplikate DE → EN/FR/ES (entspricht Task 3 aus HANDOFF_PROMPT)

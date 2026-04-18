@@ -6,3 +6,8 @@ node_modules/
 # aber werden nicht versioniert — sonst 88 MB pro Baseline)
 screenshots/_archive/
 screenshots/claude/_archive/
+
+# Credentials — never commit
+.env
+.env.*
+!.env.*.template

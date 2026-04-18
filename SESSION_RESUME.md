@@ -30,20 +30,26 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-18, 13:30)
+## §1 Stand & Version (gültig: 2026-04-18, 15:10 nach Roadmap-Umstellung)
 
-- **PXZ_VERSION:** **2.7.4** live auf Local by Flywheel (Cluster-Mini-02).
+- **PXZ_VERSION:** **2.7.4** live auf Local by Flywheel (Cluster-Mini-02). Keine Theme-Änderung seit 2026-04-18 nachmittags.
 - **Site-Root:** `/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/`
 - **URL:** `https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local`
 - **Child-Theme:** `wp-content/themes/praxiszentrum/`
-- **Homepage abgenommen** durch Dr. Stracke bis inkl. v2.7.3 (Optik unverändert in v2.7.4).
-- **Task 2 (Karriere v2.6.0 + MFA-Formular) abgenommen** durch Dr. Stracke am 2026-04-18.
-- **Sprint 0 — Stand 2026-04-18 Ende:**
-  - ✅ S0.1 — Zwei lokale Git-Repos (Theme + Docs), Baseline-Commits v2.7.3 / Sprint-0-Start
-  - ✅ **S0.2 — CSS-Extraktion (NEU 2026-04-18 v2.7.4):** Home + Karriere Inline-`<style>`-Blöcke nach `assets/css/{homepage,karriere}.css` ausgelagert. Conditional enqueue via `is_page_template()` mit Dep `praxiszentrum`. 1:1-Transfer, verify + probe grün.
-  - ⏸ S0.3 — Design-Token-SSoT weiter im Backlog (Sprint-2-Kandidat)
-  - ✅ S0.4 — Verify-Pipeline auf Page-Registry umgestellt (Home + Karriere)
-- **`tools/verify.sh`:** alle 4 Checks grün (Split, Reset, Computed-Style via Registry 54/54, Alignment).
+- **Homepage + Karriere** abgenommen (v2.7.3 / v2.6.0, beide optisch konsolidiert in v2.7.4).
+
+### Sprint-Status (Stand 2026-04-18 Abend)
+
+| Sprint | Status | Kommentar |
+|---|---|---|
+| Sprint 0 — Foundation | ✅ abgeschlossen (bis auf Design-Token-SSoT → als S2.0 vorgezogen in Sprint 2) |
+| **Sprint 1 — Rollout-Infrastruktur** | ⏸ **PAUSIERT 2026-04-18** | DF-Support wegen fehlender SFTP-Credentials angeschrieben. Spec-Freigabe ((a)=2, (b)=1, (c)=2, Test-Empfänger=`stracke.md@me.com`) bleibt gültig. Reanimieren, sobald Credentials in `.env.sprint1.local` eingetragen sind. |
+| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🆕 vorgezogen, Grobskizze 2026-04-18 | Neuer aktiver Sprint. Details: `specs/sprint-2/README.md`. Enthält S2.0 (Token-SSoT), S2.1 (Seiten-Inventar), S2.2 (Template-Typologie), S2.3 (Kernseiten in Batches), S2.4 (Menü), S2.5 (QA-Audit). |
+| Sprint 2b — Legacy-Content-Migration | ⏳ nach Sprint 2 | 172 Legacy-Seiten, verschoben. |
+| Sprint 3 — Mehrsprachigkeit (WPML) | ⏳ geplant | |
+| Sprint 4 — Go-Live (SEO/Schema/Cut-Over) | ⏳ geplant | |
+
+- **`tools/verify.sh`:** alle 4 Checks grün (Split, Reset, Computed-Style via Registry 54/54, Alignment) — zuletzt 2026-04-18 nachmittags.
 
 ### Theme-Repo (`praxiszentrum/`) Commit-Stand
 
@@ -89,18 +95,21 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 Nach Pflicht-Init + Pre-Flight grün, fragt Claude:
 
-> „v2.7.4 ist live, Homepage + Karriere abgenommen, Sprint 0 bis auf S0.3 abgeschlossen (S0.1 + S0.2 + S0.4 grün),
-> Split-Check-Ausweitung auf `assets/css/*.css` offen. Welche Front bearbeiten wir?
+> „Sprint 1 pausiert (DF-Support wartet), Sprint 2 (Kernseiten-Ausbau) vorgezogen. v2.7.4 weiter live, Homepage + Karriere abgenommen. Welche Front bearbeiten wir?
 >
-> A. **Sprint 1 starten** — Staging-Setup + Backup/Rollback + End-to-End-Mail-Test (Outlook)
-> B. **Sprint 0 / S0.3** — Design-Token-SSoT + Komponenten-Abstraktion (additiv, risikoarm)
-> C. **Verify-Pipeline-Härtung** — Split-Check in `tools/verify.sh` um `assets/css/{homepage,karriere}.css` erweitern (Nachzügler aus S0.2)
-> D. **Backlog 2026-04-18** — CTA-Anschnitt @ 1440 px ODER PHP-Deprecation `theme-freesia-demo-import`
-> E. **Mobile-Eyebrow MFA** — „WIR SUCHEN DICH · MFA M/W/D" bricht 2-zeilig (offen aus v2.7.3)
-> F. **Mehrsprachigkeit (Sprint 3)** — Task 3 WPML DE→EN/FR/ES
-> G. **Andere konkrete Änderung** — Sie nennen"
+> A. **Sprint 2 / S2.0 — Design-Token-SSoT starten** — Vorbedingung für alle neuen Kernseiten; additiv, risikoarm, keine Optik-Änderung.
+> B. **Sprint 2 / S2.1 — Seiten-Inventar & Content-Audit** — Liste der Muss-Seiten erstellen, Content-Quellen klären (Prod-Übernahme vs. Neu-Text).
+> C. **Sprint 1 reanimieren** — nur falls DF-Support inzwischen SFTP-Credentials geliefert hat. Credentials in `.env.sprint1.local` eintragen, dann S1.1 starten.
+> D. **Sprint 2 / S2.3 Batch A vorziehen** — Datenschutz + Impressum als reine Legal-Textseiten starten (paralleler, separater Pfad zu S2.0/S2.1).
+> E. **Backlog 2026-04-18** — CTA-Anschnitt @ 1440 px ODER PHP-Deprecation `theme-freesia-demo-import` ODER Mobile-Eyebrow MFA.
+> F. **Andere konkrete Änderung** — Sie nennen."
 
 Keine Code-Änderung vor expliziter Wahl.
+
+**Checks vor der Antwort auf die Status-Frage:**
+- Ist `.env.sprint1.local` bereits gefüllt? → C möglich
+- Gibt es eine Mail vom DF-Support? → C möglich
+- Sonst: A ist der saubere nächste Schritt, weil S2.0 alle folgenden Sprint-2-Teilschritte entkoppelt
 
 ---
 
@@ -118,6 +127,49 @@ Keine Code-Änderung vor expliziter Wahl.
 ---
 
 ## §5 Letzte Session — Was wurde erledigt
+
+### Session 2026-04-18 (Abend) — Sprint-1-Design, DF-Blocker, Roadmap-Umstellung
+
+**Auftrag Dr. Stracke:** Front A (Sprint 1 starten — Staging + Backup + Mail-Test).
+
+**Durchgeführt:**
+
+1. **Architekten-Modus Phase 1/2 für Sprint 1** — Verständnis + Lösungsdesign mit blockierenden Entscheidungen (a)/(b)/(c)/(d) + Test-Empfänger.
+2. **Entscheidungen freigegeben 2026-04-18 durch Dr. Stracke:**
+   - (a) = 2 → Root-Domain `westend-hausarzt.de` als Staging (Weiterleitung zu `.com` wird aufgehoben)
+   - (b) = 1 → AkeebaBackup für Full-Backup + Restore
+   - (c) = 2 → Mail-Test mit Text + 1 PDF-Anhang (~2 MB)
+   - (d) = offen, ASAP
+   - Test-Empfänger: `stracke.md@me.com`
+   - Credentials-Lieferweg: Option B (`.env.sprint1.local`, gitignore-geschützt)
+3. **Spec-Artefakte neu angelegt:**
+   - `specs/sprint-1/README.md` — detaillierte Sprint-1-Spec mit Akzeptanzkriterien für S1.1/S1.2/S1.3
+   - `specs/sprint-1/OPEN_DECISIONS.md` — Credentials-Checkliste
+   - `.env.sprint1.local.template` — ausfüllbares Template mit allen Feldern
+   - `.gitignore` erweitert um `.env*` + Negation `!.env.*.template`
+4. **Blocker:** Dr. Stracke fand SFTP-Zugangsdaten im DF-Kundencenter (ManagedHosting 24) nicht, Support am 2026-04-18 angeschrieben. Sprint 1 pausiert.
+5. **Roadmap umdisponiert 2026-04-18 (Dr.-Stracke-Auftrag):**
+   - Sprint 1 ⏸ bis DF-Support antwortet
+   - Sprint 2 (neu: „Kernseiten-Ausbau + Design-System") vorgezogen, weil vollständig auf Local machbar
+   - Ursprüngliches Sprint-2-Scope (Legacy-Migration 172 Seiten) → als Sprint 2b verschoben
+   - `_rules/ARCHITECTURE.md` §4 aktualisiert
+6. **Sprint-2-Grobskizze erstellt:** `specs/sprint-2/README.md` mit S2.0 (Token-SSoT, vorgezogen aus Sprint 0) bis S2.5 (QA-Audit). Detail-Specs kommen in der nächsten Session vor Umsetzung.
+
+**Verifikation:**
+- `tools/verify.sh` grün (vor Session-Ende, unverändert seit Nachmittag — keine Theme-Änderung diese Session).
+- Keine Live-Änderung an `.com` oder `.de`.
+- Keine Credentials im Repo (überprüft: `.env.sprint1.local` matched `.gitignore:12`, Template matched Negation `:13`).
+
+**Nexus-Architektur-Update:**
+- `Nexus/_memory/MEMORY.md` — Status-Zeile `praxis-redesign` aktualisiert auf neuen Sprint-Status.
+- Ergänzendes Tutorial: `Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/04-credentials-und-env-dateien.md` (Credentials-Hygiene, `.gitignore`-Negation, Lieferoptionen A/B/C).
+
+**Offene Punkte für nächste Session:**
+- DF-Support-Antwort abwarten → sobald da, `.env.sprint1.local` füllen und Sprint 1 reaktivieren
+- Entscheidung in nächster Session: Front A (S2.0 Token-SSoT) oder Front D (Legal-Seiten vorziehen)?
+- Sprint-2-Details: Offene Fragen in `specs/sprint-2/README.md` unten (Content-Quellen, Datenschutz-Text, Fotos, Doctolib-Einbettung)
+
+---
 
 ### 0. ARBEITSWEISE AB 2026-04-18 — ARCHITEKTEN-MODUS (VERBINDLICH)
 
