@@ -115,7 +115,7 @@ SOCK="/Users/.../run/VFEzUQg6g/mysql/mysqld.sock"
 
 | ID | Defekt | Wurzel | Adressiert in |
 |----|--------|--------|--------------|
-| A1 | Inline-CSS in Page-Templates → doppelte Reset-Regeln möglich (PXZ-E-001) | Keine CSS-Modularisierung | Sprint 0 / S0.2 |
+| A1 | ~~Inline-CSS in Page-Templates~~ → **erledigt 2026-04-18 v2.7.4** (Sprint 0 / S0.2): Home + Karriere-CSS leben jetzt in `assets/css/{homepage,karriere}.css`, conditional enqueue via `is_page_template()` | Keine CSS-Modularisierung | ~~Sprint 0 / S0.2~~ ✅ |
 | A2 | Kein Komponenten-System — `.pxz-*-card` dreimal dupliziert | DRY-Verletzung, Token-Redeklaration | Sprint 0 / S0.3 |
 | A3 | Content-Quellen uneinheitlich — Gutenberg-Inhalt wird auf Karriere ignoriert | Kein Content-Contract | Sprint 2 |
 | A4 | Kein Git | Nie eingerichtet (Cortex selbst auch nicht) | Sprint 0 / S0.1 |
@@ -149,7 +149,7 @@ d=1 (Deadline 48 h halten → Sprint 0 minimal: S0.1 + S0.4; S0.2 + S0.3
 ins Backlog).
 
 - ✅ S0.1 Git-Repo für Theme (Baseline v2.7.3) + separates Repo für Docs/Tools
-- ⏸ S0.2 CSS-Extraktion (Inline → Datei) — **Backlog** (Sprint 1 oder später)
+- ✅ S0.2 CSS-Extraktion (Inline → `assets/css/{homepage,karriere}.css`) — **abgeschlossen 2026-04-18 v2.7.4** (nachgezogen in separater Session). 1:1-Transfer, conditional enqueue via `is_page_template()` mit Dep `praxiszentrum`. Verify + Probe grün.
 - ⏸ S0.3 Design-Token-SSoT + Komponenten-Abstraktion — **Backlog** (Sprint 2 Kandidat)
 - ✅ S0.4 Verify-Pipeline auf Page-Registry (Home + Karriere) umgestellt
 

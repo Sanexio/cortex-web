@@ -30,19 +30,39 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-18, 13:00)
+## §1 Stand & Version (gültig: 2026-04-18, 13:30)
 
-- **PXZ_VERSION:** 2.7.3 live auf Local by Flywheel (Cluster-Mini-02).
+- **PXZ_VERSION:** **2.7.4** live auf Local by Flywheel (Cluster-Mini-02).
 - **Site-Root:** `/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/`
 - **URL:** `https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local`
 - **Child-Theme:** `wp-content/themes/praxiszentrum/`
-- **Homepage abgenommen** durch Dr. Stracke bis inkl. v2.7.3.
+- **Homepage abgenommen** durch Dr. Stracke bis inkl. v2.7.3 (Optik unverändert in v2.7.4).
 - **Task 2 (Karriere v2.6.0 + MFA-Formular) abgenommen** durch Dr. Stracke am 2026-04-18.
-- **Sprint 0 minimal-Scope abgeschlossen** (Entscheidungen: b=1 / c=2 / d=1):
+- **Sprint 0 — Stand 2026-04-18 Ende:**
   - ✅ S0.1 — Zwei lokale Git-Repos (Theme + Docs), Baseline-Commits v2.7.3 / Sprint-0-Start
+  - ✅ **S0.2 — CSS-Extraktion (NEU 2026-04-18 v2.7.4):** Home + Karriere Inline-`<style>`-Blöcke nach `assets/css/{homepage,karriere}.css` ausgelagert. Conditional enqueue via `is_page_template()` mit Dep `praxiszentrum`. 1:1-Transfer, verify + probe grün.
+  - ⏸ S0.3 — Design-Token-SSoT weiter im Backlog (Sprint-2-Kandidat)
   - ✅ S0.4 — Verify-Pipeline auf Page-Registry umgestellt (Home + Karriere)
-  - ⏸ S0.2 / S0.3 — bewusst ins Backlog verschoben (Deadline-Option d=1)
-- **`tools/verify.sh`:** alle 4 Checks grün (Split, Reset, Computed-Style via Registry, Alignment).
+- **`tools/verify.sh`:** alle 4 Checks grün (Split, Reset, Computed-Style via Registry 54/54, Alignment).
+
+### Theme-Repo (`praxiszentrum/`) Commit-Stand
+
+```
+914af8d  feat(s0.2): extract karriere CSS; bump PXZ_VERSION 2.7.3 → 2.7.4
+c3f7db7  feat(s0.2): extract homepage CSS from inline to assets/css/homepage.css
+8c9d0fa  chore: baseline v2.7.3 (homepage + karriere + mfa-formular)
+```
+
+### Docs-Repo (`projects/praxis-redesign/`) Commit-Stand
+
+```
+7de7ee0  chore: verify-shots from S0.2 extraction (2026-04-18 v2.7.4)
+67dca8d  chore: verify-shots post-v2.7.3 (2026-04-18 12:46 pre-flight)
+166ecac  chore: remove obsolete NEXT_SESSION_PROMPT.md
+2909005  docs: reflect sprint-0 minimal-scope completion (s0.1 + s0.4)
+a5e28e1  feat(s0.4): page registry + generic probe/shoot
+2f288a3  chore: baseline Sprint-0 start (docs + verify tools, post-v2.7.3)
+```
 
 ---
 
@@ -69,15 +89,16 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 Nach Pflicht-Init + Pre-Flight grün, fragt Claude:
 
-> „v2.7.3 ist live, Task 2 freigegeben, Sprint 0 minimal-Scope (S0.1 + S0.4) abgeschlossen,
-> alle Checks grün. Welche Front bearbeiten wir?
+> „v2.7.4 ist live, Homepage + Karriere abgenommen, Sprint 0 bis auf S0.3 abgeschlossen (S0.1 + S0.2 + S0.4 grün),
+> Split-Check-Ausweitung auf `assets/css/*.css` offen. Welche Front bearbeiten wir?
 >
 > A. **Sprint 1 starten** — Staging-Setup + Backup/Rollback + End-to-End-Mail-Test (Outlook)
-> B. **Backlog Sprint 0** — S0.2 CSS-Extraktion ODER S0.3 Token-SSoT jetzt doch angehen
-> C. **Backlog 2026-04-18** — CTA-Anschnitt @ 1440 px ODER PHP-Deprecation `theme-freesia-demo-import`
-> D. **Mobile-Eyebrow MFA** — „WIR SUCHEN DICH · MFA M/W/D" bricht 2-zeilig (offen aus v2.7.3)
-> E. **Mehrsprachigkeit (Sprint 3)** — Task 3 WPML DE→EN/FR/ES
-> F. **Andere konkrete Änderung** — Sie nennen"
+> B. **Sprint 0 / S0.3** — Design-Token-SSoT + Komponenten-Abstraktion (additiv, risikoarm)
+> C. **Verify-Pipeline-Härtung** — Split-Check in `tools/verify.sh` um `assets/css/{homepage,karriere}.css` erweitern (Nachzügler aus S0.2)
+> D. **Backlog 2026-04-18** — CTA-Anschnitt @ 1440 px ODER PHP-Deprecation `theme-freesia-demo-import`
+> E. **Mobile-Eyebrow MFA** — „WIR SUCHEN DICH · MFA M/W/D" bricht 2-zeilig (offen aus v2.7.3)
+> F. **Mehrsprachigkeit (Sprint 3)** — Task 3 WPML DE→EN/FR/ES
+> G. **Andere konkrete Änderung** — Sie nennen"
 
 Keine Code-Änderung vor expliziter Wahl.
 
@@ -196,6 +217,76 @@ Dr. Stracke hat Task 1 (v2.5.0: Hero/Standorte/MFA) freigegeben. Task 2 umgesetz
   Anker `#bewerben` rendert, Shortcode `[wpforms id="9664"]` eingebettet.
 
 **Status v2.6.0:** ✅ Freigegeben durch Dr. Stracke am 2026-04-18.
+
+---
+
+## Session 2026-04-18 (nachm.) — Sprint 0 / S0.2 CSS-Extraktion (v2.7.4)
+
+**Auftrag Dr. Stracke:** „Erst F (offene Commits abräumen) dann B (Sprint-0-Backlog) dann Session beenden."
+Für B wurde die Wahl zwischen S0.2 und S0.3 an Claude delegiert (Effektivität/Effizienz).
+Claude entschied sich für **S0.2**, weil es Vorbedingung für S0.3 ist und einen konkreten
+Tech-Debt entschuldet (Inline-CSS-Bloat).
+
+### Durchgeführt
+
+**F — Offene Commits:**
+- Befund: die in §5 gelisteten „offenen Commits" (s0.4 feat + docs reflect) waren
+  bereits erledigt. Nur 2 Verify-Screenshots aus dem Pre-Flight 12:46 untracked.
+- Commit Docs-Repo: `67dca8d chore: verify-shots post-v2.7.3 (2026-04-18 12:46 pre-flight)`.
+
+**B — Sprint 0 / S0.2 CSS-Extraktion:**
+
+Theme-Repo (`praxiszentrum/`):
+1. `assets/css/homepage.css` neu — 563 Zeilen aus Inline `<style>`-Block von
+   `template-homepage.php` 1:1 extrahiert (PHP-Echo im Kommentar durch statischen
+   Text ersetzt, CSS-Body unverändert).
+2. `assets/css/karriere.css` neu — 291 Zeilen analog aus `template-karriere.php`.
+3. `template-homepage.php` — Inline-Block (Zeilen 27–591) entfernt; `$v`-Variable
+   für Logo-Cache-Buster bleibt erhalten (wird noch für `logo.svg?v=` verwendet).
+4. `template-karriere.php` — Inline-Block + tote `$v`-Zuweisung entfernt.
+5. `functions.php` — `wp_enqueue_scripts`-Action erweitert um zwei conditional
+   enqueues (`is_page_template()`), Dep auf `'praxiszentrum'` → Cascade-Position
+   bleibt identisch zum ehemaligen Inline-Block im Body.
+6. `functions.php` — `PXZ_VERSION` 2.7.3 → 2.7.4 (semver-patch, Architektur-
+   Infra-Change, keine Optik-Änderung).
+7. `CHANGELOG.md` — neuer v2.7.4-Eintrag mit 1:1-Transfer-Vermerk.
+
+Commits Theme-Repo:
+- `c3f7db7 feat(s0.2): extract homepage CSS from inline to assets/css/homepage.css`
+- `914af8d feat(s0.2): extract karriere CSS; bump PXZ_VERSION 2.7.3 → 2.7.4`
+
+Commit Docs-Repo:
+- `7de7ee0 chore: verify-shots from S0.2 extraction (2026-04-18 v2.7.4)`
+
+### Verifikation
+
+| Check | Ergebnis |
+|---|---|
+| `tools/verify.sh` §1 Split | ✅ keine Dupes `style.css` ↔ `template-homepage.php` (siehe unten, Split-Check kennt noch nicht die neuen `assets/css/*.css` — Nachzügler-Task) |
+| `tools/verify.sh` §2 Reset-Scope | ✅ keine generischen Tag-Selektoren mit `!important padding:0` |
+| `tools/verify.sh` §3 Computed-Style-Probe | ✅ 54/54 Assertions grün auf Home + Karriere × 3 Viewports |
+| `tools/verify.sh` §4 Alignment | ✅ delta = 0px auf allen Showpiece-Elementen |
+| `bun run tools/probe-design.mjs` | ✅ 54/54 grün |
+
+### Nexus-Architektur-Update
+
+- `Nexus/_memory/MEMORY.md` — Projektzeile `praxis-redesign` auf v2.7.4 aktualisiert;
+  Pfad-Referenz Theme-Repo auf Stand v2.7.4 (914af8d) ergänzt; Pattern-Katalog-Eintrag
+  `wp-inline-css-to-external.md` verlinkt.
+- `Nexus/_memory/patterns/wp-inline-css-to-external.md` neu — wiederverwendbares
+  Pattern für Inline→Extern-CSS-Extraktion in WordPress mit Conditional Enqueue.
+- `Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/03-inline-css-zu-externer-datei.md`
+  neu — Tutorial für Dr. Stracke (Enqueue-System, Cascade-Disziplin, 1:1-Transfer,
+  Beweis über Computed-Style-Probe statt Screenshots).
+- `_rules/ARCHITECTURE.md` — Kategorie A1 gestrichen (erledigt), Sprint-0-Status
+  aktualisiert (S0.2 ✅).
+
+### Offener Nachzügler (nicht blockierend)
+
+**Split-Check-Ausweitung:** `tools/verify.sh` §1 vergleicht aktuell nur `style.css`
+gegen `template-homepage.php`. Nach S0.2 könnten sich Selektor-Duplikate in
+`assets/css/{homepage,karriere}.css` unbemerkt einschleichen. → in §3 als Front C
+gelistet.
 
 ---
 
@@ -379,14 +470,15 @@ läuft rechts aus dem Container; kein Blocker für Task-1-Freigabe.
 
 ## 4. OFFENE AUFGABEN (Priorität absteigend)
 
-**Architektur-Ebene (übergeordnet, seit 2026-04-18):**
+**Architektur-Ebene (übergeordnet, Stand 2026-04-18 nachm.):**
 
-- **Sprint 0 — Foundation** — minimal-Scope ✅ abgeschlossen 2026-04-18:
+- **Sprint 0 — Foundation** — bis auf S0.3 abgeschlossen:
   - Entscheidungen freigegeben: b=1 (lokal), c=2 (zwei Repos), d=1 (Deadline halten).
   - ✅ S0.1 Git-Repos (Theme-Repo + Docs-Repo), Baseline-Commits.
+  - ✅ **S0.2 CSS-Extraktion (Home + Karriere inline → `assets/css/`) — NEU 2026-04-18 v2.7.4.**
+  - ⏸ S0.3 Design-Token-SSoT — Backlog (Sprint-2-Kandidat, Risiko niedrig, additiv).
   - ✅ S0.4 Page-Registry (Home + Karriere), generischer `shoot.mjs`.
-  - ⏸ S0.2 CSS-Extraktion — Backlog.
-  - ⏸ S0.3 Design-Token-SSoT — Backlog.
+  - ⏸ **Nachzügler:** Split-Check in `tools/verify.sh` auf `assets/css/*.css` ausweiten.
 - **Sprint 1 — Rollout-Infrastruktur** — noch nicht begonnen.
   - S1.1 Staging (Subdomain Domainfactory oder lokal)
   - S1.2 Backup/Rollback-SOP + Pre-Deploy-Snapshot
