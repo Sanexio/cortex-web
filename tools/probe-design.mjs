@@ -1,79 +1,25 @@
 #!/usr/bin/env bun
-// probe-design.mjs — Computed-Style-Probe gegen DESIGN_GUIDELINES §13 harte Werte.
-// Exit 0 = alle harten Werte greifen. Exit 1 = mindestens ein Wert falsch.
+// probe-design.mjs — Computed-Style-Probe via Page-Registry.
+//
+// Liest tools/page-registry.mjs und iteriert über alle Pages × Viewports ×
+// Selektoren. Exit 0 = alle Assertions greifen auf allen Pages.
+// Exit 1 = mindestens ein Computed-Style-Mismatch oder fehlendes Element.
 //
 // Usage:
-//   bun run tools/probe-design.mjs
-//   bun run tools/probe-design.mjs --url=https://... (optional Override)
+//   bun run tools/probe-design.mjs                 # alle Pages
+//   bun run tools/probe-design.mjs --slug=home     # nur eine Page
+//   bun run tools/probe-design.mjs --slug=karriere
 //
-// Reference: _rules/FEHLERPROTOKOLL.md#PXZ-E-004
+// Reference: _rules/FEHLERPROTOKOLL.md#PXZ-E-004, Sprint-0 S0.4.
 
 import { launch } from "puppeteer-core";
+import { pages } from "./page-registry.mjs";
 
-const DEFAULT_URL =
-  "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/";
 const CHROME =
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
-const urlArg = process.argv.find((a) => a.startsWith("--url="));
-const URL = urlArg ? urlArg.slice(6) : DEFAULT_URL;
-
-// Expected values per viewport (DESIGN_GUIDELINES §13 + §14, updated v2.5.0).
-// Keys are raw CSS selectors (full syntax).
-// Badge is now inline (static) on ALL viewports — consistent left-aligned layout.
-// MFA card uses the same padding scale as the Standort card.
-const EXPECTED = {
-  1440: {
-    ".pxz-loc-card--main": {
-      paddingTop: "112px",
-      paddingLeft: "96px",
-      paddingRight: "96px",
-      paddingBottom: "96px",
-      position: "relative",
-    },
-    ".pxz-loc-card--main .pxz-loc-badge": {
-      position: "static",
-    },
-    ".pxz-mfa-card": {
-      paddingTop: "112px",
-      paddingLeft: "96px",
-    },
-    ".pxz-final-card": {
-      padding: "0px",
-      backgroundColor: "rgba(0, 0, 0, 0)",
-      boxShadow: "none",
-    },
-  },
-  768: {
-    ".pxz-loc-card--main": {
-      paddingTop: "96px",
-      paddingLeft: "72px",
-    },
-    ".pxz-loc-card--main .pxz-loc-badge": {
-      position: "static",
-    },
-    ".pxz-mfa-card": {
-      paddingTop: "96px",
-      paddingLeft: "72px",
-    },
-    ".pxz-hero-sub": {
-      textAlign: "center",
-    },
-  },
-  430: {
-    ".pxz-loc-card--main": {
-      paddingTop: "72px",
-      paddingLeft: "40px",
-    },
-    ".pxz-loc-card--main .pxz-loc-badge": {
-      position: "static",
-    },
-    ".pxz-mfa-card": {
-      paddingTop: "72px",
-      paddingLeft: "40px",
-    },
-  },
-};
+const slugArg = process.argv.find((a) => a.startsWith("--slug="));
+const onlySlug = slugArg ? slugArg.slice(7) : null;
 
 const browser = await launch({
   executablePath: CHROME,
@@ -83,62 +29,98 @@ const browser = await launch({
 const page = await browser.newPage();
 await page.setCacheEnabled(false);
 
+const PROBED_PROPS = [
+  "padding",
+  "paddingTop",
+  "paddingLeft",
+  "paddingRight",
+  "paddingBottom",
+  "position",
+  "top",
+  "right",
+  "backgroundColor",
+  "boxShadow",
+  "border",
+  "borderRadius",
+  "textAlign",
+  "color",
+  "maxWidth",
+];
+
 let failures = 0;
+let pageCount = 0;
 
-for (const [vp, specs] of Object.entries(EXPECTED)) {
-  const viewport = Number(vp);
-  await page.setViewport({ width: viewport, height: 1000 });
-  await page.goto(URL + "?v=" + Date.now(), { waitUntil: "networkidle2" });
+for (const pageDef of pages) {
+  if (onlySlug && pageDef.slug !== onlySlug) continue;
+  pageCount++;
 
-  console.log(`\n=== Viewport ${viewport}px ===`);
-  for (const [sel, props] of Object.entries(specs)) {
-    const actual = await page.evaluate((s) => {
-      const el = document.querySelector(s);
-      if (!el) return null;
-      const cs = window.getComputedStyle(el);
-      const out = {};
-      for (const p of [
-        "padding",
-        "paddingTop",
-        "paddingLeft",
-        "paddingRight",
-        "paddingBottom",
-        "position",
-        "top",
-        "right",
-        "backgroundColor",
-        "boxShadow",
-        "border",
-        "borderRadius",
-        "textAlign",
-      ]) {
-        out[p] = cs[p];
-      }
-      return out;
-    }, sel);
+  console.log(`\n=== Page: ${pageDef.slug} (${pageDef.url}) ===`);
 
-    if (!actual) {
-      console.log(`  ✗ ${sel} — not found in DOM`);
-      failures++;
-      continue;
+  for (const vp of pageDef.viewports) {
+    const specs = pageDef.expected?.[vp] ?? {};
+    const existsList = pageDef.exists ?? [];
+
+    await page.setViewport({ width: vp, height: 1000 });
+    await page.goto(pageDef.url + "?v=" + Date.now(), {
+      waitUntil: "networkidle2",
+    });
+
+    console.log(`\n  [Viewport ${vp}px]`);
+
+    for (const sel of existsList) {
+      const ok = await page.evaluate(
+        (s) => !!document.querySelector(s),
+        sel
+      );
+      const mark = ok ? "✓" : "✗";
+      console.log(`    ${mark} ${sel} exists in DOM`);
+      if (!ok) failures++;
     }
 
-    for (const [prop, want] of Object.entries(props)) {
-      const got = actual[prop];
-      const ok = got === want;
-      const mark = ok ? "✓" : "✗";
-      console.log(`  ${mark} ${sel} { ${prop}: ${got} }  want: ${want}`);
-      if (!ok) failures++;
+    for (const [sel, props] of Object.entries(specs)) {
+      const actual = await page.evaluate(
+        (s, probed) => {
+          const el = document.querySelector(s);
+          if (!el) return null;
+          const cs = window.getComputedStyle(el);
+          const out = {};
+          for (const p of probed) out[p] = cs[p];
+          return out;
+        },
+        sel,
+        PROBED_PROPS
+      );
+
+      if (!actual) {
+        console.log(`    ✗ ${sel} — not found in DOM`);
+        failures++;
+        continue;
+      }
+
+      for (const [prop, want] of Object.entries(props)) {
+        const got = actual[prop];
+        const ok = got === want;
+        const mark = ok ? "✓" : "✗";
+        console.log(`    ${mark} ${sel} { ${prop}: ${got} }  want: ${want}`);
+        if (!ok) failures++;
+      }
     }
   }
 }
 
 await browser.close();
 
+if (pageCount === 0) {
+  console.log(`\nFAIL — kein Page-Match für --slug=${onlySlug}`);
+  process.exit(1);
+}
+
 if (failures > 0) {
-  console.log(`\nFAIL — ${failures} mismatch(es).`);
+  console.log(`\nFAIL — ${failures} mismatch(es) auf ${pageCount} Page(s).`);
   process.exit(1);
 } else {
-  console.log("\nOK — all computed styles match DESIGN_GUIDELINES §13.");
+  console.log(
+    `\nOK — alle Assertions auf ${pageCount} Page(s) greifen (DESIGN_GUIDELINES §13).`
+  );
   process.exit(0);
 }
