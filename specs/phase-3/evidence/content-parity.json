@@ -1,0 +1,79 @@
+{
+  "timestamp": "2026-04-18T22:45:39.534Z",
+  "trunk_id": "basic-check",
+  "wp": {
+    "ok": true,
+    "page_id": 9668,
+    "link": "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/",
+    "lookup_count": 1,
+    "headline_expected": "Laborcheck Basis — Informationen",
+    "checks": {
+      "headline": true,
+      "tagline": true,
+      "beschreibung": true,
+      "cta_label": true,
+      "cta_url": true,
+      "parameters": true
+    },
+    "missing": {
+      "parameters": []
+    }
+  },
+  "shopify": {
+    "ok": true,
+    "product_id": 10940942844171,
+    "handle": "basic-check",
+    "lookup_count": 1,
+    "checks": {
+      "title": true,
+      "tagline": true,
+      "beschreibung": true,
+      "parameters": true,
+      "price": true,
+      "sku": true
+    },
+    "product": {
+      "id": 10940942844171,
+      "title": "Basis-Bluttest",
+      "body_html": "<p class=\"cw-tagline\">Der kompakte Gesundheitscheck.</p>\n<p class=\"cw-beschreibung\">Kleiner Laborcheck mit 15 Parametern. Abnahme in der Praxis,<br>Ergebnis innerhalb von 48 Stunden.<br></p>\n<h3>Laborparameter</h3>\n<table class=\"cw-laborparameter\">\n<thead><tr>\n<th>Code</th>\n<th>Einheit</th>\n</tr></thead>\n<tbody>\n<tr>\n<td>HGB</td>\n<td>g/dl</td>\n</tr>\n<tr>\n<td>WBC</td>\n<td>/µl</td>\n</tr>\n<tr>\n<td>RBC</td>\n<td>T/l</td>\n</tr>\n<tr>\n<td>HCT</td>\n<td>%</td>\n</tr>\n<tr>\n<td>MCV</td>\n<td>fl</td>\n</tr>\n<tr>\n<td>MCH</td>\n<td>pg</td>\n</tr>\n<tr>\n<td>MCHC</td>\n<td>g/dl</td>\n</tr>\n<tr>\n<td>PLT</td>\n<td>G/l</td>\n</tr>\n<tr>\n<td>Na</td>\n<td>mmol/l</td>\n</tr>\n<tr>\n<td>K</td>\n<td>mmol/l</td>\n</tr>\n<tr>\n<td>Krea</td>\n<td>mg/dl</td>\n</tr>\n<tr>\n<td>GFR</td>\n<td>ml/min</td>\n</tr>\n<tr>\n<td>GOT</td>\n<td>U/l</td>\n</tr>\n<tr>\n<td>GPT</td>\n<td>U/l</td>\n</tr>\n<tr>\n<td>CRP</td>\n<td>mg/l</td>\n</tr>\n</tbody>\n</table>",
+      "vendor": "Sanexio",
+      "product_type": "bluttests",
+      "handle": "basic-check",
+      "updated_at": "2026-04-19T00:44:47+02:00",
+      "published_at": null,
+      "tags": "bluttests, cortex-web",
+      "status": "draft",
+      "variants": [
+        {
+          "id": 53059328934155,
+          "product_id": 10940942844171,
+          "title": "Default",
+          "price": "99.00",
+          "position": 1,
+          "inventory_policy": "deny",
+          "compare_at_price": null,
+          "option1": "Default",
+          "option2": null,
+          "option3": null,
+          "created_at": "2026-04-19T00:06:51+02:00",
+          "updated_at": "2026-04-19T00:06:51+02:00",
+          "taxable": true,
+          "barcode": null,
+          "fulfillment_service": "manual",
+          "grams": 0,
+          "inventory_management": null,
+          "requires_shipping": false,
+          "sku": "JVT-BLD-001",
+          "weight": 0,
+          "weight_unit": "kg",
+          "inventory_item_id": 55057110597899,
+          "inventory_quantity": 0,
+          "old_inventory_quantity": 0,
+          "admin_graphql_api_id": "gid://shopify/ProductVariant/53059328934155",
+          "image_id": null
+        }
+      ]
+    },
+    "missing_parameters": []
+  }
+}
