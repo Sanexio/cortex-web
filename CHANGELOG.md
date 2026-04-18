@@ -35,4 +35,4 @@ Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](htt
 
 #### Initial-Commit
 - Git-Repo initialisiert
-- Erster Commit: `chore: phase 0 – skeleton, rules, nexus integration`
+- Erster Commit: `6178d2f — chore: phase 0 – skeleton, rules, nexus integration`

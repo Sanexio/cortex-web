@@ -31,7 +31,7 @@
 
 - **Version:** 0.1.0 (Phase 0 abgeschlossen)
 - **Stand:** 2026-04-18, Session 1 abgeschlossen
-- **Git-Commit:** *(wird nach Initial-Commit eingetragen)*
+- **Git-Commit:** `6178d2f` (Initial Commit Phase 0)
 - **Skelett:** vollständig (Ordnerstruktur, Regeln, Schemas-Gerüste, Adapter-READMEs)
 - **Nexus-Integration:** MEMORY.md, CLAUDE.md, devices.json aktualisiert
 - **Adapter:** NICHT implementiert (kommen in Phase 1/2)
