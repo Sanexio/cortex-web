@@ -1,6 +1,6 @@
 # ARCHITECTURE — Cortex-Web
 
-> Lebendes Dokument. Stand: 2026-04-18 nach Phase 0.
+> Lebendes Dokument. Stand: 2026-04-19 nach Phase 2 (Setup + Adapter).
 
 ---
 
@@ -80,11 +80,12 @@ Juvantis-Kern (`DHT/`, `social-media/`) bleibt unter `projects/Juvantis/`.
 | Phase | Ziel | Session | Status | Kommentar |
 |:---:|------|:-------:|:-----:|-----------|
 | **0** | Skelett + Regeln + Nexus | 1 | ✅ 2026-04-18 | Commit `6178d2f` / `d9577cd` |
-| **1** | POC WP-Adapter: 1 Produkt → WP-Page | 1 | ✅ 2026-04-18 | Commit `778635c`, 10/10 AK, HWG-konform, idempotent |
-| **2** | POC Shopify-Adapter: gleiches Produkt | 1 | ⏳ | nächste Session |
-| **3** | Review — trägt der Ansatz? | 1 | ⏳ | Go/No-Go |
-| **4** | Praxis-Subsumierung: `praxis-redesign/` → `sites/praxis-webseite/` | 1 | ⏳ | `git mv` |
-| **5** | Juvantis-Subsumierung: `Juvantis/juvantis-web/` → `sites/juvantis-webseite/` | 1 | ⏳ | `git mv` |
+| **1** | POC WP-Adapter: 1 Produkt → WP-Page | 2 | ✅ 2026-04-18 | Commit `778635c`, 10/10 AK, HWG-konform, idempotent |
+| **2 (Setup)** | Shopify Custom App + Admin-API-Token | 3 | ✅ 2026-04-18 | Commit `48c4170`, OAuth-Catcher + Authorize-Script |
+| **2 (Adapter)** | POC Shopify-Adapter: gleiches Produkt → Draft | 4 | ✅ 2026-04-19 | Commit `7d6f665`, 12/12 AK, Trunk-Master via Roundtrip nachgewiesen |
+| **3** | Review — trägt der Ansatz? | 5? | ⏳ | Go/No-Go visueller Vergleich WP vs. Shopify |
+| **4** | Praxis-Subsumierung: `praxis-redesign/` → `sites/praxis-webseite/` | tbd | ⏳ | `git mv` |
+| **5** | Juvantis-Subsumierung: `Juvantis/juvantis-web/` → `sites/juvantis-webseite/` | tbd | ⏳ | `git mv` |
 
 **Wichtig:** Phasen sind in separaten Sessions abzuschließen. Jede Phase endet mit
 „Session beenden" (LL-042), nächste Phase startet mit „Projekt fortsetzen" (LL-043).

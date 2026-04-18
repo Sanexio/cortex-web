@@ -2,6 +2,38 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionierung: SemVer.
 
+## [0.3.0] — 2026-04-19 (Session 4)
+
+### Phase 2 abgeschlossen — POC Shopify-Adapter End-to-End
+
+#### Hinzugefügt
+- `specs/phase-2/POC_SHOPIFY_ADAPTER.md` — Architekten-Modus-Spec (Verständnis + Lösungsdesign + 12 Akzeptanzkriterien + Selbstprüfungs-Plan + Phase-2b-Hooks)
+- `specs/phase-2/evidence/2026-04-19_self-check.md` — Self-Check 12/12 grün, FK-2-Bug (Handle-Position) dokumentiert
+- `adapters/shopify/build.mjs` — CLI: YAML → AJV-Validation → Renderer → Payload-JSON auf stdout
+- `adapters/shopify/products-to-shopify.mjs` — CLI: REST-Push mit handle-basierter Idempotenz (GET → POST/PUT), `ALLOW_OVERWRITE=1`-Safeguard für published Produkte
+- `adapters/shopify/lib/shopify-rest-client.mjs` — Fetch-Wrapper mit `X-Shopify-Access-Token`-Header + Token-Mask, API-Version `2026-04` gepinnt, Store-Handle-Validierung
+- `adapters/shopify/lib/renderers/product-juvantis.mjs` — Renderer für `views.juvantis`: body_html (Tagline + Beschreibung + Laborparameter-Tabelle), Default-Variant mit `requires_shipping=false`, `status:"draft"` hartcodiert (C-1)
+- `tools/sync-shopify.sh` — Pipeline: validate → build → push, lädt `.env.local`
+
+#### Geändert
+- `tools/validate.sh` — optionaler Shopify-Connectivity-Check via ENV-Flag `CHECK_SHOPIFY=1` (curl gegen `/shop.json` mit Token)
+- `adapters/shopify/README.md` — Pipeline-Beschreibung + View-Logik aktualisiert, Store-Handle korrigiert
+
+#### Verifiziert
+- Test-Produkt `id=10940942844171, handle=basic-check, status=draft, published_at=null` im Store `juvantis.myshopify.com`
+- Idempotent: 2. Lauf = `update`, gleiche ID, neueres `updated_at` (+5s)
+- CW-001 (Trunk-Master) per Roundtrip: Adapter setzt manuell auf `active` gesetzten Status zurück auf `draft`, sobald `ALLOW_OVERWRITE=1` gesetzt
+- HWG-Trennung: `body_html` enthält keinen Preis, keinen `Jetzt-buchen`-CTA, keine sanexio.eu-URL
+- Storefront-Schutz: `https://sanexio.eu/products/basic-check` → HTTP 302 → `/password` (Store passwortgeschützt + Draft-Status doppelt geschützt)
+- Theme-Repo `juvantis-web/theme` weiterhin unangetastet (HEAD `1fbc35b`, working tree clean)
+- `.env.local` weiterhin git-ignoriert, `chmod 600`
+
+#### Lessons Learned (vollständig in Tutorial `Second Brain/30 Tutorials/Webentwicklung/Shopify & Liquid/06-shopify-admin-rest-product-sync.md`)
+- **`handle` MUSS im Product-Body stehen** — Top-Level oder Wrapper-Position wird ignoriert, Shopify generiert dann eigenen Handle aus `title`. Erkannt in AK-3 (1. Lauf), gefixt, 2. Lauf grün.
+- Tags werden alphabetisch normalisiert (`cortex-web, bluttests` → `bluttests, cortex-web`); für Set-Vergleich egal, für Audit dokumentieren.
+- Shopify-Storefront ist standardmäßig passwortgeschützt — auch ohne Password-Wall wäre Draft-Produkt 404.
+- Pattern „CW-001 Trunk-Master per Roundtrip nachgewiesen" — Admin-Edits werden bei nächstem Adapter-Lauf zurückgesetzt; das ist nicht Theorie, sondern verifiziert.
+
 ## [0.2.1-setup] — 2026-04-18 (Session 3)
 
 ### Phase 2 Infrastruktur — Shopify Admin-API-Token provisioniert

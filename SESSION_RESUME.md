@@ -6,7 +6,7 @@
 > 1. Pflicht-Init Nexus (CLAUDE.md, MEMORY.md, GLOBAL_RULES.md, SESSION_LIFECYCLE.md)
 > 2. Diese Datei (SESSION_RESUME.md)
 > 3. Alle in §0 unten als Pflicht-Lesung markierten Folgedateien
-> 4. Pre-Flight (`tools/validate.sh`)
+> 4. Pre-Flight (`tools/validate.sh`, optional `CHECK_SHOPIFY=1`)
 > 5. Status-Statement im Architekten-Stil → wartet auf Wahl der Front
 
 ---
@@ -28,38 +28,26 @@
 
 ## §1 Stand & Version
 
-- **Version:** 0.2.1-setup (Phase-2-Infrastruktur abgeschlossen, Phase-2-Adapter offen)
-- **Stand:** 2026-04-18, Session 3 abgeschlossen — **Shopify Admin-API-Token produktiv**
-- **Git-Commits:**
+- **Version:** `0.3.0` — **Phase 2 (Setup + Adapter) abgeschlossen**
+- **Stand:** 2026-04-19, Session 4 abgeschlossen — **Common-Trunk-Ansatz funktional bewiesen**
+- **Git-Commits (chronologisch):**
   - `6178d2f` · `d9577cd` — Phase 0 Skelett + Nachtrag
   - `778635c` · `19fd8ce` — Phase 1 POC WP-Adapter + Close-Session
-  - *(Session 3 Änderungen: bisher uncommitted; Commit-Empfehlung siehe §4 unten)*
-- **Working Tree:** 1 modifiziert (`.env.local.template`), 3 untracked (Shopify-Tooling + CLI-Config), Trunk unverändert
+  - `48c4170` — Phase 2 Setup (Shopify Custom App + Admin-API-Token)
+  - `7d6f665` — **Phase 2 Adapter (POC Shopify-Adapter, 12/12 AKs grün)**
+- **Working Tree:** clean nach LL-042-Audit (alle Phase-2-Code-, Spec- und Doku-Updates committed; Nexus-Updates gehen über `nexus-sync.sh` in den Git-Repo)
+- **Trunk-Content:** 1 Produkt (`basic-check.yaml`) bedient zwei Plattformen
+- **WP-Adapter:** Phase 1, idempotent, HWG-konform (Local-WP)
+- **Shopify-Adapter:** **Phase 2, idempotent, draft-only, mit ALLOW_OVERWRITE-Safeguard** (`juvantis.myshopify.com`)
+- **iOS-Adapter:** Placeholder, Phase ≥3 oder später
+- **Medien-Registry:** weiterhin leer → **Phase 2b-Kandidat** (siehe §4 P2)
 
-### §1.1 Shopify Adapter-Credentials (Phase 2 Setup)
+### §1.1 Aktuelle Artefakte im Shopify-Store
 
-Einmaliger Setup-Akt in Session 3 durchgeführt, muss nicht wiederholt werden:
-
-- **Custom App im Dev Dashboard:** `Cortex-Web Adapter` (Version `cortex-web-adapter-3` aktiv)
-  - Client-ID: `19fe6e2bd121da1592ac75d27b167e72` (öffentlich)
-  - Scopes: `read_products, write_products, read_files, write_files`
-  - `use_legacy_install_flow = true`, `embedded = false`
-  - `application_url` und `redirect_urls` auf `http://localhost:53682/callback`
-- **Admin-API-Token:** in `.env.local` als `SHOPIFY_ADMIN_TOKEN` (beginnt mit `shpat_…`)
-- **Store:** `juvantis.myshopify.com` (öffentliche Domain `sanexio.eu`, Plan `basic`, Owner Dr. Stracke)
-- **Verifiziert:** `GET /admin/api/2026-04/shop.json` → `HTTP 200`, Shop-Metadaten korrekt
-
-### §1.2 Neue Tools dieser Session
-
-- `tools/shopify-oauth-catcher.mjs` — Node-HTTP-Server auf `localhost:53682/callback`, tauscht OAuth-Code gegen Admin-API-Token, schreibt in `.env.local` (chmod 600). Wiederverwendbar bei Scope-Erweiterung oder Token-Rotation.
-- `tools/shopify-authorize.sh` — Bash-Script, das die OAuth-Authorize-URL sauber (ohne Copy-Paste-Zeilenumbrüche) zusammenbaut und per `open` im Default-Browser startet.
-- `shopify.app.cortex-web-adapter.toml` — CLI-Konfig (via `shopify app config link`), enthält öffentliche App-Metadaten. Wird mit `shopify app deploy` ins Dev Dashboard gepusht.
-
-### §1.3 Nexus-Updates (LL-042 Schritt 2+3)
-
-- `Nexus/_memory/MEMORY.md` — Cortex-Web-Zeile auf Phase-2-Setup ✅, neue Pfad-Referenzen für Shopify-OAuth-Tooling, Pattern-Katalog erweitert, Store-Name `medzpoint` korrigiert zu `juvantis.myshopify.com`
-- `Nexus/_memory/patterns/shopify-custom-app-token.md` — **neues Pattern** (Custom-App-Token via manuellem OAuth-Authorize)
-- `Second Brain/30 Tutorials/Webentwicklung/Shopify & Liquid/05-admin-api-token-custom-app.md` — **neues Tutorial** mit vollständiger Schritt-für-Schritt-Anleitung und Fallstricke-Liste
+- **Test-Produkt:** id `10940942844171`, handle `basic-check`, status `draft`, published_at `null`
+- **Admin-URL:** https://juvantis.myshopify.com/admin/products/10940942844171
+- **Storefront:** `https://sanexio.eu/products/basic-check` → HTTP 302 → `/password` (passwort-geschützt)
+- **Säuberung:** Test-Produkt bleibt im Store als Phase-3-Review-Artefakt. Löschung nur auf Dr.-Stracke-Wunsch.
 
 ---
 
@@ -69,127 +57,118 @@ Einmaliger Setup-Akt in Session 3 durchgeführt, muss nicht wiederholt werden:
 cd ~/Cortex/projects/Cortex-Web && bash tools/validate.sh
 ```
 
-Erwartet: `validate: OK (N file(s))`, Exit 0. **Stand 2026-04-18 Session 3: grün.**
+Erwartet: `validate: OK (1 file(s))`, Exit 0.
 
-Zusätzlicher Shopify-Connectivity-Check (einmal manuell verifiziert, für automatisierte Pre-Flights in Phase 2 als Teil von `tools/validate.sh` vorgesehen):
-
+Mit Shopify-Connectivity-Check:
 ```bash
-set -a; source .env.local; set +a
-curl -sS -H "X-Shopify-Access-Token: $SHOPIFY_ADMIN_TOKEN" \
-  "https://$SHOPIFY_STORE/admin/api/2026-04/shop.json" | jq '.shop.myshopify_domain'
+cd ~/Cortex/projects/Cortex-Web && CHECK_SHOPIFY=1 bash tools/validate.sh
 ```
+
+Erwartet zusätzlich: `validate: shopify OK (juvantis.myshopify.com, HTTP 200)`.
+
+**Stand 2026-04-19 Session 4: beide grün.**
 
 ---
 
-## §3 Letzte Session — Session 3, 2026-04-18 Abend
+## §3 Letzte Session — Session 4, 2026-04-19
 
 ### Ziel der Session
-Vorbereitung Phase 2: Einmalige Einrichtung der Shopify-Infrastruktur (Custom App, Admin-API-Token), damit Session 4 direkt mit Adapter-Spec und Implementierung starten kann.
+Phase 2 Adapter-Implementation: Spec schreiben (Architekten-Modus Phase 1+2) → Implementation (Phase 3) → Selbstprüfung (Phase 4) → 12/12 AKs grün.
 
 ### Durchgeführt
+1. Pflicht-Init geladen, Pre-Flight `tools/validate.sh` grün.
+2. Session-3-Änderungen committed: `48c4170` (4 mod + 3 untracked + Doku).
+3. **Phase-2-Spec geschrieben:** `specs/phase-2/POC_SHOPIFY_ADAPTER.md` (291 Zeilen, analog Phase-1-Vorlage). Entscheidungen E-1…E-8 von Claude getroffen (Dr. Stracke-Delegation): Product / REST / Handle / ALLOW_OVERWRITE-Flag / Tags `cortex-web,bluttests`. Alle Alternativen in §2.7 dokumentiert.
+4. **Implementation:** 5 neue Dateien (`shopify-rest-client.mjs`, `product-juvantis.mjs`, `build.mjs`, `products-to-shopify.mjs`, `sync-shopify.sh`), 2 Erweiterungen (`validate.sh` mit `CHECK_SHOPIFY=1`, `adapters/shopify/README.md`).
+5. **Bug während AK-3 entdeckt + gefixt:** Erste Implementation hatte `handle` auf Payload-Root statt in `payload.product`. Shopify hat dadurch eigenen Handle aus `title` derived (`basis-bluttest` statt `basic-check`). Fix: handle in product-Body. Test-Produkt mit falschem Handle via DELETE entfernt. **FK-2-Klassifizierung im Self-Check.**
+6. **Selbstprüfung 12/12 AKs grün** — Self-Check: `specs/phase-2/evidence/2026-04-19_self-check.md`. Inkl. AK-12 (ALLOW_OVERWRITE-Roundtrip) per autonomer API-Manipulation verifiziert.
+7. Commit `7d6f665`: 9 files, +774/-15.
+8. **Session-Ende-Audit (LL-042 5 Schritte):**
+   - Schritt 1: Projekt-Audit grün (Pre-Flight, keine TODOs, keine Backups)
+   - Schritt 2: Nexus-Audit, identifizierte Updates für `Nexus/CLAUDE.md`, `MEMORY.md`, `SYSTEM_MAP.md`, `Cortex-Web/_rules/ARCHITECTURE.md`, `CHANGELOG.md`
+   - Schritt 3: Pattern-Optimierung — neuer Pattern `shopify-rest-product-sync.md` in `Nexus/_memory/patterns/`
+   - Schritt 4: Tutorial-Update — `Second Brain/30 Tutorials/Webentwicklung/Shopify & Liquid/06-shopify-admin-rest-product-sync.md`
+   - Schritt 5: Diese Datei aktualisiert.
 
-1. Shopify CLI installiert (`npm install -g @shopify/cli@latest`, v3.93.2)
-2. Custom App im Dev Dashboard erstellt: `Cortex-Web Adapter`, Version `cortex-web-adapter-1` → `-2` → `-3`
-3. Lokal verlinkt: `shopify app config link --client-id=…` erzeugt `shopify.app.cortex-web-adapter.toml`
-4. Erkennung: „App installieren" im neuen Dev Dashboard triggert **keinen** OAuth-Authorize (nur App-Open, keine `code`-Callback)
-5. Fallback-Strategie: manuellen OAuth-Authorize via `https://juvantis.myshopify.com/admin/oauth/authorize?…` auslösen
-6. Implementiert: `tools/shopify-oauth-catcher.mjs` (Node-HTTP-Server) + `tools/shopify-authorize.sh` (URL-Builder)
-7. `.env.local.template` um Shopify-Variablen erweitert
-8. App-URL und `redirect_urls` auf `http://localhost:53682/callback` gesetzt, per `shopify app deploy` als Version `-3` veröffentlicht
-9. Catcher gestartet, Authorize-Link via Shell-Script geöffnet, Dr. Stracke hat den Scopes zugestimmt
-10. Shopify redirectet zu Catcher mit `code` → Token-Exchange → `SHOPIFY_STORE` + `SHOPIFY_ADMIN_TOKEN` in `.env.local`
-11. Verifizierung: `HTTP 200` auf `/shop.json`, Shop-Identität korrekt
+### Verifiziert (Auszug aus Self-Check)
+| AK | Status | Evidenz |
+|---|:---:|---|
+| AK-1 | ✅ | `validate: OK (1 file(s))` |
+| AK-2 | ✅ | `validate: shopify OK (juvantis.myshopify.com, HTTP 200)` |
+| AK-3 | ✅ | `action: "create"`, id 10940942844171, handle `basic-check` |
+| AK-4 | ✅ | `count: 1`, status `draft` |
+| AK-5 | ✅ | vendor/product_type/tags/sku/price korrekt |
+| AK-6 | ✅ | body_html: required present, forbidden (Preis/CTA) absent |
+| AK-7 | ✅ | 2. Lauf = update, gleiche ID, +5s updated_at |
+| AK-8 | ✅ | Storefront 302 → `/password` (Draft + Password doppelt geschützt) |
+| AK-9 | ✅ | Juvantis-Theme HEAD `1fbc35b` clean |
+| AK-10 | ✅ | `.env.local` gitignored, chmod 600 |
+| AK-11 | ✅ | Token-Mask aktiv (Defense-in-Depth) |
+| AK-12 | ✅ | ALLOW_OVERWRITE-Roundtrip: abort ohne Flag, success mit Flag, status zurück auf draft |
 
-### Nicht durchgeführt (bewusst, Architekten-Modus)
+**Score: 12/12 = 100 %**
 
-- **Kein Phase-2-Adapter-Code geschrieben.** Spec fehlt noch. WORKING_MODE.md Phase 1 (Verständnis) + Phase 2 (Lösungsdesign) müssen in Session 4 vor jedem Schreiben passieren.
+### Lessons Learned (im Tutorial `06-shopify-admin-rest-product-sync.md` festgehalten)
 
-### Lessons Learned (detailliert)
-
-- Store-Handle war in MEMORY.md falsch hinterlegt als `medzpoint`, tatsächlich `juvantis`. Aus Base64-Decode des `host=…` OAuth-Parameters rekonstruiert (`YWRtaW4uc2hvcGlmeS5jb20vc3RvcmUvanV2YW50aXM` → `admin.shopify.com/store/juvantis`).
-- `shopify app dev --store=<production>.myshopify.com` ist **nicht** nutzbar — verlangt Dev-Store oder Plus-Sandbox.
-- URL-Copy-Paste aus Chat zerschießt lange URLs durch Zeilenumbrüche (`redirect_ur%0A%20i` statt `redirect_uri`). Immer via Shell-Script mit `open` öffnen.
-- Shopify antwortet im `access_token`-Response nur mit den **effektiven** Scopes: `read_*` wird zu `write_*` kollabiert, wenn beide beantragt sind (Antwort: `"scope": "write_products,write_files"` — Lesezugriff ist implizit enthalten).
+- **Shopify REST: `handle` MUSS im Product-Body stehen, nicht im Wrapper.** Sonst derived Shopify einen Handle aus `title` (Slugify-Logik). Konsequenz für jede Idempotenz-Strategie.
+- **Tags werden alphabetisch normalisiert** — Set-Vergleich für Idempotenz egal, für Audit dokumentieren.
+- **Storefront ist passwort-geschützt** — Draft-Produkt doppelt geschützt; AK-8 erfüllt durch Redirect ODER 404.
+- **CW-001 (Trunk-Master) per Roundtrip-Test verifiziert**: Adapter setzt Admin-`active`-Edits zurück auf `draft`.
 
 ---
 
-## §4 Offene Tasks (Priorität absteigend) — Phase 2 startet mit Session 4
+## §4 Offene Tasks (Priorität absteigend) — Phase 3 oder Phase 4 wählen
 
-### P0 — Git-Commit für Session 3 (optional, sobald Dr. Stracke gibt OK)
+### P0 — Wahl der nächsten Phase (Architekten-Entscheidung)
 
-Nicht-committed aktuell:
-- modifiziert: `.env.local.template` (Shopify-Felder hinzugefügt)
-- untracked: `tools/shopify-oauth-catcher.mjs`, `tools/shopify-authorize.sh`, `shopify.app.cortex-web-adapter.toml`
+Zwei valide Pfade, beide mit eigenem Mehrwert:
 
-**NICHT** committen: `.env.local` (git-ignoriert, enthält Secrets)
+| Option | Phase | Inhalt | Dauer-Schätzung |
+|---|---|---|---|
+| **(α) Review-Phase abschließen** | **Phase 3** | Visueller Vergleich der beiden gerenderten Outputs (WP-Page + Shopify-Draft-Produkt). Go/No-Go-Entscheidung Dr. Stracke ob Common-Trunk-Ansatz für Realbetrieb taugt. | 1 kurze Session, primär visuell |
+| **(β) Subsumierung starten** | **Phase 4** | `git mv projects/praxis-redesign/ → projects/Cortex-Web/sites/praxis-webseite/` + Pfad-Anpassungen + Audit. Invasiv, braucht Go. | 1 ganze Session, viele Pfad-Updates |
+| **(γ) Phase 2b einschieben** | **Phase 2b** | Medien-Pipeline (`tools/media/register.mjs`, `_media-source/`, Hash-Dedupe, `stagedUploadsCreate`) + Metafield-Idempotenz. Verschiebt Phase 3 hinter Phase 2b. | 1 ganze Session |
+| **(δ) Pause/Wartung** | — | Dr. Stracke arbeitet an anderen Projekten weiter, Cortex-Web ruht | 0 |
 
-Vorschlag-Nachricht:
-```
-feat(phase-2-setup): Shopify Admin-API-Token Provisioning-Tooling
+### P1 — Aktualisierungen, die in Schritt 5 NICHT eigenmächtig durchgeführt wurden
 
-- tools/shopify-oauth-catcher.mjs: OAuth-Code → Admin-API-Token Exchange (localhost:53682)
-- tools/shopify-authorize.sh: URL-Builder für manuellen OAuth-Authorize
-- shopify.app.cortex-web-adapter.toml: Shopify CLI App-Konfiguration (public)
-- .env.local.template: erweitert um SHOPIFY_{CLIENT_ID,CLIENT_SECRET,STORE,ADMIN_TOKEN}
+**Juvantis-Doku-Drift** (außerhalb Cortex-Web): `projects/Juvantis/CLAUDE.md` und `projects/Juvantis/_config/RULES.md` führen den Store noch als `medzpoint` (siehe R-007, R-008, R-015). Korrekt ist `juvantis.myshopify.com`. Sollte in einer reinen Juvantis-Session korrigiert werden — nicht in Cortex-Web-Sessions, da das Juvantis-Projekt eigenständig ist.
 
-Store juvantis.myshopify.com (sanexio.eu), Scopes write_products + write_files.
-Token verifiziert gegen /admin/api/2026-04/shop.json (HTTP 200).
-```
+### P2 — Phase 2b Vorbereitung (für später, nicht jetzt)
 
-### P1 — Phase 2 Spec schreiben (nächste Session)
+Falls Phase 3 oder 4 zu Phase 2b führt:
+- Medien-Schema (`media.schema.json` konkretisieren)
+- `tools/media/register.mjs` implementieren
+- `_media-source/<kategorie>/` Ordnerstruktur etablieren
+- Shopify Files via `stagedUploadsCreate` + `fileCreate` (GraphQL!)
+- Metafield-Idempotenz `cortex_web.trunk_id` als stabilerer Marker
 
-Ziel-Dokument: `specs/phase-2/POC_SHOPIFY_ADAPTER.md`
+### Parallel laufende Arbeiten (NICHT in Cortex-Web-Sessions berührt)
 
-Analog zu `specs/phase-1/POC_WP_ADAPTER.md`. Inhalt muss enthalten:
-
-1. **Verständnis (WORKING_MODE Phase 1):** Zielzustand, Constraints (CW-001 Trunk-Master, CW-003 lokale Medien-Originale, CW-005 Plattform-Trennung → juvantis-View mit Preis & Kauf-CTA erlaubt, Draft-Status Pflicht), implizite Annahmen.
-2. **Lösungsdesign (Phase 2):** REST vs. GraphQL Admin API, Rate-Limits, Idempotenz-Strategie (SKU als Identifier), Draft/Published-Toggle, Medien-Pipeline (Phase-2-Scope = Produkt-Daten only, Medien-Registry optional ab Phase 2b).
-3. **Akzeptanzkriterien (AK-1…AK-N):** analog Phase 1.
-
-### P2 — Phase 2 Implementation (nach Spec-Freigabe)
-
-- `adapters/shopify/build.mjs` — Trunk-YAML → Shopify-Admin-API-Payload (juvantis-View)
-- `adapters/shopify/products-to-shopify.mjs` — Idempotenter Create/Update per SKU oder `handle`
-- `adapters/shopify/lib/` — REST-Client + Renderer (analog `adapters/wordpress/lib/`)
-- `tools/sync-shopify.sh` — Pipeline: validate → build → push, lädt `.env.local`
-- `tools/validate.sh` erweitern um Shopify-Connectivity-Check (`/shop.json` mit Token)
-
-### P3 — Nach Phase 2: Phase 3 (Review)
-
-Visueller Vergleich WP-Rendering vs. Shopify-Rendering desselben Produkts `basic-check`. Go/No-Go-Entscheidung Dr. Stracke, ob der Common-Trunk-Ansatz den Pflegeaufwand rechtfertigt.
-
-### Parallel laufende Arbeiten (werden NICHT in Cortex-Web-Sessions berührt)
-
-- `praxis-redesign` Sprint 2 (S2.1 Seiten-Inventar) — läuft in eigenen Sessions weiter, Theme-Repo bleibt autonom bis Phase 4
-- `Juvantis/juvantis-web` — läuft in eigenen Sessions weiter, Theme-Repo bleibt autonom bis Phase 5
+- `praxis-redesign` Sprint 2 (S2.1 Seiten-Inventar) — eigenständige Sessions, autonom bis Phase 4
+- `Juvantis/juvantis-web` — eigenständige Sessions, autonom bis Phase 5
 - `Juvantis/DHT`, `Juvantis/social-media` — unabhängig, bleiben dauerhaft unter `projects/Juvantis/`
 
 ---
 
 ## §5 Phasen-spezifische Pflicht-Lesung
 
-### Für Phase 2 (POC Shopify-Adapter) — nächste Session
-
-- `~/Cortex/projects/Juvantis/CLAUDE.md` — Shopify-Theme-Regeln (`medzpoint`-Bezeichnung war falsch, korrekter Store-Handle ist `juvantis.myshopify.com`, public Domain `sanexio.eu`)
-- `~/Cortex/projects/Juvantis/juvantis-web/theme/` — Target-Theme-Struktur (falls Adapter als Page oder Product rendert; Phase-2-Entscheidung)
-- `~/Cortex/projects/Juvantis/_config/RULES.md` — R-001…R-018 (Shopify-Konventionen)
-- `~/Cortex/Nexus/_memory/patterns/shopify-workflow.md` — bestehendes Pattern
-- `~/Cortex/Nexus/_memory/patterns/shopify-custom-app-token.md` — **neu in Session 3**
-- `~/Cortex/Nexus/Second Brain/30 Tutorials/Webentwicklung/Shopify & Liquid/05-admin-api-token-custom-app.md` — **neu in Session 3**
-- `.env.local` (lokal, nicht im Git) enthält Admin-API-Token, Store-Domain
-
 ### Für Phase 3 (Review)
-
-- Outputs aus Phase 1 + 2 (Screenshots, Diff-Report)
-- Visual Comparison der beiden gerenderten Seiten
+- `Cortex-Web/specs/phase-1/POC_WP_ADAPTER.md` + Local-WP-Page (Page-ID 9668)
+- `Cortex-Web/specs/phase-2/POC_SHOPIFY_ADAPTER.md` + Self-Check + Shopify-Produkt (id 10940942844171)
+- `Cortex-Web/_rules/ARCHITECTURE.md` §3 (Roadmap)
 
 ### Für Phase 4 (Praxis-Subsumierung)
+- `projects/praxis-redesign/SESSION_RESUME.md` — aktueller Sprint-Stand
+- `Cortex-Web/_rules/ARCHITECTURE.md` §2 (Ziel-Architektur)
+- **WICHTIG:** Phase 4 setzt Go von Dr. Stracke voraus (`git mv` invasiv)
 
-- `projects/praxis-redesign/SESSION_RESUME.md` — aktueller Sprint-Stand zum Zeitpunkt von Phase 4
-- **WICHTIG:** Phase 4 setzt Go von Dr. Stracke voraus (`git mv`-Operation ist invasiv)
+### Für Phase 2b (Medien-Pipeline)
+- `Cortex-Web/_config/RULES.md` CW-003 (Lokale Originale)
+- `Cortex-Web/trunk/schema/media.schema.json` (Platzhalter, muss konkretisiert werden)
+- `Nexus/_memory/patterns/shopify-rest-product-sync.md` §11 (Out-of-Scope-Hinweise)
 
 ### Für Phase 5 (Juvantis-Web-Subsumierung)
-
 - `projects/Juvantis/juvantis-web/` (Theme-Git-Status)
 - **WICHTIG:** ebenfalls Go erforderlich
 
@@ -197,29 +176,34 @@ Visueller Vergleich WP-Rendering vs. Shopify-Rendering desselben Produkts `basic
 
 ## §6 Sofort-Status-Frage für nächste Session
 
-> **„Cortex-Web Phase-2-Setup abgeschlossen (Custom App `Cortex-Web Adapter`,
-> Admin-API-Token für `juvantis.myshopify.com` in `.env.local`, verifiziert
-> HTTP 200). Session-3-Dateien sind uncommitted.
+> **„Cortex-Web Phase 2 (Setup + Adapter) abgeschlossen — Common-Trunk-Ansatz auf
+> WP und Shopify funktional bewiesen, 12/12 AKs grün, Test-Produkt
+> `10940942844171` als Phase-3-Review-Artefakt im Store. Vier Optionen für
+> nächsten Schritt:
 >
-> Soll ich (a) erst die Session-3-Änderungen committen (Commit-Vorschlag in
-> §4 P0 der SESSION_RESUME.md), oder (b) direkt mit Phase-2-Spec beginnen
-> (`specs/phase-2/POC_SHOPIFY_ADAPTER.md` nach Architekten-Modus Phase 1
-> Verständnis-Sicherung)? Oder (c) beides nacheinander?"**
+> (α) Phase 3 Review — visueller Vergleich WP-Page vs. Shopify-Draft, Go/No-Go.
+> (β) Phase 4 Subsumierung praxis-redesign → `sites/praxis-webseite/` (`git mv`).
+> (γ) Phase 2b Medien-Pipeline (`_media-source/`, Metafield-Idempotenz).
+> (δ) Pause/Wartung.
+>
+> Welche Front?"**
 
 ---
 
 ## §7 Verbote / harte Regeln — dürfen NIE passieren
 
-- **Keine Datenverschiebung** aus `praxis-redesign/` oder `Juvantis/juvantis-web/` in Phase 2–3 (erst Phase 4/5, jeweils mit separatem Go)
-- **Kein Push zu Prod-Shopify oder Prod-WP** während POC-Phasen — Shopify-Adapter arbeitet immer mit `status: draft`
-- **CW-001 Trunk-ist-Master** — keine direkten Shopify-Admin-Edits für Trunk-gepflegten Content
+- **Keine Datenverschiebung** aus `praxis-redesign/` oder `Juvantis/juvantis-web/` ohne explizites Go (Phase 4/5 jeweils separate Freigabe)
+- **Kein Push zu Prod-Shopify in `status="active"`** während Phase 3 — Adapter ist hartcodiert auf `draft`, niemals umkonfigurieren
+- **Kein Touch am `praxiszentrum`-Theme** und am `juvantis-web/theme/`-Repo in Cortex-Web-Sessions — beide Themes gehören ihren Heimatprojekten
+- **CW-001 Trunk-Master bleibt unbestritten** — Admin-Edits werden vom nächsten Adapter-Lauf zurückgesetzt; das ist Feature, nicht Bug
 - **CW-005 Plattform-Trennung** — KEIN Preis, KEIN Kauf-CTA auf Praxis-Site (schema-erzwungen via `const: false`)
-- **Keine Shopify-API-Credentials oder WP-Passwörter im Repo** (nicht in `.env.*.template`, nirgends)
+- **Keine Shopify-API-Credentials oder WP-Passwörter im Repo**
 - **Kein `--force` bei Git** außer bei explizitem Dr.-Stracke-Go
-- **Kein Touch am `praxiszentrum`-Theme** in Cortex-Web-Sessions — das Theme gehört `praxis-redesign`, wird erst in Phase 4 subsumiert
-- **Kein Admin-/Root-/Login-Passwort im Chat** — nur App-Passwords, API-Tokens (`feedback_secrets_handling.md`)
-- **Kein Zurücklesen/Loggen des Shopify-Client-Secrets** oder `SHOPIFY_ADMIN_TOKEN` im Chat — auch nicht in Tool-Results oder Debug-Ausgaben
-- **Keine Scope-Erweiterung ohne Go** — Scope-Änderung erfordert App-Neuinstallation, alter Token wird ungültig, `sync-shopify.sh`-Läufe unterbrechen
+- **Kein Admin-/Root-/Login-Passwort im Chat** — nur App-Passwords, API-Tokens
+- **Kein Zurücklesen/Loggen des Shopify-Client-Secrets** oder `SHOPIFY_ADMIN_TOKEN` im Chat
+- **Keine Scope-Erweiterung der Custom App ohne Go** — Token würde invalidiert
+- **Kein Test-Produkt im Store löschen ohne Dr.-Stracke-Go** — `10940942844171` ist Phase-3-Review-Artefakt
+- **Kein Eingriff in Juvantis/juvantis-web Auto-Sync-Hook** (PostToolUse-Hook auf `theme/`) — Cortex-Web berührt dieses Verzeichnis nicht
 
 ---
 
@@ -228,10 +212,11 @@ Visueller Vergleich WP-Rendering vs. Shopify-Rendering desselben Produkts `basic
 | Session | Datum | Phase | Ergebnis | Commit(s) |
 |---------|-------|:-----:|----------|-----------|
 | 1 | 2026-04-18 | 0 | Skelett + Regeln + Nexus ✅ | `6178d2f`, `d9577cd` |
-| 2 | 2026-04-18 | 1 | POC WP-Adapter End-to-End ✅, Local-WP-Setup dokumentiert, Pattern + Tutorial | `778635c`, `19fd8ce` |
-| 3 | 2026-04-18 | 2 (Setup) | Shopify Custom App + Admin-API-Token ✅, OAuth-Catcher-Pattern + Tutorial, MEMORY-Update (`medzpoint` → `juvantis.myshopify.com`) | *(uncommitted — siehe §4 P0)* |
-| *(4)* | *tbd* | *2 (Spec+Adapter)* | *POC Shopify-Adapter — Spec + Implementation* | — |
+| 2 | 2026-04-18 | 1 | POC WP-Adapter End-to-End ✅, Local-WP-Setup, Pattern + Tutorial | `778635c`, `19fd8ce` |
+| 3 | 2026-04-18 | 2 (Setup) | Shopify Custom App + Admin-API-Token ✅, OAuth-Catcher, Tutorial 05, MEMORY-Korrektur | `48c4170` |
+| **4** | **2026-04-19** | **2 (Adapter)** | **POC Shopify-Adapter ✅ End-to-End, 12/12 AKs grün, Spec + Self-Check, Pattern + Tutorial 06, FK-2-Bug (handle) gefunden+gefixt** | **`7d6f665`** |
+| *(5)* | *tbd* | *3 oder 4 oder 2b* | *Phase-Wahl Dr. Stracke* | — |
 
 ---
 
-*Stand: 2026-04-18, Ende Session 3. Nächste Session: Phase-2-Spec + Adapter per „Projekt fortsetzen Cortex-Web".*
+*Stand: 2026-04-19, Ende Session 4. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Phase-Wahl gemäß §6.*
