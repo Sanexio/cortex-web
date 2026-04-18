@@ -30,30 +30,31 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-18, 15:10 nach Roadmap-Umstellung)
+## §1 Stand & Version (gültig: 2026-04-18 Abend, nach S2.0 Design-Token-SSoT)
 
-- **PXZ_VERSION:** **2.7.4** live auf Local by Flywheel (Cluster-Mini-02). Keine Theme-Änderung seit 2026-04-18 nachmittags.
+- **PXZ_VERSION:** **2.7.5** live auf Local by Flywheel (Cluster-Mini-02). Stand: Design-Token-SSoT in `assets/css/tokens.css`, keine Optik-Änderung gegenüber v2.7.4 (MD5-byte-identisch).
 - **Site-Root:** `/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/`
 - **URL:** `https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local`
 - **Child-Theme:** `wp-content/themes/praxiszentrum/`
-- **Homepage + Karriere** abgenommen (v2.7.3 / v2.6.0, beide optisch konsolidiert in v2.7.4).
+- **Homepage + Karriere** weiter abgenommen, visuelle Abnahme v2.7.5 durch Dr. Stracke 2026-04-18.
 
 ### Sprint-Status (Stand 2026-04-18 Abend)
 
 | Sprint | Status | Kommentar |
 |---|---|---|
-| Sprint 0 — Foundation | ✅ abgeschlossen (bis auf Design-Token-SSoT → als S2.0 vorgezogen in Sprint 2) |
-| **Sprint 1 — Rollout-Infrastruktur** | ⏸ **PAUSIERT 2026-04-18** | DF-Support wegen fehlender SFTP-Credentials angeschrieben. Spec-Freigabe ((a)=2, (b)=1, (c)=2, Test-Empfänger=`stracke.md@me.com`) bleibt gültig. Reanimieren, sobald Credentials in `.env.sprint1.local` eingetragen sind. |
-| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🆕 vorgezogen, Grobskizze 2026-04-18 | Neuer aktiver Sprint. Details: `specs/sprint-2/README.md`. Enthält S2.0 (Token-SSoT), S2.1 (Seiten-Inventar), S2.2 (Template-Typologie), S2.3 (Kernseiten in Batches), S2.4 (Menü), S2.5 (QA-Audit). |
+| Sprint 0 — Foundation | ✅ abgeschlossen (S0.3 final als S2.0 in Sprint 2 erledigt) |
+| **Sprint 1 — Rollout-Infrastruktur** | ⏸ **PAUSIERT** | DF-Support wegen fehlender SFTP-Credentials angeschrieben. Spec bleibt gültig. Reanimieren, sobald Credentials in `.env.sprint1.local` eingetragen sind. Check beim Einstieg: `SFTP_DE_HOST` in `.env.sprint1.local` nicht mehr leer? |
+| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🟢 **aktiv, S2.0 ✅** | **S2.0 (Token-SSoT) abgeschlossen 2026-04-18 v2.7.5**, 0-Delta-Verifizierung. Offen: S2.0b (Komponenten-Abstraktion, optional), S2.1 (Seiten-Inventar), S2.2 (Template-Typologie), S2.3 (Kernseiten in Batches), S2.4 (Menü), S2.5 (QA-Audit). |
 | Sprint 2b — Legacy-Content-Migration | ⏳ nach Sprint 2 | 172 Legacy-Seiten, verschoben. |
 | Sprint 3 — Mehrsprachigkeit (WPML) | ⏳ geplant | |
 | Sprint 4 — Go-Live (SEO/Schema/Cut-Over) | ⏳ geplant | |
 
-- **`tools/verify.sh`:** alle 4 Checks grün (Split, Reset, Computed-Style via Registry 54/54, Alignment) — zuletzt 2026-04-18 nachmittags.
+- **`tools/verify.sh`:** alle 4 Checks grün (Split, Reset, Computed-Style via Registry 54/54, Alignment) — zuletzt 2026-04-18 nach S2.0-Commit.
 
 ### Theme-Repo (`praxiszentrum/`) Commit-Stand
 
 ```
+257304e  feat(s2.0): design-token SSoT; bump PXZ_VERSION 2.7.4 → 2.7.5
 914af8d  feat(s0.2): extract karriere CSS; bump PXZ_VERSION 2.7.3 → 2.7.4
 c3f7db7  feat(s0.2): extract homepage CSS from inline to assets/css/homepage.css
 8c9d0fa  chore: baseline v2.7.3 (homepage + karriere + mfa-formular)
@@ -62,12 +63,11 @@ c3f7db7  feat(s0.2): extract homepage CSS from inline to assets/css/homepage.css
 ### Docs-Repo (`projects/praxis-redesign/`) Commit-Stand
 
 ```
+6dbd214  chore: v2.7.5 verify shots (S2.0 token-SSoT, md5-identical to pre-S2.0)
+29383cd  docs(sprint-2): S2.0 design-token SSoT spec
+519c4e1  docs(sprint-1): spec + env template; pause for DF-support; preschedule sprint 2
+bee530a  docs: S0.2 abschließen (v2.7.4) + Session-Resume finalisieren
 7de7ee0  chore: verify-shots from S0.2 extraction (2026-04-18 v2.7.4)
-67dca8d  chore: verify-shots post-v2.7.3 (2026-04-18 12:46 pre-flight)
-166ecac  chore: remove obsolete NEXT_SESSION_PROMPT.md
-2909005  docs: reflect sprint-0 minimal-scope completion (s0.1 + s0.4)
-a5e28e1  feat(s0.4): page registry + generic probe/shoot
-2f288a3  chore: baseline Sprint-0 start (docs + verify tools, post-v2.7.3)
 ```
 
 ---
@@ -95,21 +95,21 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 Nach Pflicht-Init + Pre-Flight grün, fragt Claude:
 
-> „Sprint 1 pausiert (DF-Support wartet), Sprint 2 (Kernseiten-Ausbau) vorgezogen. v2.7.4 weiter live, Homepage + Karriere abgenommen. Welche Front bearbeiten wir?
+> „Sprint 2 / S2.0 Design-Token-SSoT ist ✅ abgeschlossen (v2.7.5, 0-Delta-verifiziert). Sprint 1 weiter pausiert (DF-Support-Antwort abwarten). Welche Front bearbeiten wir?
 >
-> A. **Sprint 2 / S2.0 — Design-Token-SSoT starten** — Vorbedingung für alle neuen Kernseiten; additiv, risikoarm, keine Optik-Änderung.
-> B. **Sprint 2 / S2.1 — Seiten-Inventar & Content-Audit** — Liste der Muss-Seiten erstellen, Content-Quellen klären (Prod-Übernahme vs. Neu-Text).
-> C. **Sprint 1 reanimieren** — nur falls DF-Support inzwischen SFTP-Credentials geliefert hat. Credentials in `.env.sprint1.local` eintragen, dann S1.1 starten.
-> D. **Sprint 2 / S2.3 Batch A vorziehen** — Datenschutz + Impressum als reine Legal-Textseiten starten (paralleler, separater Pfad zu S2.0/S2.1).
-> E. **Backlog 2026-04-18** — CTA-Anschnitt @ 1440 px ODER PHP-Deprecation `theme-freesia-demo-import` ODER Mobile-Eyebrow MFA.
+> A. **Sprint 2 / S2.1 — Seiten-Inventar & Content-Audit** — Muss-Seiten-Liste, Content-Quellen klären (Prod-Übernahme/Neu-Text). Vorbereitung für S2.3 Kernseiten-Implementierung.
+> B. **Sprint 2 / S2.0b — Komponenten-Abstraktion** — `assets/css/components.css` mit `.pxz-card--dark/--light`, `.pxz-section`, `.pxz-eyebrow`, `.pxz-btn`. Additiv, risikoarm; reduziert Duplikation der drei Card-Klassen. Optional, nicht blockierend für S2.1.
+> C. **Sprint 2 / S2.3 Batch A — Datenschutz + Impressum** — Legal-Textseiten vorziehen (parallele Front zu S2.1). Vorbedingung: Rechtssicherheit-Entscheidung (Anwalt/Generator/Prod-Text).
+> D. **Sprint 1 reanimieren** — nur falls DF-Support SFTP-Credentials geliefert hat. Check: `SFTP_DE_HOST` in `.env.sprint1.local` nicht mehr leer?
+> E. **Backlog 2026-04-18** — CTA-Anschnitt @ 1440 px · PHP-Deprecation `theme-freesia-demo-import` · Mobile-Eyebrow MFA.
 > F. **Andere konkrete Änderung** — Sie nennen."
 
 Keine Code-Änderung vor expliziter Wahl.
 
 **Checks vor der Antwort auf die Status-Frage:**
-- Ist `.env.sprint1.local` bereits gefüllt? → C möglich
-- Gibt es eine Mail vom DF-Support? → C möglich
-- Sonst: A ist der saubere nächste Schritt, weil S2.0 alle folgenden Sprint-2-Teilschritte entkoppelt
+- `grep -E "^SFTP_DE_HOST=." .env.sprint1.local` — leer? dann D nicht möglich.
+- Gibt es eine Mail vom DF-Support? → D möglich
+- Sonst: A (S2.1) ist der direkt nutzbare nächste Schritt, weil er die Voraussetzung für Kernseiten-Batches schafft
 
 ---
 
@@ -128,7 +128,49 @@ Keine Code-Änderung vor expliziter Wahl.
 
 ## §5 Letzte Session — Was wurde erledigt
 
-### Session 2026-04-18 (Abend) — Sprint-1-Design, DF-Blocker, Roadmap-Umstellung
+### Session 2026-04-18 (Abend) — Sprint 2 / S2.0 Design-Token-SSoT (v2.7.5)
+
+**Auftrag Dr. Stracke:** Front A — S2.0 Design-Token-SSoT starten. Entscheidungen 1a (nur tokens.css, kein components.css), 2a (Duplikate löschen, echte SSoT), 3a (karriere.css auf `var()`-Referenzen), 4a (PXZ_VERSION 2.7.4 → 2.7.5 als patch-bump).
+
+**Architekten-Modus-Durchlauf:**
+
+1. **Phase 1 (Verständnis):** IST-Bestandsaufnahme — 171 `var(--pxz-*)`-Zugriffe in 4 Dateien, Primitives 3-fach dupliziert (style.css, homepage.css, karriere.css), semantische Tokens nur seiten-lokal.
+2. **Phase 2 (Lösungsdesign):** Spec `specs/sprint-2/S2.0_tokens.md` mit 4 Entscheidungspunkten, explizit gemachten Annahmen, Akzeptanzkriterien-Tabelle, Rollback-Plan. Dr. Stracke freigegeben → Umsetzung.
+3. **Phase 3 (Umsetzung):**
+   - `assets/css/tokens.css` neu — 12 Primitives + 6 semantische Light-Defaults auf `:root`, zwei-Schicht-Aufbau mit `var()`-Referenz zwischen Schichten.
+   - `functions.php` — Enqueue-Dependency-Kette umgestellt: `pxz-tokens` → `blocksy-parent` → `praxiszentrum` → `pxz-homepage`/`pxz-karriere`. PXZ_VERSION 2.7.4 → 2.7.5.
+   - `style.css` — `:root`-Block mit 9 Primitives entfernt, Kommentar-Verweis auf `tokens.css`.
+   - `assets/css/homepage.css` — Primitive-Block in `.pxz-home` (11 Primitives + 6 semantische Defaults) entfernt; Dark-Mode-Override `.pxz-mfa { --pxz-bg: var(--pxz-ink) … }` bleibt unverändert (Custom Properties vererben durch Subtree).
+   - `assets/css/karriere.css` — 4 Primitive-Duplikate entfernt, Amber über `var(--pxz-amber)` referenziert, Karriere-spezifisches `#0E0E10` lokal im Scope mit Kommentar-Begründung.
+   - `CHANGELOG.md` — v2.7.5-Block mit Detail-Eintrag.
+4. **Phase 4 (Selbstprüfung):** 100 % — alle 13 Akzeptanzkriterien erfüllt.
+
+**Verifikation:**
+- `tools/verify.sh` grün: §1 Split-Check, §2 Reset-Scope, §3 Computed-Style-Probe **54/54** auf Home + Karriere × 3 Viewports, §4 Alignment-Probe **10/10** Showpiece-Zentrierungen.
+- Neue versionsbenannte Shots: `screenshots/claude/2026-04-18_v2.7.5_{home,karriere}_{desktop1440,tablet768,mobile430}_full.png` (6 Shots).
+- **MD5-Byte-Vergleich:** alle 6 v2.7.5-Shots md5-identisch zu ihren Baseline-Pendants (Home v2.7.3, Karriere v2.6.0). Stärkster möglicher Null-Delta-Beweis.
+- **Visuelle Abnahme Dr. Stracke:** 2026-04-18 im Browser bestätigt („Das sieht gut aus").
+
+**Commits:**
+- Theme-Repo: `257304e feat(s2.0): design-token SSoT; bump PXZ_VERSION 2.7.4 → 2.7.5` (6 Dateien, +87/−46).
+- Docs-Repo: `29383cd docs(sprint-2): S2.0 design-token SSoT spec` + `6dbd214 chore: v2.7.5 verify shots`. Kein Remote-Push (b=1 aus Sprint 0).
+
+**Nexus-Architektur-Updates (Session-Ende Schritt 3):**
+- `Nexus/_memory/MEMORY.md` — Projekt-Status-Zeile auf „Sprint 2 aktiv, S2.0 ✅ v2.7.5", Theme-Repo-Pfad auf Commit `257304e`, Tutorial-Referenz auf `05-design-tokens-und-cascade.md` erweitert, Pattern-Katalog um `design-token-ssot.md` ergänzt.
+- `Nexus/_memory/patterns/design-token-ssot.md` neu — wiederverwendbares Pattern (Zwei-Schicht-Tokens + Dependency-Kette + MD5-Byte-Beweis).
+- `Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/05-design-tokens-und-cascade.md` neu — Erklär-Tutorial für Dr. Stracke (CSS Custom Properties, zwei-Schicht-Aufbau, Cascade-Ordnung in WP, MD5-Null-Delta-Beweis).
+
+**Cleanup:** 6 Zwischenstand-verify-Shots (`2026-04-18_{1636,1656,1703}_verify_*`) nach `screenshots/claude/_archive/` verschoben (gitignored).
+
+**Offene Punkte für nächste Session:**
+- **S2.0b Komponenten-Abstraktion** — optional, additiv (siehe Front B in §3).
+- **S2.1 Seiten-Inventar** — Vorbedingung für S2.3 Kernseiten-Batches (siehe Front A).
+- **DF-Support-Antwort** — Sprint 1 reaktivierbar sobald `.env.sprint1.local` gefüllt.
+- **Backlog unverändert:** CTA-Anschnitt @ 1440 px, PHP-Deprecation `theme-freesia-demo-import`, Mobile-Eyebrow MFA.
+
+---
+
+### Session 2026-04-18 (Abend, vorher) — Sprint-1-Design, DF-Blocker, Roadmap-Umstellung
 
 **Auftrag Dr. Stracke:** Front A (Sprint 1 starten — Staging + Backup + Mail-Test).
 
