@@ -1,0 +1,184 @@
+# ARCHITECTURE — praxis-redesign
+
+> Lebendes Dokument. Stand: 2026-04-18 nach v2.7.2 (Homepage-Look abgenommen; Task 2
+> Karriere weiter freigabepflichtig). Bei jeder Architekturentscheidung pflegen.
+
+---
+
+## 1. IST-Architektur
+
+### 1.1 Projekt-Arbeitsordner (Prozess-Docs, aktuell kein Git)
+
+```
+~/Cortex/projects/praxis-redesign/
+├── SESSION_START.md           — Einstieg für jede neue Claude-Session
+├── SESSION_RESUME.md          — aktueller Stand, wird je Session fortgeschrieben
+├── HANDOFF_PROMPT.md          — Projekt-Kontext + 8 Aufgaben
+├── DESIGN_GUIDELINES.md       — v2.2, §13–§16 verbindlich
+├── PHASE1_AUDIT.md            — 5-Phasen-Plan (Phase 1 abgeschlossen)
+├── _rules/
+│   ├── WORKING_MODE.md        — Architekten-Modus (ab 2026-04-18 verbindlich)
+│   ├── ARCHITECTURE.md        — diese Datei
+│   ├── FEHLERPROTOKOLL.md     — PXZ-E-001 … 005
+│   └── PRE_FLIGHT_CHECKLIST.md
+├── specs/
+│   └── sprint-0/              — Verständnis + Lösungsdesign je Teilschritt
+├── tools/
+│   ├── verify.sh              — §1 Split/§2 Reset/§3 Probe/§4 Alignment/Shot (HOMEPAGE-ONLY, Limit)
+│   ├── probe-design.mjs       — Puppeteer Computed-Style (HOMEPAGE-ONLY, Limit)
+│   ├── ab-diff.mjs            — Vorher/Nachher-Shots + Delta + Alignment (NEU 2026-04-18, §7a)
+│   ├── alignment-probe.mjs    — Standalone Spezifitäts-/Alignment-Check (NEU 2026-04-18)
+│   ├── shoot_karriere.mjs     — DEPRECATED, ersetzt durch ab-diff.mjs
+│   ├── create_mfa_form.php    — WPForms-Generator, idempotent
+│   └── create_karriere_page.php — WP-Page-Generator, idempotent
+├── screenshots/
+│   ├── {1,2,3}.png            — harte Design-Referenzen von Dr. Stracke
+│   └── claude/                — Verifikations-Shots
+├── assets/
+│   ├── logo/, praxis/, team/
+├── phase2/                    — Legacy-Arbeitsordner
+├── package.json               — nur puppeteer-core
+└── bun.lock
+```
+
+### 1.2 WordPress-Site (Local by Flywheel, Cluster-Mini-02)
+
+```
+/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/
+├── wp-content/themes/praxiszentrum/        ← Custom Child Theme (Parent: Blocksy)
+│   ├── style.css                           80 Zeilen Base-/Utility-CSS
+│   ├── functions.php                       PXZ_VERSION=2.6.0, Konstanten, Enqueue, Helper
+│   ├── template-homepage.php               ~1200 Z., ALLES inline (CSS + Content + HTML)
+│   └── template-karriere.php               ~260 Z., ALLES inline, NEU in v2.6.0
+├── wp-content/mu-plugins/
+│   ├── akeeba-backup-coreupdate.php        (AkeebaBackup)
+│   └── 000-local-mail-redirect.php         DEV-ONLY, leitet .local-Mail nach Mailpit
+├── wp-content/plugins/ (30 aktive)         WPForms Pro, WP Mail SMTP Pro, WPML, AIOSEO, …
+└── wp-config.php                           DB_NAME=local, Host=localhost
+```
+
+### 1.3 Infrastruktur (Local)
+
+| Dienst | Port | Konfig |
+|--------|------|--------|
+| MySQL | 10004 (TCP) + Socket `/Users/…/run/VFEzUQg6g/mysql/mysqld.sock` | DB=local, User=root, Pass=root |
+| Mailpit SMTP | 10001 | fängt alle `.local`-Mails ab |
+| Mailpit UI/API | 10000 | `http://localhost:10000/api/v1/messages` |
+| nginx | (router) | HTTPS self-signed |
+| PHP | 8.2.29 | `/Applications/Local.app/Contents/Resources/extraResources/lightning-services/php-8.2.29+0/bin/darwin-arm64/bin/php` |
+| WP-CLI | v2.x | `/Applications/Local.app/Contents/Resources/extraResources/bin/wp-cli/wp-cli.phar` |
+
+**WP-CLI-Aufrufmuster (erforderlich, sonst DB-Verbindung scheitert):**
+```bash
+PHP=".../php-8.2.29+0/bin/darwin-arm64/bin/php"
+PHAR=".../wp-cli/wp-cli.phar"
+SITE="/Users/cluster-mini-02/Local Sites/.../app/public"
+SOCK="/Users/.../run/VFEzUQg6g/mysql/mysqld.sock"
+"$PHP" -d memory_limit=512M \
+       -d mysqli.default_socket="$SOCK" \
+       -d pdo_mysql.default_socket="$SOCK" \
+       "$PHAR" --path="$SITE" <command>
+```
+
+### 1.4 Content-Quellen (aktuell inkonsistent)
+
+| Quelle | Einsatz | Bemerkung |
+|--------|---------|-----------|
+| `pxz_homepage_content()` (PHP-Array in `functions.php`) | Homepage-Texte DE/EN/FR/ES | strukturierte Mehrsprachigkeit, aber schwer editierbar |
+| `PXZ_*`-Konstanten | Telefon, E-Mail, Adressen | Single Source of Truth |
+| Gutenberg-Blocks (`wp_posts.post_content`) | Karriere-Seite angelegt, **wird vom Template ignoriert** | Template rendert statisch; Editor-Inhalt erscheint nicht |
+| Hardcoded im Template | Karriere-Hero-Titel, Intro, Card-Text | Content vermischt mit Layout |
+
+---
+
+## 2. Zielarchitektur (SOLL — für Go-Live-Fähigkeit)
+
+| Dimension | IST | SOLL |
+|-----------|-----|------|
+| Seiten im neuen Design | 2 (Home, Karriere) | Home + Karriere + 172 Bestandsseiten |
+| Design-System | Ad-hoc, dreimal dupliziert | Komponentenbibliothek, 1 Token-Quelle |
+| CSS-Distribution | 80 Z. `style.css` + 2× >500 Z. inline | Modulare CSS-Dateien, Templates nur Markup |
+| Versionskontrolle | Keine | Git lokal, optional Remote |
+| Verifikation | Homepage-Selektoren only | Page-Registry, jede Page mit EXPECTED |
+| Staging | Keines | Local → Staging → Prod |
+| WPML | Installiert, ungenutzt | DE/EN/FR/ES je Seite |
+| SEO | AIOSEO aktiv, ungeprüft | Schema.org MedicalBusiness, OG, Sitemap |
+| Backup/Rollback | Plugins aktiv, kein Plan | Pre-Deploy-Snapshot, 1-Klick-Rollback |
+| Onboarding | Tribal Knowledge | 1 README mit reproducible Setup |
+
+---
+
+## 3. Schwachstellen-Register
+
+### Kategorie A — Architekturdefekte
+
+| ID | Defekt | Wurzel | Adressiert in |
+|----|--------|--------|--------------|
+| A1 | Inline-CSS in Page-Templates → doppelte Reset-Regeln möglich (PXZ-E-001) | Keine CSS-Modularisierung | Sprint 0 / S0.2 |
+| A2 | Kein Komponenten-System — `.pxz-*-card` dreimal dupliziert | DRY-Verletzung, Token-Redeklaration | Sprint 0 / S0.3 |
+| A3 | Content-Quellen uneinheitlich — Gutenberg-Inhalt wird auf Karriere ignoriert | Kein Content-Contract | Sprint 2 |
+| A4 | Kein Git | Nie eingerichtet (Cortex selbst auch nicht) | Sprint 0 / S0.1 |
+
+### Kategorie B — Prozess-Defekte
+
+| ID | Defekt | Wurzel | Adressiert in |
+|----|--------|--------|--------------|
+| B1 | Verify-Pipeline homepage-only → PXZ-E-005 (DSGVO) blieb unentdeckt | `probe-design.mjs` kennt nur Homepage | Sprint 0 / S0.4 |
+| B2 | Keine Verständnis-Sicherung vor Umsetzung | Arbeitsprozess war fluide | WORKING_MODE.md |
+| B3 | Screenshots als alleiniges Design-Gate (PXZ-E-003) | Keine textuellen Akzeptanzkriterien | `_rules/ACCEPTANCE.md` geplant |
+| B4 | `PXZ_VERSION` monolithisch | Alles über einen Cache-Buster | Sprint 1 (CHANGELOG, Semver-Policy) |
+
+### Kategorie C — Betriebs-Risiken für Go-Live
+
+| ID | Defekt | Wurzel | Adressiert in |
+|----|--------|--------|--------------|
+| C1 | Mail-Versand in Prod nicht geprüft (Outlook + Anhang) | Local lenkt nach Mailpit | Sprint 1 |
+| C2 | 172 Legacy-Seiten ohne Migrationsplan | PHASE1_AUDIT deckt es nicht ab | Sprint 2 |
+| C3 | MU-Plugin nicht in Repo | Kein Dev-Bootstrap | Sprint 0 / S0.1 |
+| C4 | Kein Staging | Toolchain noch nicht aufgesetzt | Sprint 1 |
+
+---
+
+## 4. Sprint-Roadmap
+
+### Sprint 0 — Foundation (AKTUELL, wartet auf Freigabe b/c/d)
+- S0.1 Git-Repo für Theme + MU-Plugin-Snapshot
+- S0.2 CSS-Extraktion (Inline → Datei)
+- S0.3 Design-Token-SSoT + Komponenten-Abstraktion (additiv, nicht destruktiv)
+- S0.4 Verify-Pipeline auf Page-Registry umstellen
+
+Detail: `specs/sprint-0/README.md` + `specs/sprint-0/OPEN_DECISIONS.md`.
+
+### Sprint 1 — Rollout-Infrastruktur
+- S1.1 Staging-Setup (Subdomain bei Domainfactory oder lokal)
+- S1.2 Backup/Rollback-SOP (Duplicator + AkeebaBackup) + Pre-Deploy-Snapshot
+- S1.3 End-to-End-Mail-Test auf Staging (echte Outlook-SMTP, Anhang)
+
+### Sprint 2 — Content-Migration
+- S2.1 Audit der 172 Legacy-Seiten → `phase4_audit.json`
+- S2.2 Seiten-Typologie → je Typ ein Template
+- S2.3 Migrations-Batches ≤20 Seiten mit Visual-Diff
+- (hier auch: Komponenten-Migration der 3 Card-Varianten auf `.pxz-card--dark`)
+
+### Sprint 3 — Mehrsprachigkeit
+- S3.1 WPML-Homepage-Duplikate DE → EN/FR/ES (entspricht Task 3 aus HANDOFF_PROMPT)
+- S3.2 Formulare mehrsprachig
+
+### Sprint 4 — Go-Live (Phase 5 aus PHASE1_AUDIT)
+- S4.1 SEO/Schema/Sitemap
+- S4.2 QA-Matrix (Browser × Sprache × Page-Typ)
+- S4.3 Cut-Over-Plan + DNS-Switch + Rollback-Übung
+
+---
+
+## 5. Noch einzuführende Prozess-Artefakte
+
+| Artefakt | Zweck | Status |
+|----------|-------|--------|
+| `_rules/WORKING_MODE.md` | Architekten-Modus, Arbeitsprozess | ✅ angelegt 2026-04-18 |
+| `_rules/ARCHITECTURE.md` | diese Datei | ✅ angelegt 2026-04-18 |
+| `_rules/ACCEPTANCE.md` | textuelle Akzeptanzkriterien je Task | ⏳ in Sprint 0 |
+| `specs/<sprint>/<task>.md` | pro Task: Verständnis + Design + Prüfung | ⏳ mit Sprint 0 beginnt |
+| `tools/page-registry.mjs` | zentrale Page-Liste | ⏳ Sprint 0 / S0.4 |
+| `tools/bootstrap.sh` | reproducible Setup | ⏳ Sprint 0 / S0.1 |
+| `CHANGELOG.md` (am Theme) | Semver-Bumps | ⏳ Sprint 0 / S0.1 |

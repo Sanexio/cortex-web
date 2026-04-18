@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+*.log
+
+# Archivierte Verifikations-Shots (bleiben im Dateisystem als Historie,
+# aber werden nicht versioniert — sonst 88 MB pro Baseline)
+screenshots/_archive/
+screenshots/claude/_archive/
