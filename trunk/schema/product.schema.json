@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cortex-web.local/schema/product.json",
+  "title": "Product",
+  "description": "Cortex-Web Produkt (Bluttest, Body-Check etc.) — I-2 hybrid i18n. Platzhalter, wird in Phase 1 konkretisiert.",
+  "type": "object",
+  "required": ["id", "sku", "category", "status", "title"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "sku": { "type": "string" },
+    "category": { "type": "string" },
+    "status": { "enum": ["active", "draft", "archived"] },
+    "price_eur": { "type": "number", "minimum": 0 },
+    "images": {
+      "type": "object",
+      "properties": {
+        "hero": { "type": "string", "pattern": "^media://" },
+        "gallery": { "type": "array", "items": { "type": "string", "pattern": "^media://" } }
+      }
+    },
+    "title": {
+      "type": "object",
+      "required": ["de"],
+      "properties": {
+        "de": { "type": "string" },
+        "en": { "type": "string" },
+        "fr": { "type": "string" },
+        "es": { "type": "string" }
+      }
+    },
+    "beschreibung": {
+      "type": "object",
+      "required": ["de"],
+      "properties": {
+        "de": { "type": "string" },
+        "en": { "type": "string" },
+        "fr": { "type": "string" },
+        "es": { "type": "string" }
+      }
+    },
+    "views": {
+      "type": "object",
+      "properties": {
+        "juvantis": { "type": "object" },
+        "praxis": { "type": "object" }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cortex-web.local/schema/component.json",
+  "title": "Component Spec",
+  "description": "Platzhalter für Komponenten-Spec (Maximal-Trunk). Wird beim ersten Komponenten-Import konkretisiert.",
+  "type": "object",
+  "required": ["name", "props"],
+  "properties": {
+    "name": { "type": "string" },
+    "props": { "type": "array" },
+    "states": { "type": "array" },
+    "a11y": { "type": "object" }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cortex-web.local/schema/page.json",
+  "title": "Page",
+  "description": "Platzhalter für Seiten-Schema. Wird in Phase 1 konkretisiert.",
+  "type": "object",
+  "required": ["id", "slug", "site", "title"],
+  "properties": {
+    "id": { "type": "string" },
+    "slug": { "type": "string" },
+    "site": { "enum": ["praxis", "juvantis", "shared"] },
+    "title": {
+      "type": "object",
+      "required": ["de"],
+      "properties": {
+        "de": { "type": "string" },
+        "en": { "type": "string" },
+        "fr": { "type": "string" },
+        "es": { "type": "string" }
+      }
+    }
+  }
+}
