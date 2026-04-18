@@ -1,48 +1,107 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://cortex-web.local/schema/product.json",
+  "$id": "https://cortex-web.local/schemas/product-v1.json",
   "title": "Product",
-  "description": "Cortex-Web Produkt (Bluttest, Body-Check etc.) — I-2 hybrid i18n. Platzhalter, wird in Phase 1 konkretisiert.",
+  "description": "Cortex-Web Produkt (Bluttest, Body-Check etc.). I-2 hybrid i18n: sprach-invariante Felder auf Top-Level, mehrsprachige Felder verschachtelt unter .de/.en/.fr/.es. HWG-Gate: views.praxis.show_price MUSS false sein.",
   "type": "object",
-  "required": ["id", "sku", "category", "status", "title"],
+  "additionalProperties": false,
+  "required": ["id", "sku", "category", "status", "parameters", "title", "views"],
   "properties": {
-    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-    "sku": { "type": "string" },
-    "category": { "type": "string" },
-    "status": { "enum": ["active", "draft", "archived"] },
-    "price_eur": { "type": "number", "minimum": 0 },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Stabile Kennung, wird als WP-Page-Slug verwendet"
+    },
+    "sku": {
+      "type": "string",
+      "description": "Shopify-SKU (sprach-invariant)"
+    },
+    "category": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "status": {
+      "enum": ["active", "draft", "archived"]
+    },
+    "price_eur": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Juvantis-Preis, wird von Praxis-View ignoriert (HWG)"
+    },
     "images": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "hero": { "type": "string", "pattern": "^media://" },
-        "gallery": { "type": "array", "items": { "type": "string", "pattern": "^media://" } }
+        "gallery": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^media://" }
+        }
       }
     },
-    "title": {
-      "type": "object",
-      "required": ["de"],
-      "properties": {
-        "de": { "type": "string" },
-        "en": { "type": "string" },
-        "fr": { "type": "string" },
-        "es": { "type": "string" }
+    "parameters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "einheit"],
+        "properties": {
+          "code": { "type": "string", "minLength": 1 },
+          "einheit": { "type": "string", "minLength": 1 }
+        }
       }
     },
-    "beschreibung": {
-      "type": "object",
-      "required": ["de"],
-      "properties": {
-        "de": { "type": "string" },
-        "en": { "type": "string" },
-        "fr": { "type": "string" },
-        "es": { "type": "string" }
-      }
-    },
+    "title": { "$ref": "#/definitions/i18nString" },
+    "tagline": { "$ref": "#/definitions/i18nString" },
+    "beschreibung": { "$ref": "#/definitions/i18nString" },
     "views": {
       "type": "object",
+      "additionalProperties": false,
+      "required": ["juvantis", "praxis"],
       "properties": {
-        "juvantis": { "type": "object" },
-        "praxis": { "type": "object" }
+        "juvantis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["show_price", "cta_label", "cta_url"],
+          "properties": {
+            "show_price": { "type": "boolean" },
+            "cta_label": { "$ref": "#/definitions/i18nString" },
+            "cta_url": { "type": "string", "minLength": 1 }
+          }
+        },
+        "praxis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["show_price", "cta_label", "cta_url"],
+          "properties": {
+            "show_price": {
+              "type": "boolean",
+              "const": false,
+              "description": "HWG: Praxis-View darf niemals Preis anzeigen"
+            },
+            "headline_override": { "$ref": "#/definitions/i18nString" },
+            "cta_label": { "$ref": "#/definitions/i18nString" },
+            "cta_url": {
+              "type": "string",
+              "pattern": "^(/|https://sanexio\\.eu/)",
+              "description": "Praxis-CTA darf nur intern (/) oder nach sanexio.eu zeigen"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "i18nString": {
+      "type": "object",
+      "required": ["de"],
+      "additionalProperties": false,
+      "properties": {
+        "de": { "type": "string", "minLength": 1 },
+        "en": { "type": "string", "minLength": 1 },
+        "fr": { "type": "string", "minLength": 1 },
+        "es": { "type": "string", "minLength": 1 }
       }
     }
   }

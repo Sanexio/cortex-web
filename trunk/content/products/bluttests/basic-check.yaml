@@ -1,0 +1,85 @@
+# trunk/content/products/bluttests/basic-check.yaml
+# Phase-1 POC — Beispielprodukt nach 02_ENTSCHEIDUNGEN_FINAL.md §3.1
+# Schema: trunk/schema/product.schema.json
+
+# === SPRACH-INVARIANTE FELDER (Top-Level) ===
+id: basic-check
+sku: JVT-BLD-001
+category: bluttests
+status: active
+price_eur: 99
+
+images:
+  hero: media://basic-check-hero
+  gallery:
+    - media://basic-check-sample-1
+    - media://basic-check-sample-2
+
+parameters:
+  - code: HGB
+    einheit: g/dl
+  - code: WBC
+    einheit: /µl
+  - code: RBC
+    einheit: T/l
+  - code: HCT
+    einheit: "%"
+  - code: MCV
+    einheit: fl
+  - code: MCH
+    einheit: pg
+  - code: MCHC
+    einheit: g/dl
+  - code: PLT
+    einheit: G/l
+  - code: Na
+    einheit: mmol/l
+  - code: K
+    einheit: mmol/l
+  - code: Krea
+    einheit: mg/dl
+  - code: GFR
+    einheit: ml/min
+  - code: GOT
+    einheit: U/l
+  - code: GPT
+    einheit: U/l
+  - code: CRP
+    einheit: mg/l
+
+# === MEHRSPRACHIGE FELDER (I-2 verschachtelt) ===
+title:
+  de: Basis-Bluttest
+  en: Basic Blood Check
+  fr: Analyse sanguine de base
+  es: Análisis de sangre básico
+
+tagline:
+  de: Der kompakte Gesundheitscheck.
+  en: The compact health check.
+
+beschreibung:
+  de: |
+    Kleiner Laborcheck mit 15 Parametern. Abnahme in der Praxis,
+    Ergebnis innerhalb von 48 Stunden.
+  en: |
+    Small lab check with 15 parameters. Blood drawn in-practice,
+    results within 48 hours.
+
+# === ADAPTER-VIEWS (HWG-Logik) ===
+views:
+  juvantis:
+    show_price: true
+    cta_label:
+      de: Jetzt buchen
+      en: Book now
+    cta_url: /products/basic-check
+
+  praxis:
+    show_price: false
+    headline_override:
+      de: Laborcheck Basis — Informationen
+    cta_label:
+      de: Mehr erfahren auf sanexio.eu
+      en: More at sanexio.eu
+    cta_url: https://sanexio.eu/products/basic-check
