@@ -2,6 +2,51 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionierung: SemVer.
 
+## [0.4.0] — 2026-04-19 (Session 5)
+
+### Phase 3 abgeschlossen — Review-Pipeline 12/12 AKs grün
+
+#### Hinzugefügt
+- `specs/phase-3/REVIEW.md` — Architekten-Modus-Spec mit 6 Review-Dimensionen, 12 AKs, 7 Entscheidungen (E-1…E-7)
+- `specs/phase-3/evidence/2026-04-19_self-check.md` — Self-Check 12/12 grün, 2 FK-Fixes dokumentiert
+- `specs/phase-3/evidence/*.json` — Maschinen-lesbare Evidenz pro Dimension (`content-parity`, `hwg-scan`, `commerce-check`, `idempotency-wp`, `idempotency-shopify`, `roundtrip`, `screenshots`, `summary`)
+- `specs/phase-3/evidence/wp-page-9668.png` + `shopify-body-preview.png` + `side-by-side.html` + `side-by-side.png` — visuelle Evidenz
+- `tools/review.sh` — Bash-Orchestrator, lädt `.env.local`, exec-t `bun review/run.mjs`
+- `tools/review/run.mjs` — JS-Orchestrator, sequenziert alle 6 Module, aggregiert in `summary.json`
+- `tools/review/content-parity.mjs` — Trunk ↔ WP ↔ Shopify Content-Diff (AK-2, AK-3)
+- `tools/review/hwg-scan.mjs` — Token-Scan für `€`, `EUR`, `Kaufen`, `Warenkorb`, `Bestellen`, `Jetzt buchen` + Pflicht-CTA-Check (AK-4)
+- `tools/review/commerce-check.mjs` — Shopify-Produkt-Vollständigkeit (Preis, SKU, Variant, Tags, Vendor, Draft) (AK-5)
+- `tools/review/idempotency.mjs` — 2× sync-wp.sh + 2× sync-shopify.sh, Zeilen-basierter JSON-Parser (AK-6, AK-7)
+- `tools/review/roundtrip.mjs` — Admin-API flip status=active → sync-shopify → GET status=draft, finally-Safety-Net (AK-8, CW-001 empirisch)
+- `tools/review/screenshots.mjs` — Puppeteer: WP live (mit `acceptInsecureCerts`), Shopify body_html in Shell, Side-by-Side HTML+PNG (AK-9, AK-10, AK-11)
+
+#### Verifiziert (End-to-End, 12/12 Akzeptanzkriterien)
+- `bash tools/review.sh` → `AK automatisch: 11/11 grün (AK-12 Self-Check manuell)` → Self-Check macht AK-12 = 12/12
+- Content-Parität: alle 6 WP-Checks + 6 Shopify-Checks grün
+- HWG-Compliance: alle 6 verbotenen Tokens `found: false`, erlaubter CTA + URL präsent
+- Commerce-Check: alle 7 Shopify-Felder (Variant/Preis/SKU/product_type/Tags/Vendor/Draft-Status) OK
+- Idempotenz: 2. Lauf beider Pipelines = `action: "update"`, gleiche IDs, gleiche Handles
+- Trunk-Master-Roundtrip: `draft → active (Admin) → sync-shopify → draft (Trunk wins)` bewiesen
+- Alle Screenshots > 10 KB, Side-by-Side-Montage lesbar
+- Working Tree clean nach Commit `98d1f67`
+
+#### Nexus-Updates (außerhalb des Projekt-Repos, LL-042 Schritt 2–4)
+- `Nexus/CLAUDE.md`: Cortex-Web-Abschnitt um Session-5 + Phasen-Plan (Phase 3 ✅, Phase 4 🔜 freigegeben) ergänzt
+- `Nexus/_memory/MEMORY.md`: Aktive-Projekte-Zeile, Cortex-Web-Pfad-Referenz (Review-Pipeline), Pattern-Katalog, Letzte-Aktualisierung
+- `Nexus/_memory/patterns/cross-platform-review-pipeline.md` — **neues Pattern** (Review-Pipeline-Struktur + 2 Fallstricke + Trunk-Master-Roundtrip)
+- Tutorial `Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/07-review-pipeline-und-local-wp-tests.md`
+
+#### Lessons Learned
+- **Sync-Script-Output ist nicht atomar:** `sync-wp.sh`/`sync-shopify.sh` printen Progress + JSON + `OK`-Marker. Zeilen-basierter Parser statt Trailing-JSON-Regex ist Pflicht (FK-2-Pattern aus Session-Bug).
+- **Local-by-Flywheel nutzt selbstsigniertes HTTPS:** Puppeteer braucht `acceptInsecureCerts: true` + `--ignore-certificate-errors`. Gilt auch für mkcert-/MAMP-Setups (FK-5 durch Kontext-Verlust aus Phase-1/2-Sessions).
+- **Trunk-Master ist beweisbar:** Admin-API-Flip → Adapter-Lauf → GET zeigt trunk-Wert zurück. `finally`-Safety-Net Pflicht — abgebrochener Test darf Plattform nicht in schlechtem Zustand hinterlassen.
+- **HWG-Compliance 2-stufig:** Schema-Gate (Build-Time) + Runtime-Token-Scan (auf gerendertem HTML) fangen unterschiedliche Failure-Modes.
+
+#### Commits
+- `98d1f67 — feat(phase-3): review pipeline + 12/12 AKs green`
+
+---
+
 ## [0.3.0] — 2026-04-19 (Session 4)
 
 ### Phase 2 abgeschlossen — POC Shopify-Adapter End-to-End
