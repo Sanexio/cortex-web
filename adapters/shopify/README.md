@@ -1,28 +1,49 @@
 # Adapter — Shopify
 
-> Implementierung in **Phase 2**. Bun-basiert, rendert Trunk-Content zu Shopify-Sections,
-> -Pages und -Products.
+Bun-basiert, rendert Trunk-Content zu Shopify-Produkten via Admin REST API.
 
 ## Ziel-Store
 
-`medzpoint` auf `sanexio.eu` — Theme-ID `181128757515` (Taste 8.0.1 + Custom Sections).
+`juvantis.myshopify.com` (öffentliche Domain `sanexio.eu`). Custom App
+`Cortex-Web Adapter`, Token in `.env.local` als `SHOPIFY_ADMIN_TOKEN`
+(siehe Setup-Tutorial `Second Brain/30 Tutorials/Webentwicklung/Shopify & Liquid/05-admin-api-token-custom-app.md`).
 
-## Adapter-Pipeline (geplant)
+## Pipeline (Phase 2 POC)
 
-1. `validate.sh` — Schema-Check
-2. `build.mjs` — Trunk-Content → Shopify-JSON-Templates + Liquid-Sections
-3. `tokens-to-liquid.mjs` — `trunk/design/tokens.css` → `assets/tokens.css` + `config/settings_data.json`
-4. `products-to-shopify.mjs` — YAML → Shopify Admin API (Products, Variants)
-5. `pages-to-shopify.mjs` — MD → Shopify Pages (Admin API)
-6. `components-to-sections.mjs` — Component-Specs → Liquid-Snippets
-7. `media-upload-to-shopify.mjs` — Medien aus `_media-source/` → Shopify Files
+```
+sync-shopify.sh
+ ├─ validate.sh  (AJV + CHECK_SHOPIFY=1 → /shop.json)
+ ├─ build.mjs    (YAML → Shopify-Product-Payload, status=draft hardcoded)
+ └─ products-to-shopify.mjs  (GET /products?handle=... → POST oder PUT)
+```
+
+Idempotenz: `handle` (= `id` aus Trunk). Bei mehreren Treffern → Abbruch.
+Bei `status=active` oder `published_at != null` → Abbruch, außer `ALLOW_OVERWRITE=1`.
+
+## Aufruf
+
+```bash
+bash tools/sync-shopify.sh
+# oder spezifisches Produkt:
+bash tools/sync-shopify.sh trunk/content/products/bluttests/basic-check.yaml
+```
 
 ## Views-Logik (CW-005)
 
-Bei Produkt-Rendering greift der Shopify-Adapter auf `views.juvantis`:
-- `show_price: true` → Preis wird gerendert
-- `cta_label` → Kauf-/Buchungs-Button
+Shopify-Adapter rendert `views.juvantis` (Preis erlaubt, Kauf-CTA erlaubt).
+`views.praxis` wird ignoriert (HWG-Trennung).
+
+## Constraints (Spec §1.2)
+
+- C-1 `status: "draft"` hartcodiert, nicht überschreibbar
+- C-7 nur `views.juvantis` wird gelesen
+- C-9 Token-Mask in allen Stderr-Pfaden
+- C-10 keine Bilder in Phase 2 (Medien-Pipeline = Phase 2b)
+
+## Out-of-Scope
+
+- Bilder/Medien, Variant-Sets, Kollektionen, GraphQL — siehe Spec §5/§6.
 
 ## Status
 
-Phase 0: nur dieser Platzhalter. Implementierung: Phase 2.
+Phase 2 POC implementiert. Selbstprüfung gegen AK-1 … AK-12 (Spec §3).
