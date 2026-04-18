@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cortex-web.local/schema/media.json",
+  "title": "Media Registry Entry",
+  "description": "Schema für einzelne Einträge in trunk/media/registry.yaml.",
+  "type": "object",
+  "required": ["master_backend", "master_url", "backup_local", "uploaded", "rechte", "alt"],
+  "properties": {
+    "master_backend": { "enum": ["shopify_files", "nas", "s3", "wp_media"] },
+    "master_url": { "type": "string", "format": "uri" },
+    "backup_local": { "type": "string" },
+    "uploaded": { "type": "string", "format": "date" },
+    "rechte": { "type": "string" },
+    "alt": {
+      "type": "object",
+      "required": ["de"],
+      "properties": {
+        "de": { "type": "string" },
+        "en": { "type": "string" },
+        "fr": { "type": "string" },
+        "es": { "type": "string" }
+      }
+    },
+    "sites": {
+      "type": "object",
+      "properties": {
+        "juvantis": { "enum": ["auto-synced", "manual", "none"] },
+        "praxis": { "enum": ["auto-synced", "manual", "none"] }
+      }
+    }
+  }
+}

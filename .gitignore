@@ -1,0 +1,29 @@
+# Lokale Medien-Originale (M-3c: Master liegt in Shopify Files, lokale Kopien sind Backup)
+_media-source/**
+!_media-source/.gitkeep
+!_media-source/*/.gitkeep
+
+# Dependencies
+node_modules/
+bun.lock
+
+# Build-Artefakte (Adapter-Outputs sind transient)
+adapters/*/dist/
+adapters/*/.cache/
+
+# Editor-/OS-Dateien
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.orig
+*.bak
+
+# Secrets (.env-Dateien IMMER ignoriert, niemals committen)
+.env
+.env.*
+!.env.*.template
+
+# Lokale Logs
+*.log
+logs/

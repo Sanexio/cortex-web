@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cortex-web.local/schema/team-member.json",
+  "title": "TeamMember",
+  "description": "Platzhalter. Wird bei Team-Migration konkretisiert.",
+  "type": "object",
+  "required": ["id", "name", "role"],
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "role": {
+      "type": "object",
+      "required": ["de"],
+      "properties": {
+        "de": { "type": "string" },
+        "en": { "type": "string" }
+      }
+    },
+    "photo": { "type": "string", "pattern": "^media://" }
+  }
+}

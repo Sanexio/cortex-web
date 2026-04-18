@@ -1,0 +1,17 @@
+# Cortex-Web Media-Registry
+# Format: siehe trunk/schema/media.schema.json
+# Füllt sich in Phase 1 mit ersten Einträgen (Logo, Hero-Bilder).
+# Aktualisierung via tools/media/register.mjs (in Phase 1 implementiert).
+
+# Beispiel (kommt in Phase 1):
+# basic-check-hero:
+#   master_backend: shopify_files
+#   master_url: https://cdn.shopify.com/s/files/...
+#   backup_local: _media-source/produkte/basic-check/hero.jpg
+#   uploaded: 2026-04-18
+#   rechte: "© Sanexio GmbH"
+#   alt:
+#     de: "Blutentnahme"
+#   sites:
+#     juvantis: auto-synced
+#     praxis: auto-synced
