@@ -12,7 +12,7 @@ einen gemeinsamen Content-, Design- und Medien-Trunk teilen:
   - Plattform: WordPress mit Blocksy Child-Theme `praxiszentrum`
   - HWG-/Berufsordnungs-konform (keine Preise, kein Anpreisen)
 - **Juvantis-Webseite** (`sanexio.eu`) — Sanexio GmbH Distribution
-  - Plattform: Shopify Taste 8.0.1, Store `medzpoint`
+  - Plattform: Shopify Taste 8.0.1, Store `juvantis.myshopify.com` (öffentliche Domain: `sanexio.eu`)
   - B2C + B2B Distribution von Juvantis-Produkten (DHT, Bluttests, Body Checks)
 
 Die Webseiten bleiben formal getrennt (eigenes Impressum, eigene DSGVO, eigene

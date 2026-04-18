@@ -2,6 +2,31 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionierung: SemVer.
 
+## [0.2.1-setup] — 2026-04-18 (Session 3)
+
+### Phase 2 Infrastruktur — Shopify Admin-API-Token provisioniert
+
+#### Hinzugefügt
+- `tools/shopify-oauth-catcher.mjs` — Node-HTTP-Server auf `localhost:53682/callback`, tauscht OAuth-Code gegen Admin-API-Token, schreibt `SHOPIFY_STORE` + `SHOPIFY_ADMIN_TOKEN` in `.env.local` (chmod 600, Token niemals auf stdout)
+- `tools/shopify-authorize.sh` — Bash-Script, baut OAuth-Authorize-URL sauber per URL-Encode und öffnet sie per `open` (umgeht Copy-Paste-Zeilenumbrüche)
+- `shopify.app.cortex-web-adapter.toml` — Shopify CLI App-Konfiguration (Client-ID, Scopes, App-URL, redirect_urls; nur öffentliche Metadaten)
+
+#### Geändert
+- `.env.local.template` — Shopify-Abschnitt ergänzt: `SHOPIFY_CLIENT_ID`, `SHOPIFY_CLIENT_SECRET`, `SHOPIFY_STORE`, `SHOPIFY_ADMIN_TOKEN` mit Kommentaren zur Herkunft
+
+#### Verifiziert
+- `GET /admin/api/2026-04/shop.json` mit neuem Token → HTTP 200, Shop-Identität korrekt (`juvantis.myshopify.com`, `sanexio.eu`, Dr. Stracke als Owner)
+- `.env.local` weiterhin git-ignoriert, `chmod 600`
+- `tools/validate.sh` weiterhin grün (`validate: OK (1 file(s))`)
+- Theme-Repo `praxiszentrum` weiterhin unangetastet (kein Touch)
+
+#### Lessons Learned (ausführlich in Tutorial `Second Brain/30 Tutorials/Webentwicklung/Shopify & Liquid/05-admin-api-token-custom-app.md`)
+- Shopify Dev Dashboard „App installieren" triggert **keinen** OAuth-Authorize — Custom-App-Token benötigt manuellen `/admin/oauth/authorize`-Aufruf
+- `shopify app dev` erfordert Dev- oder Plus-Sandbox-Store, nicht für Production-Stores nutzbar
+- URL-Copy-Paste aus Chat riskiert Zeilenumbruch-Korruption (`redirect_ur%0A%20i` statt `redirect_uri`); Shell-Script mit `open` ist robuster
+- Shopify `access_token`-Response kollabiert `read_*` + `write_*` Paare zu `write_*` (Lesezugriff implizit)
+- Store-Handle `juvantis.myshopify.com` korrigiert MEMORY-Eintrag (`medzpoint` war falsch)
+
 ## [0.2.0] — 2026-04-18
 
 ### Phase 1 abgeschlossen — POC WordPress-Adapter End-to-End
