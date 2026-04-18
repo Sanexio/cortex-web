@@ -24,11 +24,12 @@
 ├── specs/
 │   └── sprint-0/              — Verständnis + Lösungsdesign je Teilschritt
 ├── tools/
-│   ├── verify.sh              — §1 Split/§2 Reset/§3 Probe/§4 Alignment/Shot (HOMEPAGE-ONLY, Limit)
-│   ├── probe-design.mjs       — Puppeteer Computed-Style (HOMEPAGE-ONLY, Limit)
-│   ├── ab-diff.mjs            — Vorher/Nachher-Shots + Delta + Alignment (NEU 2026-04-18, §7a)
-│   ├── alignment-probe.mjs    — Standalone Spezifitäts-/Alignment-Check (NEU 2026-04-18)
-│   ├── shoot_karriere.mjs     — DEPRECATED, ersetzt durch ab-diff.mjs
+│   ├── verify.sh              — §1 Split/§2 Reset/§3 Probe/§4 Alignment/Shot (via Page-Registry, Home + Karriere)
+│   ├── page-registry.mjs      — zentrale Page-Liste (slug/url/viewports/expected/exists) — NEU Sprint 0 / S0.4
+│   ├── probe-design.mjs       — Puppeteer Computed-Style + Existenz-Checks über Registry (refactored S0.4)
+│   ├── shoot.mjs              — generischer Screenshot-Runner über Registry (ersetzt shoot_karriere.mjs) — NEU S0.4
+│   ├── ab-diff.mjs            — Vorher/Nachher-Shots + Delta + Alignment (2026-04-18, §7a)
+│   ├── alignment-probe.mjs    — Standalone Spezifitäts-/Alignment-Check (2026-04-18)
 │   ├── create_mfa_form.php    — WPForms-Generator, idempotent
 │   └── create_karriere_page.php — WP-Page-Generator, idempotent
 ├── screenshots/
@@ -47,7 +48,7 @@
 /Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/
 ├── wp-content/themes/praxiszentrum/        ← Custom Child Theme (Parent: Blocksy)
 │   ├── style.css                           80 Zeilen Base-/Utility-CSS
-│   ├── functions.php                       PXZ_VERSION=2.6.0, Konstanten, Enqueue, Helper
+│   ├── functions.php                       PXZ_VERSION=2.7.3, Konstanten, Enqueue, Helper
 │   ├── template-homepage.php               ~1200 Z., ALLES inline (CSS + Content + HTML)
 │   └── template-karriere.php               ~260 Z., ALLES inline, NEU in v2.6.0
 ├── wp-content/mu-plugins/
@@ -98,8 +99,8 @@ SOCK="/Users/.../run/VFEzUQg6g/mysql/mysqld.sock"
 | Seiten im neuen Design | 2 (Home, Karriere) | Home + Karriere + 172 Bestandsseiten |
 | Design-System | Ad-hoc, dreimal dupliziert | Komponentenbibliothek, 1 Token-Quelle |
 | CSS-Distribution | 80 Z. `style.css` + 2× >500 Z. inline | Modulare CSS-Dateien, Templates nur Markup |
-| Versionskontrolle | Keine | Git lokal, optional Remote |
-| Verifikation | Homepage-Selektoren only | Page-Registry, jede Page mit EXPECTED |
+| Versionskontrolle | **Git lokal, 2 Repos (Theme + Docs) seit Sprint 0 / S0.1** | Git lokal, optional Remote |
+| Verifikation | **Page-Registry (Home + Karriere) seit Sprint 0 / S0.4** | Page-Registry, jede Page mit EXPECTED |
 | Staging | Keines | Local → Staging → Prod |
 | WPML | Installiert, ungenutzt | DE/EN/FR/ES je Seite |
 | SEO | AIOSEO aktiv, ungeprüft | Schema.org MedicalBusiness, OG, Sitemap |
@@ -141,11 +142,16 @@ SOCK="/Users/.../run/VFEzUQg6g/mysql/mysqld.sock"
 
 ## 4. Sprint-Roadmap
 
-### Sprint 0 — Foundation (AKTUELL, wartet auf Freigabe b/c/d)
-- S0.1 Git-Repo für Theme + MU-Plugin-Snapshot
-- S0.2 CSS-Extraktion (Inline → Datei)
-- S0.3 Design-Token-SSoT + Komponenten-Abstraktion (additiv, nicht destruktiv)
-- S0.4 Verify-Pipeline auf Page-Registry umstellen
+### Sprint 0 — Foundation (2026-04-18, minimal-Scope abgeschlossen)
+
+Entscheidung Dr. Stracke: b=1 (Git lokal), c=2 (zwei Repos: Theme + Docs),
+d=1 (Deadline 48 h halten → Sprint 0 minimal: S0.1 + S0.4; S0.2 + S0.3
+ins Backlog).
+
+- ✅ S0.1 Git-Repo für Theme (Baseline v2.7.3) + separates Repo für Docs/Tools
+- ⏸ S0.2 CSS-Extraktion (Inline → Datei) — **Backlog** (Sprint 1 oder später)
+- ⏸ S0.3 Design-Token-SSoT + Komponenten-Abstraktion — **Backlog** (Sprint 2 Kandidat)
+- ✅ S0.4 Verify-Pipeline auf Page-Registry (Home + Karriere) umgestellt
 
 Detail: `specs/sprint-0/README.md` + `specs/sprint-0/OPEN_DECISIONS.md`.
 
@@ -177,8 +183,8 @@ Detail: `specs/sprint-0/README.md` + `specs/sprint-0/OPEN_DECISIONS.md`.
 |----------|-------|--------|
 | `_rules/WORKING_MODE.md` | Architekten-Modus, Arbeitsprozess | ✅ angelegt 2026-04-18 |
 | `_rules/ARCHITECTURE.md` | diese Datei | ✅ angelegt 2026-04-18 |
-| `_rules/ACCEPTANCE.md` | textuelle Akzeptanzkriterien je Task | ⏳ in Sprint 0 |
-| `specs/<sprint>/<task>.md` | pro Task: Verständnis + Design + Prüfung | ⏳ mit Sprint 0 beginnt |
-| `tools/page-registry.mjs` | zentrale Page-Liste | ⏳ Sprint 0 / S0.4 |
-| `tools/bootstrap.sh` | reproducible Setup | ⏳ Sprint 0 / S0.1 |
-| `CHANGELOG.md` (am Theme) | Semver-Bumps | ⏳ Sprint 0 / S0.1 |
+| `_rules/ACCEPTANCE.md` | textuelle Akzeptanzkriterien je Task | ⏳ Backlog (aus Sprint 0 verschoben) |
+| `specs/<sprint>/<task>.md` | pro Task: Verständnis + Design + Prüfung | ✅ begonnen mit `specs/sprint-0/` |
+| `tools/page-registry.mjs` | zentrale Page-Liste | ✅ Sprint 0 / S0.4 |
+| `tools/bootstrap.sh` | reproducible Setup | ⏳ Backlog |
+| `CHANGELOG.md` (am Theme) | Semver-Bumps | ✅ Sprint 0 / S0.1 |

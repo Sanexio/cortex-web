@@ -30,17 +30,19 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-18, 12:15)
+## §1 Stand & Version (gültig: 2026-04-18, 13:00)
 
 - **PXZ_VERSION:** 2.7.3 live auf Local by Flywheel (Cluster-Mini-02).
 - **Site-Root:** `/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/`
 - **URL:** `https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local`
 - **Child-Theme:** `wp-content/themes/praxiszentrum/`
-- **Homepage abgenommen** durch Dr. Stracke bis inkl. v2.7.3:
-  - Hero (Logo 151/200/248 px), MFA-Sektion (T-C-Conversion-Text, ~60 % Hero-Höhe),
-    Stats, Fachrichtungen, Team, Service, Standorte, Final-CTA, Footer, Nav.
+- **Homepage abgenommen** durch Dr. Stracke bis inkl. v2.7.3.
 - **Task 2 (Karriere v2.6.0 + MFA-Formular) abgenommen** durch Dr. Stracke am 2026-04-18.
-- **`tools/verify.sh`:** alle 4 Checks grün (Split, Reset, Computed-Style, Alignment).
+- **Sprint 0 minimal-Scope abgeschlossen** (Entscheidungen: b=1 / c=2 / d=1):
+  - ✅ S0.1 — Zwei lokale Git-Repos (Theme + Docs), Baseline-Commits v2.7.3 / Sprint-0-Start
+  - ✅ S0.4 — Verify-Pipeline auf Page-Registry umgestellt (Home + Karriere)
+  - ⏸ S0.2 / S0.3 — bewusst ins Backlog verschoben (Deadline-Option d=1)
+- **`tools/verify.sh`:** alle 4 Checks grün (Split, Reset, Computed-Style via Registry, Alignment).
 
 ---
 
@@ -67,13 +69,15 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 Nach Pflicht-Init + Pre-Flight grün, fragt Claude:
 
-> „v2.7.3 ist live, Task 2 freigegeben, alle Checks grün. Welche Front bearbeiten wir?
+> „v2.7.3 ist live, Task 2 freigegeben, Sprint 0 minimal-Scope (S0.1 + S0.4) abgeschlossen,
+> alle Checks grün. Welche Front bearbeiten wir?
 >
-> A. **Sprint 0 starten** — Antworten zu `OPEN_DECISIONS.md` (b)/(c)/(d) liefern, dann S0.1 Git-Repo
-> B. **Backlog 2026-04-18** — CTA-Anschnitt @ 1440 px ODER PHP-Deprecation `theme-freesia-demo-import`
-> C. **Mobile-Eyebrow MFA** — „WIR SUCHEN DICH · MFA M/W/D" bricht 2-zeilig (offen aus v2.7.3)
-> D. **Mehrsprachigkeit (Sprint 3)** — Task 3 WPML DE→EN/FR/ES (nicht vor Sprint 0)
-> E. **Andere konkrete Änderung** — Sie nennen"
+> A. **Sprint 1 starten** — Staging-Setup + Backup/Rollback + End-to-End-Mail-Test (Outlook)
+> B. **Backlog Sprint 0** — S0.2 CSS-Extraktion ODER S0.3 Token-SSoT jetzt doch angehen
+> C. **Backlog 2026-04-18** — CTA-Anschnitt @ 1440 px ODER PHP-Deprecation `theme-freesia-demo-import`
+> D. **Mobile-Eyebrow MFA** — „WIR SUCHEN DICH · MFA M/W/D" bricht 2-zeilig (offen aus v2.7.3)
+> E. **Mehrsprachigkeit (Sprint 3)** — Task 3 WPML DE→EN/FR/ES
+> F. **Andere konkrete Änderung** — Sie nennen"
 
 Keine Code-Änderung vor expliziter Wahl.
 
@@ -377,11 +381,16 @@ läuft rechts aus dem Container; kein Blocker für Task-1-Freigabe.
 
 **Architektur-Ebene (übergeordnet, seit 2026-04-18):**
 
-- **Sprint 0 — Foundation** — wartet auf Freigabe der offenen Entscheidungen.
-  - Reihenfolge Sprint 0 → 1 → 2 → 3 → 4 wurde am 2026-04-18 freigegeben.
-  - **Offen (blockierend):** `specs/sprint-0/OPEN_DECISIONS.md` — (b) Git-Remote,
-    (c) Git-Scope, (d) Deadline-Realität. Ohne Antworten kein Sprint-0-Start.
-  - Details: `specs/sprint-0/README.md`.
+- **Sprint 0 — Foundation** — minimal-Scope ✅ abgeschlossen 2026-04-18:
+  - Entscheidungen freigegeben: b=1 (lokal), c=2 (zwei Repos), d=1 (Deadline halten).
+  - ✅ S0.1 Git-Repos (Theme-Repo + Docs-Repo), Baseline-Commits.
+  - ✅ S0.4 Page-Registry (Home + Karriere), generischer `shoot.mjs`.
+  - ⏸ S0.2 CSS-Extraktion — Backlog.
+  - ⏸ S0.3 Design-Token-SSoT — Backlog.
+- **Sprint 1 — Rollout-Infrastruktur** — noch nicht begonnen.
+  - S1.1 Staging (Subdomain Domainfactory oder lokal)
+  - S1.2 Backup/Rollback-SOP + Pre-Deploy-Snapshot
+  - S1.3 End-to-End-Mail-Test (echte Outlook-SMTP + Anhang)
 
 **Produkt-Ebene (aus HANDOFF_PROMPT.md):**
 
@@ -397,6 +406,60 @@ läuft rechts aus dem Container; kein Blocker für Task-1-Freigabe.
 8. **Task 8 — Echte Fotos** für 6 Ärzte (Barcsay, Seelig, Jawich, Shahin, Landeberg, Arbitmann).
 
 **Deadline:** Go-Live innerhalb 48 h (ursprünglich ab Session-Start).
+
+---
+
+## Session 2026-04-18 — Sprint 0 Minimal-Scope umgesetzt (S0.1 + S0.4)
+
+**Auftrag Dr. Stracke:** Front A mit b=1 (Git lokal), c=2 (zwei Repos), d=1 (Deadline halten).
+
+### S0.1 — Zwei lokale Git-Repos
+
+**Repo A — Theme** (`wp-content/themes/praxiszentrum/`)
+- Neu: `.gitignore`, `CHANGELOG.md` (Pre-Git-Historie v2.5.0…v2.7.3 + PXZ_VERSION-Bump-Policy), `README.md` (Setup + WP-CLI-Aufrufmuster + Struktur).
+- `git init -b main`, Baseline-Commit `8c9d0fa`: `chore: baseline v2.7.3 (homepage + karriere + mfa-formular)`.
+- 10 Dateien im Commit, `git status` sauber.
+
+**Repo B — Docs/Tools** (`~/Cortex/projects/praxis-redesign/`)
+- Neu: `.gitignore` (`node_modules/`, `.DS_Store`, `*.log`, `screenshots/_archive/`, `screenshots/claude/_archive/`).
+- `git init -b main`, Baseline-Commit `2f288a3`: `chore: baseline Sprint-0 start (docs + verify tools, post-v2.7.3)`.
+- 87 Dateien im Commit, 28 MB komprimiert, `git status` sauber.
+- Kein Remote (b=1).
+
+### S0.4 — Verify-Pipeline auf Page-Registry
+
+**Neue Dateien in `tools/`:**
+- `page-registry.mjs` — Export `pages = [{slug, url, viewports, expected, exists}]`. Initial: Home + Karriere, 3 Viewports.
+- `shoot.mjs` — Generischer Screenshot-Runner mit `--slug=` / `--ver=` Flags.
+
+**Refactor:**
+- `probe-design.mjs` — liest Registry statt hartkodierte Home-Map. Neu: `exists`-Liste pro Page (DOM-Existenz-Check). `--slug=` Flag zum Isolieren einer Page.
+
+**Gelöscht:** `shoot_karriere.mjs` (ersetzt durch `shoot.mjs`).
+
+**Karriere-EXPECTED ad-hoc vermessen:**
+- `.pxz-kar-card` padding-top 112/96/72, padding-left/right 96/72/40
+- `.pxz-kar-eyebrow` color `rgb(245, 184, 0)` auf allen Viewports
+- DOM-Existenz: `.pxz-kar-hero`, `.pxz-kar-card`, `form[id^='wpforms-form-']`, alle 6 WPForms-Felder inkl. DSGVO-Checkbox mit `required` (PXZ-E-005-Schutz)
+
+### Verifikation
+
+- `bun run tools/probe-design.mjs` — **54 Assertions grün** auf 2 Pages × 3 Viewports.
+- `bun run tools/shoot.mjs --slug=home --ver=2.7.3` — 3 Shots gespeichert.
+- `bun run tools/shoot.mjs --slug=karriere --ver=2.6.0` — 3 Shots gespeichert.
+- `tools/verify.sh` — alle 4 Checks grün (Split, Reset, Computed-Style, Alignment).
+
+### Docs-Pflege
+
+- `_rules/ARCHITECTURE.md` — tools-Tree + SOLL/IST-Tabelle + Sprint-0-Status + Artefakte-Tabelle auf neuen Stand.
+- `SESSION_RESUME.md` — §1 Stand, §3 Fronten-Liste, §5 Session-Block (diese), §4 Tasks-Block aktualisiert.
+- `Nexus/_memory/MEMORY.md` — Projekt-Status-Zeile praxis-redesign.
+
+### Offene Commits (nach S0.4)
+
+Die Docs-Änderungen + S0.4-Tool-Dateien liegen in Repo B und brauchen noch ihre Commits:
+- `feat(s0.4): page registry + generic probe/shoot; remove shoot_karriere`
+- `docs: reflect sprint-0 minimal-scope completion`
 
 ---
 
