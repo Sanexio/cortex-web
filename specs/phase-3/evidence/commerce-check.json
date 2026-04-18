@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "product_id": 10940942844171,
+  "handle": "basic-check",
+  "title": "Basis-Bluttest",
+  "variant_count": 1,
+  "price": "99.00",
+  "sku": "JVT-BLD-001",
+  "product_type": "bluttests",
+  "tags": "bluttests, cortex-web",
+  "vendor": "Sanexio",
+  "status": "draft",
+  "checks": {
+    "has_variant": true,
+    "price_positive": true,
+    "sku_present": true,
+    "product_type_present": true,
+    "tags_present": true,
+    "vendor_present": true,
+    "status_draft": true
+  },
+  "timestamp": "2026-04-18T22:45:39.534Z"
+}

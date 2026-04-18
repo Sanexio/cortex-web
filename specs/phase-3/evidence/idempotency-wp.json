@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "run1": {
+    "action": "update",
+    "id": 9668,
+    "slug": "basic-check",
+    "status": "publish",
+    "link": "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/",
+    "modified_gmt": "2026-04-18T22:45:40"
+  },
+  "run2": {
+    "action": "update",
+    "id": 9668,
+    "slug": "basic-check",
+    "status": "publish",
+    "link": "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/",
+    "modified_gmt": "2026-04-18T22:45:41"
+  },
+  "run1_exit": 0,
+  "run2_exit": 0,
+  "same_id": true,
+  "run2_action": "update",
+  "timestamp": "2026-04-18T22:45:39.534Z"
+}

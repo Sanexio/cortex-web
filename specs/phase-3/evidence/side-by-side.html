@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><title>Cortex-Web Phase 3 — Side by Side</title>
+<style>
+  :root { font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; color: #1a1a1a; }
+  body { margin: 0; background: #f4f4f6; }
+  header { padding: 1.2rem 2rem; background: #0c2340; color: #fff; }
+  header h1 { margin: 0; font-size: 1.4rem; }
+  header p { margin: 0.3rem 0 0; opacity: 0.85; }
+  .row { display: flex; gap: 16px; padding: 20px; }
+  .col { flex: 1; background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  .col header { background: #f6f7fa; color: #0c2340; padding: 0.8rem 1rem; border-bottom: 1px solid #e0e0e0; }
+  .col h2 { margin: 0; font-size: 1.05rem; }
+  .col .sub { font-size: 0.85rem; color: #555; margin-top: 0.15rem; }
+  .shot { padding: 10px; }
+  .shot img { display: block; width: 100%; height: auto; border: 1px solid #e9e9e9; border-radius: 4px; }
+  .meta { font-size: 0.75rem; color: #888; padding: 0.6rem 1rem 0.9rem; border-top: 1px solid #eee; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+</style></head><body>
+<header>
+  <h1>Cortex-Web Phase 3 — Side-by-Side Review</h1>
+  <p>Trunk-Produkt <code>basic-check</code> &middot; dieselbe YAML rendert auf zwei Plattformen &middot; 2026-04-18T22:45:39.534Z</p>
+</header>
+<div class="row">
+  <div class="col">
+    <header>
+      <h2>WordPress (westend-hausarzt.com / Local-WP)</h2>
+      <div class="sub">Praxis-Sicht &middot; HWG-konform &middot; ohne Preis &middot; CTA verlinkt auf sanexio.eu</div>
+    </header>
+    <div class="shot"><img src="./wp-page-9668.png" alt="WP-Page-Screenshot"></div>
+    <div class="meta">Quelle: <code>https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/</code></div>
+  </div>
+  <div class="col">
+    <header>
+      <h2>Shopify (juvantis.myshopify.com / sanexio.eu)</h2>
+      <div class="sub">Juvantis-Sicht &middot; mit Preis &middot; mit Buchungs-CTA &middot; Draft-Produkt</div>
+    </header>
+    <div class="shot"><img src="./shopify-body-preview.png" alt="Shopify body_html Preview"></div>
+    <div class="meta">Quelle: Admin <code>https://juvantis.myshopify.com/admin/products/10940942844171</code></div>
+  </div>
+</div>
+</body></html>
