@@ -79,9 +79,9 @@ Juvantis-Kern (`DHT/`, `social-media/`) bleibt unter `projects/Juvantis/`.
 
 | Phase | Ziel | Session | Status | Kommentar |
 |:---:|------|:-------:|:-----:|-----------|
-| **0** | Skelett + Regeln + Nexus | 1 | ✅ 2026-04-18 | diese Session |
-| **1** | POC WP-Adapter: 1 Produkt → WP-Page | 1 | ⏳ | nächste Session |
-| **2** | POC Shopify-Adapter: gleiches Produkt | 1 | ⏳ | |
+| **0** | Skelett + Regeln + Nexus | 1 | ✅ 2026-04-18 | Commit `6178d2f` / `d9577cd` |
+| **1** | POC WP-Adapter: 1 Produkt → WP-Page | 1 | ✅ 2026-04-18 | Commit `778635c`, 10/10 AK, HWG-konform, idempotent |
+| **2** | POC Shopify-Adapter: gleiches Produkt | 1 | ⏳ | nächste Session |
 | **3** | Review — trägt der Ansatz? | 1 | ⏳ | Go/No-Go |
 | **4** | Praxis-Subsumierung: `praxis-redesign/` → `sites/praxis-webseite/` | 1 | ⏳ | `git mv` |
 | **5** | Juvantis-Subsumierung: `Juvantis/juvantis-web/` → `sites/juvantis-webseite/` | 1 | ⏳ | `git mv` |
