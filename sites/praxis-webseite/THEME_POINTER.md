@@ -33,21 +33,23 @@ Verbindung.
 
 ---
 
-## Aktueller Theme-Stand (Stand 2026-04-19 nach S2.0b)
+## Aktueller Theme-Stand (Stand 2026-04-19 nach S2.3-B)
 
 | Eintrag | Wert |
 |---------|------|
-| Commit-Hash | `8f596f7` (auf `08f40ff` folgend) |
-| Commit-Message | `refactor(s2.0b): extract promoted classes from homepage.css + add specificity fix` |
-| PXZ_VERSION | `2.7.8` |
-| Bedeutung | S2.0b Komponenten-Bibliothek — Schicht 3 (Components) eingezogen gemäß DESIGN_GUIDELINES v3.0 §2. `components.css` zentralisiert Container, Typografie, Buttons, Section, Card, Hero. Home MD5-Null-Delta verifiziert. Karriere −9 px am `.wpforms-submit` (WCAG-Accessibility-Gewinn, dokumentiert). |
-| Architektonische Verschiebung | Sprint-Reihenfolge: S2.2 ✅ → S2.0b ✅ → **S2.3 Content-Batches (B/C/G frei, A blockiert)** → S2.4 → S2.5 |
-| Verify.sh-Stand | grün (§1–§4, alle 54/54 Computed-Styles + 10/10 Alignment) |
-| Letzte Dr.-Stracke-Freigabe | 2026-04-19 (S2.0b-Spec freigegeben, Architekten-Entscheidungen F1…F7 + F-1…F-5 delegiert) |
+| Commit-Hash | `74a9512` (auf `8f596f7` folgend) |
+| Commit-Message | `feat(s2.3-b): SEO-Layer, /praxis/+/team/+404 content, PXZ_VERSION 2.7.9` |
+| PXZ_VERSION | `2.7.9` |
+| Bedeutung | S2.3 Batch B Content — 3 P0-Seiten mit Echt-Content + theme-eigene SEO-Meta-Schicht. `inc/seo-data.php` + `inc/seo-meta.php` unterdrücken AIOSEO auf überschriebenen Seiten. `template-standard.php` dynamisiert aus `post_meta`. `standard.css` + `404.css` Finals (Tokens-only). 404.php erweitert um Search-Form + 3 Top-Links. 21/21 smoke-seo-Assertions grün. Home+Karriere 5/6 MD5-MATCH, 1/6 Delta (home_tablet768, dokumentiert S2.3-B-LL-1). |
+| Architektonische Verschiebung | Sprint-Reihenfolge: S2.2 ✅ → S2.0b ✅ → S2.0e ✅ → S2.0f ✅ → S2.3-B ✅ → S2.3-C + S2.3-G + S2.0d verbleiben |
+| Verify.sh-Stand | grün (§1–§4, alle Computed-Styles + 10/10 Alignment + Component-Probe) |
+| smoke-seo.sh-Stand | **21/21 grün** (title/meta/canonical/og/jsonld auf praxis+team+404) |
+| Letzte Dr.-Stracke-Freigabe | 2026-04-19 (S2.3-B-Spec freigegeben, Architekten-Entscheidungen F1…F7 delegiert, Content-Ton-Direktive: modern/Puls der Zeit/Rundumversorgung) |
 
-### Versionskette des Themes (Stand 2026-04-19, Ende S2.0b)
+### Versionskette des Themes (Stand 2026-04-19, Ende S2.3-B)
 
 ```
+74a9512  feat(s2.3-b): SEO-Layer, /praxis/+/team/+404 content, PXZ_VERSION 2.7.9
 8f596f7  refactor(s2.0b): extract promoted classes from homepage.css + add specificity fix
 08f40ff  feat(s2.0b): add components.css Schicht 3 + pxz-components enqueue + PXZ_VERSION 2.7.8
 dd3e4e1  fix(s2.2): comment strings triggering WP page-template auto-discovery

@@ -115,6 +115,54 @@ export const pages = [
       ".wpforms-field-checkbox input[required]",
     ],
   },
+  // S2.3 Batch B — 3 neue Pages (2026-04-19)
+  {
+    slug: "praxis",
+    url: `${BASE}/praxis/`,
+    viewports: [1440, 768, 430],
+    expected: {},
+    exists: [
+      ".pxz-standard",
+      ".pxz-standard-hero",
+      "h1.pxz-standard-title",
+      ".pxz-standard-content",
+      ".pxz-standard-cta",
+      'script[type="application/ld+json"]',
+      'link[rel="canonical"]',
+      'meta[name="description"]',
+    ],
+  },
+  {
+    slug: "team",
+    url: `${BASE}/team/`,
+    viewports: [1440, 768, 430],
+    expected: {},
+    exists: [
+      ".pxz-standard",
+      ".pxz-standard-hero",
+      "h1.pxz-standard-title",
+      ".pxz-standard-content",
+      ".pxz-standard-cta",
+      'script[type="application/ld+json"]',
+      'link[rel="canonical"]',
+      'meta[name="description"]',
+    ],
+  },
+  {
+    slug: "404",
+    url: `${BASE}/diese-seite-gibt-es-nicht-s23b-probe/`,
+    viewports: [1440, 768, 430],
+    expected: {},
+    exists: [
+      ".pxz-404",
+      ".pxz-404-hero",
+      "h1.pxz-404-title",
+      ".pxz-404-search",
+      '.pxz-404-search input[type="search"]',
+      ".pxz-404-top-links",
+      'meta[name="robots"]',
+    ],
+  },
 ];
 
 export default pages;

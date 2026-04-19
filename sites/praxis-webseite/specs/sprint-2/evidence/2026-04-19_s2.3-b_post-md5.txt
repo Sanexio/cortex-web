@@ -1,0 +1,6 @@
+1011c76b3677b9dbd8d0069cc4c1c680  2026-04-19_v2.7.9_home_desktop1440_full.png
+30de78f9cf897fc9fbf8e174dcffc235  2026-04-19_v2.7.9_karriere_tablet768_full.png
+4f9483103574cdc0520cb76f50e27e36  2026-04-19_v2.7.9_home_tablet768_full.png
+640268efd030ab057fb443b8e45475b7  2026-04-19_v2.7.9_home_mobile430_full.png
+c80fac1fd67074229392abe618eb676d  2026-04-19_v2.7.9_karriere_desktop1440_full.png
+cd3e4178944971eea0247df880447750  2026-04-19_v2.7.9_karriere_mobile430_full.png
