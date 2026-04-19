@@ -807,5 +807,28 @@ Betroffene Templates (S2.3-B-Revision):
 **Korrekt:**
 - `blogname`-Option ist authoritative.
 - Theme-Header-Fragment liest `bloginfo('name')` → picks up URL-basierten Filter.
-- Logo + Wortmarke sind **immer** gemeinsam gerendert (Logo alleine ohne Text = NG; Text alleine ohne Logo = NG).
+- Logo + Wortmarke sind **immer** gemeinsam gerendert, **außer** wenn das Logo die Wortmarke bereits enthält (siehe §18.3 Sanexio-Variante).
+
+### §18.3 Logo-Marken-Zuordnung (verbindlich, seit S2.3-B-rev3 2026-04-19)
+
+Jede URL/Seite bekommt IMMER das zur Wortmarke passende Logo. Keine Mischung, keine Fallbacks.
+
+| URL / Kontext | Wortmarke | Logo-Datei | Layout |
+|---|---|---|---|
+| Alle Praxis-Seiten (Home, `/praxis/`, `/sprechstunden/`, `/kontakt/`, `/aerzte/`, Fachrichtungen, Einzel-Ärzte, Karriere, Datenschutz, Impressum, 404) | **Praxiszentrum Dr. Stracke & Kollegen** | `assets/logo.svg` (rundes Badge mit Caduceus, 151 – 248 px je Viewport) | Logo **+** Text-Wortmarke (`.top` "Praxiszentrum" + `.sub` "Dr. Stracke & Kollegen") |
+| `/team/` | **Praxisgemeinschaft Sanexio** | `assets/logo-sanexio.svg` (horizontale Wortmarke "sanexio" mit EKG-Puls als "n" + Untertitel "PRAXISGEMEINSCHAFT", viewBox 800×270) | **Nur** Logo (Text bereits integriert); **kein** separater `.pxz-nav-logo-text`-Span |
+
+**Implementierung** (`template-parts/header-nav.php`): URL-basierter Check
+`preg_match('#^/team/?(\?|$)#', $_SERVER['REQUEST_URI'])` → `$is_sanexio = true`
+→ rendert Sanexio-Logo ohne Text; sonst Praxiszentrum-Variante (Logo + Text).
+
+**CSS-Scope** (`assets/css/nav.css`):
+- `.pxz-nav-logo-praxis img` → 151 / 200 / 248 px quadratisch je Viewport.
+- `.pxz-nav-logo-sanexio img` → 200 / 240 / 320 / 400 px horizontal je Viewport; `aspect-ratio: 800/270`.
+
+**Alternativ-Variante (reserve, nicht aktiv):** `assets/logo-sanexio-compact.svg` — gleiche Wortmarke ohne "PRAXISGEMEINSCHAFT"-Untertitel und mit dunkelblauem Text (#0a2540). Einsetzbar, wenn später eine weitere Seite den Brand-Kontext ohne Untertitel braucht.
+
+**Quell-Archiv:** `sites/praxis-webseite/assets-source/sanexio-logo/` (beide Varianten als Backup).
+
+**Anti-Pattern:** Praxis-Logo mit Sanexio-Wortmarke mischen, oder umgekehrt. Jeder Brand bekommt seine eigenen Assets.
 

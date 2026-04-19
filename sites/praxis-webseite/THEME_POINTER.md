@@ -37,9 +37,9 @@ Verbindung.
 
 | Eintrag | Wert |
 |---------|------|
-| Commit-Hash | `e2bb7b1` (auf `81d3f62` folgend) |
-| Commit-Message | `feat(s2.3-b-rev2): unified site header via template-part + nav.css` |
-| PXZ_VERSION | `2.7.11` |
+| Commit-Hash | `dd1de0f` (auf `e2bb7b1` folgend) |
+| Commit-Message | `feat(s2.3-b-rev3): Sanexio logo for /team/ brand switch` |
+| PXZ_VERSION | `2.7.12` |
 | Bedeutung | S2.3 Batch B Content — 3 P0-Seiten mit Echt-Content + theme-eigene SEO-Meta-Schicht. `inc/seo-data.php` + `inc/seo-meta.php` unterdrücken AIOSEO auf überschriebenen Seiten. `template-standard.php` dynamisiert aus `post_meta`. `standard.css` + `404.css` Finals (Tokens-only). 404.php erweitert um Search-Form + 3 Top-Links. 21/21 smoke-seo-Assertions grün. Home+Karriere 5/6 MD5-MATCH, 1/6 Delta (home_tablet768, dokumentiert S2.3-B-LL-1). |
 | Architektonische Verschiebung | Sprint-Reihenfolge: S2.2 ✅ → S2.0b ✅ → S2.0e ✅ → S2.0f ✅ → S2.3-B ✅ → S2.3-C + S2.3-G + S2.0d verbleiben |
 | Verify.sh-Stand | grün (§1–§4, alle Computed-Styles + 10/10 Alignment + Component-Probe) |
@@ -49,6 +49,7 @@ Verbindung.
 ### Versionskette des Themes (Stand 2026-04-19, Ende S2.3-B)
 
 ```
+dd1de0f  feat(s2.3-b-rev3): Sanexio logo for /team/ brand switch
 e2bb7b1  feat(s2.3-b-rev2): unified site header via template-part + nav.css
 81d3f62  feat(s2.3-b-rev): Dr.-Stracke-Feedback — branding + H1 sizes + team grid + 404 cartoon
 74a9512  feat(s2.3-b): SEO-Layer, /praxis/+/team/+404 content, PXZ_VERSION 2.7.9
