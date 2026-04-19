@@ -33,21 +33,23 @@ Verbindung.
 
 ---
 
-## Aktueller Theme-Stand (Stand 2026-04-19 nach S2.2)
+## Aktueller Theme-Stand (Stand 2026-04-19 nach S2.0b)
 
 | Eintrag | Wert |
 |---------|------|
-| Commit-Hash | `dd3e4e1` (Hotfix nach `6c02cb4`) |
-| Commit-Message | `fix(s2.2): comment strings triggering WP page-template auto-discovery` |
-| PXZ_VERSION | `2.7.7` |
-| Bedeutung | S2.2 Template-Typologie — 8 Skelett-Templates angelegt (Layout-Hülle, kein Echt-Content; Content folgt in S2.3 Batch A–G). Hotfix gegen Comment-Strings, die WP Page-Template-Auto-Discovery triggerten. |
-| Architektonische Verschiebung | Sprint-Reihenfolge: S2.2 → **S2.0b (Component-Refactor, eingeschoben)** → S2.3 (Content) → S2.4 → S2.5 |
-| Verify.sh-Stand | grün (Home + Karriere unberührt, AK-7 erfüllt) |
-| Letzte Dr.-Stracke-Freigabe | 2026-04-19 (S2.2-Spec freigegeben, Architekten-Entscheidungen delegiert) |
+| Commit-Hash | `8f596f7` (auf `08f40ff` folgend) |
+| Commit-Message | `refactor(s2.0b): extract promoted classes from homepage.css + add specificity fix` |
+| PXZ_VERSION | `2.7.8` |
+| Bedeutung | S2.0b Komponenten-Bibliothek — Schicht 3 (Components) eingezogen gemäß DESIGN_GUIDELINES v3.0 §2. `components.css` zentralisiert Container, Typografie, Buttons, Section, Card, Hero. Home MD5-Null-Delta verifiziert. Karriere −9 px am `.wpforms-submit` (WCAG-Accessibility-Gewinn, dokumentiert). |
+| Architektonische Verschiebung | Sprint-Reihenfolge: S2.2 ✅ → S2.0b ✅ → **S2.3 Content-Batches (B/C/G frei, A blockiert)** → S2.4 → S2.5 |
+| Verify.sh-Stand | grün (§1–§4, alle 54/54 Computed-Styles + 10/10 Alignment) |
+| Letzte Dr.-Stracke-Freigabe | 2026-04-19 (S2.0b-Spec freigegeben, Architekten-Entscheidungen F1…F7 + F-1…F-5 delegiert) |
 
-### Versionskette des Themes (Stand 2026-04-19, Ende S2.2)
+### Versionskette des Themes (Stand 2026-04-19, Ende S2.0b)
 
 ```
+8f596f7  refactor(s2.0b): extract promoted classes from homepage.css + add specificity fix
+08f40ff  feat(s2.0b): add components.css Schicht 3 + pxz-components enqueue + PXZ_VERSION 2.7.8
 dd3e4e1  fix(s2.2): comment strings triggering WP page-template auto-discovery
 6c02cb4  feat(s2.2): 8 skelett-templates + functions.php enqueue + PXZ_VERSION 2.7.7
 c4f18ba  feat(s2.0c): tokens.css v2 with 4-layer model; bump PXZ_VERSION 2.7.5 → 2.7.6
