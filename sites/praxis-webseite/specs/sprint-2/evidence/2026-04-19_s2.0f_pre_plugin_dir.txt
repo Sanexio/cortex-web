@@ -1,0 +1,14 @@
+total 40
+drwxr-xr-x@ 12 cluster-mini-02  staff   384 16 Apr 20:36 .
+drwxr-xr-x@ 36 cluster-mini-02  staff  1152 18 Apr 09:32 ..
+drwxr-xr-x@  9 cluster-mini-02  staff   288 16 Apr 20:36 admin
+-rw-r--r--@  1 cluster-mini-02  staff  4064 16 Apr 20:36 changelog.txt
+drwxr-xr-x@  9 cluster-mini-02  staff   288 16 Apr 20:36 includes
+-rw-r--r--@  1 cluster-mini-02  staff    26 16 Apr 20:36 index.php
+drwxr-xr-x@  3 cluster-mini-02  staff    96 16 Apr 20:36 languages
+drwxr-xr-x@  8 cluster-mini-02  staff   256 16 Apr 20:36 public
+-rw-r--r--@  1 cluster-mini-02  staff  2155 16 Apr 20:36 readme.txt
+-rw-r--r--@  1 cluster-mini-02  staff  1630 16 Apr 20:36 santapress.php
+drwxr-xr-x@  3 cluster-mini-02  staff    96 16 Apr 20:36 templates
+-rw-r--r--@  1 cluster-mini-02  staff   263 16 Apr 20:36 uninstall.php
+ 21M	/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/wp-content/plugins/santapress/

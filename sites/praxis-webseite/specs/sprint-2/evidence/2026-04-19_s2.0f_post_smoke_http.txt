@@ -1,0 +1,8 @@
+=== smoke-http.sh — 5 URLs on https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local ===
+  ✓ 200  /
+  ✓ 200  /karriere/
+  ✓ 200  /wp-login.php
+  ✓ 200  /feed/
+  ✓ 200  /?s=test
+
+==> SMOKE OK — no 5xx across 5 URLs
