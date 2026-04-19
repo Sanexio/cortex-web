@@ -78,7 +78,7 @@ Diese drei Dokumente bilden die Entscheidungshistorie. Seit Phase 4 (2026-04-19,
 | **2** | POC Shopify-Adapter (gleiches Produkt → Shopify) | 3+4 | ✅ 2026-04-18/19 |
 | **3** | Review & Go/No-Go | 5 | ✅ 2026-04-19 |
 | **4** | Subsumierung praxis-redesign → sites/praxis-webseite/ | 6 | ✅ 2026-04-19 |
-| **5** | Subsumierung Juvantis/juvantis-web → sites/juvantis-webseite/ | tbd | ⏳ kein Go |
+| **5** | Subsumierung Juvantis-Web-Docs → sites/juvantis-webseite/ (Theme-Klon bleibt bei `Juvantis/juvantis-web/theme/`) | 7 | ✅ 2026-04-19 |
 
 ## Regeln
 

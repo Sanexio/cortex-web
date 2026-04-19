@@ -66,7 +66,7 @@
 | 2 (Adapter) | POC Shopify-Adapter | ✅ |
 | 3 | Review-Pipeline + Go/No-Go | ✅ |
 | **4** | **Subsumierung praxis-redesign → sites/praxis-webseite/** | **✅ 2026-04-19** |
-| 5 | Subsumierung Juvantis/juvantis-web → sites/juvantis-webseite/ | ⏳ kein Go |
+| 5 | Subsumierung Juvantis-Web-Docs → sites/juvantis-webseite/ (Theme-Klon bleibt) | ✅ 2026-04-19 Session 7 |
 
 ---
 

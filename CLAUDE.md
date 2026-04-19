@@ -54,7 +54,8 @@ nach Phase 5 übernehmen die subsumierten Site-Sprints ihre eigene Nummerierung 
 | Projekt | Zustand | Bezug zu Cortex-Web |
 |---------|---------|---------------------|
 | `sites/praxis-webseite/` (ex `praxis-redesign`) | Sprint 2 aktiv, in Cortex-Web subsumiert 2026-04-19 | Eigenes WORKING_MODE / FEHLERPROTOKOLL / Sprints |
-| `Juvantis/juvantis-web` | produktiv | wird in Phase 5 zu `sites/juvantis-webseite/` |
+| `sites/juvantis-webseite/` | Docs subsumiert 2026-04-19 (Phase 5) | Eigene SESSION_RESUME + SHOPIFY_THEME_POINTER; Theme-Klon bleibt bei `Juvantis/juvantis-web/theme/` |
+| `Juvantis/juvantis-web/theme/` | produktiv, unverändert | Shopify-Theme-Klon, GitHub-Remote Branch `shopify-theme`, Deploy via `sites/juvantis-webseite/shopify-sync.sh` |
 | `Juvantis/DHT`, `Juvantis/social-media` | produktiv | bleiben unter `projects/Juvantis/` |
 | `telegram-bridge` | produktiv | unabhängig |
 
