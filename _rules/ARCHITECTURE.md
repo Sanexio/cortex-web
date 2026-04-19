@@ -190,6 +190,51 @@ Detail: `specs/sprint-0/README.md` + `specs/sprint-0/OPEN_DECISIONS.md`.
 
 ---
 
+## 4b. Cortex-Web — Dach-Projekt (parallel, ab 2026-04-18)
+
+Seit 2026-04-18 existiert das Dach-Projekt **Cortex-Web** (`projects/Cortex-Web/`),
+das praxis-redesign perspektivisch subsumiert. Der Common Trunk hält Content,
+Design-Tokens, UI-Komponenten-Specs und Medien zentral; plattform-spezifische
+Adapter rendern WP-Pages (für praxis-redesign) und Shopify-Sections (für Juvantis).
+
+### Phasen-Plan Cortex-Web (eigene Sessions)
+
+| Phase | Ziel | Wirkung auf praxis-redesign |
+|:---:|------|:----------------------------|
+| T0 | Skelett + Regeln + Nexus | Keine (2026-04-18 ✅) |
+| T1 | POC WP-Adapter: 1 Produkt → WP-Page (neu, neben bestehendem Theme) | Keine (additive Tests in Local WP) |
+| T2 | POC Shopify-Adapter | Keine |
+| T3 | Review & Go/No-Go | Keine |
+| T4 | **Subsumierung praxis-redesign** via `git mv` → `Cortex-Web/sites/praxis-webseite/` | ~30 Min Pause (Pfad-Umzug), Sprint 2 danach dort weiter |
+| T5 | Subsumierung Juvantis-Web | Keine |
+
+### Parallelität in Phasen 0–3
+
+- **Sprint 2 praxis-redesign läuft UNGESTÖRT weiter.** Neue Kernseiten-Arbeiten
+  passieren direkt im Theme `praxiszentrum/`, nicht im Trunk.
+- Nach Phase 3 (Cortex-Web POC erfolgreich): neue Kernseiten werden direkt im
+  Cortex-Web-Trunk erstellt, der WP-Adapter rendert sie.
+- **Sprint 1 bleibt pausiert** bis SFTP-Credentials da sind.
+
+### Nach Phase 4 (Subsumierung)
+
+- Theme-Repo (`praxiszentrum/`) bleibt intakt, nur Docs-Repo wandert via `git mv`
+- Pfad-Referenzen in MEMORY.md, CLAUDE.md, SYSTEM_MAP.md werden aktualisiert
+- Sprint-Nummerierung Sprint 0–4 wird nahtlos in
+  `Cortex-Web/sites/praxis-webseite/_rules/ARCHITECTURE.md` fortgeführt
+
+### Entscheidungshistorie
+
+- `specs/bridge-strategy/00_BRAINSTORMING_KONZEPT.md` — Phase-1-Verständnis (Plattform-Optionen)
+- `specs/bridge-strategy/01_COMMON_TRUNK_LOKALE_ENTWICKLUNG.md` — Phase-2-Lösungsdesign
+- `specs/bridge-strategy/02_ENTSCHEIDUNGEN_FINAL.md` — finale Festlegungen (Name, Struktur, Medien, I18n, Trunk-Tiefe)
+
+Diese drei Dokumente wandern bei Phase 4 mit dem Docs-Repo nach
+`Cortex-Web/sites/praxis-webseite/specs/bridge-strategy/` oder werden hoch-
+promoted nach `Cortex-Web/specs/bridge-strategy/` (Entscheidung bei Phase 4).
+
+---
+
 ## 5. Noch einzuführende Prozess-Artefakte
 
 | Artefakt | Zweck | Status |
