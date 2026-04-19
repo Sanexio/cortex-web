@@ -1,6 +1,6 @@
 # WORKING_MODE — Cortex-Web
 
-> **Architekten-Modus** gilt. Quelle: `projects/praxis-redesign/_rules/WORKING_MODE.md`.
+> **Architekten-Modus** gilt. Quelle: `Cortex-Web/sites/praxis-webseite/_rules/WORKING_MODE.md` (vor Phase-4-Subsumierung am 2026-04-19: `projects/praxis-redesign/_rules/WORKING_MODE.md`).
 >
 > Um Drift zu vermeiden, wird der Modus nicht dupliziert, sondern referenziert.
 > Bei Änderungen am Architekten-Modus: Quelle bearbeiten, hier nur Verweis pflegen.
@@ -15,7 +15,7 @@ Der Architekten-Modus gilt für JEDE Cortex-Web-Session, unabhängig von Phase:
 
 ## Referenzdokument
 
-**→ `~/Cortex/projects/praxis-redesign/_rules/WORKING_MODE.md`**
+**→ `~/Cortex/projects/Cortex-Web/sites/praxis-webseite/_rules/WORKING_MODE.md`**
 
 Enthält:
 - Rollen (Dr. Stracke = Projektleiter, Claude = Architekt)

@@ -6,8 +6,7 @@
 
 ## Status
 
-**Phase 0 abgeschlossen** (Skelett, Konfig, Regel-Infrastruktur, Nexus-Eintragung).
-Nächste Phase: POC WordPress-Adapter. Siehe `SESSION_RESUME.md` für Status.
+**Phasen 0–4 abgeschlossen.** Phase 4 (Subsumierung praxis-redesign → `sites/praxis-webseite/`) am 2026-04-19. Siehe `SESSION_RESUME.md` für aktuellen Status.
 
 ## Struktur (Kurz)
 
@@ -24,7 +23,7 @@ _rules/       ← Architektur, Pre-Flight, Working-Mode-Referenz
 ## Einstieg
 
 - Neue Session: „Projekt fortsetzen" im Chat → lädt Pflicht-Init + `SESSION_RESUME.md`.
-- Entscheidungshistorie: `projects/praxis-redesign/specs/bridge-strategy/` (00/01/02).
+- Entscheidungshistorie: `Cortex-Web/specs/bridge-strategy/` (00/01/02, seit Phase 4 hier).
 
 ## Architektur-Prinzipien (Kurz)
 

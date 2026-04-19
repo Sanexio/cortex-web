@@ -1,7 +1,7 @@
 # POC_WP_ADAPTER — Phase 1 Spec
 
 > **Status:** Lösungsdesign (Architekten-Modus Phase 2), wartet auf Freigabe.
-> **Vorgänger-Entscheidungen:** `projects/praxis-redesign/specs/bridge-strategy/02_ENTSCHEIDUNGEN_FINAL.md`
+> **Vorgänger-Entscheidungen:** `Cortex-Web/specs/bridge-strategy/02_ENTSCHEIDUNGEN_FINAL.md` (vor Phase 4: `projects/praxis-redesign/specs/bridge-strategy/02_ENTSCHEIDUNGEN_FINAL.md`)
 > **Phase:** 1 von 5 (ARCHITECTURE.md §3)
 > **Erstellt:** 2026-04-18
 > **Scope:** 1 Produkt aus Trunk → 1 WP-Page auf Local-WP, HWG-konform, idempotent.

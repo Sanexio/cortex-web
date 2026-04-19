@@ -1,6 +1,6 @@
 # ARCHITECTURE — Cortex-Web
 
-> Lebendes Dokument. Stand: 2026-04-19 nach Phase 3 (Review abgeschlossen, Phase 4 freigegeben).
+> Lebendes Dokument. Stand: 2026-04-19 nach Phase 4 (Praxis subsumiert).
 
 ---
 
@@ -84,7 +84,7 @@ Juvantis-Kern (`DHT/`, `social-media/`) bleibt unter `projects/Juvantis/`.
 | **2 (Setup)** | Shopify Custom App + Admin-API-Token | 3 | ✅ 2026-04-18 | Commit `48c4170`, OAuth-Catcher + Authorize-Script |
 | **2 (Adapter)** | POC Shopify-Adapter: gleiches Produkt → Draft | 4 | ✅ 2026-04-19 | Commit `7d6f665`, 12/12 AK, Trunk-Master via Roundtrip nachgewiesen |
 | **3** | Review — trägt der Ansatz? | 5 | ✅ 2026-04-19 | Commit `98d1f67`, 12/12 AK, 6 Dimensionen automatisiert, Dr. Stracke Go für Phase 4 |
-| **4** | Praxis-Subsumierung: `praxis-redesign/` → `sites/praxis-webseite/` | tbd | 🔜 freigegeben | `git mv`, eigene Session, Pflicht-Init inkl. praxis-redesign |
+| **4** | Praxis-Subsumierung: `praxis-redesign/` → `sites/praxis-webseite/` | 6 | ✅ 2026-04-19 | `git subtree add` (E1a, alle 13 Commits erhalten); bridge-strategy nach `Cortex-Web/specs/bridge-strategy/` (3b); `THEME_POINTER.md` für Local-WP-Theme (2a) |
 | **5** | Juvantis-Subsumierung: `Juvantis/juvantis-web/` → `sites/juvantis-webseite/` | tbd | ⏳ | `git mv`, noch kein Go |
 
 **Wichtig:** Phasen sind in separaten Sessions abzuschließen. Jede Phase endet mit
@@ -109,15 +109,16 @@ Git-Historien bleiben erhalten.
 
 ## 5. Entscheidungshistorie
 
-Die drei Strategie-Dokumente:
+Die drei Strategie-Dokumente liegen seit Phase 4 (2026-04-19, Entscheidung 3b)
+hier im Dach-Projekt:
 
-- `projects/praxis-redesign/specs/bridge-strategy/00_BRAINSTORMING_KONZEPT.md` — Phase-1-Verständnis
-- `projects/praxis-redesign/specs/bridge-strategy/01_COMMON_TRUNK_LOKALE_ENTWICKLUNG.md` — Phase-2-Lösungsdesign
-- `projects/praxis-redesign/specs/bridge-strategy/02_ENTSCHEIDUNGEN_FINAL.md` — finale Entscheidungen
+- `Cortex-Web/specs/bridge-strategy/00_BRAINSTORMING_KONZEPT.md` — Phase-1-Verständnis
+- `Cortex-Web/specs/bridge-strategy/01_COMMON_TRUNK_LOKALE_ENTWICKLUNG.md` — Phase-2-Lösungsdesign
+- `Cortex-Web/specs/bridge-strategy/02_ENTSCHEIDUNGEN_FINAL.md` — finale Entscheidungen
 
-Liegen physisch noch in praxis-redesign, weil die Entscheidungen DORT begonnen haben.
-Bei Phase 4 wandern sie nach `sites/praxis-webseite/specs/bridge-strategy/` oder — besser —
-nach `Cortex-Web/specs/bridge-strategy/` (Architektur-Dokumente gehören zum Dach).
+Sie wurden ursprünglich in praxis-redesign begonnen, weil die Entscheidungen
+dort entstanden — aber konzeptionell betreffen sie das Dach (beide Sites),
+deshalb hochpromotet.
 
 ---
 

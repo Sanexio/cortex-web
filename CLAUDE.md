@@ -22,7 +22,7 @@ Design-Tokens, Medien.
 
 ## Arbeitsprinzip — Architekten-Modus
 
-Es gilt der **Architekten-Modus aus `projects/praxis-redesign/_rules/WORKING_MODE.md`**
+Es gilt der **Architekten-Modus aus `sites/praxis-webseite/_rules/WORKING_MODE.md`**
 (FK-1…FK-5, 4-Phasen-Prozess: Verständnis → Lösungsdesign → Umsetzung → Selbstprüfung).
 Keine Umsetzung ohne Spec. Keine Spec ohne Freigabe.
 
@@ -38,7 +38,7 @@ Bei Überschneidung: Architekten-Modus hat Vorrang vor Explorations-/Mitdenk-Imp
 6. `Cortex-Web/SESSION_RESUME.md`
 7. `Cortex-Web/_rules/ARCHITECTURE.md`
 8. `Cortex-Web/_config/RULES.md`
-9. `projects/praxis-redesign/_rules/WORKING_MODE.md` (Architekten-Modus)
+9. `sites/praxis-webseite/_rules/WORKING_MODE.md` (Architekten-Modus)
 
 Phasen-spezifisch (siehe SESSION_RESUME.md):
 - Phase 1/2 POC: zusätzlich `trunk/schema/product.schema.json` und das POC-Produkt
@@ -53,7 +53,7 @@ nach Phase 5 übernehmen die subsumierten Site-Sprints ihre eigene Nummerierung 
 
 | Projekt | Zustand | Bezug zu Cortex-Web |
 |---------|---------|---------------------|
-| `praxis-redesign` | Sprint 2 aktiv | wird in Phase 4 zu `sites/praxis-webseite/` |
+| `sites/praxis-webseite/` (ex `praxis-redesign`) | Sprint 2 aktiv, in Cortex-Web subsumiert 2026-04-19 | Eigenes WORKING_MODE / FEHLERPROTOKOLL / Sprints |
 | `Juvantis/juvantis-web` | produktiv | wird in Phase 5 zu `sites/juvantis-webseite/` |
 | `Juvantis/DHT`, `Juvantis/social-media` | produktiv | bleiben unter `projects/Juvantis/` |
 | `telegram-bridge` | produktiv | unabhängig |
