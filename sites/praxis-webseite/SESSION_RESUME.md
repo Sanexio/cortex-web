@@ -30,9 +30,10 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-19 nach S2.0b Komponenten-Bibliothek)
+## §1 Stand & Version (gültig: 2026-04-19 Ende Session 13 nach S2.0f)
 
-- **PXZ_VERSION:** **2.7.8** live auf Local by Flywheel (Cluster-Mini-02). Stand: Schicht 3 (Components) eingezogen per `assets/css/components.css` mit 6 Blöcken (§1 Container, §2 Typografie 11 Klassen, §3 Buttons 11 Varianten, §4 Section-Wrapper `.pxz-sect*` + Alias `.pxz-section*`, §5 Card, §6 Hero-Basis). `functions.php`: `pxz-components` global zwischen `praxiszentrum` und page-CSS enqueued, alle 10 page-CSS depend auf `pxz-components`. **Home MD5-Null-Delta verifiziert** auf 3 Viewports (1440/768/430). **Karriere −9 px** am `.wpforms-submit`-Button durch WCAG-compliantes `min-height: 44px` + `line-height: 1` aus generischer `.pxz-btn`-Komponente (Accessibility-Gewinn, dokumentiert in `specs/sprint-2/evidence/2026-04-19_s2.0b_md5-diff.md`). In-Session-Fix S2.0b-LL-1 (page-scope Overrides für `.pxz-eyebrow` + `.pxz-sect-intro` in homepage.css, Spez 0,2,0). Theme-Commits: `08f40ff` (feat components+enqueue+version+changelog) + `8f596f7` (refactor homepage-trim+specificity-fix).
+- **PXZ_VERSION:** **2.7.8** live auf Local by Flywheel (Cluster-Mini-02). **Unverändert seit S2.0b** — S2.0e (Verify-Hardening) und S2.0f (Santapress-Plugin-Entfernung) haben das Theme nicht angefasst. Theme-HEAD: `8f596f7`. Stand des Themes wie nach S2.0b: Schicht 3 (Components) per `assets/css/components.css` mit 6 Blöcken eingezogen, globaler Enqueue zwischen `praxiszentrum` und page-CSS, Home MD5-Null-Delta verifiziert, Karriere −9 px WCAG-Accessibility-Gewinn (dokumentiert). Theme-Commits: `08f40ff` (feat components) + `8f596f7` (refactor specificity-fix).
+- **S2.0f-Abschluss (Session 13):** Santapress-Plugin aus Local-WP entfernt (`wp_options.active_plugins` 26 → 25, Rewrite-Rules 13085 → 10979 Bytes, `wp_posts`-Count identisch vor/nach = 2860). Plugin archiviert in `_archive/santapress-2026-04-19/` mit Verfallsdatum **2026-05-19**. Neues Tool `tools/smoke-http.sh` (5 URLs × HTTP 200, 5xx-Fail-Regel). 6/6 AKs grün. Cortex-Web-Commits: `e036328` (Spec) + `a6cc6f3` (Tool+Evidenz+Self-Check) + `ced4e0a` (.gitignore-Hygiene).
 - **Design-Autorität:** `DESIGN_GUIDELINES.md` v3.0 (§0 Cortex-DS-Backstop, §2 4-Schichten, §7 Spacing konsolidiert, §17 Austausch-Protokoll). Ältere Versionen in `DESIGN_GUIDELINES.v2.3.md` archiviert.
 - **Cortex-DS-Backstop-Artifact:** `design-system/Cortex-Design-System.html` (git-trackbar, MD5 `c36b8cac63c2de3538a94ee74412e269`).
 - **Site-Root:** `/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/`
@@ -40,13 +41,13 @@
 - **Child-Theme:** `wp-content/themes/praxiszentrum/`
 - **Homepage + Karriere** weiter abgenommen; S2.0c ist Architektur-Infra ohne Optik-Änderung, visuelle v2.7.5-Abnahme bleibt gültig.
 
-### Sprint-Status (Stand 2026-04-19 Ende Session 10)
+### Sprint-Status (Stand 2026-04-19 Ende Session 13)
 
 | Sprint | Status | Kommentar |
 |---|---|---|
 | Sprint 0 — Foundation | ✅ abgeschlossen | |
 | **Sprint 1 — Rollout-Infrastruktur** | ⏸ **PAUSIERT (bewusst)** | SFTP-Credentials liegen vor (`.env.sprint1.local` gefüllt, 2026-04-19 09:24). Dr. Stracke hat explizit entschieden: **„zuerst Design und Content"** (Cortex-Web SESSION_RESUME §4 P0). Sprint 1 erst nach Kernseiten. |
-| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🟢 **aktiv, S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅ + S2.0b ✅** | S2.0 (Token-SSoT 2-Schicht, v2.7.5) + S2.0c (4-Schichten + Cortex-DS, v2.7.6) + S2.1 (Seiten-Inventar, 27 Einträge) + S2.2 (Template-Typologie, 8 Skelett-Templates, v2.7.7) + **S2.0b (Komponenten-Bibliothek `components.css`, 6 Blöcke, globaler Enqueue, v2.7.8, Home MD5-Null-Delta, Karriere -9px WCAG-Accessibility-Gewinn, 10/12 AKs, Theme-Commits `08f40ff`+`8f596f7`, Cortex-Web-Commits `2056e3e`+`df50333`) abgeschlossen 2026-04-19.** Offen: **S2.3 Content-Batches freigeschaltet** (Batch B/C/G frei verfügbar; Batch A blockiert durch Rechtssicherheitsquelle), S2.0e Mini (verify.sh §3b + erweiterter Split-Check, schließt AK-8+AK-10), S2.0d Mini (`kar`→`karriere`-Rename + Legacy-Alias-Abbau), S2.4 Menü, S2.5 QA-Audit. |
+| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🟢 **aktiv, S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅ + S2.0b ✅ + S2.0e ✅ + S2.0f ✅** | S2.0 + S2.0c (Design-System) + S2.1 (Inventar) + S2.2 (Skelett-Templates) + **S2.0b (Komponenten-Bibliothek v2.7.8, 12/12 AKs nach S2.0e-Nachtrag)** + **S2.0e (Verify-Hardening: tools/verify.sh §1b+§3b, 8/8 AKs, Cortex-Web `88290b0`+`6352b1e`)** + **S2.0f (Santapress-Plugin-Entfernung, 6/6 AKs, Cortex-Web `e036328`+`a6cc6f3`+`ced4e0a`, Archive bis 2026-05-19) abgeschlossen 2026-04-19.** Offen: **S2.3 Content-Batches** (Batch B/C/G frei verfügbar, alle Vorbedingungen da; Batch A blockiert durch Rechtssicherheitsquelle), S2.0d Mini (`kar`→`karriere`-Rename), S2.4 Menü, S2.5 QA-Audit. |
 | Sprint 2b — Legacy-Content-Migration | ⏳ nach Sprint 2 | 172 Legacy-Seiten. |
 | Sprint 3 — Mehrsprachigkeit (WPML) | ⏳ geplant | |
 | Sprint 4 — Go-Live (SEO/Schema/Cut-Over) | ⏳ geplant | |
@@ -83,11 +84,16 @@ d7f797d  docs(sprint-2/s2.1): page-inventory.md mit 27 Einträgen + self-check 8
 ## §2 Pre-Flight-Befehl
 
 ```bash
-cd ~/Cortex/projects/praxis-redesign && tools/verify.sh
+cd ~/Cortex/projects/Cortex-Web/sites/praxis-webseite && bash tools/verify.sh
 ```
 
-Erwartet: Exit 0. Prüft §1 Split-Check + §2 Reset-Scope + Screenshots +
-§3 Computed-Style-Probe + §4 Alignment-Probe (PXZ-E-008).
+Erwartet: Exit 0. Prüft §1 Split + §1b Split-Paar-Check (S2.0e) + §2 Reset + §3 Computed-Style 54/54 + §3b Component-Probe 8+2 (S2.0e) + §4 Alignment 10/10 (PXZ-E-008).
+
+**Zusätzlich nach Infrastruktur-Eingriff (Plugin-Entfernung, Rewrite-Rules):**
+```bash
+cd ~/Cortex/projects/Cortex-Web/sites/praxis-webseite && bash tools/smoke-http.sh
+```
+Erwartet: Exit 0, keine 5xx, 5 URLs gecheckt (Home, Karriere, wp-login, feed, search).
 
 Nach jeder CSS-Änderung **zusätzlich**:
 ```bash
@@ -101,50 +107,22 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 ## §3 Sofort-Status-Frage an Dr. Stracke (Architekten-Stil)
 
-Nach Pflicht-Init + Pre-Flight grün, fragt Claude:
+Praxis-Sub-Site-Einstieg läuft standardmäßig über Cortex-Web-Dach („Projekt fortsetzen Cortex-Web"). Die vollständige Status-Frage lebt in `projects/Cortex-Web/SESSION_RESUME.md §6`. Kurzfassung für Direkteinstieg:
 
-> „Sprint 2 / S2.0b Komponenten-Bibliothek ist ✅ abgeschlossen — Schicht 3
-> (Components) per `assets/css/components.css` eingezogen (6 Blöcke: Container,
-> Typografie, Buttons, Section `.pxz-sect*`/`.pxz-section*`, Card, Hero-Basis),
-> globaler Enqueue zwischen `praxiszentrum` und page-CSS, PXZ_VERSION 2.7.8.
-> Home MD5-Null-Delta verifiziert (3/3 MATCH auf 1440/768/430). Karriere −9 px
-> am `.wpforms-submit` (WCAG-Accessibility-Gewinn: `min-height: 44px` +
-> `line-height: 1`, dokumentiert). In-Session-Fix S2.0b-LL-1: `.pxz-eyebrow`
-> und `.pxz-sect-intro` verloren margins durch Spezifitäts-Kollision mit
-> `.pxz-home :where(p)`-Reset; page-scope Overrides in homepage.css haben das
-> gefixt. 10/12 AKs grün (AK-8 + AK-10 verify.sh-Erweiterung auf S2.0e
-> verschoben). 5 Lessons Learned. Theme-Commits `08f40ff`+`8f596f7`,
-> Cortex-Web-Commits `2056e3e`+`df50333`. 2 neue Patterns + Tutorial 12 in Nexus.
+> „Sprint 2 / S2.0f Santapress-Plugin-Entfernung ist ✅ abgeschlossen — Plugin aus Local-WP entfernt, Rewrite-Rules regeneriert, keine Regression (verify.sh + smoke-http.sh grün), Archive bis 2026-05-19. Theme unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). 6/6 AKs, 5 Lessons. Welche Front?
 >
-> S2.3 Content-Batches sind nun **freigeschaltet** (Skelett-Templates aus S2.2
-> + Komponenten-Bibliothek aus S2.0b stehen beide). Welche Front?
->
-> A. **S2.3 Batch B — Praxis + Team + 404** (empfohlen, frei verfügbar,
->    3 P0-Seiten mit Echt-Content, Spec `specs/sprint-2/S2.3-B_praxis-team-404.md`
->    neu schreiben).
-> B. **S2.3 Batch C — Fachrichtungen-Landing + Ärzte-Übersicht** (2 P0,
->    Card-Grid).
+> A. **S2.3 Batch B — Praxis + Team + 404** (Hauptlinie, alle Vorbedingungen stehen, 3 P0-Seiten mit Echt-Content, neue Spec `specs/sprint-2/S2.3-B_praxis-team-404.md` im Architekten-Modus).
+> B. **S2.3 Batch C — Fachrichtungen-Landing + Ärzte-Übersicht** (2 P0, Card-Grid).
 > C. **S2.3 Batch G — Sprechstunden + Kontakt** (2 P0, Doctolib-Workaround).
-> D. **S2.0e Mini** (empfohlen vor S2.3, ~30 min) — verify.sh §3b Component-
->    Probe auf Draft-Testseite + erweiterter Split-Check; schließt die 2 auf
->    S2.0e verschobenen AKs.
-> E. **S2.0d Mini** — `kar`→`karriere`-Rename + Semantic-Token
->    `--pxz-space-card-padding-sm` nachziehen + Legacy-Alias-Audit.
-> F. **S2.3 Batch A — Datenschutz + Impressum** — **blockiert** durch
->    Rechtssicherheits-Quelle (Anwalt / e-recht24 / Prod-Text).
-> G. **Strukturhygiene-Block** — SESSION_START.md-Legacy-Pfade + 5 Plugin-
->    Phantom-Templates aufräumen.
-> H. **Sprint 1 reanimieren** — SFTP-Credentials sind da (seit 2026-04-19).
->    Staging-Setup aktivierbar, aber Design-first-Direktive gilt noch.
-> I. **Andere konkrete Änderung** — Sie nennen."
+> D. **S2.0d Mini** — `kar`→`karriere`-Rename + Semantic-Token nachziehen + Legacy-Alias-Audit.
+> E. **S2.3 Batch A — Datenschutz + Impressum** — **blockiert** durch Rechtssicherheits-Quelle.
+> F. **Strukturhygiene-Block** — SESSION_START.md-Legacy-Pfade + 5 Plugin-Phantom-Templates aufräumen.
+> G. **Sprint 1 reanimieren** — SFTP-Credentials seit 2026-04-19 verfügbar, Design-first-Direktive gilt aber.
+> H. **Andere konkrete Änderung** — Sie nennen."
 
 Keine Code-Änderung vor expliziter Wahl.
 
-**Empfohlener Default:** A (S2.3 Batch B). Begründung: das Komponenten-Fundament
-steht jetzt stabil, und Batch B (Praxis + Team + 404) ist der natürliche
-Content-Einstieg (3 P0-Seiten ohne Blocker). Alternativ D (S2.0e Mini) davor,
-falls die zwei verschobenen AKs zuerst geschlossen werden sollen. B/C/E sind
-jederzeit freie Einstiegspunkte.
+**Architekten-Tendenz:** A (S2.3 Batch B) — alle Vorbedingungen stehen (Skelette S2.2, Komponenten S2.0b, Verify-Hardening S2.0e, Plugin-Interferenz entfernt S2.0f). Content-Momentum aufbauen. Batch B ist ein Mehr-Session-Kandidat, deshalb sinnvollerweise mit frischem Chat beginnen.
 
 ---
 
@@ -162,6 +140,24 @@ jederzeit freie Einstiegspunkte.
 ---
 
 ## §5 Letzte Session — Was wurde erledigt
+
+### Session 13 — 2026-04-19 — Sprint 2 / S2.0f Santapress-Plugin-Entfernung
+
+**Auftrag Dr. Stracke:** „Projekt fortsetzen Cortex-Web" → „Wir starten so, wie es für dich am sinnvollsten erscheint" → Claude-Wahl: Option D (Santapress-Entfernung vor S2.3 Batch B).
+
+**Phase-1-Wahl (F1–F4):** F1a (S2.0f in Sprint 2), F2c (Archive-Then-Delete statt Hard-Delete — Gegenvorschlag von Claude, Dr. Stracke zugestimmt), F3b (verify.sh + HTTP-Smoke), F4a (volle Spec).
+
+**Phase-2-Wahl (F5–F7):** an Claude delegiert. Entscheidungen: F5b-modifiziert (5xx-Fail-Regel, 5 URLs), F6b (Verfallsdatum 2026-05-19), F7b (wp_posts-Paranoia-Snapshot).
+
+**Phase 3 Umsetzung (T1–T8):** Pre-Condition-Snapshot → Hook-Dependency-Audit (0 externe Referenzen) → `active_plugins` via mysqli-prepared (26 → 25) → Plugin-Ordner nach `_archive/santapress-2026-04-19/` → Rewrite-Rules DELETE + Warmup (13085 → 10979 Bytes) → `smoke-http.sh` neu angelegt + verify.sh Komplett-Lauf beide grün → Self-Check 6/6 → Cortex-Web-Commits `e036328` + `a6cc6f3` + `ced4e0a`.
+
+**Phase 4 Selbstprüfung:** 6/6 AKs grün. F7b-Paranoia bestätigt: `wp_posts`-Count vor/nach identisch (2860, Delta=0 je post_status) → kein `deactivation_hook`-Schaden. 5 Lessons Learned S2.0f-LL-1…5 (in Pattern `wp-plugin-safe-removal.md` + Tutorial 14).
+
+**Theme unberührt:** HEAD `8f596f7`, PXZ_VERSION `2.7.8` unverändert. S2.0f war reiner Local-WP-Infrastruktur-Eingriff, kein CSS/PHP-Touch am Theme.
+
+### Session 12 — 2026-04-19 — Sprint 2 / S2.0e Verify-Hardening (Kurz)
+
+`tools/verify.sh` um §1b `grep_split_css()` + §3b `component_probe()` (zweistufige Bash-Probe) erweitert. Architektur-Pivot während Umsetzung: ursprüngliche DOM-Probe auf Draft-Page scheiterte an WP-Rewrite-Rule-Grenze (Santapress-Interferenz) → Bash-Probe architektonisch sauberer (Code-Korrektheit vs. Integrations-Korrektheit). S2.0b-Self-Check rückwirkend auf 12/12 angehoben. 8/8 AKs. Cortex-Web `88290b0`+`6352b1e`. Tutorial 13, Pattern `verify-probe-code-vs-integration.md`.
 
 ### Session 11 — 2026-04-19 — Sprint 2 / S2.0b Komponenten-Bibliothek (v2.7.8)
 
