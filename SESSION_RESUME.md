@@ -40,14 +40,14 @@
 ## §1 Stand & Version
 
 - **Version:** `0.6.0` — Cortex-Web-Aufbau (Phase 0–5) ✅ vollständig
-- **Stand:** 2026-04-19, **Session 8 abgeschlossen** (Praxis-Sprint 2 / S2.0c)
+- **Stand:** 2026-04-19, **Session 9 abgeschlossen** (Praxis-Sprint 2 / S2.1 Seiten-Inventar)
 - **Working Tree:** clean
 - **Cortex-Web-Aufbau (Phase 0–5):** ✅ **vollständig**
 - **Trunk-Content:** unverändert, 1 Produkt (`basic-check.yaml`)
 - **WP-Adapter:** Phase 1, idempotent, HWG-konform, Review-geprüft
 - **Shopify-Adapter:** Phase 2, idempotent, draft-only, Review-geprüft
 - **Review-Pipeline:** Phase 3, 11/11 automatische AKs grün
-- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`c4f18ba`** (**PXZ_VERSION 2.7.6**, S2.0c Design-System-Konsolidierung). Design-Autorität: `DESIGN_GUIDELINES.md` v3.0 (§0 Cortex-DS-Backstop, §2 4-Schichten, §7 konsolidiert, §17 Austausch-Protokoll). Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ abgeschlossen 2026-04-19; S2.1 Seiten-Inventar Spec freigegeben, wartet auf Umsetzung in nächster Session.
+- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`c4f18ba`** (**PXZ_VERSION 2.7.6**). Design-Autorität: `DESIGN_GUIDELINES.md` v3.0. Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ + **S2.1 ✅** (Seiten-Inventar, 27 Einträge, Cortex-Web-Commit `d7f797d`, 8/8 AKs grün). Nächste Praxis-Fronten: S2.2 Template-Typologie ODER S2.3 Batch A Legal (blockiert).
 - **Juvantis-Site:** `sites/juvantis-webseite/` (Docs-Schicht), Theme-Pointer auf Commit `1fbc35b` (GitHub-Remote `shopify-theme`)
 
 ### §1.1 Phasen-Status
@@ -102,11 +102,61 @@ cd ~/Cortex/projects/Cortex-Web && bash tools/review.sh
 ```
 Erwartet: `AK automatisch: 11/11 grün`, Exit 0.
 
-**Stand Ende Session 7:** alle vier grün (validate, CHECK_SHOPIFY, theme-Klon-HEAD `1fbc35b`, status clean).
+**Stand Ende Session 9:** validate ✅, verify.sh (Praxis) ✅, working tree clean nach Commit `d7f797d`.
 
 ---
 
-## §3 Letzte Session — Session 7, 2026-04-19
+## §3 Letzte Session — Session 9, 2026-04-19
+
+### Ziel
+Praxis-Sprint 2 / S2.1 Seiten-Inventar umsetzen. Spec `S2.1_page-inventory.md` war
+in Session 8 freigegeben, Entscheidungen E1-Hybrid+SEO · E2a · E3a · E4c getroffen.
+
+### Durchgeführt (Architekten-Modus 4 Phasen)
+1. **Pflicht-Init:** Nexus + Cortex-Web + Praxis-SESSION_RESUME gelesen.
+   Dr. Stracke-Wahl: „ich überlasse dir die entscheidung" → Option A (S2.1) autonom gewählt.
+2. **Pre-Flight:** `tools/validate.sh` ✅. Praxis `tools/verify.sh` ✅ (Exit 0, alle 4 Checks).
+3. **Phase 1 Verständnis** im Chat kommuniziert: Zielzustand / Constraints / §8-Freigabe-Fragen geklärt.
+4. **Phase 2:** Spec war schon freigegeben — keine neue Spec-Runde nötig.
+5. **Phase 3 Umsetzung:**
+   - Sitemap-Abgleich `westend-hausarzt.com/page-sitemap.xml` → URL-Liste + Architektur-Befund (keine Fachrichtungen auf Prod, Dr.-Stracke-Arzt-Profil einziges live Arzt-Profil).
+   - `specs/sprint-2/page-inventory.md` mit 27 Zeilen × 9 Pflicht-Spalten geschrieben (8 Kern + 9 Fachrichtungen + 9 Ärzte + 1 Karriere, 10× P0 / 17× P1).
+   - Ableitungs-Abschnitte für S2.2 (Template-Häufigkeit), S2.3 (Batch A–G), S2.4 (Menü), S2.5 (QA) mitgeliefert.
+   - Offene Folgeentscheidung Nr. 6 neu hinzugefügt (Datenschutz-Dublette `/datenschutzerklaerung-2/` auf Prod).
+   - arzt-7 mit Prod-URL Dr. Stracke vorgefüllt (Vermutungs-Flag, zu bestätigen in S2.3 Batch D).
+6. **Phase 4 Selbstprüfung:** `evidence/2026-04-19_s2.1_self-check.md` mit 8/8 AKs grün.
+7. **Commit:** Cortex-Web `d7f797d` — 6 Dateien, +200 Zeilen. Kein Push (b=1 aus Sprint 0).
+8. **„Session beenden"-Workflow LL-042:**
+   - Schritt 1: Projekt-Audit — clean tree, keine Backups, verify + validate grün. **Warnung:** `sites/praxis-webseite/SESSION_START.md` hat 5 Legacy-Pfad-Referenzen auf `projects/praxis-redesign/` aus Pre-Phase-4 (siehe §4 Offene Tasks P3 / §7 unten).
+   - Schritt 2: Nexus-Audit — Cortex-Web in devices.json ✅; MEMORY.md + SYSTEM_MAP.md + CLAUDE.md hatten Session 8+9 + Version 2.7.6 noch nicht aktualisiert.
+   - Schritt 3: Pattern-Optimierung — neues Pattern `Nexus/_memory/patterns/page-inventory.md` angelegt (7-Schritte-Ablauf, Lessons S2.1-LL-1…5). Nexus-Architektur-Aktualisierung: SYSTEM_MAP Stand-Zeile, MEMORY.md Projekt-Zeile + Pattern-Katalog + Pfad-Referenz-Tabelle (neu: Seiten-Inventar-Eintrag, neu: Tutorial 10), CLAUDE.md Sessions 7+8+9 ergänzt.
+   - Schritt 4: Tutorial-Update — `Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/10-seiten-inventar-website-relaunch.md` angelegt (didaktisch für Dr. Stracke).
+   - Schritt 5: diese Datei finalisiert.
+
+### Verifiziert (AK-Tabelle aus Self-Check)
+| AK | Status | Evidenz |
+|---|:---:|---|
+| AK-1 | ✅ | page-inventory.md existiert (9826 B) |
+| AK-2 | ✅ | 27 Zeilen in Inventar-Tabellen-Scope |
+| AK-3 | ✅ | Alle §2.6-Pflicht-Seiten inventarisiert |
+| AK-4 | ✅ | Keine leeren Pflichtspalten |
+| AK-5 | ✅ | Theme-Repo unverändert |
+| AK-6 | ✅ | verify.sh Exit 0 |
+| AK-7 | ✅ | Home/Impressum/Datenschutz/Kontakt/404 alle P0 |
+| AK-8 | ✅ | 6 offene Folgeentscheidungen + arzt-7/8 TBD-Flag dokumentiert |
+
+**Score: 8/8 = 100 %**
+
+### Lessons Learned (S2.1-LL-1…5 — ins Pattern übernommen)
+- **S2.1-LL-1:** Sitemap (`page-sitemap.xml`) als Pre-Check statt Content-Crawl — Architektur-Diagnose ohne Scope-Verletzung.
+- **S2.1-LL-2:** Spec-Zähl-Mehrdeutigkeiten (Team vs. Ärzte-Übersicht) explizit auflösen und im Self-Check begründen.
+- **S2.1-LL-3:** TBD-Zeilen dürfen Vermutungs-Vorbefüllungen aus Sitemap-Analyse bekommen — aber nur mit explizitem Vermutungs-Flag.
+- **S2.1-LL-4:** Ableitungs-Abschnitte im Inventar-File sparen dem Folge-Sprint die Phase-1-Arbeit.
+- **S2.1-LL-5:** Architektur-Diskrepanzen gehören auf die betroffene Inventar-Zeile, nicht nur in die Spec.
+
+---
+
+## §3a Letzte Session — Session 7, 2026-04-19
 
 ### Ziel
 Phase 5 (Juvantis-Web-Subsumierung) deterministisch ausführen — `Juvantis/juvantis-web/{shopify-sync.sh, shopify_export, knowledge-graph}` →
@@ -184,17 +234,32 @@ Shopify-Theme-Klon, ohne Eingriff in Theme-Repo oder Live-Site.
 
 ## §4 Offene Tasks (Priorität absteigend)
 
-### P0 — Praxis-Redesign fortsetzen (Dr. Stracke explizit angekündigt)
+### P0 — Praxis-Sprint 2 fortsetzen (Dr. Stracke-Direktive „zuerst Design und Content" bleibt)
 
-**Dr. Stracke: „machen wir mit dem Redesign der Webpage weiter; FTP-Daten
-habe ich mittlerweile; wir machen aber trotzdem zuerst Design und Content."**
+S2.1 Inventar ist abgeschlossen. Nächste Front in Sprint 2:
 
-Einstieg: **Praxis-Sprint 2 / S2.1 — Seiten-Inventar & Content-Audit.**
+**P0a — S2.2 Template-Typologie (empfohlen, direkt anschlussfähig)**
 - Pfad: `sites/praxis-webseite/`
-- Sprint-1-Reanimation (SFTP/Staging) bewusst zurückgestellt, obwohl
-  Credentials vorliegen — Design + Content zuerst.
-- Befehl nächste Session: `„Projekt fortsetzen Cortex-Web"` → Option A
-  (oder direkt `„Projekt fortsetzen praxis-webseite"` für tieferen Einstieg).
+- Input liegt: Template-Häufigkeits-Tabelle im Inventar §„Ableitungen für Folge-Sprints".
+- Neue PHP-Templates anzulegen (Schätzung): `template-standard.php`, `template-sprechstunden.php`, `template-kontakt.php`, `template-fachrichtung-landing.php`, `template-fachrichtung.php`, `template-team.php`, `template-arzt.php`, `404.php`.
+- Architekten-Modus: Spec `specs/sprint-2/S2.2_templates.md` neu zu schreiben und freizugeben.
+
+**P0b — S2.3 Batch A Datenschutz + Impressum (blockiert)**
+- Vorbedingung: **offene Folgeentscheidung Nr. 1** — Rechtssicherheits-Quelle (Anwalt / e-recht24-ähnlicher Generator / Prod-Übernahme).
+- Dr.-Stracke-Entscheidung steht aus. Sobald getroffen, kann die Batch-A-Spec geschrieben werden.
+
+### P1 — Juvantis-Web-Trunk-Content-Ausbau (mittelfristig)
+Weitere YAML-Produktquellen in `trunk/content/products/` (Body Checks,
+Bluttests, DHT). Jedes Produkt via `adapters/shopify/` als Draft rendern,
+Admin-Freigabe. Nicht blockiert.
+
+### P2 — Phase 2b Medien-Pipeline (verschoben)
+Medien-Trunk + Shopify-Files-Upload + `_media-source/`-Registry.
+Kandidat parallel zu Praxis-Sprint 2.
+
+### P3 — Nachschärfungen Strukturhygiene
+- **Sprint 2b anvisieren:** 172 Legacy-Prod-Seiten (Posts, Aktionen, mehrsprachige Dubletten inkl. `/datenschutzerklaerung-2/`) nach Go-Live.
+- **Offener struktureller Punkt für Dr. Stracke:** `sites/praxis-webseite/SESSION_START.md` hat 5 Legacy-Pfad-Referenzen auf `projects/praxis-redesign/` (vor Phase 4). Inhalt redundant mit SESSION_RESUME.md. Vorschlag analog zur NEXT_SESSION_PROMPT-Regel in `Nexus/_rules/SESSION_LIFECYCLE.md` §3: zu 1-Zeilen-Pointer auf SESSION_RESUME.md reduzieren ODER löschen. **Keine eigenmächtige Durchführung** — entscheidet Dr. Stracke in der nächsten Session.
 
 ### P1 — Juvantis-Web-Trunk-Content-Ausbau (mittelfristig)
 Weitere YAML-Produktquellen in `trunk/content/products/` (Body Checks,
@@ -230,27 +295,35 @@ Items 14–16 aus §0 oben.
 
 ## §6 Sofort-Status-Frage für nächste Session
 
-> **„Praxis-Sprint 2 / S2.0c (Design-System-Konsolidierung) abgeschlossen —
-> 12/12 AKs grün, 3 Commits, PXZ_VERSION 2.7.6 live, `DESIGN_GUIDELINES.md`
-> v3.0 als einzige Design-Autorität mit Cortex-DS als §0-Backstop, 4-Schichten-
-> Token-Modell verankert, Tutorial 09 geschrieben, Cortex-DS-Artifact
-> git-trackbar im Repo. MD5-Null-Delta im 3-Weg-Beweis bestätigt.**
+> **„Praxis-Sprint 2 / S2.1 Seiten-Inventar ist ✅ abgeschlossen — 27 Einträge
+> (10× P0, 17× P1), 8/8 AKs grün, Commit `d7f797d`. Sitemap-Befund:
+> Prod-Site hat keine Fachrichtungen-Struktur, Dr. Stracke ist das einzige
+> live Arzt-Profil. Ableitungen für S2.2–S2.5 bereits im Inventar
+> vorbereitet. Neues Pattern `page-inventory.md` + Tutorial 10 in Nexus.
+> Welche Front?**
 >
-> **Die S2.1-Spec (Seiten-Inventar) ist freigegeben und wartet auf Umsetzung.
-> Entscheidungen bereits getroffen: E1-Hybrid+SEO · E2a · E3a · E4c. Welche Front?**
+> A. **Praxis-Sprint 2 / S2.2 — Template-Typologie (empfohlen, direkt anschlussfähig)** —
+>    Spec `specs/sprint-2/S2.2_templates.md` neu schreiben. Template-Häufigkeits-Tabelle
+>    aus dem Inventar ist die Eingabe; 8 neue PHP-Skeletons werden benötigt.
+>    Architekten-Modus-Spec + Freigabe vor Umsetzung.
 >
-> A. **Praxis-Sprint 2 / S2.1 — Seiten-Inventar ausfüllen (empfohlen)** —
->    `specs/sprint-2/page-inventory.md` mit ~27 Einträgen (8 Kern + 9 Fachrichtungen
->    + 9 Ärzte + Karriere). Spec liegt bereit, Umsetzung ~20 min bis Self-Check.
-> B. **Praxis-Sprint 2 / S2.0b — Komponenten-Bibliothek** — `components.css`
->    mit semantischen Klassen, eliminiert Legacy-Alias-Block.
->    Kann parallel zu S2.1 laufen.
-> C. **Praxis-Sprint 2 / S2.3 Batch A — Datenschutz + Impressum** (Legal
->    vorziehen, Vorbedingung: Rechtssicherheit-Quellen-Entscheidung).
-> D. **Sprint 1 reanimieren** — Credentials liegen vor, aber Dr. Stracke
->    hat Design+Content Vorrang gegeben. Nur bei Kurskorrektur.
-> E. **Juvantis-Trunk-Content-Ausbau** oder **Phase 2b Medien** —
->    wenn die Priorität weg von Praxis kippt."
+> B. **Praxis-Sprint 2 / S2.3 Batch A — Datenschutz + Impressum** —
+>    **Vorbedingung: Rechtssicherheits-Quelle entscheiden** (Anwalt / e-recht24 /
+>    Prod-Übernahme). Ohne Ihre Entscheidung bleibt die Batch-Spec blockiert.
+>
+> C. **Praxis-Sprint 2 / S2.0b — Komponenten-Bibliothek** (parallel möglich) —
+>    `components.css` mit semantischen Klassen, eliminiert Legacy-Alias-Block.
+>
+> D. **Juvantis-Trunk-Content-Ausbau** oder **Phase 2b Medien** — wenn die Priorität
+>    weg von Praxis kippt.
+>
+> E. **Strukturhygiene:** `sites/praxis-webseite/SESSION_START.md` (Legacy-Pfade aus
+>    Pre-Phase-4) auf 1-Zeilen-Pointer reduzieren oder löschen?
+>
+> F. **Sprint 1 reanimieren** — Credentials liegen vor, aber Sie haben Design+Content
+>    Vorrang gegeben. Nur bei Kurskorrektur.
+>
+> G. **Andere konkrete Änderung** — Sie nennen."
 
 Keine Code-Änderung vor Ihrer Wahl.
 
@@ -298,9 +371,10 @@ Keine Code-Änderung vor Ihrer Wahl.
 | 5 | 2026-04-19 | 3 (Review) | Review-Pipeline 12/12 AKs ✅, 6 Dimensionen automatisiert, Pattern + Tutorial 07 | `98d1f67`, `314a41c` |
 | 6 | 2026-04-19 | 4 (Subsumierung Praxis) | Praxis-Subsumierung ✅ via `git subtree add` (E1a/E2b/E3a), 12/12 AKs, 5 Lessons, Pattern `cross-repo-subsumption.md` + Tutorial 08 | `c350b05`, `94e6e91`, `77adfc7`, `dd38922`, `61b5187`, `b7266ab`, `89de007`, `7515822` |
 | **7** | **2026-04-19** | **5 (Subsumierung Juvantis)** | **Juvantis-Web-Docs-Subsumierung ✅ via `mv` + SHOPIFY_THEME_POINTER (E1a+E2a+E3a+E4a), 12/12 AKs, 5 Lessons PH5-LL-1…5, Pattern-Erweiterung Variante B + Tutorial 08 §7 erweitert, Theme-Klon unberührt** | **`799d674`, `2d67a06`, `2b0d1ba`, `304859e`, `cad5a70`, `cb04976` + T9-Session-Ende-Commits** |
-| **8** | **2026-04-19** | **Praxis-Sprint 2 / S2.0c** | **Design-System-Konsolidierung ✅ — `DESIGN_GUIDELINES.md` v3.0 (§0 Cortex-DS-Backstop, §2 4-Schichten-Modell, §7 Spacing konsolidiert, §17 Austausch-Protokoll), `tokens.css` v2 mit 4-Schichten + Legacy-Alias-Block, Cortex-DS-Artifact git-trackbar, Tutorial 09 `vier-schichten-design-tokens.md`, 3-Weg-MD5-Null-Delta-Beweis, 12/12 AKs. S2.1-Spec freigegeben (wartet auf Umsetzung).** | Theme: **`c4f18ba`**. Docs: **`560e3d6`**, **`0edab20`** + Session-Ende-Commit. Nexus: **`8054be7`** (Tutorial 09 via Auto-Sync), Pattern `design-token-ssot.md` §8 erweitert. |
-| *(9)* | *tbd* | *Praxis-Sprint 2 / S2.1* | *Seiten-Inventar ausfüllen (Spec freigegeben, Entscheidungen E1-Hybrid+SEO/E2a/E3a/E4c getroffen)* | — |
+| 8 | 2026-04-19 | Praxis-Sprint 2 / S2.0c | Design-System-Konsolidierung ✅ — `DESIGN_GUIDELINES.md` v3.0 + `tokens.css` v2 4-Schichten + Tutorial 09 + Cortex-DS-Artifact git-trackbar, 12/12 AKs, MD5-Null-Delta | Theme `c4f18ba`. Docs `560e3d6`, `0edab20`, `0642847`. Nexus `8054be7`. |
+| **9** | **2026-04-19** | **Praxis-Sprint 2 / S2.1** | **Seiten-Inventar ✅ — `page-inventory.md` mit 27 Einträgen (10× P0, 17× P1), 9 Spalten, Sitemap-gestütztes Content-Audit, arzt-7 TBD-Vorbefüllung Dr. Stracke, Ableitungs-Abschnitte für S2.2–S2.5, 8/8 AKs grün. Neues Pattern + Tutorial 10.** | Cortex-Web: **`d7f797d`** (Inventar+Self-Check+Shots). Nexus: Pattern `page-inventory.md` + Tutorial 10 + MEMORY/CLAUDE/SYSTEM_MAP aktualisiert (Auto-Sync-Commit). |
+| *(10)* | *tbd* | *Praxis-Sprint 2 / S2.2 oder S2.3 Batch A* | *S2.2 Template-Typologie (empfohlen, direkt anschlussfähig) ODER S2.3 Batch A Datenschutz+Impressum (blockiert durch Rechtssicherheits-Quelle)* | — |
 
 ---
 
-*Stand: 2026-04-19, Ende Session 8. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–E aus §6 wählen. Erwartete Wahl: A (Praxis-Sprint 2 / S2.1 Seiten-Inventar ausfüllen).*
+*Stand: 2026-04-19, Ende Session 9. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–G aus §6 wählen. Empfohlener Default: A (S2.2 Template-Typologie). B blockiert durch Rechtssicherheits-Quellen-Entscheidung.*

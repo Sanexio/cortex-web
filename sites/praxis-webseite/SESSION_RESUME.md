@@ -30,7 +30,7 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-19 nach S2.0c Design-System-Konsolidierung)
+## §1 Stand & Version (gültig: 2026-04-19 nach S2.1 Seiten-Inventar)
 
 - **PXZ_VERSION:** **2.7.6** live auf Local by Flywheel (Cluster-Mini-02). Stand: 4-Schichten-Token-Modell in `assets/css/tokens.css` v2, keine Optik-Änderung gegenüber v2.7.5 (MD5-byte-identisch unter Gleich-Tag-Bedingungen, 3-Weg-Beweis).
 - **Design-Autorität:** `DESIGN_GUIDELINES.md` v3.0 (§0 Cortex-DS-Backstop, §2 4-Schichten, §7 Spacing konsolidiert, §17 Austausch-Protokoll). Ältere Versionen in `DESIGN_GUIDELINES.v2.3.md` archiviert.
@@ -46,7 +46,7 @@
 |---|---|---|
 | Sprint 0 — Foundation | ✅ abgeschlossen | |
 | **Sprint 1 — Rollout-Infrastruktur** | ⏸ **PAUSIERT (bewusst)** | SFTP-Credentials liegen vor (`.env.sprint1.local` gefüllt, 2026-04-19 09:24). Dr. Stracke hat explizit entschieden: **„zuerst Design und Content"** (Cortex-Web SESSION_RESUME §4 P0). Sprint 1 erst nach Kernseiten. |
-| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🟢 **aktiv, S2.0 ✅ + S2.0c ✅** | S2.0 (Token-SSoT 2-Schicht, v2.7.5) + **S2.0c (4-Schichten-Konsolidierung + Cortex-DS-Backstop, v2.7.6, 12/12 AKs) abgeschlossen 2026-04-19.** Spec `S2.1_page-inventory.md` freigegeben, wartet auf Umsetzung. Offen danach: S2.0b Komponenten (optional), S2.2 Template-Typologie, S2.3 Kernseiten-Batches, S2.4 Menü, S2.5 QA-Audit. |
+| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🟢 **aktiv, S2.0 ✅ + S2.0c ✅ + S2.1 ✅** | S2.0 (Token-SSoT 2-Schicht, v2.7.5) + S2.0c (4-Schichten + Cortex-DS, v2.7.6) + **S2.1 (Seiten-Inventar, 27 Einträge, 8/8 AKs, Cortex-Web-Commit `d7f797d`) abgeschlossen 2026-04-19.** Offen: **S2.2 Template-Typologie (empfohlen, direkt anschlussfähig)**, S2.0b Komponenten (optional, parallel möglich), S2.3 Kernseiten-Batches A–G (Batch A blockiert durch Rechtssicherheitsquelle), S2.4 Menü, S2.5 QA-Audit. |
 | Sprint 2b — Legacy-Content-Migration | ⏳ nach Sprint 2 | 172 Legacy-Seiten. |
 | Sprint 3 — Mehrsprachigkeit (WPML) | ⏳ geplant | |
 | Sprint 4 — Go-Live (SEO/Schema/Cut-Over) | ⏳ geplant | |
@@ -66,6 +66,8 @@ c3f7db7  feat(s0.2): extract homepage CSS from inline to assets/css/homepage.css
 ### Cortex-Web-Repo — Praxis-spezifische Commits (seit Subsumierung)
 
 ```
+d7f797d  docs(sprint-2/s2.1): page-inventory.md mit 27 Einträgen + self-check 8/8
+0642847  docs(session-8): close S2.0c session — SESSION_RESUME finalize (dach + praxis)
 0edab20  chore(sprint-2/s2.0c): self-check 12/12 grün — AK-12 Commit-Hashes nachgezogen
 560e3d6  docs(sprint-2/s2.0c): DESIGN_GUIDELINES v3.0 + 4-layer model + Cortex-DS backstop
 ceaf380  docs(phase-5): session 7 close (Juvantis-Subsumierung abgeschlossen)
@@ -96,19 +98,22 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 Nach Pflicht-Init + Pre-Flight grün, fragt Claude:
 
-> „Sprint 2 / S2.0c Design-System-Konsolidierung ist ✅ abgeschlossen (v2.7.6, `DESIGN_GUIDELINES.md` v3.0, 4-Schichten-Tokens, Cortex-DS-Backstop, 12/12 AKs grün). S2.1-Spec liegt freigegeben bereit. Dr. Stracke hat in Session 8 explizit entschieden: zuerst Design + Content, Sprint 1 (SFTP/Staging) später trotz vorhandener Credentials.
+> „Sprint 2 / S2.1 Seiten-Inventar ist ✅ abgeschlossen (27 Einträge, 10× P0, 17× P1, 8/8 AKs grün, Commit `d7f797d`). Architektur-Befund aus Sitemap: Prod-Site hat keine Fachrichtungen-Struktur (nutzt Check-ups), Dr.-Stracke-Arzt-Profil ist einziges live Arzt-Profil → arzt-7 vorgefüllt mit TBD-Bestätigung. Ableitungen für S2.2/S2.3/S2.4/S2.5 bereits im Inventar vorbereitet.
 >
-> A. **Sprint 2 / S2.1 — Seiten-Inventar & Content-Audit (empfohlen, Spec freigegeben)** — Tabelle in `page-inventory.md` mit ~27 Einträgen (8 Kern + 9 Fachrichtungen + 9 Ärzte + Karriere) ausfüllen. Entscheidungen bereits getroffen: E1-Hybrid+SEO · E2a · E3a · E4c. Erwartete Dauer: ~20 min bis Self-Check.
-> B. **Sprint 2 / S2.0b — Komponenten-Bibliothek** — `assets/css/components.css` mit semantischen `.pxz-card`, `.pxz-btn`, `.pxz-section` auf Schicht-2-Tokens. Additiv, eliminiert Legacy-Alias-Block in `tokens.css`. Kann auch parallel zu S2.1 laufen.
-> C. **Sprint 2 / S2.3 Batch A — Datenschutz + Impressum** — Legal-Textseiten vorziehen. Vorbedingung: Rechtssicherheit-Entscheidung (Anwalt / e-recht24 / Prod-Text).
-> D. **Sprint 1 reanimieren** — SFTP-Credentials liegen vor, aber Dr. Stracke hat Design+Content Vorrang gegeben. Nur bei expliziter Kurskorrektur.
-> E. **Backlog** — CTA-Anschnitt @ 1440 px · PHP-Deprecation `theme-freesia-demo-import` · Mobile-Eyebrow MFA.
-> F. **Andere konkrete Änderung** — Sie nennen."
+> A. **Sprint 2 / S2.2 — Template-Typologie (empfohlen, direkt anschlussfähig)** — Spec `specs/sprint-2/S2.2_templates.md` neu anlegen. Template-Häufigkeitstabelle aus Inventar liefert die 8 PHP-Skeletons. Architekten-Modus-Spec + Freigabe vor Umsetzung.
+> B. **Sprint 2 / S2.0b — Komponenten-Bibliothek** — `assets/css/components.css` mit `.pxz-card`, `.pxz-btn`, `.pxz-section` auf Schicht-2-Tokens. Additiv, eliminiert Legacy-Alias-Block. Kann parallel laufen.
+> C. **Sprint 2 / S2.3 Batch A — Datenschutz + Impressum** — **Vorbedingung: Rechtssicherheits-Entscheidung** (Anwalt / e-recht24 / Prod-Text). Solange offen, keine Batch-A-Spec.
+> D. **Strukturhygiene** — `SESSION_START.md` hat 5 Legacy-Pfade auf `projects/praxis-redesign/`. Vorschlag analog NEXT_SESSION_PROMPT-Regel: zu 1-Zeilen-Pointer reduzieren oder löschen?
+> E. **Sprint 1 reanimieren** — SFTP-Credentials liegen vor, aber Design+Content hat Vorrang.
+> F. **Backlog** — CTA-Anschnitt @ 1440 px · PHP-Deprecation `theme-freesia-demo-import` · Mobile-Eyebrow MFA.
+> G. **Andere konkrete Änderung** — Sie nennen."
 
 Keine Code-Änderung vor expliziter Wahl.
 
-**Empfohlener Default:** A (S2.1). Spec ist fertig, Entscheidungen getroffen,
-direkt umsetzbar. Die S2.1-Tabelle ist Vorbedingung für S2.2 + S2.3.
+**Empfohlener Default:** A (S2.2). Template-Häufigkeitstabelle aus dem
+S2.1-Inventar ist die Eingabe — direkte Anschlussfähigkeit, kein
+Entscheidungs-Blocker. B ist parallel. C bleibt blockiert bis zu Ihrer
+Rechtssicherheits-Entscheidung.
 
 ---
 
@@ -126,6 +131,111 @@ direkt umsetzbar. Die S2.1-Tabelle ist Vorbedingung für S2.2 + S2.3.
 ---
 
 ## §5 Letzte Session — Was wurde erledigt
+
+### Session 9 — 2026-04-19 — Sprint 2 / S2.1 Seiten-Inventar
+
+**Auftrag Dr. Stracke:** „Projekt fortsetzen Cortex-Web" → „ich überlasse dir die
+entscheidung" (nach Status-Statement). Claude-Wahl: Option A (S2.1 Seiten-Inventar)
+— Spec freigegeben, Entscheidungen E1–E4 getroffen, empfohlener Default.
+
+**Architekten-Modus 4-Phasen-Durchlauf:**
+
+- **Phase 1 Verständnis:** Zielzustand (27-Zeilen-Tabelle mit 9 Pflicht-
+  Spalten), Constraints (keine Theme-Änderung, kein Content-Crawl, keine
+  YAML-Migration, verify.sh grün am Ende), §8-Freigabe-Fragen in der Spec
+  geklärt: Frage 2 ist durch §1.3 schon gelöst (arzt-7/8 mit TBD-Flag),
+  Fragen 1+3 werden durch Sitemap-Abgleich in Phase 3 beantwortet.
+- **Phase 2 Lösungsdesign:** Spec war bereits in Session 8 freigegeben,
+  keine neue Spec-Runde.
+- **Phase 3 Umsetzung:**
+  - Sitemap-Abgleich: `curl -s https://westend-hausarzt.com/sitemap.xml` →
+    `page-sitemap.xml` mit ~150 URLs, primär mehrsprachig (EN/FR/ES +
+    WPML-Legacy). **Kritischer Befund**: Prod-Site hat KEINE Fachrichtungen-
+    Struktur, nutzt stattdessen Check-ups + einzelne Diagnostik-Unterseiten.
+    Dr. Strackes Arzt-Profil `/dr-siegbert-stracke-mba/` ist das einzige live
+    Arzt-Profil in der Sitemap.
+  - `specs/sprint-2/page-inventory.md` geschrieben (9826 B, 27 Zeilen ×
+    9 Pflicht-Spalten, 10× P0 / 17× P1). Aufbau: 8 Kern (#1–#8) + 9
+    Fachrichtungen (#9–#17) + 9 Ärzte (#18–#26) + 1 Karriere (#27).
+    Zähl-Mehrdeutigkeit „Team vs. Ärzte-Übersicht" explizit aufgelöst:
+    #3 Team (narrativ, `standard`, P0) ≠ #18 Ärzte-Grid (`team`, P0).
+    arzt-7 (#25) vorgefüllt mit Prod-URL `/dr-siegbert-stracke-mba/` +
+    Vermutungs-Flag für S2.3-Batch-D-Bestätigung.
+  - Ableitungs-Abschnitte im Inventar: **Template-Häufigkeitstabelle**
+    (8 benötigte PHP-Skeletons), **Batch-Vorschlag A–G für S2.3**,
+    **Menü-Skizze** (Top-Level aus P0-Zeilen), **QA-Pflichtliste** (P0-
+    Zeilen mit `status=done` als Go-Live-Gate).
+  - 6 offene Folgeentscheidungen dokumentiert (5 aus Spec §5 + 1 neu:
+    Datenschutz-Dublette `/datenschutzerklaerung-2/` auf Prod → Sprint 2b).
+- **Phase 4 Selbstprüfung:** `evidence/2026-04-19_s2.1_self-check.md` —
+  **8/8 AKs grün**. AK-1 Datei existiert, AK-2 27 Zeilen, AK-3 alle §2.6-
+  Pflicht-Seiten, AK-4 keine leeren Pflichtspalten, AK-5 Theme-Repo
+  unverändert (`git status --short` leer), AK-6 `verify.sh` Exit 0 (§1
+  Split + §2 Reset + §3 Computed-Style 54/54 + §4 Alignment 10/10),
+  AK-7 Home/Impressum/Datenschutz/Kontakt/404 alle P0, AK-8 alle offenen
+  Folgeentscheidungen + TBD-Flags dokumentiert.
+- **Fehlerklassen-Abgleich:** FK-1 (Missverständnis) geschlossen durch
+  Phase-1-Klärung + Spec-Entscheidung-Referenz; FK-2 (Scheinverständnis)
+  adressiert über Architektur-Unterschied-Dokumentation auf Inventar-
+  Zeile #9; FK-3 (Plausible Scheinlösung) strukturell ausgeschlossen
+  durch Pflichtspalten-Kontrakt; FK-5 (Kontextverlust) adressiert durch
+  Inventar als persistenten Kontext-Anker für S2.2–S2.5.
+
+**Verifikation:**
+- `tools/verify.sh` grün: Exit 0, 4 Checks (Split/Reset/54-Computed/10-Alignment).
+- `git status --short`: clean nach Commit.
+- AK-Score: **8/8 = 100 %**.
+
+**Commits (Cortex-Web-Repo):**
+- `d7f797d docs(sprint-2/s2.1): page-inventory.md mit 27 Einträgen + self-check 8/8`
+  (+200 Zeilen, 6 Dateien: Inventar, Self-Check, 4 verify-Shots).
+- Kein Push (b=1 aus Sprint 0 gilt unverändert).
+
+**Nexus-Architektur-Updates (Session-Ende LL-042 Schritte 2+3):**
+- `Nexus/_memory/MEMORY.md` — praxis-webseite-Zeile auf S2.1 ✅ aktualisiert,
+  neuer Pfad-Referenz-Eintrag für Seiten-Inventar, Pattern-Katalog um
+  `page-inventory.md` ergänzt, Tutorial-Referenz auf Tutorial 10, Letzte-
+  Aktualisierung-Zeile auf Session 9.
+- `Nexus/SYSTEM_MAP.md` — Stand-Zeile auf PXZ_VERSION 2.7.6 + S2.1 ✅ aktualisiert.
+- `Nexus/CLAUDE.md` — Sessions 7 + 8 + 9 im Cortex-Web-Abschnitt ergänzt.
+- `Nexus/_memory/patterns/page-inventory.md` — neues Pattern angelegt
+  (7-Schritte-Ablauf, Pflicht-Spalten, 4 Ableitungs-Abschnitte, Lessons
+  S2.1-LL-1…5, Anti-Pattern-Liste, Transferbarkeit auf Juvantis-Webseite
+  und Sprint 2b Legacy-Migration).
+
+**Tutorial-Update (Schritt 4):**
+- `Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/10-seiten-inventar-website-relaunch.md`
+  neu (didaktische Erklärung für Dr. Stracke: Was ist ein Inventar? Warum?
+  Wie aufgebaut? Welche Fallen? Anwendung im Praxis-Projekt).
+
+**Lessons Learned (S2.1-LL-1…5):**
+
+- **S2.1-LL-1** — Sitemap (`page-sitemap.xml`) als Pre-Check statt
+  Content-Crawl ermöglicht Architektur-Diagnose ohne Scope-Verletzung.
+- **S2.1-LL-2** — Spec-Zähl-Mehrdeutigkeiten (Team vs. Ärzte-Übersicht)
+  müssen explizit aufgelöst und im Self-Check begründet werden.
+- **S2.1-LL-3** — TBD-Zeilen dürfen Vermutungs-Vorbefüllungen aus
+  Sitemap-Analyse bekommen, aber nur mit explizitem Vermutungs-Flag.
+- **S2.1-LL-4** — Ableitungs-Abschnitte im Inventar-File sparen dem
+  Folge-Sprint die Phase-1-Arbeit.
+- **S2.1-LL-5** — Architektur-Diskrepanzen gehören auf die betroffene
+  Inventar-Zeile, nicht nur in die Spec.
+
+**Offene Punkte für nächste Session:**
+
+- **S2.2 Template-Typologie** (empfohlen, direkt anschlussfähig) — Spec
+  `specs/sprint-2/S2.2_templates.md` neu schreiben, 8 PHP-Skeletons anlegen.
+- **S2.3 Batch A Legal** — blockiert durch Dr.-Stracke-Entscheidung zur
+  Rechtssicherheits-Quelle (Anwalt / e-recht24 / Prod-Text).
+- **S2.0b Komponenten-Bibliothek** — parallel zu S2.2 möglich, eliminiert
+  Legacy-Alias-Block.
+- **Strukturhygiene:** `SESSION_START.md` hat 5 Legacy-Pfade auf
+  `projects/praxis-redesign/`. Empfehlung analog NEXT_SESSION_PROMPT-Regel:
+  1-Zeilen-Pointer auf SESSION_RESUME.md. Keine eigenmächtige Durchführung.
+- **Sprint 1 reanimieren** — SFTP-Credentials liegen vor, aber Design+Content-
+  Vorrang unverändert.
+
+---
 
 ### Session 8 — 2026-04-19 — Sprint 2 / S2.0c Design-System-Konsolidierung (v2.7.6)
 
