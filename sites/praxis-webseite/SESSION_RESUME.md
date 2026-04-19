@@ -30,9 +30,9 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-19 nach S2.1 Seiten-Inventar)
+## §1 Stand & Version (gültig: 2026-04-19 nach S2.2 Template-Typologie)
 
-- **PXZ_VERSION:** **2.7.6** live auf Local by Flywheel (Cluster-Mini-02). Stand: 4-Schichten-Token-Modell in `assets/css/tokens.css` v2, keine Optik-Änderung gegenüber v2.7.5 (MD5-byte-identisch unter Gleich-Tag-Bedingungen, 3-Weg-Beweis).
+- **PXZ_VERSION:** **2.7.7** live auf Local by Flywheel (Cluster-Mini-02). Stand: 8 Skelett-Page-Templates angelegt (`template-standard.php`, `-sprechstunden.php`, `-kontakt.php`, `404.php`, `-fachrichtung-landing.php`, `-fachrichtung.php`, `-team.php`, `-arzt.php`) + 8 CSS-Skelette + functions.php-Erweiterung (7 `is_page_template()` + 1 `is_404()` + 7 Display-Namen). **Keine Optik-Änderung** gegenüber v2.7.6 (Home + Karriere unberührt, Verify-Beweis 4 Shots in `screenshots/claude/2026-04-19_1357_*` + `_1427_*`). 4-Schichten-Token-Modell aus S2.0c bleibt aktiv. Theme-Commits: `6c02cb4` (Skelette+functions+CHANGELOG) + `dd3e4e1` (Hotfix PXZ-E-009).
 - **Design-Autorität:** `DESIGN_GUIDELINES.md` v3.0 (§0 Cortex-DS-Backstop, §2 4-Schichten, §7 Spacing konsolidiert, §17 Austausch-Protokoll). Ältere Versionen in `DESIGN_GUIDELINES.v2.3.md` archiviert.
 - **Cortex-DS-Backstop-Artifact:** `design-system/Cortex-Design-System.html` (git-trackbar, MD5 `c36b8cac63c2de3538a94ee74412e269`).
 - **Site-Root:** `/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/`
@@ -40,13 +40,13 @@
 - **Child-Theme:** `wp-content/themes/praxiszentrum/`
 - **Homepage + Karriere** weiter abgenommen; S2.0c ist Architektur-Infra ohne Optik-Änderung, visuelle v2.7.5-Abnahme bleibt gültig.
 
-### Sprint-Status (Stand 2026-04-19 Ende Session 8)
+### Sprint-Status (Stand 2026-04-19 Ende Session 10)
 
 | Sprint | Status | Kommentar |
 |---|---|---|
 | Sprint 0 — Foundation | ✅ abgeschlossen | |
 | **Sprint 1 — Rollout-Infrastruktur** | ⏸ **PAUSIERT (bewusst)** | SFTP-Credentials liegen vor (`.env.sprint1.local` gefüllt, 2026-04-19 09:24). Dr. Stracke hat explizit entschieden: **„zuerst Design und Content"** (Cortex-Web SESSION_RESUME §4 P0). Sprint 1 erst nach Kernseiten. |
-| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🟢 **aktiv, S2.0 ✅ + S2.0c ✅ + S2.1 ✅** | S2.0 (Token-SSoT 2-Schicht, v2.7.5) + S2.0c (4-Schichten + Cortex-DS, v2.7.6) + **S2.1 (Seiten-Inventar, 27 Einträge, 8/8 AKs, Cortex-Web-Commit `d7f797d`) abgeschlossen 2026-04-19.** Offen: **S2.2 Template-Typologie (empfohlen, direkt anschlussfähig)**, S2.0b Komponenten (optional, parallel möglich), S2.3 Kernseiten-Batches A–G (Batch A blockiert durch Rechtssicherheitsquelle), S2.4 Menü, S2.5 QA-Audit. |
+| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🟢 **aktiv, S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅** | S2.0 (Token-SSoT 2-Schicht, v2.7.5) + S2.0c (4-Schichten + Cortex-DS, v2.7.6) + S2.1 (Seiten-Inventar, 27 Einträge, Cortex-Web-Commit `d7f797d`) + **S2.2 (Template-Typologie, 8 Skelett-Templates + 8 CSS + functions.php, v2.7.7, In-Session-Bug PXZ-E-009 gefixt, 12/12 AKs, Theme-Commits `6c02cb4`+`dd3e4e1`, Cortex-Web-Commits `de4f580`+`5a2a247`) abgeschlossen 2026-04-19.** Offen: **S2.0b Component-Refactor (eingeschoben, empfohlen)**, S2.3 Kernseiten-Batches A–G (Batch B/C/G frei verfügbar; Batch A blockiert durch Rechtssicherheitsquelle), S2.4 Menü, S2.5 QA-Audit. |
 | Sprint 2b — Legacy-Content-Migration | ⏳ nach Sprint 2 | 172 Legacy-Seiten. |
 | Sprint 3 — Mehrsprachigkeit (WPML) | ⏳ geplant | |
 | Sprint 4 — Go-Live (SEO/Schema/Cut-Over) | ⏳ geplant | |
@@ -56,6 +56,8 @@
 ### Theme-Repo (`praxiszentrum/`) Commit-Stand
 
 ```
+dd3e4e1  fix(s2.2): comment strings triggering WP page-template auto-discovery
+6c02cb4  feat(s2.2): 8 skelett-templates + functions.php enqueue + PXZ_VERSION 2.7.7
 c4f18ba  feat(s2.0c): tokens.css v2 with 4-layer model; bump PXZ_VERSION 2.7.5 → 2.7.6
 257304e  feat(s2.0): design-token SSoT; bump PXZ_VERSION 2.7.4 → 2.7.5
 914af8d  feat(s0.2): extract karriere CSS; bump PXZ_VERSION 2.7.3 → 2.7.4
@@ -66,11 +68,11 @@ c3f7db7  feat(s0.2): extract homepage CSS from inline to assets/css/homepage.css
 ### Cortex-Web-Repo — Praxis-spezifische Commits (seit Subsumierung)
 
 ```
+5a2a247  docs(sprint-2/s2.2): self-check 12/12 + theme-pointer 2.7.7 + verify shots
+de4f580  docs(sprint-2/s2.2): template typology spec freigegeben (8 skeletons + S2.0b einschub)
 d7f797d  docs(sprint-2/s2.1): page-inventory.md mit 27 Einträgen + self-check 8/8
 0642847  docs(session-8): close S2.0c session — SESSION_RESUME finalize (dach + praxis)
 0edab20  chore(sprint-2/s2.0c): self-check 12/12 grün — AK-12 Commit-Hashes nachgezogen
-560e3d6  docs(sprint-2/s2.0c): DESIGN_GUIDELINES v3.0 + 4-layer model + Cortex-DS backstop
-ceaf380  docs(phase-5): session 7 close (Juvantis-Subsumierung abgeschlossen)
 ```
 
 ---
@@ -98,22 +100,41 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 Nach Pflicht-Init + Pre-Flight grün, fragt Claude:
 
-> „Sprint 2 / S2.1 Seiten-Inventar ist ✅ abgeschlossen (27 Einträge, 10× P0, 17× P1, 8/8 AKs grün, Commit `d7f797d`). Architektur-Befund aus Sitemap: Prod-Site hat keine Fachrichtungen-Struktur (nutzt Check-ups), Dr.-Stracke-Arzt-Profil ist einziges live Arzt-Profil → arzt-7 vorgefüllt mit TBD-Bestätigung. Ableitungen für S2.2/S2.3/S2.4/S2.5 bereits im Inventar vorbereitet.
+> „Sprint 2 / S2.2 Template-Typologie ist ✅ abgeschlossen — 8 Skelett-Page-
+> Templates für die 27 inventarisierten Seiten, 8 CSS-Skelette, functions.php-
+> Erweiterung, PXZ_VERSION 2.7.7. In-Session-Bug PXZ-E-009 (Code-Comments mit
+> literalem `Template Name:` triggerten WP-Auto-Discovery) gefangen + gefixt
+> (Hotfix `dd3e4e1`). 12/12 AKs grün. Architekten-Entscheidungen delegiert:
+> sprechende Slugs, PHP-Array, S2.0c-CHANGELOG-Stil. **Sprint-Reihenfolge ist
+> neu**: S2.2 → **S2.0b (Component-Refactor, eingeschoben)** → S2.3.
 >
-> A. **Sprint 2 / S2.2 — Template-Typologie (empfohlen, direkt anschlussfähig)** — Spec `specs/sprint-2/S2.2_templates.md` neu anlegen. Template-Häufigkeitstabelle aus Inventar liefert die 8 PHP-Skeletons. Architekten-Modus-Spec + Freigabe vor Umsetzung.
-> B. **Sprint 2 / S2.0b — Komponenten-Bibliothek** — `assets/css/components.css` mit `.pxz-card`, `.pxz-btn`, `.pxz-section` auf Schicht-2-Tokens. Additiv, eliminiert Legacy-Alias-Block. Kann parallel laufen.
-> C. **Sprint 2 / S2.3 Batch A — Datenschutz + Impressum** — **Vorbedingung: Rechtssicherheits-Entscheidung** (Anwalt / e-recht24 / Prod-Text). Solange offen, keine Batch-A-Spec.
-> D. **Strukturhygiene** — `SESSION_START.md` hat 5 Legacy-Pfade auf `projects/praxis-redesign/`. Vorschlag analog NEXT_SESSION_PROMPT-Regel: zu 1-Zeilen-Pointer reduzieren oder löschen?
-> E. **Sprint 1 reanimieren** — SFTP-Credentials liegen vor, aber Design+Content hat Vorrang.
-> F. **Backlog** — CTA-Anschnitt @ 1440 px · PHP-Deprecation `theme-freesia-demo-import` · Mobile-Eyebrow MFA.
-> G. **Andere konkrete Änderung** — Sie nennen."
+> A. **S2.0b Component-Refactor (empfohlen, direkt anschlussfähig)** —
+>    Generische Komponenten in `assets/css/components.css` (`.pxz-hero`,
+>    `.pxz-section`, `.pxz-card`, `.pxz-btn`, `.pxz-eyebrow`). Refactor aller
+>    10 Templates inkl. Home+Karriere mit MD5-Null-Delta-Beweis. Vereinheitlichung
+>    `kar`→`karriere` möglich (S2.2-LL-4). Spec
+>    `specs/sprint-2/S2.0b_component-library.md` neu schreiben.
+> B. **S2.3 Batch B (Praxis + Team + 404)** — 3 P0-Seiten, kein Blocker.
+> C. **S2.3 Batch C (Fachrichtungen-Landing + Ärzte-Übersicht)** — 2 P0
+>    Card-Grid-Seiten, kein Blocker.
+> D. **S2.3 Batch G (Sprechstunden + Kontakt)** — 2 P0-Seiten, mit Doctolib-
+>    Workaround.
+> E. **S2.3 Batch A (Datenschutz + Impressum)** — **Blockiert** durch
+>    Rechtssicherheits-Entscheidung (Anwalt / e-recht24 / Prod-Text).
+> F. **Strukturhygiene-Block** — `SESSION_START.md`-Pointer-Reduktion +
+>    verify.sh um WP-CLI-Probe erweitern (PXZ-E-009-Schutz) + 5 Plugin-
+>    Phantom-Templates aufräumen.
+> G. **Sprint 1 reanimieren** — SFTP-Credentials liegen vor, aber Design+Content
+>    hat Vorrang.
+> H. **Andere konkrete Änderung** — Sie nennen."
 
 Keine Code-Änderung vor expliziter Wahl.
 
-**Empfohlener Default:** A (S2.2). Template-Häufigkeitstabelle aus dem
-S2.1-Inventar ist die Eingabe — direkte Anschlussfähigkeit, kein
-Entscheidungs-Blocker. B ist parallel. C bleibt blockiert bis zu Ihrer
-Rechtssicherheits-Entscheidung.
+**Empfohlener Default:** A (S2.0b). Begründung: ohne S2.0b-Refactor würde
+jeder S2.3-Batch eigene Hero-/Card-Klassen redeklarieren → Duplikat-Druck.
+Ein S2.0b-Sprint vorab spart Refactor in jedem S2.3-Batch und ermöglicht
+gleichzeitig die `kar`→`karriere`-Vereinheitlichung. B/C/D/E/F/G sind
+auch valide, je nach Priorität.
 
 ---
 

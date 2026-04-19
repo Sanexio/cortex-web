@@ -244,6 +244,49 @@ Format je Eintrag:
 
 ---
 
+## PXZ-E-009 — Code-Comment-Strings triggern WP Page-Template-Auto-Discovery
+
+- **Datum:** 2026-04-19, **eingeführt + behoben in v2.7.7** (S2.2).
+- **Beschreibung:** Nach Anlage von 8 neuen Page-Templates (S2.2) zeigte
+  `wp eval 'print_r( wp_get_theme()->get_page_templates() );'` zwei Phantom-
+  Einträge im WP-Admin-Page-Template-Dropdown:
+  - `[404.php] => " header).`
+  - `[functions.php] => "-Header automatisch.`
+  Beide Dateien sind keine Page-Templates (404.php ist WP-Hierarchie-Fallback,
+  functions.php ist Theme-Logik) — wären aber im WP-Admin als auswählbare
+  Templates erschienen, was Editor-Verwirrung und Funktions-Bruch ausgelöst hätte.
+- **Ursache:** WordPress' Page-Template-Auto-Discovery scannt **jede PHP-Datei**
+  im Theme-Root (und Subordnern bis Tiefe 1) via Regex auf den literalen String
+  `Template Name:` (mit Doppelpunkt). Mein Header-Comment in `404.php`
+  (`* NOT a Page Template (no "Template Name:" header).`) und mein Filter-Comment
+  in `functions.php` (`// Karriere registriert sich via "Template Name:"-Header
+  automatisch.`) enthielten den Trigger-String — WP las jeweils den Reststring
+  bis Zeilenende als Display-Namen.
+- **Fehlerklasse:** **FK-3 Plausible Scheinlösung** — Code wirkt sauber
+  (didaktische Comments), produziert aber unsichtbaren WP-Bug. Auch FK-5-Anteil
+  (Kontextverlust über WP-Auto-Discovery-Verhalten).
+- **Regel:**
+  1. **Code-Comments dürfen den Trigger-String `Template Name:` (mit Doppelpunkt)
+     nicht enthalten**, auch nicht als Beispiel oder Negation. Sichere Form:
+     `Template-Name` (mit Bindestrich, ohne Doppelpunkt) oder umformulieren.
+  2. **Gleiche Vorsicht bei anderen WP-File-Header-Strings**: `Plugin Name:`,
+     `Theme Name:`, `Block Name:`, `Description:`, `Version:`. Faustregel: wenn
+     ein String ein WP-Header-Feld definiert, darf er in Comments nur als
+     `<Wort>-<Wort>` (kein Doppelpunkt) erscheinen.
+  3. **Verifikations-Workflow nach jeder Theme-Änderung**: WP-CLI-Probe
+     `wp eval 'print_r( wp_get_theme()->get_page_templates() );'` läuft und
+     listet **exakt** die intendierten Templates — keine `404.php`,
+     `functions.php`, `inc/*.php` oder `template-parts/*.php` darin.
+- **Prüfpunkt (Pre-Flight):**
+  - Künftige Theme-Sessions ergänzen `tools/verify.sh` um WP-CLI-Probe
+    `get_page_templates()` mit Whitelist-Vergleich (Erwartung: 9 — Homepage +
+    Karriere + 7 S2.2-Skelette). Bei Abweichung: Exit 1, Deploy blockiert.
+  - Manueller Schnell-Check: `grep -rn "Template Name:" /pfad/zum/theme/*.php`
+    — alle Treffer müssen echte File-Header sein (am Beginn eines Block-Comments
+    direkt nach `<?php`), keine inline-Comments oder Code-Strings.
+
+---
+
 ## Template für neue Einträge
 
 ```

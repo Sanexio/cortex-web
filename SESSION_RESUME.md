@@ -40,14 +40,14 @@
 ## §1 Stand & Version
 
 - **Version:** `0.6.0` — Cortex-Web-Aufbau (Phase 0–5) ✅ vollständig
-- **Stand:** 2026-04-19, **Session 9 abgeschlossen** (Praxis-Sprint 2 / S2.1 Seiten-Inventar)
+- **Stand:** 2026-04-19, **Session 10 abgeschlossen** (Praxis-Sprint 2 / S2.2 Template-Typologie)
 - **Working Tree:** clean
 - **Cortex-Web-Aufbau (Phase 0–5):** ✅ **vollständig**
 - **Trunk-Content:** unverändert, 1 Produkt (`basic-check.yaml`)
 - **WP-Adapter:** Phase 1, idempotent, HWG-konform, Review-geprüft
 - **Shopify-Adapter:** Phase 2, idempotent, draft-only, Review-geprüft
 - **Review-Pipeline:** Phase 3, 11/11 automatische AKs grün
-- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`c4f18ba`** (**PXZ_VERSION 2.7.6**). Design-Autorität: `DESIGN_GUIDELINES.md` v3.0. Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ + **S2.1 ✅** (Seiten-Inventar, 27 Einträge, Cortex-Web-Commit `d7f797d`, 8/8 AKs grün). Nächste Praxis-Fronten: S2.2 Template-Typologie ODER S2.3 Batch A Legal (blockiert).
+- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`dd3e4e1`** (Hotfix nach `6c02cb4`, **PXZ_VERSION 2.7.7**). Design-Autorität: `DESIGN_GUIDELINES.md` v3.0. Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + **S2.2 ✅** (Template-Typologie, 8 Skelett-Templates + 8 CSS-Files + functions.php-Erweiterung, Self-Check 12/12 AKs grün, Cortex-Web-Commit `5a2a247`). **Sprint-Reihenfolge ändert sich:** S2.2 → **S2.0b (Component-Refactor, eingeschoben)** → S2.3 Content-Batches.
 - **Juvantis-Site:** `sites/juvantis-webseite/` (Docs-Schicht), Theme-Pointer auf Commit `1fbc35b` (GitHub-Remote `shopify-theme`)
 
 ### §1.1 Phasen-Status
@@ -102,11 +102,97 @@ cd ~/Cortex/projects/Cortex-Web && bash tools/review.sh
 ```
 Erwartet: `AK automatisch: 11/11 grün`, Exit 0.
 
-**Stand Ende Session 9:** validate ✅, verify.sh (Praxis) ✅, working tree clean nach Commit `d7f797d`.
+**Stand Ende Session 10:** validate ✅, verify.sh (Praxis) ✅, beide Repos clean nach Theme-Commits `6c02cb4`+`dd3e4e1` und Cortex-Web-Commits `de4f580`+`5a2a247`.
 
 ---
 
-## §3 Letzte Session — Session 9, 2026-04-19
+## §3 Letzte Session — Session 10, 2026-04-19
+
+### Ziel
+Praxis-Sprint 2 / S2.2 Template-Typologie — 8 neue WP-Page-Template-Skelette
+für die in S2.1 inventarisierten 27 Seiten anlegen, ohne Echt-Content
+(Content folgt in S2.3).
+
+### Durchgeführt (Architekten-Modus 4 Phasen)
+1. **Pflicht-Init:** Nexus + Cortex-Web + Praxis-WORKING_MODE gelesen.
+   Pre-Flight: `validate.sh` ✅, Praxis `verify.sh` ✅. Dr.-Stracke-Wahl: Front A (S2.2).
+2. **Phase 1 Verständnis-Sicherung** mit 3 Rückfragen (F1 Granularität Landing,
+   F2 Hero-Komponenten-Strategie, F3 404-Inhalt). Dr. Stracke wählt
+   F1a/F2b/F3b → Architekten-Einwände, finale Wahl: F1a/F2c/F3a-plus,
+   S2.0b zwischen S2.2 und S2.3 eingeschoben.
+3. **Phase 2 Lösungsdesign:** Spec `S2.2_templates.md` (22 KB, 12 AKs, 7
+   Constraints, 7 Freigabe-Fragen). Dr. Stracke delegiert Architekten-
+   Entscheidungen — F-2 sprechende Slugs, F-3 PHP-Array, F-4 Display-Namen
+   wie vorgeschlagen, F-5 CHANGELOG S2.0c-Stil. Spec auf FREIGEGEBEN.
+4. **Phase 3 Umsetzung (T1–T10):**
+   - T1 Spec committed (Cortex-Web `de4f580`)
+   - T2 8 PHP-Templates angelegt (`template-standard.php`, `-sprechstunden.php`,
+     `-kontakt.php`, `404.php`, `-fachrichtung-landing.php`, `-fachrichtung.php`,
+     `-team.php`, `-arzt.php`)
+   - T3 8 CSS-Files angelegt (`assets/css/{standard,sprechstunden,kontakt,404,
+     fachrichtung-landing,fachrichtung,team,arzt}.css`) — Klassen-Stubs ohne
+     harte Werte
+   - T4 `functions.php`: PXZ_VERSION 2.7.6 → 2.7.7, 7 neue
+     `is_page_template()`-Conditionals + 1 `is_404()`, 7 Display-Namen
+   - T5 CHANGELOG v2.7.7 im S2.0c-Stil
+   - T6 Theme-Repo-Commit `6c02cb4` (17 Dateien)
+   - T7 verify.sh nochmal grün (Home + Karriere unverändert) ✅
+   - T8 WP-CLI-Probe `wp eval get_page_templates()` zeigte zwei Phantom-Einträge
+     (`404.php` + `functions.php`) → **PXZ-E-009-Bug entdeckt**: Code-Comments
+     mit literalem String `Template Name:` triggern WP-Auto-Discovery.
+     Hotfix: Bindestrich statt Doppelpunkt (`Template-Name`). Commit `dd3e4e1`.
+     Re-Verifikation grün — alle 8 Templates korrekt registriert.
+   - T9 Self-Check `evidence/2026-04-19_s2.2_self-check.md` mit 12/12 AKs grün
+   - T10 THEME_POINTER auf 2.7.7 + Cortex-Web-Commit `5a2a247` (Self-Check +
+     Pointer + 4 Verify-Shots als Baseline-vs-After-Beweis)
+5. **Phase 4 Selbstprüfung:** AK-Tabelle 12/12 grün, In-Session-Bug
+   dokumentiert, 5 Lessons Learned (S2.2-LL-1…5).
+6. **„Session beenden"-Workflow LL-042 (Schritte 1–5):**
+   - Schritt 1: Konsistenz-Audit — beide Repos clean, verify+validate grün,
+     keine Backup-Files, TODOs nur erwartete S2.3-Marker
+   - Schritt 2: Nexus-Audit — MEMORY/CLAUDE/SYSTEM_MAP brauchen S2.2-Update
+   - Schritt 3: Pattern-Optimierung — PXZ-E-009 ins praxis-FEHLERPROTOKOLL,
+     neues Pattern `Nexus/_memory/patterns/wp-skeleton-templates-bundle.md`
+   - Schritt 4: Tutorial-Update — `Tutorial 11 — WP Page-Templates &
+     Auto-Discovery` angelegt (didaktisch, mit PXZ-E-009 als Lehrbeispiel)
+   - Schritt 5: diese Datei finalisiert + Nexus-Updates committed
+
+### Verifiziert (AK-Tabelle aus Self-Check)
+
+| AK | Status | Evidenz |
+|---|:---:|---|
+| AK-1 | ✅ | 9 PHP-Templates (8 mit Page-Template-Header + Karriere; 404.php hat bewusst keinen) |
+| AK-2 | ✅ | 11 CSS-Files (3 alt + 8 neu mit Selector-Namespace-Comment) |
+| AK-3 | ✅ | alle 8 neuen PHPs: ABSPATH + get_header + get_footer + Container-Div + Hero-Section |
+| AK-4 | ✅ | 9 is_page_template + 1 is_404 + 8 Filter-Display-Namen in functions.php |
+| AK-5 | ✅ | PXZ_VERSION = 2.7.7 |
+| AK-6 | ✅ | CHANGELOG v2.7.7 mit S2.0c-Stil |
+| AK-7 | ✅ | verify.sh grün — Home+Karriere unverändert (4-Verify-Shots-Beweis) |
+| AK-8 | ✅ | Kein Inline-CSS in den 9 neuen PHPs |
+| AK-9 | ✅ | Keine Hex/px in den 8 neuen CSS-Files |
+| AK-10 | ✅ | Keine Touches an Homepage/Karriere/Tokens/Style-CSS (C9) |
+| AK-11 | ✅ | WP-CLI-Probe zeigt alle 8 Templates korrekt nach Hotfix |
+| AK-12 | ✅ | Self-Check-Datei vorhanden |
+
+**Score: 12/12 = 100 %**
+
+### Lessons Learned (S2.2-LL-1…5 — ins Pattern + Tutorial 11 übernommen)
+- **S2.2-LL-1:** WP-CLI-Probe (`wp eval get_page_templates`) ersetzt
+  Browser-Verifikation für Template-Registrierungs-AK — schneller, deterministisch.
+- **S2.2-LL-2:** **PXZ-E-009** — Code-Comments mit literal `Template Name:`
+  triggern WP-Auto-Discovery-Regex. Sichere Form: Bindestrich statt Doppelpunkt.
+  Gilt analog für `Plugin Name:`, `Theme Name:`, `Block Name:` etc.
+- **S2.2-LL-3:** Skelett-Disziplin: wenn Spec „minimale Werte erlaubt" sagt,
+  aber andere Files leer sind, gewinnt konsequente Skelett-Disziplin (404.css
+  blieb leer, F3a-plus-Stilisierung nach S2.3 verschoben).
+- **S2.2-LL-4:** Sprechende Slugs vor 3-Buchstaben-Kürzeln — bei Inkonsistenz
+  im Bestand vereinheitlichen wir nicht auf das schlechtere Pattern.
+- **S2.2-LL-5:** Spec-Aussagen im Self-Check verifizieren, nicht blind übernehmen
+  — die Spec hatte off-by-one in AK-1-Erklärung (Homepage in „grep-Zähl" vergessen).
+
+---
+
+## §3a Letzte Session — Session 9, 2026-04-19
 
 ### Ziel
 Praxis-Sprint 2 / S2.1 Seiten-Inventar umsetzen. Spec `S2.1_page-inventory.md` war
@@ -156,7 +242,7 @@ in Session 8 freigegeben, Entscheidungen E1-Hybrid+SEO · E2a · E3a · E4c getr
 
 ---
 
-## §3a Letzte Session — Session 7, 2026-04-19
+## §3b Letzte Session — Session 7, 2026-04-19
 
 ### Ziel
 Phase 5 (Juvantis-Web-Subsumierung) deterministisch ausführen — `Juvantis/juvantis-web/{shopify-sync.sh, shopify_export, knowledge-graph}` →
@@ -236,17 +322,24 @@ Shopify-Theme-Klon, ohne Eingriff in Theme-Repo oder Live-Site.
 
 ### P0 — Praxis-Sprint 2 fortsetzen (Dr. Stracke-Direktive „zuerst Design und Content" bleibt)
 
-S2.1 Inventar ist abgeschlossen. Nächste Front in Sprint 2:
+S2.2 Skelett-Templates abgeschlossen. **Sprint-Reihenfolge ist neu:** S2.2 ✅
+→ **S2.0b (eingeschoben)** → S2.3 → S2.4 → S2.5.
 
-**P0a — S2.2 Template-Typologie (empfohlen, direkt anschlussfähig)**
+**P0a — S2.0b Component-Refactor (empfohlen, direkt anschlussfähig)**
 - Pfad: `sites/praxis-webseite/`
-- Input liegt: Template-Häufigkeits-Tabelle im Inventar §„Ableitungen für Folge-Sprints".
-- Neue PHP-Templates anzulegen (Schätzung): `template-standard.php`, `template-sprechstunden.php`, `template-kontakt.php`, `template-fachrichtung-landing.php`, `template-fachrichtung.php`, `template-team.php`, `template-arzt.php`, `404.php`.
-- Architekten-Modus: Spec `specs/sprint-2/S2.2_templates.md` neu zu schreiben und freizugeben.
+- Ziel: Generische Komponenten in `assets/css/components.css` (`.pxz-hero`,
+  `.pxz-section`, `.pxz-card`, `.pxz-btn`, `.pxz-eyebrow`).
+- Refactor **aller 10 Templates** inklusive Home + Karriere auf die generischen
+  Komponenten. Beweis: MD5-Null-Delta-Shots für Home + Karriere (analog S2.0c).
+- Erst nach S2.0b-Freigabe wird C9 für Home+Karriere temporär aufgehoben.
+- Nebeneffekt: `kar`→`karriere`-Vereinheitlichung (S2.2-LL-4) kann mitziehen.
+- Architekten-Modus: Spec `specs/sprint-2/S2.0b_component-library.md` zu schreiben.
 
-**P0b — S2.3 Batch A Datenschutz + Impressum (blockiert)**
-- Vorbedingung: **offene Folgeentscheidung Nr. 1** — Rechtssicherheits-Quelle (Anwalt / e-recht24-ähnlicher Generator / Prod-Übernahme).
-- Dr.-Stracke-Entscheidung steht aus. Sobald getroffen, kann die Batch-A-Spec geschrieben werden.
+**P0b — S2.3 Content-Batches (P0-Subset, parallel zu S2.0b denkbar)**
+- Frei verfügbare Batches: B (Praxis+Team+404), C (Fachr-Landing+Ärzte-Übers.),
+  G (Sprechstunden+Kontakt, mit Doctolib-Workaround). 7 Seiten P0.
+- Batch A (Datenschutz+Impressum) bleibt blockiert: **Folgeentscheidung Nr. 1**
+  — Rechtssicherheits-Quelle (Anwalt / e-recht24 / Prod-Übernahme).
 
 ### P1 — Juvantis-Web-Trunk-Content-Ausbau (mittelfristig)
 Weitere YAML-Produktquellen in `trunk/content/products/` (Body Checks,
@@ -260,6 +353,8 @@ Kandidat parallel zu Praxis-Sprint 2.
 ### P3 — Nachschärfungen Strukturhygiene
 - **Sprint 2b anvisieren:** 172 Legacy-Prod-Seiten (Posts, Aktionen, mehrsprachige Dubletten inkl. `/datenschutzerklaerung-2/`) nach Go-Live.
 - **Offener struktureller Punkt für Dr. Stracke:** `sites/praxis-webseite/SESSION_START.md` hat 5 Legacy-Pfad-Referenzen auf `projects/praxis-redesign/` (vor Phase 4). Inhalt redundant mit SESSION_RESUME.md. Vorschlag analog zur NEXT_SESSION_PROMPT-Regel in `Nexus/_rules/SESSION_LIFECYCLE.md` §3: zu 1-Zeilen-Pointer auf SESSION_RESUME.md reduzieren ODER löschen. **Keine eigenmächtige Durchführung** — entscheidet Dr. Stracke in der nächsten Session.
+- **Verify.sh Pre-Flight-Erweiterung:** WP-CLI-Probe `wp eval 'print_r( wp_get_theme()->get_page_templates() );'` als Whitelist-Check ergänzen, damit PXZ-E-009-artige Phantom-Templates automatisch entdeckt werden. Kandidat für S2.0b oder eigene Mini-Session.
+- **5 Phantom-Templates aus Plugins** (`alter-front-page-template.php`, `two-column-blog-template.php`, `our-team-template.php`, `about-us-template.php`, `portfolio-template.php`) erscheinen im WP-Admin-Dropdown — nicht aus unserem Theme, vermutlich aus `theme-freesia-demo-import`. Aufräumen optional, eigener Mini-Sprint.
 
 ### P1 — Juvantis-Web-Trunk-Content-Ausbau (mittelfristig)
 Weitere YAML-Produktquellen in `trunk/content/products/` (Body Checks,
@@ -295,37 +390,51 @@ Items 14–16 aus §0 oben.
 
 ## §6 Sofort-Status-Frage für nächste Session
 
-> **„Praxis-Sprint 2 / S2.1 Seiten-Inventar ist ✅ abgeschlossen — 27 Einträge
-> (10× P0, 17× P1), 8/8 AKs grün, Commit `d7f797d`. Sitemap-Befund:
-> Prod-Site hat keine Fachrichtungen-Struktur, Dr. Stracke ist das einzige
-> live Arzt-Profil. Ableitungen für S2.2–S2.5 bereits im Inventar
-> vorbereitet. Neues Pattern `page-inventory.md` + Tutorial 10 in Nexus.
-> Welche Front?**
+> **„Praxis-Sprint 2 / S2.2 Template-Typologie ist ✅ abgeschlossen —
+> 8 Skelett-Templates angelegt (Layout-Hülle ohne Echt-Content), 8 CSS-Files,
+> functions.php-Erweiterung, PXZ_VERSION 2.7.7, 12/12 AKs grün, In-Session-Bug
+> PXZ-E-009 (Code-Comment-Strings triggern WP-Auto-Discovery) gefangen +
+> dokumentiert. Theme-Commits `6c02cb4`+`dd3e4e1`, Cortex-Web-Commits
+> `de4f580`+`5a2a247`. Neues Pattern `wp-skeleton-templates-bundle.md` +
+> Tutorial 11 in Nexus. Welche Front?**
 >
-> A. **Praxis-Sprint 2 / S2.2 — Template-Typologie (empfohlen, direkt anschlussfähig)** —
->    Spec `specs/sprint-2/S2.2_templates.md` neu schreiben. Template-Häufigkeits-Tabelle
->    aus dem Inventar ist die Eingabe; 8 neue PHP-Skeletons werden benötigt.
->    Architekten-Modus-Spec + Freigabe vor Umsetzung.
+> A. **Praxis-Sprint 2 / S2.0b — Component-Refactor (empfohlen, direkt
+>    anschlussfähig)** — Spec `specs/sprint-2/S2.0b_component-library.md` neu
+>    schreiben. Generische Komponenten in `assets/css/components.css`
+>    (`.pxz-hero`, `.pxz-section`, `.pxz-card`, `.pxz-btn`, `.pxz-eyebrow`).
+>    Refactor aller 10 Templates inklusive Home+Karriere mit MD5-Null-Delta-Beweis.
+>    Vereinheitlichung `kar`→`karriere` möglich (S2.2-LL-4).
 >
-> B. **Praxis-Sprint 2 / S2.3 Batch A — Datenschutz + Impressum** —
+> B. **Praxis-Sprint 2 / S2.3 Batch B — Praxis + Team + 404** — frei verfügbar
+>    (kein Blocker). 3 P0-Seiten mit Echt-Content. Spec
+>    `specs/sprint-2/S2.3-B_praxis-team-404.md` neu schreiben.
+>
+> C. **Praxis-Sprint 2 / S2.3 Batch C — Fachrichtungen-Landing + Ärzte-Übersicht**
+>    — frei verfügbar. 2 P0-Seiten, beides Card-Grid-Templates.
+>
+> D. **Praxis-Sprint 2 / S2.3 Batch G — Sprechstunden + Kontakt** — 2 P0-Seiten,
+>    Doctolib-Einbettung mit statischem Workaround möglich (offene
+>    Folgeentscheidung Nr. 3 nicht hart blockierend).
+>
+> E. **Praxis-Sprint 2 / S2.3 Batch A — Datenschutz + Impressum** —
 >    **Vorbedingung: Rechtssicherheits-Quelle entscheiden** (Anwalt / e-recht24 /
 >    Prod-Übernahme). Ohne Ihre Entscheidung bleibt die Batch-Spec blockiert.
 >
-> C. **Praxis-Sprint 2 / S2.0b — Komponenten-Bibliothek** (parallel möglich) —
->    `components.css` mit semantischen Klassen, eliminiert Legacy-Alias-Block.
+> F. **Strukturhygiene-Aufräumblock:** `SESSION_START.md` auf Pointer reduzieren,
+>    verify.sh um WP-CLI-Probe erweitern (PXZ-E-009-Schutz), 5 Plugin-Phantom-
+>    Templates aufräumen.
 >
-> D. **Juvantis-Trunk-Content-Ausbau** oder **Phase 2b Medien** — wenn die Priorität
->    weg von Praxis kippt.
+> G. **Juvantis-Trunk-Content-Ausbau** oder **Phase 2b Medien** — wenn die
+>    Priorität weg von Praxis kippt.
 >
-> E. **Strukturhygiene:** `sites/praxis-webseite/SESSION_START.md` (Legacy-Pfade aus
->    Pre-Phase-4) auf 1-Zeilen-Pointer reduzieren oder löschen?
+> H. **Sprint 1 reanimieren** — SFTP-Credentials prüfen (DF-Support seit
+>    2026-04-18 angefragt). Nur bei Kurskorrektur.
 >
-> F. **Sprint 1 reanimieren** — Credentials liegen vor, aber Sie haben Design+Content
->    Vorrang gegeben. Nur bei Kurskorrektur.
->
-> G. **Andere konkrete Änderung** — Sie nennen."
+> I. **Andere konkrete Änderung** — Sie nennen."
 
-Keine Code-Änderung vor Ihrer Wahl.
+Keine Code-Änderung vor Ihrer Wahl. Empfohlener Default: **A (S2.0b
+Component-Refactor)**, weil es die Grundlage für alle 25 Content-Seiten in
+S2.3 schafft und keinen Blocker hat.
 
 ---
 
@@ -372,9 +481,10 @@ Keine Code-Änderung vor Ihrer Wahl.
 | 6 | 2026-04-19 | 4 (Subsumierung Praxis) | Praxis-Subsumierung ✅ via `git subtree add` (E1a/E2b/E3a), 12/12 AKs, 5 Lessons, Pattern `cross-repo-subsumption.md` + Tutorial 08 | `c350b05`, `94e6e91`, `77adfc7`, `dd38922`, `61b5187`, `b7266ab`, `89de007`, `7515822` |
 | **7** | **2026-04-19** | **5 (Subsumierung Juvantis)** | **Juvantis-Web-Docs-Subsumierung ✅ via `mv` + SHOPIFY_THEME_POINTER (E1a+E2a+E3a+E4a), 12/12 AKs, 5 Lessons PH5-LL-1…5, Pattern-Erweiterung Variante B + Tutorial 08 §7 erweitert, Theme-Klon unberührt** | **`799d674`, `2d67a06`, `2b0d1ba`, `304859e`, `cad5a70`, `cb04976` + T9-Session-Ende-Commits** |
 | 8 | 2026-04-19 | Praxis-Sprint 2 / S2.0c | Design-System-Konsolidierung ✅ — `DESIGN_GUIDELINES.md` v3.0 + `tokens.css` v2 4-Schichten + Tutorial 09 + Cortex-DS-Artifact git-trackbar, 12/12 AKs, MD5-Null-Delta | Theme `c4f18ba`. Docs `560e3d6`, `0edab20`, `0642847`. Nexus `8054be7`. |
-| **9** | **2026-04-19** | **Praxis-Sprint 2 / S2.1** | **Seiten-Inventar ✅ — `page-inventory.md` mit 27 Einträgen (10× P0, 17× P1), 9 Spalten, Sitemap-gestütztes Content-Audit, arzt-7 TBD-Vorbefüllung Dr. Stracke, Ableitungs-Abschnitte für S2.2–S2.5, 8/8 AKs grün. Neues Pattern + Tutorial 10.** | Cortex-Web: **`d7f797d`** (Inventar+Self-Check+Shots). Nexus: Pattern `page-inventory.md` + Tutorial 10 + MEMORY/CLAUDE/SYSTEM_MAP aktualisiert (Auto-Sync-Commit). |
-| *(10)* | *tbd* | *Praxis-Sprint 2 / S2.2 oder S2.3 Batch A* | *S2.2 Template-Typologie (empfohlen, direkt anschlussfähig) ODER S2.3 Batch A Datenschutz+Impressum (blockiert durch Rechtssicherheits-Quelle)* | — |
+| 9 | 2026-04-19 | Praxis-Sprint 2 / S2.1 | Seiten-Inventar ✅ — `page-inventory.md` mit 27 Einträgen (10× P0, 17× P1), 9 Spalten, Sitemap-gestütztes Content-Audit, arzt-7 TBD-Vorbefüllung Dr. Stracke, Ableitungs-Abschnitte für S2.2–S2.5, 8/8 AKs grün. Neues Pattern + Tutorial 10. | Cortex-Web: `d7f797d` (Inventar+Self-Check+Shots). Nexus: Pattern `page-inventory.md` + Tutorial 10 + MEMORY/CLAUDE/SYSTEM_MAP aktualisiert (Auto-Sync-Commit). |
+| **10** | **2026-04-19** | **Praxis-Sprint 2 / S2.2** | **Template-Typologie ✅ — 8 Skelett-Templates angelegt (`template-standard`, `-sprechstunden`, `-kontakt`, `404`, `-fachrichtung-landing`, `-fachrichtung`, `-team`, `-arzt`), 8 CSS-Files, functions.php-Erweiterung (7 is_page_template + 1 is_404 + 7 Filter), PXZ_VERSION 2.7.7, CHANGELOG. In-Session-Bug PXZ-E-009 (WP-Auto-Discovery via Code-Comment-Strings) entdeckt+gefixt. 12/12 AKs grün. Architekten-Entscheidungen delegiert: F-2 sprechende Slugs, F-3 PHP-Array, F-4 Display-Namen, F-5 CHANGELOG. Sprint-Reihenfolge umgestellt: S2.2 → S2.0b (eingeschoben) → S2.3.** | Theme: **`6c02cb4`** (Skelette+functions.php+CHANGELOG) + **`dd3e4e1`** (Hotfix Comment-Bug). Cortex-Web: **`de4f580`** (Spec) + **`5a2a247`** (Self-Check+Pointer+Verify-Shots). Nexus: Pattern `wp-skeleton-templates-bundle.md` + Tutorial 11 + MEMORY/CLAUDE/SYSTEM_MAP. |
+| *(11)* | *tbd* | *Praxis-Sprint 2 / S2.0b oder S2.3 B/C/G* | *S2.0b Component-Refactor (empfohlen) ODER S2.3 Batch B/C/G (3 P0-Batches frei verfügbar). S2.3 Batch A weiterhin blockiert (Rechtsquelle).* | — |
 
 ---
 
-*Stand: 2026-04-19, Ende Session 9. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–G aus §6 wählen. Empfohlener Default: A (S2.2 Template-Typologie). B blockiert durch Rechtssicherheits-Quellen-Entscheidung.*
+*Stand: 2026-04-19, Ende Session 10. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–I aus §6 wählen. Empfohlener Default: A (S2.0b Component-Refactor) — schafft die Grundlage für alle 25 S2.3-Content-Seiten und hat keinen Blocker.*
