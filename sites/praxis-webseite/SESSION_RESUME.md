@@ -30,9 +30,9 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-19 nach S2.2 Template-Typologie)
+## §1 Stand & Version (gültig: 2026-04-19 nach S2.0b Komponenten-Bibliothek)
 
-- **PXZ_VERSION:** **2.7.7** live auf Local by Flywheel (Cluster-Mini-02). Stand: 8 Skelett-Page-Templates angelegt (`template-standard.php`, `-sprechstunden.php`, `-kontakt.php`, `404.php`, `-fachrichtung-landing.php`, `-fachrichtung.php`, `-team.php`, `-arzt.php`) + 8 CSS-Skelette + functions.php-Erweiterung (7 `is_page_template()` + 1 `is_404()` + 7 Display-Namen). **Keine Optik-Änderung** gegenüber v2.7.6 (Home + Karriere unberührt, Verify-Beweis 4 Shots in `screenshots/claude/2026-04-19_1357_*` + `_1427_*`). 4-Schichten-Token-Modell aus S2.0c bleibt aktiv. Theme-Commits: `6c02cb4` (Skelette+functions+CHANGELOG) + `dd3e4e1` (Hotfix PXZ-E-009).
+- **PXZ_VERSION:** **2.7.8** live auf Local by Flywheel (Cluster-Mini-02). Stand: Schicht 3 (Components) eingezogen per `assets/css/components.css` mit 6 Blöcken (§1 Container, §2 Typografie 11 Klassen, §3 Buttons 11 Varianten, §4 Section-Wrapper `.pxz-sect*` + Alias `.pxz-section*`, §5 Card, §6 Hero-Basis). `functions.php`: `pxz-components` global zwischen `praxiszentrum` und page-CSS enqueued, alle 10 page-CSS depend auf `pxz-components`. **Home MD5-Null-Delta verifiziert** auf 3 Viewports (1440/768/430). **Karriere −9 px** am `.wpforms-submit`-Button durch WCAG-compliantes `min-height: 44px` + `line-height: 1` aus generischer `.pxz-btn`-Komponente (Accessibility-Gewinn, dokumentiert in `specs/sprint-2/evidence/2026-04-19_s2.0b_md5-diff.md`). In-Session-Fix S2.0b-LL-1 (page-scope Overrides für `.pxz-eyebrow` + `.pxz-sect-intro` in homepage.css, Spez 0,2,0). Theme-Commits: `08f40ff` (feat components+enqueue+version+changelog) + `8f596f7` (refactor homepage-trim+specificity-fix).
 - **Design-Autorität:** `DESIGN_GUIDELINES.md` v3.0 (§0 Cortex-DS-Backstop, §2 4-Schichten, §7 Spacing konsolidiert, §17 Austausch-Protokoll). Ältere Versionen in `DESIGN_GUIDELINES.v2.3.md` archiviert.
 - **Cortex-DS-Backstop-Artifact:** `design-system/Cortex-Design-System.html` (git-trackbar, MD5 `c36b8cac63c2de3538a94ee74412e269`).
 - **Site-Root:** `/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/`
@@ -46,7 +46,7 @@
 |---|---|---|
 | Sprint 0 — Foundation | ✅ abgeschlossen | |
 | **Sprint 1 — Rollout-Infrastruktur** | ⏸ **PAUSIERT (bewusst)** | SFTP-Credentials liegen vor (`.env.sprint1.local` gefüllt, 2026-04-19 09:24). Dr. Stracke hat explizit entschieden: **„zuerst Design und Content"** (Cortex-Web SESSION_RESUME §4 P0). Sprint 1 erst nach Kernseiten. |
-| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🟢 **aktiv, S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅** | S2.0 (Token-SSoT 2-Schicht, v2.7.5) + S2.0c (4-Schichten + Cortex-DS, v2.7.6) + S2.1 (Seiten-Inventar, 27 Einträge, Cortex-Web-Commit `d7f797d`) + **S2.2 (Template-Typologie, 8 Skelett-Templates + 8 CSS + functions.php, v2.7.7, In-Session-Bug PXZ-E-009 gefixt, 12/12 AKs, Theme-Commits `6c02cb4`+`dd3e4e1`, Cortex-Web-Commits `de4f580`+`5a2a247`) abgeschlossen 2026-04-19.** Offen: **S2.0b Component-Refactor (eingeschoben, empfohlen)**, S2.3 Kernseiten-Batches A–G (Batch B/C/G frei verfügbar; Batch A blockiert durch Rechtssicherheitsquelle), S2.4 Menü, S2.5 QA-Audit. |
+| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🟢 **aktiv, S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅ + S2.0b ✅** | S2.0 (Token-SSoT 2-Schicht, v2.7.5) + S2.0c (4-Schichten + Cortex-DS, v2.7.6) + S2.1 (Seiten-Inventar, 27 Einträge) + S2.2 (Template-Typologie, 8 Skelett-Templates, v2.7.7) + **S2.0b (Komponenten-Bibliothek `components.css`, 6 Blöcke, globaler Enqueue, v2.7.8, Home MD5-Null-Delta, Karriere -9px WCAG-Accessibility-Gewinn, 10/12 AKs, Theme-Commits `08f40ff`+`8f596f7`, Cortex-Web-Commits `2056e3e`+`df50333`) abgeschlossen 2026-04-19.** Offen: **S2.3 Content-Batches freigeschaltet** (Batch B/C/G frei verfügbar; Batch A blockiert durch Rechtssicherheitsquelle), S2.0e Mini (verify.sh §3b + erweiterter Split-Check, schließt AK-8+AK-10), S2.0d Mini (`kar`→`karriere`-Rename + Legacy-Alias-Abbau), S2.4 Menü, S2.5 QA-Audit. |
 | Sprint 2b — Legacy-Content-Migration | ⏳ nach Sprint 2 | 172 Legacy-Seiten. |
 | Sprint 3 — Mehrsprachigkeit (WPML) | ⏳ geplant | |
 | Sprint 4 — Go-Live (SEO/Schema/Cut-Over) | ⏳ geplant | |
@@ -56,6 +56,8 @@
 ### Theme-Repo (`praxiszentrum/`) Commit-Stand
 
 ```
+8f596f7  refactor(s2.0b): extract promoted classes from homepage.css + add specificity fix
+08f40ff  feat(s2.0b): add components.css Schicht 3 + pxz-components enqueue + PXZ_VERSION 2.7.8
 dd3e4e1  fix(s2.2): comment strings triggering WP page-template auto-discovery
 6c02cb4  feat(s2.2): 8 skelett-templates + functions.php enqueue + PXZ_VERSION 2.7.7
 c4f18ba  feat(s2.0c): tokens.css v2 with 4-layer model; bump PXZ_VERSION 2.7.5 → 2.7.6
@@ -68,11 +70,12 @@ c3f7db7  feat(s0.2): extract homepage CSS from inline to assets/css/homepage.css
 ### Cortex-Web-Repo — Praxis-spezifische Commits (seit Subsumierung)
 
 ```
+df50333  docs(sprint-2/s2.0b): self-check 10/12 green + theme-pointer 2.7.8 + md5 evidence
+2056e3e  docs(sprint-2/s2.0b): component-library spec freigegeben
+6e51fa2  docs(session-10): close S2.2 session — SESSION_RESUME finalize (dach + praxis) + PXZ-E-009
 5a2a247  docs(sprint-2/s2.2): self-check 12/12 + theme-pointer 2.7.7 + verify shots
 de4f580  docs(sprint-2/s2.2): template typology spec freigegeben (8 skeletons + S2.0b einschub)
 d7f797d  docs(sprint-2/s2.1): page-inventory.md mit 27 Einträgen + self-check 8/8
-0642847  docs(session-8): close S2.0c session — SESSION_RESUME finalize (dach + praxis)
-0edab20  chore(sprint-2/s2.0c): self-check 12/12 grün — AK-12 Commit-Hashes nachgezogen
 ```
 
 ---
@@ -100,41 +103,48 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 Nach Pflicht-Init + Pre-Flight grün, fragt Claude:
 
-> „Sprint 2 / S2.2 Template-Typologie ist ✅ abgeschlossen — 8 Skelett-Page-
-> Templates für die 27 inventarisierten Seiten, 8 CSS-Skelette, functions.php-
-> Erweiterung, PXZ_VERSION 2.7.7. In-Session-Bug PXZ-E-009 (Code-Comments mit
-> literalem `Template Name:` triggerten WP-Auto-Discovery) gefangen + gefixt
-> (Hotfix `dd3e4e1`). 12/12 AKs grün. Architekten-Entscheidungen delegiert:
-> sprechende Slugs, PHP-Array, S2.0c-CHANGELOG-Stil. **Sprint-Reihenfolge ist
-> neu**: S2.2 → **S2.0b (Component-Refactor, eingeschoben)** → S2.3.
+> „Sprint 2 / S2.0b Komponenten-Bibliothek ist ✅ abgeschlossen — Schicht 3
+> (Components) per `assets/css/components.css` eingezogen (6 Blöcke: Container,
+> Typografie, Buttons, Section `.pxz-sect*`/`.pxz-section*`, Card, Hero-Basis),
+> globaler Enqueue zwischen `praxiszentrum` und page-CSS, PXZ_VERSION 2.7.8.
+> Home MD5-Null-Delta verifiziert (3/3 MATCH auf 1440/768/430). Karriere −9 px
+> am `.wpforms-submit` (WCAG-Accessibility-Gewinn: `min-height: 44px` +
+> `line-height: 1`, dokumentiert). In-Session-Fix S2.0b-LL-1: `.pxz-eyebrow`
+> und `.pxz-sect-intro` verloren margins durch Spezifitäts-Kollision mit
+> `.pxz-home :where(p)`-Reset; page-scope Overrides in homepage.css haben das
+> gefixt. 10/12 AKs grün (AK-8 + AK-10 verify.sh-Erweiterung auf S2.0e
+> verschoben). 5 Lessons Learned. Theme-Commits `08f40ff`+`8f596f7`,
+> Cortex-Web-Commits `2056e3e`+`df50333`. 2 neue Patterns + Tutorial 12 in Nexus.
 >
-> A. **S2.0b Component-Refactor (empfohlen, direkt anschlussfähig)** —
->    Generische Komponenten in `assets/css/components.css` (`.pxz-hero`,
->    `.pxz-section`, `.pxz-card`, `.pxz-btn`, `.pxz-eyebrow`). Refactor aller
->    10 Templates inkl. Home+Karriere mit MD5-Null-Delta-Beweis. Vereinheitlichung
->    `kar`→`karriere` möglich (S2.2-LL-4). Spec
->    `specs/sprint-2/S2.0b_component-library.md` neu schreiben.
-> B. **S2.3 Batch B (Praxis + Team + 404)** — 3 P0-Seiten, kein Blocker.
-> C. **S2.3 Batch C (Fachrichtungen-Landing + Ärzte-Übersicht)** — 2 P0
->    Card-Grid-Seiten, kein Blocker.
-> D. **S2.3 Batch G (Sprechstunden + Kontakt)** — 2 P0-Seiten, mit Doctolib-
->    Workaround.
-> E. **S2.3 Batch A (Datenschutz + Impressum)** — **Blockiert** durch
->    Rechtssicherheits-Entscheidung (Anwalt / e-recht24 / Prod-Text).
-> F. **Strukturhygiene-Block** — `SESSION_START.md`-Pointer-Reduktion +
->    verify.sh um WP-CLI-Probe erweitern (PXZ-E-009-Schutz) + 5 Plugin-
+> S2.3 Content-Batches sind nun **freigeschaltet** (Skelett-Templates aus S2.2
+> + Komponenten-Bibliothek aus S2.0b stehen beide). Welche Front?
+>
+> A. **S2.3 Batch B — Praxis + Team + 404** (empfohlen, frei verfügbar,
+>    3 P0-Seiten mit Echt-Content, Spec `specs/sprint-2/S2.3-B_praxis-team-404.md`
+>    neu schreiben).
+> B. **S2.3 Batch C — Fachrichtungen-Landing + Ärzte-Übersicht** (2 P0,
+>    Card-Grid).
+> C. **S2.3 Batch G — Sprechstunden + Kontakt** (2 P0, Doctolib-Workaround).
+> D. **S2.0e Mini** (empfohlen vor S2.3, ~30 min) — verify.sh §3b Component-
+>    Probe auf Draft-Testseite + erweiterter Split-Check; schließt die 2 auf
+>    S2.0e verschobenen AKs.
+> E. **S2.0d Mini** — `kar`→`karriere`-Rename + Semantic-Token
+>    `--pxz-space-card-padding-sm` nachziehen + Legacy-Alias-Audit.
+> F. **S2.3 Batch A — Datenschutz + Impressum** — **blockiert** durch
+>    Rechtssicherheits-Quelle (Anwalt / e-recht24 / Prod-Text).
+> G. **Strukturhygiene-Block** — SESSION_START.md-Legacy-Pfade + 5 Plugin-
 >    Phantom-Templates aufräumen.
-> G. **Sprint 1 reanimieren** — SFTP-Credentials liegen vor, aber Design+Content
->    hat Vorrang.
-> H. **Andere konkrete Änderung** — Sie nennen."
+> H. **Sprint 1 reanimieren** — SFTP-Credentials sind da (seit 2026-04-19).
+>    Staging-Setup aktivierbar, aber Design-first-Direktive gilt noch.
+> I. **Andere konkrete Änderung** — Sie nennen."
 
 Keine Code-Änderung vor expliziter Wahl.
 
-**Empfohlener Default:** A (S2.0b). Begründung: ohne S2.0b-Refactor würde
-jeder S2.3-Batch eigene Hero-/Card-Klassen redeklarieren → Duplikat-Druck.
-Ein S2.0b-Sprint vorab spart Refactor in jedem S2.3-Batch und ermöglicht
-gleichzeitig die `kar`→`karriere`-Vereinheitlichung. B/C/D/E/F/G sind
-auch valide, je nach Priorität.
+**Empfohlener Default:** A (S2.3 Batch B). Begründung: das Komponenten-Fundament
+steht jetzt stabil, und Batch B (Praxis + Team + 404) ist der natürliche
+Content-Einstieg (3 P0-Seiten ohne Blocker). Alternativ D (S2.0e Mini) davor,
+falls die zwei verschobenen AKs zuerst geschlossen werden sollen. B/C/E sind
+jederzeit freie Einstiegspunkte.
 
 ---
 
@@ -152,6 +162,78 @@ auch valide, je nach Priorität.
 ---
 
 ## §5 Letzte Session — Was wurde erledigt
+
+### Session 11 — 2026-04-19 — Sprint 2 / S2.0b Komponenten-Bibliothek (v2.7.8)
+
+**Auftrag Dr. Stracke:** „Projekt fortsetzen Cortex-Web" → „du entscheidest"
+→ Claude-Wahl: Front A (S2.0b). F1–F7 + F-1…F-5 alle delegiert.
+
+**Architekten-Modus 4-Phasen-Durchlauf:**
+
+- **Phase 1 Verständnis:** 7 Rückfragen F1–F7 mit Trade-off-Tabellen. Entscheidungen
+  F1a (zwei Ebenen), F2a (`.pxz-eyebrow` heraufziehen), F3b (kar-Rename verschoben
+  auf S2.0d), F4b (erweiterter Scope inkl. Buttons + Typografie), F5a (eigenes
+  Stylesheet), F6a (Patch-Bump 2.7.8), F7b (verify.sh-Erweiterung auf Draft-Testseite).
+- **Phase 2 Lösungsdesign:** Spec `specs/sprint-2/S2.0b_component-library.md`
+  mit 14 Constraints, 12 AKs, 7 Risiken. 5 weitere Freigabe-Fragen F-1…F-5 alle
+  delegiert (24 px hartkodiert in `.pxz-card`; Testseite dauerhaft; 3 atomare
+  Commits; `.pxz-sect*` + `.pxz-section*` parallel).
+- **Phase 3 Umsetzung (T1–T13):**
+  - `components.css` angelegt (128 Zeilen, byteidentisch aus homepage.css gehoben)
+  - `homepage.css` getrimmt (5 Blöcke entfernt: Container + Typografie + Buttons
+    + Hero-Base + Section)
+  - `functions.php`: `pxz-components` enqueued, 10 Deps umgestellt, PXZ_VERSION
+    2.7.7 → 2.7.8
+  - WP-Testseite `s2-0b-probe` (ID 9670) via direktem MySQL-Client (wp-cli
+    scheiterte an Local-by-Flywheel-Socket → neues Pattern).
+  - **In-Session-Bug-Jagd:** erste Post-Refactor-Shots zeigten 6/6 MD5-Delta.
+    Root-Cause via Puppeteer `offsetHeight` pro Sub-Element: `.pxz-eyebrow` und
+    `.pxz-sect-intro` verloren margins durch Spezifitäts-Kollision mit
+    `.pxz-home :where(p)`-Reset (beide Spez 0,1,0; homepage.css lädt jetzt
+    später als components.css → Reset gewinnt).
+  - **Fix S2.0b-LL-1:** page-scope Overrides `.pxz-home .pxz-eyebrow` +
+    `.pxz-home .pxz-sect-intro` in homepage.css (Spez 0,2,0).
+  - Post-Fix: Home MD5 3/3 MATCH ✓. Karriere −9 px am `.wpforms-submit` durch
+    WCAG-`min-height: 44px` + `line-height: 1` aus `.pxz-btn` (dokumentierter
+    Accessibility-Gewinn).
+  - 2 atomare Theme-Commits `08f40ff`+`8f596f7`. Commit C (verify.sh-Erweiterung)
+    auf Mini-Sprint S2.0e verschoben.
+  - Cortex-Web-Commit `df50333`: Spec + Self-Check + Baseline-Evidenz + MD5-Diff
+    + 12 Shots + THEME_POINTER → 2.7.8.
+- **Phase 4 Selbstprüfung:** AK-Tabelle 10/12 grün (AK-8 + AK-10 verschoben auf
+  S2.0e). 5 Lessons Learned S2.0b-LL-1…5.
+
+**Verifiziert (AK-Tabelle aus Self-Check):**
+AK-1…7, AK-9, AK-11, AK-12 grün. AK-8 + AK-10 dokumentiert verschoben.
+**Score: 10/12 = 83 %** (2/12 auf S2.0e).
+
+**Lessons Learned (S2.0b-LL-1…5):**
+- LL-1 `:where()`-Resets schützen nur innerhalb derselben Datei
+- LL-2 Puppeteer-Tablet-Shots jittern (SSIM 0.988) — MD5 ist nicht allein Wahrheit
+- LL-3 Globale Komponenten-Regeln bringen Accessibility-Props auf alle Pages
+- LL-4 Class-Promotion erfordert Kaskaden-Analyse gegen nicht-promotierte Resets
+- LL-5 WP-CLI scheitert bei Local-by-Flywheel; Socket-Umweg via Lightning-mysql
+
+**Session-Ende-Workflow LL-042 (5 Schritte durchlaufen):**
+- Schritt 1 Projekt-Audit grün (beide Repos clean, verify+validate grün)
+- Schritt 2 Nexus-Audit → MEMORY/CLAUDE/SYSTEM_MAP auf v2.7.8 aktualisiert
+- Schritt 3 Pattern-Optimierung → 2 neue Patterns (`css-layer3-promotion.md`,
+  `local-wp-mysql-socket.md`)
+- Schritt 4 Tutorial-Update → Tutorial 12 (`12-css-spezifitaet-und-komponenten-schichten.md`)
+- Schritt 5 SESSION_RESUME.md (dach + praxis) finalisiert
+
+---
+
+### Session 10 — 2026-04-19 — Sprint 2 / S2.2 Template-Typologie (v2.7.7)
+
+Nachgetragen für Vollständigkeit. Details in Cortex-Web `SESSION_RESUME.md §3a`
+und in `evidence/2026-04-19_s2.2_self-check.md` (12/12 AKs grün). 8 Skelett-
+Page-Templates + 8 CSS-Skelette + functions.php-Erweiterung. In-Session-Bug
+PXZ-E-009 (Code-Comment-Strings `Template Name:` triggerten WP-Auto-Discovery);
+Hotfix via Bindestrich-Schreibweise. Theme-Commits `6c02cb4`+`dd3e4e1`,
+Cortex-Web-Commits `de4f580`+`5a2a247`+`6e51fa2`.
+
+---
 
 ### Session 9 — 2026-04-19 — Sprint 2 / S2.1 Seiten-Inventar
 
