@@ -39,15 +39,15 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.6.2` — Cortex-Web-Aufbau (Phase 0–5) ✅ vollständig · Praxis-Sprint 2 fortgeführt
-- **Stand:** 2026-04-19, **Session 12 abgeschlossen** (Praxis-Sprint 2 / S2.0e Verify-Hardening)
+- **Version:** `0.6.3` — Cortex-Web-Aufbau (Phase 0–5) ✅ vollständig · Praxis-Sprint 2 fortgeführt (+ Infra-Mini S2.0f)
+- **Stand:** 2026-04-19, **Session 13 abgeschlossen** (Praxis-Sprint 2 / S2.0f Santapress-Plugin-Entfernung)
 - **Working Tree:** clean
 - **Cortex-Web-Aufbau (Phase 0–5):** ✅ **vollständig**
 - **Trunk-Content:** unverändert, 1 Produkt (`basic-check.yaml`)
 - **WP-Adapter:** Phase 1, idempotent, HWG-konform, Review-geprüft
 - **Shopify-Adapter:** Phase 2, idempotent, draft-only, Review-geprüft
 - **Review-Pipeline:** Phase 3, 11/11 automatische AKs grün
-- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`8f596f7`** (**PXZ_VERSION 2.7.8**, **unverändert seit S2.0b** — S2.0e hat das Theme nicht angefasst). Design-Autorität: `DESIGN_GUIDELINES.md` v3.0. Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅ + S2.0b ✅ + **S2.0e ✅** (Verify-Hardening: `tools/verify.sh` um §1b `grep_split_css()` + §3b `component_probe()` (zweistufige Bash-Probe) erweitert, S2.0b-Self-Check rückwirkend auf 12/12 angehoben, Cortex-Web-Commits `88290b0`+`6352b1e`). **S2.3 Content-Batches jetzt freigeschaltet:** B/C/G verfügbar, A blockiert durch Rechtssicherheitsquelle.
+- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`8f596f7`** (**PXZ_VERSION 2.7.8**, **unverändert seit S2.0b** — S2.0e und S2.0f haben das Theme nicht angefasst). Design-Autorität: `DESIGN_GUIDELINES.md` v3.0. Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅ + S2.0b ✅ + S2.0e ✅ + **S2.0f ✅** (Santapress-Plugin aus Local-WP entfernt: `active_plugins` 26→25, Rewrite-Rules 13085→10979 Bytes, `wp_posts`-Count identisch vor/nach (2860, kein Content verloren), Plugin archiviert in `_archive/santapress-2026-04-19/` mit Verfallsdatum 2026-05-19, neues `tools/smoke-http.sh` (5 URLs × HTTP 200), 6/6 AKs grün, Cortex-Web-Commits `e036328`+`a6cc6f3`+`ced4e0a`). **S2.3 Content-Batches weiterhin freigeschaltet:** B/C/G verfügbar, A blockiert durch Rechtssicherheitsquelle.
 - **Juvantis-Site:** `sites/juvantis-webseite/` (Docs-Schicht), Theme-Pointer auf Commit `1fbc35b` (GitHub-Remote `shopify-theme`)
 
 ### §1.1 Phasen-Status
@@ -102,11 +102,63 @@ cd ~/Cortex/projects/Cortex-Web && bash tools/review.sh
 ```
 Erwartet: `AK automatisch: 11/11 grün`, Exit 0.
 
-**Stand Ende Session 11:** validate ✅, verify.sh (Praxis) ✅, beide Repos clean nach Theme-Commits `08f40ff`+`8f596f7` und Cortex-Web-Commits `2056e3e`+`df50333`.
+**Stand Ende Session 13:** validate ✅, verify.sh (Praxis) ✅, smoke-http.sh (neu) ✅ (5 URLs × HTTP 200, keine 5xx), beide Repos clean. Theme unverändert (HEAD `8f596f7`). Cortex-Web-Commits dieser Session: `e036328` (Spec) + `a6cc6f3` (Tool+Evidenz+Self-Check) + `ced4e0a` (.gitignore-Hygiene).
 
 ---
 
-## §3 Letzte Session — Session 12, 2026-04-19
+## §3 Letzte Session — Session 13, 2026-04-19
+
+### Ziel
+Praxis-Sprint 2 / S2.0f Santapress-Plugin-Entfernung — das in S2.0e als Interferenz-Quelle identifizierte Santapress-Plugin aus Local-WP entfernen. Freigabe durch Dr. Stracke in Session 12. Reversibel, regressions-frei, audit-nachvollziehbar.
+
+### Durchgeführt (Architekten-Modus 4 Phasen)
+1. **Pflicht-Init** (Nexus + Cortex-Web + Praxis-WORKING_MODE + SESSION_RESUME Session 12). Pre-Flight `validate.sh` ✅ + `verify.sh` ✅.
+2. **Phase 1 Verständnis-Sicherung** mit 4 Freigabe-Fragen (F1–F4). Dr. Stracke wählt: F1a (S2.0f in Sprint 2), F2c (Archive-Then-Delete auf Vorschlag hin, statt F2b Hard-Delete), F3b (verify.sh + HTTP-Smoke), F4a (volle Spec).
+3. **Phase 2 Lösungsdesign:** Spec `S2.0f_santapress-removal.md` (Hard-Cap 60 min, 5 T-Tasks, 6 AKs, 6 Risiken). 3 weitere Freigabe-Fragen (F5/F6/F7) — Dr. Stracke delegiert an Claude. Entscheidungen: F5b-modifiziert (5xx-Fail-Regel, 5 URLs inkl. 3 WP-Core-Routen), F6b (Verfallsdatum 2026-05-19), F7b (wp_posts-Count-Snapshot als Paranoia).
+4. **Phase 3 Umsetzung — alle 5 T-Tasks in Reihenfolge:**
+   - T0 Spec committed (`e036328`)
+   - T1 Pre-Condition-Snapshot: 26 active_plugins (Santapress an Index 15), rewrite_rules 13085 Bytes, wp_posts 2860 gesamt, Plugin 21 MB
+   - T2 Hook-Dependency-Audit: **0 externe Referenzen** in Plugins/Theme/mu-Plugins/andere-Themes → Entfernung sicher
+   - T3a PHP-Serialize-Manipulation via `mysqli->prepare` (S2.0f-LL-2: `'localhost'` + Socket-Argument statt `null`): before=26 after=25 removed=1 affected_rows=1
+   - T3b Plugin-Ordner nach `_archive/santapress-2026-04-19/` verschoben (21 MB, identisch zum Source), ARCHIVE_README.md mit Rollback-Anleitung + Verfallsdatum
+   - T4 `DELETE FROM wp_options WHERE option_name='rewrite_rules'` + 2× Warmup-curl (beide HTTP 200) → neue Größe **10979 Bytes** (−2106 = Santapress-Routen weg, S2.0f-LL-3)
+   - T5a `smoke-http.sh` neu angelegt, 5 URLs (`/`, `/karriere/`, `/wp-login.php`, `/feed/`, `/?s=test`), Exit 0, alle HTTP 200
+   - T5b `verify.sh` Komplett-Lauf: §1+§1b+§2+§3+§3b+§4 alle grün, Exit 0 → **keine Regression**
+   - T7 Self-Check `evidence/2026-04-19_s2.0f_self-check.md` (6/6 AKs grün), 5 Lessons Learned
+   - T8 Commit B (`a6cc6f3`) — 16 Files (.gitignore + Spec-Update + Tool + 13 Evidenz-Files + Self-Check)
+5. **Phase 4 Selbstprüfung:** AK-Tabelle 6/6 grün. **F7b-Paranoia-Check bestätigt:** `wp_posts`-Count vor/nach identisch (2860 gesamt, Delta=0 je post_status) → kein `deactivation_hook`-Schaden.
+6. **„Session beenden"-Workflow LL-042 (6 Schritte):**
+   - Schritt 1: Projekt-Audit grün (verify/validate/smoke alle OK, Theme clean, keine Backup-Files, nur erwartete S2.3-TODO-Marker in Specs)
+   - Schritt 2: Nexus-Audit — CLAUDE.md + MEMORY.md brauchen Session-13-Updates
+   - Schritt 3: Pattern-Optimierung — neues Pattern `wp-plugin-safe-removal.md` angelegt; `.gitignore`-Hygiene (`screenshots/claude/` ergänzt, Commit `ced4e0a`)
+   - Schritt 4: Tutorial 14 `14-wp-plugin-sicher-entfernen.md` angelegt (5-Schritt-Protokoll, PHP-Serialize-Erklärung, Governance-Pattern)
+   - Schritt 5: diese Datei finalisiert
+   - Schritt 6: Dashboard (siehe Chat-Ausgabe)
+
+### Verifiziert (AK-Tabelle aus Self-Check)
+
+| AK | Status | Evidenz |
+|---|:---:|---|
+| AK-1 | ✅ | active_plugins 26 → 25 (Santapress raus) |
+| AK-2 | ✅ | Plugins-Dir ohne santapress, Archive 21 MB identisch |
+| AK-3 | ✅ | rewrite_rules 13085 → 10979 Bytes (−2106) |
+| AK-4 | ✅ | verify.sh Exit 0, 6 §-Blöcke grün |
+| AK-5 | ✅ | smoke-http.sh Exit 0, 5/5 URLs HTTP 200 |
+| AK-6 | ✅ | T2-Dependency-Audit: 0 externe Referenzen |
+
+**Score: 6/6 = 100 %**
+
+### Lessons Learned (S2.0f-LL-1…5 — ins Pattern + Tutorial 14 übernommen)
+
+- **S2.0f-LL-1:** Page-Registry (`tools/page-registry.mjs`) ist Definition-of-Done-Artefakt für S2.3. Registry hat aktuell nur 2 Einträge (home, karriere) — die 8 S2.2-Skelett-Slugs sind nicht registriert. Bei S2.3-Pages muss Registry mitgepflegt werden.
+- **S2.0f-LL-2:** `mysqli` + Unix-Socket: `new mysqli('localhost', ..., $socket)` ist robuster als `new mysqli(null, ..., $socket)`. `null` als Host ist in manchen PHP-Versionen inkonsistent.
+- **S2.0f-LL-3:** `rewrite_rules`-Größen-Delta ist das einfachste Signal für Plugin-Route-Entfernung. Hier: −2106 Bytes.
+- **S2.0f-LL-4:** F7b `wp_posts`-Count ist billige Paranoia (2×50ms) mit hoher Aussagekraft gegen `deactivation_hook`-Schaden. Standard-Evidenz für Plugin-Entfernungen.
+- **S2.0f-LL-5:** `smoke-http.sh` gehört **nicht** in `verify.sh`. Scope-Disziplin (S2.0e-LL-4): Code-Korrektheit deterministisch/offline vs. Request-Verfügbarkeit netzwerkabhängig. Zwei Dimensionen → zwei Tools.
+
+---
+
+## §3a Vorletzte Session — Session 12, 2026-04-19
 
 ### Ziel
 Praxis-Sprint 2 / S2.0e Verify-Hardening — `tools/verify.sh` um Split-Check-Erweiterung
@@ -502,47 +554,29 @@ Shopify-Theme-Klon, ohne Eingriff in Theme-Repo oder Live-Site.
 
 ### P0 — Praxis-Sprint 2 fortsetzen (Dr. Stracke-Direktive „zuerst Design und Content" bleibt)
 
-S2.0b ✅ und S2.0e ✅ abgeschlossen. **Sprint-Reihenfolge:** S2.2 ✅ → S2.0b ✅ →
-S2.0e ✅ → **S2.3 Content-Batches freigeschaltet** → S2.4 → S2.5. Ein optionaler
+S2.0b ✅, S2.0e ✅ und S2.0f ✅ abgeschlossen. **Sprint-Reihenfolge:** S2.2 ✅ → S2.0b ✅ →
+S2.0e ✅ → S2.0f ✅ → **S2.3 Content-Batches freigeschaltet** → S2.4 → S2.5. Ein optionaler
 Mini-Sprint verbleibt (S2.0d Rename).
 
-**P0a — S2.3 Content-Batch B/C/G (Hauptlinie, jetzt freigeschaltet)**
+**P0a — S2.3 Content-Batch B/C/G (Hauptlinie, freigeschaltet)**
 - Pfad: `sites/praxis-webseite/`
-- Skelett-Templates (S2.2) + Komponenten-Bibliothek (S2.0b) stehen → jetzt
-  können die 7 freien P0-Seiten mit Echt-Content befüllt werden.
+- Skelett-Templates (S2.2) + Komponenten-Bibliothek (S2.0b) + Verify-Hardening (S2.0e) + Santapress-Interferenz-Quelle entfernt (S2.0f) → jetzt können die 7 freien P0-Seiten mit Echt-Content befüllt werden.
 - Batch B: Praxis + Team + 404 (3 Seiten)
 - Batch C: Fachrichtungen-Landing + Ärzte-Übersicht (2 Seiten, Card-Grid)
 - Batch G: Sprechstunden + Kontakt (2 Seiten, Doctolib-Workaround)
 - Je Batch eigene Spec `S2.3-<letter>_<name>.md`, Architekten-Modus.
+- **Neu (S2.0f-LL-1):** Jede in S2.3 neu angelegte WP-Page gehört zur Definition-of-Done in `tools/page-registry.mjs` (Registry hat aktuell nur 2 Einträge: home, karriere).
 
 **P0b — S2.0d Mini (optional, vor oder nach S2.3)**
-- `kar` → `karriere` Rename in `karriere.css` und `template-karriere.php`.
-  Vereinheitlichung mit sprechenden Slugs (S2.2-LL-4). MD5-Null-Delta-Beweis
-  erforderlich.
-- Semantic-Token `--pxz-space-card-padding-sm` nachziehen, `.pxz-card` in
-  `components.css` umstellen (löst AK-2-Ausnahme auf).
+- `kar` → `karriere` Rename in `karriere.css` und `template-karriere.php`. Vereinheitlichung mit sprechenden Slugs (S2.2-LL-4). MD5-Null-Delta-Beweis erforderlich.
+- Semantic-Token `--pxz-space-card-padding-sm` nachziehen, `.pxz-card` in `components.css` umstellen (löst AK-2-Ausnahme auf).
 - Legacy-Alias-Abbau in `tokens.css` (DESIGN_GUIDELINES §2.1) — optional.
 
 **P0c — S2.3 Batch A (Datenschutz + Impressum) — blockiert**
-- **Vorbedingung:** Rechtssicherheits-Quelle wählen (Anwalt / e-recht24 /
-  Prod-Text). Ohne Dr.-Stracke-Entscheidung bleibt Batch A blockiert.
+- **Vorbedingung:** Rechtssicherheits-Quelle wählen (Anwalt / e-recht24 / Prod-Text). Ohne Dr.-Stracke-Entscheidung bleibt Batch A blockiert.
 
-**P0d — Santapress-Plugin entfernen (freigegeben 2026-04-19)**
-- Dr. Stracke hat in Session 12 freigegeben: „Santapress kann komplett gelöscht
-  werden". Das Plugin ist einer der Gründe für den S2.0e-Rewrite-Rule-Pivot
-  gewesen (es kapert Rewrite-Rules). Entfernung ist zukunftsfähig und räumt
-  eine potenzielle Fehlerquelle für S2.3-Content-Batches aus dem Weg.
-- Konkrete Schritte (für eigenen Mini-Sprint, ~15–30 min):
-  1. Backup der aktiven-Plugins-Option (`wp_options.active_plugins`) anlegen.
-  2. Plugin per SQL deaktivieren (`wp_options.active_plugins` anpassen) oder
-     Plugin-Ordner entfernen (`wp-content/plugins/santapress/`).
-  3. Rewrite-Rules neu generieren (DELETE + Warmup-Request, siehe
-     `local-wp-mysql-socket.md` §Grenze).
-  4. `verify.sh` erneut laufen lassen, sicherstellen dass §3 + §3b grün bleiben.
-  5. Check, ob sonst noch Santapress-Referenzen in functions.php / Theme stehen
-     (Santapress-Code-Warning aus 404-Page kam aus `class-santapress-public.php:724`).
-- Out-of-scope für jetzt: Sollte Santapress produktiv auf westend-hausarzt.com
-  laufen, ist das separate Entscheidung. Local-WP-Entfernung ist unkritisch.
+**P0d — Santapress-Plugin-Archiv auflösen (fällig ab 2026-05-19)**
+- `sites/praxis-webseite/_archive/santapress-2026-04-19/` hat Verfallsdatum 2026-05-19 (30 Tage). Dann eigene Kurz-Session (~5 min) zur Entscheidung: gelöscht (wenn nichts aufgefallen) oder reaktiviert (wenn Funktion vermisst wurde). Nicht sinnvoll vor diesem Datum.
 
 ### P1 — Juvantis-Web-Trunk-Content-Ausbau (mittelfristig)
 Weitere YAML-Produktquellen in `trunk/content/products/` (Body Checks,
@@ -593,23 +627,22 @@ Items 14–16 aus §0 oben.
 
 ## §6 Sofort-Status-Frage für nächste Session
 
-> **„Praxis-Sprint 2 / S2.0e Verify-Hardening ist ✅ abgeschlossen —
-> `tools/verify.sh` um §1b `grep_split_css()` + §3b `component_probe()`
-> (zweistufige Bash-Probe) erweitert. Architektur-Pivot während Umsetzung:
-> ursprüngliche DOM-Probe auf Draft-Page scheiterte an WP-Rewrite-Rule-Grenze
-> bei direkt-SQL-Page-Inserts (Santapress-Plugin-Interaktion). Bash-Probe
-> architektonisch sauberer (trennt Code-Korrektheit von Integrations-Korrektheit).
-> Theme-Repo unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). S2.0b-Self-Check
-> rückwirkend auf 12/12 (100 %) angehoben. Cortex-Web-Commits `88290b0` (Spec)
-> + `6352b1e` (Tool + Self-Check + Nachtrag). Neues Pattern
-> `verify-probe-code-vs-integration.md`, `local-wp-mysql-socket.md` um
-> Rewrite-Rule-Warnung erweitert, Tutorial 13 angelegt. Dr.-Stracke-Freigabe
-> 2026-04-19: Santapress-Plugin darf komplett entfernt werden. 5 Lessons
-> S2.0e-LL-1…5. Welche Front?**
+> **„Praxis-Sprint 2 / S2.0f Santapress-Plugin-Entfernung ist ✅ abgeschlossen —
+> Plugin aus Local-WP entfernt (26 → 25 active_plugins), Rewrite-Rules
+> regeneriert (13085 → 10979 Bytes, Santapress-Routen raus), `wp_posts`-Count
+> vor/nach identisch (2860, kein Content verloren, F7b-Paranoia-Check bestätigt).
+> Plugin-Ordner archiviert in `_archive/santapress-2026-04-19/` mit Verfallsdatum
+> 2026-05-19 (30 Tage Beobachtungsfenster). Neues Tool `tools/smoke-http.sh`
+> (5 URLs × HTTP 200, 5xx-Fail-Regel). Theme unberührt (HEAD `8f596f7`,
+> PXZ_VERSION 2.7.8). 6/6 AKs grün. Cortex-Web-Commits `e036328` (Spec) +
+> `a6cc6f3` (Tool+Evidenz+Self-Check) + `ced4e0a` (.gitignore-Hygiene).
+> Neues Pattern `wp-plugin-safe-removal.md`, Tutorial 14 angelegt. 5 Lessons
+> S2.0f-LL-1…5. Welche Front?**
 >
-> A. **Praxis S2.3 Batch B — Praxis + Team + 404** (empfohlen, frei verfügbar,
->    Skelett + Komponenten-Bibliothek + verify-Hardening sind da, 3 P0-Seiten
->    mit Echt-Content, Spec `specs/sprint-2/S2.3-B_praxis-team-404.md` neu schreiben).
+> A. **Praxis S2.3 Batch B — Praxis + Team + 404** (Hauptlinie, 3 P0-Seiten
+>    mit Echt-Content, alle Vorbedingungen da: Skelette S2.2, Komponenten S2.0b,
+>    Verify-Hardening S2.0e, Plugin-Interferenz entfernt S2.0f). Neue Spec
+>    `specs/sprint-2/S2.3-B_praxis-team-404.md` im Architekten-Modus.
 >
 > B. **Praxis S2.3 Batch C — Fachrichtungen-Landing + Ärzte-Übersicht**
 >    (2 P0-Seiten, Card-Grid-Templates).
@@ -617,33 +650,27 @@ Items 14–16 aus §0 oben.
 > C. **Praxis S2.3 Batch G — Sprechstunden + Kontakt** (2 P0-Seiten, Doctolib-
 >    Workaround).
 >
-> D. **Santapress-Plugin-Entfernung (~15–30 min, freigegeben durch Dr. Stracke)**
->    — räumt die Rewrite-Rule-Interferenz aus dem Weg, die in S2.0e den Pivot
->    ausgelöst hat. Sinnvoll VOR S2.3 Batch B, weil Batch B möglicherweise
->    direkt-SQL-Page-Operations braucht.
->
-> E. **Praxis S2.0d Mini** — `kar`→`karriere`-Rename + Semantic-Token
+> D. **Praxis S2.0d Mini** — `kar`→`karriere`-Rename + Semantic-Token
 >    `--pxz-space-card-padding-sm` nachziehen + Legacy-Alias-Audit in tokens.css.
 >
-> F. **Praxis S2.3 Batch A — Datenschutz + Impressum** — **blockiert** durch
+> E. **Praxis S2.3 Batch A — Datenschutz + Impressum** — **blockiert** durch
 >    Rechtssicherheits-Quelle (Anwalt / e-recht24 / Prod). Ohne Ihre Entscheidung
 >    nicht startbar.
 >
-> G. **Juvantis-Trunk-Content-Ausbau** oder **Phase 2b Medien-Pipeline**
+> F. **Juvantis-Trunk-Content-Ausbau** oder **Phase 2b Medien-Pipeline**
 >    (wenn Priorität weg von Praxis kippt).
 >
-> H. **Sprint 1 reanimieren** — SFTP-Credentials sind da (seit 2026-04-19).
+> G. **Sprint 1 reanimieren** — SFTP-Credentials sind da (seit 2026-04-19).
 >    Staging-Setup ist aktivierbar, aber Design-first-Direktive gilt noch.
 >
-> I. **Strukturhygiene-Aufräumblock:** `SESSION_START.md`-Legacy-Pfade bereinigen,
->    5 Plugin-Phantom-Templates aufräumen.
+> H. **Strukturhygiene-Aufräumblock:** `SESSION_START.md`-Legacy-Pfade bereinigen,
+>    5 Plugin-Phantom-Templates aufräumen (aus SESSION_RESUME §4 P3).
 >
-> J. **Andere konkrete Änderung** — Sie nennen."
+> I. **Andere konkrete Änderung** — Sie nennen."
 
-Keine Code-Änderung vor Ihrer Wahl. Architekten-Tendenz: **D (Santapress-Entfernung)
-vor A (S2.3 Batch B)** — die Plugin-Entfernung ist kurz, freigegeben, räumt eine
-dokumentierte Fehlerquelle aus. Alternativ direkt **A** wenn Sie Content-Momentum
-priorisieren.
+Keine Code-Änderung vor Ihrer Wahl. Architekten-Tendenz: **A (S2.3 Batch B)** —
+alle Vorbedingungen stehen, Content-Momentum nutzen. Dieser Batch ist größer
+(Mehr-Session-Kandidat) und sollte mit frischem Chat beginnen.
 
 ---
 
@@ -694,8 +721,9 @@ priorisieren.
 | 10 | 2026-04-19 | Praxis-Sprint 2 / S2.2 | Template-Typologie ✅ — 8 Skelett-Templates + 8 CSS + functions.php-Erweiterung, PXZ_VERSION 2.7.7, In-Session-Bug PXZ-E-009 gefixt, 12/12 AKs grün. | Theme: `6c02cb4`+`dd3e4e1`. Cortex-Web: `de4f580`+`5a2a247`. Nexus: Pattern `wp-skeleton-templates-bundle.md` + Tutorial 11. |
 | **11** | **2026-04-19** | **Praxis-Sprint 2 / S2.0b** | **Komponenten-Bibliothek ✅ — Schicht 3 eingezogen per `components.css` (6 Blöcke: Container + Typografie + Buttons + Section + Card + Hero), globaler Enqueue zwischen `praxiszentrum` und page-CSS. PXZ_VERSION 2.7.8. Home MD5-Null-Delta verifiziert (3/3 MATCH). Karriere −9 px am `.wpforms-submit` (WCAG-Accessibility-Gewinn, dokumentiert). In-Session-Fix S2.0b-LL-1: Spezifitäts-Kollision mit `.pxz-home :where(p)`-Reset gefixt per page-scope Overrides. 10/12 AKs grün (AK-8 + AK-10 verschoben auf S2.0e). 5 Lessons Learned.** | Theme: **`08f40ff`** (feat components+enqueue+version+changelog) + **`8f596f7`** (refactor homepage-trim+specificity-fix). Cortex-Web: **`2056e3e`** (Spec) + **`df50333`** (Self-Check+Pointer+Evidence+12 Shots). Nexus: 2 neue Patterns `css-layer3-promotion.md` + `local-wp-mysql-socket.md` + Tutorial 12 + MEMORY/CLAUDE/SYSTEM_MAP. |
 | **12** | **2026-04-19** | **Praxis-Sprint 2 / S2.0e** | **Verify-Hardening ✅ — `tools/verify.sh` um §1b `grep_split_css()` + §3b `component_probe()` (zweistufige Bash-Probe: 8 Datei-Assertions + 2 Enqueue-Checks) erweitert. Architektur-Pivot unter Umsetzung wegen WP-Rewrite-Rule-Grenze bei direkt-SQL-Page-Inserts (Santapress-Interaktion). Bash-Probe architektonisch sauberer (trennt Code-Korrektheit von Integrations-Korrektheit). Theme unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). S2.0b-Self-Check rückwirkend auf 12/12. 8/8 AKs. 5 Lessons S2.0e-LL-1…5. Dr.-Stracke-Freigabe: Santapress-Plugin darf entfernt werden.** | Cortex-Web: **`88290b0`** (Spec) + **`6352b1e`** (Tool+Self-Check+Nachtrag). Nexus: neues Pattern `verify-probe-code-vs-integration.md` + Erweiterung `local-wp-mysql-socket.md` §Grenze + Tutorial 13 + MEMORY/CLAUDE-Update. |
-| *(13)* | *tbd* | *Santapress-Entfernung oder S2.3 Batch B* | *D (Santapress-Entfernung, ~15–30 min, freigegeben) empfohlen vor Batch B. Oder direkt A (S2.3 Batch B: Praxis + Team + 404). Batch A weiter blockiert (Rechtsquelle).* | — |
+| **13** | **2026-04-19** | **Praxis-Sprint 2 / S2.0f** | **Santapress-Plugin-Entfernung ✅ — 5-Schritt-Protokoll (T1 Pre-Snapshot + T2 Dependency-Audit 0 externe Referenzen + T3 active_plugins-Update via mysqli-prepared + Archive-mv + T4 Rewrite-Rules-Regenerierung −2106 Bytes + T5 verify.sh + neues smoke-http.sh beide grün). `wp_posts`-Count identisch vor/nach (F7b: kein Content verloren). Archive in `_archive/santapress-2026-04-19/` (gitignored, Verfallsdatum 2026-05-19). Theme unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). 6/6 AKs. 5 Lessons S2.0f-LL-1…5.** | Cortex-Web: **`e036328`** (Spec) + **`a6cc6f3`** (Tool+Evidenz+Self-Check, 16 Files) + **`ced4e0a`** (.gitignore-Hygiene). Nexus: neues Pattern `wp-plugin-safe-removal.md` + Tutorial 14 + MEMORY/CLAUDE-Update. |
+| *(14)* | *tbd* | *S2.3 Batch B oder weitere Front* | *A (S2.3 Batch B: Praxis + Team + 404) empfohlen — alle Vorbedingungen stehen. Batch A weiter blockiert (Rechtsquelle). S2.0d Mini optional.* | — |
 
 ---
 
-*Stand: 2026-04-19, Ende Session 12. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–J aus §6 wählen. Architekten-Tendenz: D (Santapress-Entfernung) vor A (S2.3 Batch B), weil Santapress-Freigabe durch Dr. Stracke in Session 12 erfolgte und die Plugin-Entfernung eine dokumentierte Fehlerquelle für S2.3 Batch B ausräumt.*
+*Stand: 2026-04-19, Ende Session 13. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–I aus §6 wählen. Architekten-Tendenz: A (S2.3 Batch B), weil alle Vorbedingungen stehen (Skelett, Komponenten, Verify-Hardening, Plugin-Interferenz entfernt) und Content-Momentum aufgebaut werden soll.*
