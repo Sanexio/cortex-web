@@ -32,3 +32,7 @@ logs/
 # Metadaten zu Archiven gehören in specs/*/evidence/ bzw. in Self-Check-Dokumente,
 # nicht als vollständiger Ordner ins Git. README bleibt lokal im Archive-Ordner.
 _archive/
+
+# Transient Verify-Screenshots (neu generiert bei jedem verify.sh-Lauf).
+# Echte Evidenz-Screenshots gehören nach specs/*/evidence/, nicht ins Rolling-Archiv.
+sites/*/screenshots/claude/
