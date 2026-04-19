@@ -39,15 +39,15 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.6.1` — Cortex-Web-Aufbau (Phase 0–5) ✅ vollständig · Praxis-Sprint 2 fortgeführt
-- **Stand:** 2026-04-19, **Session 11 abgeschlossen** (Praxis-Sprint 2 / S2.0b Komponenten-Bibliothek)
+- **Version:** `0.6.2` — Cortex-Web-Aufbau (Phase 0–5) ✅ vollständig · Praxis-Sprint 2 fortgeführt
+- **Stand:** 2026-04-19, **Session 12 abgeschlossen** (Praxis-Sprint 2 / S2.0e Verify-Hardening)
 - **Working Tree:** clean
 - **Cortex-Web-Aufbau (Phase 0–5):** ✅ **vollständig**
 - **Trunk-Content:** unverändert, 1 Produkt (`basic-check.yaml`)
 - **WP-Adapter:** Phase 1, idempotent, HWG-konform, Review-geprüft
 - **Shopify-Adapter:** Phase 2, idempotent, draft-only, Review-geprüft
 - **Review-Pipeline:** Phase 3, 11/11 automatische AKs grün
-- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`8f596f7`** (Folge von `08f40ff`, **PXZ_VERSION 2.7.8**). Design-Autorität: `DESIGN_GUIDELINES.md` v3.0. Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅ + **S2.0b ✅** (Komponenten-Bibliothek `components.css`, 6 Blöcke, globaler Enqueue zwischen `praxiszentrum` und page-CSS, Home MD5-Null-Delta verifiziert, Karriere -9px Accessibility-Gewinn am `.wpforms-submit`, Self-Check 10/12 AKs grün — AK-8 + AK-10 verify.sh-Erweiterung auf S2.0e verschoben, Cortex-Web-Commit `df50333`). **S2.3 Content-Batches jetzt freigeschaltet:** B/C/G verfügbar, A blockiert durch Rechtssicherheitsquelle.
+- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`8f596f7`** (**PXZ_VERSION 2.7.8**, **unverändert seit S2.0b** — S2.0e hat das Theme nicht angefasst). Design-Autorität: `DESIGN_GUIDELINES.md` v3.0. Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅ + S2.0b ✅ + **S2.0e ✅** (Verify-Hardening: `tools/verify.sh` um §1b `grep_split_css()` + §3b `component_probe()` (zweistufige Bash-Probe) erweitert, S2.0b-Self-Check rückwirkend auf 12/12 angehoben, Cortex-Web-Commits `88290b0`+`6352b1e`). **S2.3 Content-Batches jetzt freigeschaltet:** B/C/G verfügbar, A blockiert durch Rechtssicherheitsquelle.
 - **Juvantis-Site:** `sites/juvantis-webseite/` (Docs-Schicht), Theme-Pointer auf Commit `1fbc35b` (GitHub-Remote `shopify-theme`)
 
 ### §1.1 Phasen-Status
@@ -106,7 +106,92 @@ Erwartet: `AK automatisch: 11/11 grün`, Exit 0.
 
 ---
 
-## §3 Letzte Session — Session 11, 2026-04-19
+## §3 Letzte Session — Session 12, 2026-04-19
+
+### Ziel
+Praxis-Sprint 2 / S2.0e Verify-Hardening — `tools/verify.sh` um Split-Check-Erweiterung
+(§1b) und Component-Probe (§3b) ergänzen, um die in S2.0b auf „später" verschobenen
+AK-8 + AK-10 nachzuholen. Keine Theme-Änderung.
+
+### Durchgeführt (Architekten-Modus 4 Phasen)
+1. **Pflicht-Init geladen** (Nexus + Cortex-Web + Praxis-WORKING_MODE + SESSION_RESUME Session 11).
+   Pre-Flight: `validate.sh` ✅, Praxis `verify.sh` ✅.
+2. **Phase 1 Verständnis-Sicherung** mit 7 Freigabefragen (F1–F7) + 3 Detail-Fragen
+   (Page-Status, Viewport-Umfang, Migration-Pattern). Alles delegiert durch Dr. Stracke
+   an Architekten-Wahl.
+3. **Phase 2 Lösungsdesign:** Spec `S2.0e_verify-hardening.md` (14 KB, 8 AKs, 6 Risiken,
+   Out-of-Scope-Liste). Architekten-Entscheidungen: F1a-modifiziert + F2b + F3a + F4a +
+   F5b+F5c + F6b + 90-min-Cap. Für die 3 Detail-Fragen: publish statt draft,
+   1440 only, Migration-Skript statt ad-hoc SQL.
+4. **Phase 3 Umsetzung — mit Architektur-Pivot:**
+   - T1 Spec committed (`88290b0`)
+   - T2 Migration-Skript `tools/migrations/2026-04-19_s2.0e_probe-page-setup.sh` angelegt,
+     idempotent-Verhalten verifiziert (2× OK-Ausgabe). Page 9670 auf publish + Probe-Markup.
+   - T3 `page-registry.mjs` erweitert um `component-probe`-Eintrag.
+   - **Pivot-Entdeckung:** Puppeteer-Probe schlägt fehl — `/s2-0b-probe/` gibt 404,
+     trotz publish + Probe-Markup. Grund: WordPress-Rewrite-Rules werden nach direktem
+     SQL-INSERT nicht zuverlässig für den Slug generiert (Santapress-Plugin-Interaktion).
+     Diagnose via 4 Versuche: `DELETE rewrite_rules` + Warmup (fail), PHP-CLI `flush_rewrite_rules`
+     (fail am Local-DB-Socket), `/?pagename=` (301), `/index.php/…/` (301). Alle scheitern.
+   - **Architektur-Pivot:** T2 + T3 rückgängig (Page auf draft/leer, Skript gelöscht,
+     page-registry-Eintrag entfernt). §3b neu als zweistufige **Bash-Probe**:
+     · Stufe A — 8 `grep`-Assertions auf `components.css` (Datei-Korrektheit)
+     · Stufe B — 2 `curl`+`grep`-Checks auf Home-HTML (Enqueue-Korrektheit)
+     Multi-Line-CSS via `grep -E <head> -A <ctx> | grep -qE <content>` gelöst.
+   - T4 `PROBED_PROPS` in `probe-design.mjs` um `textTransform`/`fontWeight`/`fontSize`
+     erweitert (zukunftsfähig für Page-Typografie-Probes in S2.3).
+   - T5 `grep_split_css()` + `component_probe()` in `verify.sh` + Dispatch.
+   - T6 Komplett-Lauf `verify.sh`: §1 + §1b + §2 + §3 + §3b + §4 alle grün, Exit 0.
+   - T7 S2.0e-Self-Check `evidence/2026-04-19_s2.0e_self-check.md` (8/8 AKs).
+   - T8 S2.0b-Self-Check-Nachtrag: AK-8 + AK-10 → grün durch S2.0e, finaler Score
+     **12/12 (100 %)**.
+   - T9 Cortex-Web-Commit B (`6352b1e`).
+5. **Phase 4 Selbstprüfung:** AK-Tabelle 8/8 grün. 5 Lessons Learned S2.0e-LL-1…5.
+   Pivot explizit als „architektonische Abweichung" im Self-Check dokumentiert.
+6. **„Session beenden"-Workflow LL-042 (6 Schritte):**
+   - Schritt 1: Projekt-Audit grün (verify/validate beide OK, Theme clean, keine Backups).
+   - Schritt 2: Nexus-Audit — MEMORY.md + CLAUDE.md brauchten Session-12-Updates.
+   - Schritt 3: Pattern-Optimierung — neues Pattern `verify-probe-code-vs-integration.md`
+     angelegt (plattform-agnostisch WP/Shopify/Next.js/iOS).
+     `local-wp-mysql-socket.md` um Rewrite-Rule-Warnsektion erweitert.
+   - Schritt 4: Tutorial 13 `13-verify-probe-architektur-und-wp-rewrite-grenze.md`
+     angelegt (Meta-Ebene-Lehrsätze: Dimensionen trennen, Architektur-Pivots als
+     Chance, Rollback muss DB mit zurücksetzen).
+   - Schritt 5: diese Datei finalisiert.
+   - Schritt 6: Dashboard (siehe unten im Chat).
+
+### Verifiziert (AK-Tabelle aus Self-Check)
+
+| AK | Status | Evidenz |
+|---|:---:|---|
+| AK-1 | ✅ | `grep_split_css()` in verify.sh (Def + Aufruf) |
+| AK-2 | ✅ | 3× „Keine doppelten Basis-Selektoren" |
+| AK-3 | ✅ | `component_probe()` mit 8+2 Assertions (Bash, statt page-registry-DOM-Probe) |
+| AK-4 | ✅ | PROBED_PROPS enthält textTransform/fontWeight/fontSize |
+| AK-5 | ✅ | verify.sh --component-probe grün, 10× ✓ |
+| AK-6 | ✅ | Full verify.sh Exit 0 mit §1 + §1b + §2 + §3 + §3b + §4 |
+| AK-7 | ✅ | Theme-HEAD `8f596f7` unverändert, clean |
+| AK-8 | ✅ | S2.0b-Self-Check-Nachtrag mit S2.0e-Ref |
+
+**Score: 8/8 = 100 %**
+
+### Lessons Learned (S2.0e-LL-1…5 — ins Pattern + Tutorial 13 übernommen)
+- **S2.0e-LL-1:** Puppeteer-DOM-Probe auf direkt-SQL-angelegte Pages scheitert an
+  WP-Rewrite-Rules. Gilt besonders mit Plugins wie Santapress, die eigene URL-Handler
+  registrieren. Regel: direkt-SQL nur für Backend-Objekte, nicht für Frontend-Slug-URLs.
+- **S2.0e-LL-2:** Architektur-Pivot unter Zeitdruck ist architektonisch oft besser
+  als Forcieren des ursprünglichen Plans. Hier: Trennung Code- vs. Integrations-Test
+  gewinnt gegenüber „ein DOM-Test für alles".
+- **S2.0e-LL-3:** `grep -E <head> -A <ctx> | grep -qE <content>` ist ein robustes
+  Muster für Multi-Line-CSS-Assertions (kein pcregrep/perl nötig).
+- **S2.0e-LL-4:** Gute Pre-Flight-Probes testen die zwei Fragen, die echte Aussagen
+  treffen: „Läuft der Code?" und „Ist die Regel da?" sind unterschiedlich.
+- **S2.0e-LL-5:** Rollback nach Architektur-Pivot muss DB-Zustand mit zurücksetzen
+  (post_status, post_content) — nicht nur Dateien.
+
+---
+
+## §3a Vorletzte Session — Session 11, 2026-04-19
 
 ### Ziel
 Praxis-Sprint 2 / S2.0b Komponenten-Bibliothek — Schicht 3 (Components) gemäß
@@ -417,9 +502,9 @@ Shopify-Theme-Klon, ohne Eingriff in Theme-Repo oder Live-Site.
 
 ### P0 — Praxis-Sprint 2 fortsetzen (Dr. Stracke-Direktive „zuerst Design und Content" bleibt)
 
-S2.0b ✅ abgeschlossen. **Sprint-Reihenfolge:** S2.2 ✅ → S2.0b ✅ →
-**S2.3 Content-Batches freigeschaltet** → S2.4 → S2.5. Zwei optionale
-Mini-Sprints empfohlen vor S2.3.
+S2.0b ✅ und S2.0e ✅ abgeschlossen. **Sprint-Reihenfolge:** S2.2 ✅ → S2.0b ✅ →
+S2.0e ✅ → **S2.3 Content-Batches freigeschaltet** → S2.4 → S2.5. Ein optionaler
+Mini-Sprint verbleibt (S2.0d Rename).
 
 **P0a — S2.3 Content-Batch B/C/G (Hauptlinie, jetzt freigeschaltet)**
 - Pfad: `sites/praxis-webseite/`
@@ -430,15 +515,7 @@ Mini-Sprints empfohlen vor S2.3.
 - Batch G: Sprechstunden + Kontakt (2 Seiten, Doctolib-Workaround)
 - Je Batch eigene Spec `S2.3-<letter>_<name>.md`, Architekten-Modus.
 
-**P0b — S2.0e Mini (empfohlen vor S2.3, ~30 min)**
-- verify.sh §3b Component-Probe auf Draft-Testseite `s2-0b-probe` (ID 9670):
-  4 Computed-Style-Assertions auf `.pxz-container`, `.pxz-btn`, `.pxz-eyebrow`,
-  `.pxz-hero`.
-- Split-Check-Erweiterung: `components.css` vs. `homepage.css` vs. `karriere.css`
-  auf Doppel-Selektoren (erweitert die bestehende PXZ-E-001-Prüfung).
-- Schließt die 2 aus S2.0b verschobenen AKs (AK-8 + AK-10).
-
-**P0c — S2.0d Mini (optional, vor oder nach S2.3)**
+**P0b — S2.0d Mini (optional, vor oder nach S2.3)**
 - `kar` → `karriere` Rename in `karriere.css` und `template-karriere.php`.
   Vereinheitlichung mit sprechenden Slugs (S2.2-LL-4). MD5-Null-Delta-Beweis
   erforderlich.
@@ -446,9 +523,26 @@ Mini-Sprints empfohlen vor S2.3.
   `components.css` umstellen (löst AK-2-Ausnahme auf).
 - Legacy-Alias-Abbau in `tokens.css` (DESIGN_GUIDELINES §2.1) — optional.
 
-**P0d — S2.3 Batch A (Datenschutz + Impressum) — blockiert**
+**P0c — S2.3 Batch A (Datenschutz + Impressum) — blockiert**
 - **Vorbedingung:** Rechtssicherheits-Quelle wählen (Anwalt / e-recht24 /
   Prod-Text). Ohne Dr.-Stracke-Entscheidung bleibt Batch A blockiert.
+
+**P0d — Santapress-Plugin entfernen (freigegeben 2026-04-19)**
+- Dr. Stracke hat in Session 12 freigegeben: „Santapress kann komplett gelöscht
+  werden". Das Plugin ist einer der Gründe für den S2.0e-Rewrite-Rule-Pivot
+  gewesen (es kapert Rewrite-Rules). Entfernung ist zukunftsfähig und räumt
+  eine potenzielle Fehlerquelle für S2.3-Content-Batches aus dem Weg.
+- Konkrete Schritte (für eigenen Mini-Sprint, ~15–30 min):
+  1. Backup der aktiven-Plugins-Option (`wp_options.active_plugins`) anlegen.
+  2. Plugin per SQL deaktivieren (`wp_options.active_plugins` anpassen) oder
+     Plugin-Ordner entfernen (`wp-content/plugins/santapress/`).
+  3. Rewrite-Rules neu generieren (DELETE + Warmup-Request, siehe
+     `local-wp-mysql-socket.md` §Grenze).
+  4. `verify.sh` erneut laufen lassen, sicherstellen dass §3 + §3b grün bleiben.
+  5. Check, ob sonst noch Santapress-Referenzen in functions.php / Theme stehen
+     (Santapress-Code-Warning aus 404-Page kam aus `class-santapress-public.php:724`).
+- Out-of-scope für jetzt: Sollte Santapress produktiv auf westend-hausarzt.com
+  laufen, ist das separate Entscheidung. Local-WP-Entfernung ist unkritisch.
 
 ### P1 — Juvantis-Web-Trunk-Content-Ausbau (mittelfristig)
 Weitere YAML-Produktquellen in `trunk/content/products/` (Body Checks,
@@ -499,20 +593,23 @@ Items 14–16 aus §0 oben.
 
 ## §6 Sofort-Status-Frage für nächste Session
 
-> **„Praxis-Sprint 2 / S2.0b Komponenten-Bibliothek ist ✅ abgeschlossen —
-> Schicht 3 (Components) per `assets/css/components.css` eingezogen, 6 Blöcke
-> (Container + Typografie + Buttons + Section + Card + Hero), globaler Enqueue,
-> PXZ_VERSION 2.7.8, Home MD5-Null-Delta verifiziert, Karriere −9 px am
-> `.wpforms-submit` (WCAG-Accessibility-Gewinn, dokumentiert), 10/12 AKs grün
-> (AK-8 + AK-10 verify.sh-Erweiterung auf S2.0e verschoben), 5 Lessons Learned.
-> In-Session-Fix S2.0b-LL-1: Spezifitäts-Kollision zwischen `.pxz-home :where(p)`-Reset
-> und hochgezogenen Class-Regeln — gefixt per page-scope Overrides.
-> Theme-Commits `08f40ff`+`8f596f7`, Cortex-Web-Commits `2056e3e`+`df50333`.
-> 2 neue Patterns + Tutorial 12 in Nexus. Welche Front?**
+> **„Praxis-Sprint 2 / S2.0e Verify-Hardening ist ✅ abgeschlossen —
+> `tools/verify.sh` um §1b `grep_split_css()` + §3b `component_probe()`
+> (zweistufige Bash-Probe) erweitert. Architektur-Pivot während Umsetzung:
+> ursprüngliche DOM-Probe auf Draft-Page scheiterte an WP-Rewrite-Rule-Grenze
+> bei direkt-SQL-Page-Inserts (Santapress-Plugin-Interaktion). Bash-Probe
+> architektonisch sauberer (trennt Code-Korrektheit von Integrations-Korrektheit).
+> Theme-Repo unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). S2.0b-Self-Check
+> rückwirkend auf 12/12 (100 %) angehoben. Cortex-Web-Commits `88290b0` (Spec)
+> + `6352b1e` (Tool + Self-Check + Nachtrag). Neues Pattern
+> `verify-probe-code-vs-integration.md`, `local-wp-mysql-socket.md` um
+> Rewrite-Rule-Warnung erweitert, Tutorial 13 angelegt. Dr.-Stracke-Freigabe
+> 2026-04-19: Santapress-Plugin darf komplett entfernt werden. 5 Lessons
+> S2.0e-LL-1…5. Welche Front?**
 >
 > A. **Praxis S2.3 Batch B — Praxis + Team + 404** (empfohlen, frei verfügbar,
->    Skelett + Komponenten-Bibliothek sind da, 3 P0-Seiten mit Echt-Content,
->    Spec `specs/sprint-2/S2.3-B_praxis-team-404.md` neu schreiben).
+>    Skelett + Komponenten-Bibliothek + verify-Hardening sind da, 3 P0-Seiten
+>    mit Echt-Content, Spec `specs/sprint-2/S2.3-B_praxis-team-404.md` neu schreiben).
 >
 > B. **Praxis S2.3 Batch C — Fachrichtungen-Landing + Ärzte-Übersicht**
 >    (2 P0-Seiten, Card-Grid-Templates).
@@ -520,9 +617,10 @@ Items 14–16 aus §0 oben.
 > C. **Praxis S2.3 Batch G — Sprechstunden + Kontakt** (2 P0-Seiten, Doctolib-
 >    Workaround).
 >
-> D. **Praxis S2.0e Mini** (vor S2.3 empfohlen, ~30 min) — verify.sh §3b
->    Component-Probe auf Draft-Testseite + erweiterter Split-Check; schließt
->    die 2 aus S2.0b verschobenen AKs (AK-8 + AK-10).
+> D. **Santapress-Plugin-Entfernung (~15–30 min, freigegeben durch Dr. Stracke)**
+>    — räumt die Rewrite-Rule-Interferenz aus dem Weg, die in S2.0e den Pivot
+>    ausgelöst hat. Sinnvoll VOR S2.3 Batch B, weil Batch B möglicherweise
+>    direkt-SQL-Page-Operations braucht.
 >
 > E. **Praxis S2.0d Mini** — `kar`→`karriere`-Rename + Semantic-Token
 >    `--pxz-space-card-padding-sm` nachziehen + Legacy-Alias-Audit in tokens.css.
@@ -534,18 +632,18 @@ Items 14–16 aus §0 oben.
 > G. **Juvantis-Trunk-Content-Ausbau** oder **Phase 2b Medien-Pipeline**
 >    (wenn Priorität weg von Praxis kippt).
 >
-> H. **Sprint 1 reanimieren** — SFTP-Credentials sind da (seit 2026-04-19
->    09:24). Staging-Setup ist aktivierbar, aber Design-first-Direktive gilt noch.
+> H. **Sprint 1 reanimieren** — SFTP-Credentials sind da (seit 2026-04-19).
+>    Staging-Setup ist aktivierbar, aber Design-first-Direktive gilt noch.
 >
 > I. **Strukturhygiene-Aufräumblock:** `SESSION_START.md`-Legacy-Pfade bereinigen,
 >    5 Plugin-Phantom-Templates aufräumen.
 >
 > J. **Andere konkrete Änderung** — Sie nennen."
 
-Keine Code-Änderung vor Ihrer Wahl. Empfohlener Default: **A (S2.3 Batch B)** —
-das Komponenten-Fundament steht, der Content-Ausbau ist die eigentliche
-Sprint-2-Hauptlinie. Alternativ **D (S2.0e Mini)** als Kurz-Vorstufe vorher,
-falls Sie verify.sh vollständig grün sehen möchten bevor Content dazukommt.
+Keine Code-Änderung vor Ihrer Wahl. Architekten-Tendenz: **D (Santapress-Entfernung)
+vor A (S2.3 Batch B)** — die Plugin-Entfernung ist kurz, freigegeben, räumt eine
+dokumentierte Fehlerquelle aus. Alternativ direkt **A** wenn Sie Content-Momentum
+priorisieren.
 
 ---
 
@@ -595,8 +693,9 @@ falls Sie verify.sh vollständig grün sehen möchten bevor Content dazukommt.
 | 9 | 2026-04-19 | Praxis-Sprint 2 / S2.1 | Seiten-Inventar ✅ — `page-inventory.md` mit 27 Einträgen (10× P0, 17× P1), 9 Spalten, Sitemap-gestütztes Content-Audit, arzt-7 TBD-Vorbefüllung Dr. Stracke, Ableitungs-Abschnitte für S2.2–S2.5, 8/8 AKs grün. Neues Pattern + Tutorial 10. | Cortex-Web: `d7f797d` (Inventar+Self-Check+Shots). Nexus: Pattern `page-inventory.md` + Tutorial 10 + MEMORY/CLAUDE/SYSTEM_MAP aktualisiert (Auto-Sync-Commit). |
 | 10 | 2026-04-19 | Praxis-Sprint 2 / S2.2 | Template-Typologie ✅ — 8 Skelett-Templates + 8 CSS + functions.php-Erweiterung, PXZ_VERSION 2.7.7, In-Session-Bug PXZ-E-009 gefixt, 12/12 AKs grün. | Theme: `6c02cb4`+`dd3e4e1`. Cortex-Web: `de4f580`+`5a2a247`. Nexus: Pattern `wp-skeleton-templates-bundle.md` + Tutorial 11. |
 | **11** | **2026-04-19** | **Praxis-Sprint 2 / S2.0b** | **Komponenten-Bibliothek ✅ — Schicht 3 eingezogen per `components.css` (6 Blöcke: Container + Typografie + Buttons + Section + Card + Hero), globaler Enqueue zwischen `praxiszentrum` und page-CSS. PXZ_VERSION 2.7.8. Home MD5-Null-Delta verifiziert (3/3 MATCH). Karriere −9 px am `.wpforms-submit` (WCAG-Accessibility-Gewinn, dokumentiert). In-Session-Fix S2.0b-LL-1: Spezifitäts-Kollision mit `.pxz-home :where(p)`-Reset gefixt per page-scope Overrides. 10/12 AKs grün (AK-8 + AK-10 verschoben auf S2.0e). 5 Lessons Learned.** | Theme: **`08f40ff`** (feat components+enqueue+version+changelog) + **`8f596f7`** (refactor homepage-trim+specificity-fix). Cortex-Web: **`2056e3e`** (Spec) + **`df50333`** (Self-Check+Pointer+Evidence+12 Shots). Nexus: 2 neue Patterns `css-layer3-promotion.md` + `local-wp-mysql-socket.md` + Tutorial 12 + MEMORY/CLAUDE/SYSTEM_MAP. |
-| *(12)* | *tbd* | *Praxis-Sprint 2 / S2.3 B/C/G oder S2.0e* | *S2.3 Batch B/C/G (Content-Batches freigeschaltet, Komponenten-Fundament steht). Oder S2.0e Mini (~30 min, verify-Erweiterung) vorher. Batch A weiter blockiert (Rechtsquelle).* | — |
+| **12** | **2026-04-19** | **Praxis-Sprint 2 / S2.0e** | **Verify-Hardening ✅ — `tools/verify.sh` um §1b `grep_split_css()` + §3b `component_probe()` (zweistufige Bash-Probe: 8 Datei-Assertions + 2 Enqueue-Checks) erweitert. Architektur-Pivot unter Umsetzung wegen WP-Rewrite-Rule-Grenze bei direkt-SQL-Page-Inserts (Santapress-Interaktion). Bash-Probe architektonisch sauberer (trennt Code-Korrektheit von Integrations-Korrektheit). Theme unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). S2.0b-Self-Check rückwirkend auf 12/12. 8/8 AKs. 5 Lessons S2.0e-LL-1…5. Dr.-Stracke-Freigabe: Santapress-Plugin darf entfernt werden.** | Cortex-Web: **`88290b0`** (Spec) + **`6352b1e`** (Tool+Self-Check+Nachtrag). Nexus: neues Pattern `verify-probe-code-vs-integration.md` + Erweiterung `local-wp-mysql-socket.md` §Grenze + Tutorial 13 + MEMORY/CLAUDE-Update. |
+| *(13)* | *tbd* | *Santapress-Entfernung oder S2.3 Batch B* | *D (Santapress-Entfernung, ~15–30 min, freigegeben) empfohlen vor Batch B. Oder direkt A (S2.3 Batch B: Praxis + Team + 404). Batch A weiter blockiert (Rechtsquelle).* | — |
 
 ---
 
-*Stand: 2026-04-19, Ende Session 11. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–J aus §6 wählen. Empfohlener Default: A (S2.3 Batch B) — das Komponenten-Fundament ist gelegt, Content-Ausbau ist die Hauptlinie. Alternativ D (S2.0e Mini) als kurze Vorstufe.*
+*Stand: 2026-04-19, Ende Session 12. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–J aus §6 wählen. Architekten-Tendenz: D (Santapress-Entfernung) vor A (S2.3 Batch B), weil Santapress-Freigabe durch Dr. Stracke in Session 12 erfolgte und die Plugin-Entfernung eine dokumentierte Fehlerquelle für S2.3 Batch B ausräumt.*
