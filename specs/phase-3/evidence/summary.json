@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-18T22:45:39.534Z",
+  "timestamp": "2026-04-19T07:26:33.468Z",
   "trunk_source": "trunk/content/products/bluttests/basic-check.yaml",
   "wp_page_id": 9668,
   "shopify_product_id": 10940942844171,
@@ -68,7 +68,7 @@
           "vendor": "Sanexio",
           "product_type": "bluttests",
           "handle": "basic-check",
-          "updated_at": "2026-04-19T00:44:47+02:00",
+          "updated_at": "2026-04-19T00:45:44+02:00",
           "published_at": null,
           "tags": "bluttests, cortex-web",
           "status": "draft",
@@ -190,7 +190,7 @@
           "slug": "basic-check",
           "status": "publish",
           "link": "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/",
-          "modified_gmt": "2026-04-18T22:45:40"
+          "modified_gmt": "2026-04-19T07:26:34"
         },
         "run2": {
           "action": "update",
@@ -198,7 +198,7 @@
           "slug": "basic-check",
           "status": "publish",
           "link": "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/",
-          "modified_gmt": "2026-04-18T22:45:41"
+          "modified_gmt": "2026-04-19T07:26:35"
         },
         "run1_exit": 0,
         "run2_exit": 0,
@@ -217,7 +217,7 @@
           "handle": "basic-check",
           "status": "draft",
           "published_at": null,
-          "updated_at": "2026-04-19T00:44:47+02:00",
+          "updated_at": "2026-04-19T00:45:44+02:00",
           "admin_url": "https://juvantis.myshopify.com/admin/products/10940942844171"
         },
         "run2": {
@@ -226,7 +226,7 @@
           "handle": "basic-check",
           "status": "draft",
           "published_at": null,
-          "updated_at": "2026-04-19T00:44:47+02:00",
+          "updated_at": "2026-04-19T00:45:44+02:00",
           "admin_url": "https://juvantis.myshopify.com/admin/products/10940942844171"
         },
         "run1_exit": 0,
@@ -258,7 +258,7 @@
             "step": "adapter-run",
             "exit": 0,
             "stdout_tail": [
-              "  \"updated_at\": \"2026-04-19T00:45:44+02:00\",",
+              "  \"updated_at\": \"2026-04-19T09:26:38+02:00\",",
               "  \"admin_url\": \"https://juvantis.myshopify.com/admin/products/10940942844171\"",
               "}",
               "sync-shopify: OK"
@@ -288,7 +288,7 @@
       "ok": true,
       "details": {
         "png": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/specs/phase-3/evidence/shopify-body-preview.png",
-        "bytes": 45439
+        "bytes": 61649
       }
     },
     {
@@ -298,7 +298,7 @@
       "details": {
         "html": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/specs/phase-3/evidence/side-by-side.html",
         "png": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/specs/phase-3/evidence/side-by-side.png",
-        "bytes": 131126
+        "bytes": 144090
       }
     }
   ]
