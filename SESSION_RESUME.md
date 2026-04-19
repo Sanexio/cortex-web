@@ -39,15 +39,15 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.6.0` — **Phase 5 abgeschlossen** (Juvantis-Web-Subsumierung)
-- **Stand:** 2026-04-19, Session 7 abgeschlossen
+- **Version:** `0.6.0` — Cortex-Web-Aufbau (Phase 0–5) ✅ vollständig
+- **Stand:** 2026-04-19, **Session 8 abgeschlossen** (Praxis-Sprint 2 / S2.0c)
 - **Working Tree:** clean
 - **Cortex-Web-Aufbau (Phase 0–5):** ✅ **vollständig**
 - **Trunk-Content:** unverändert, 1 Produkt (`basic-check.yaml`)
 - **WP-Adapter:** Phase 1, idempotent, HWG-konform, Review-geprüft
 - **Shopify-Adapter:** Phase 2, idempotent, draft-only, Review-geprüft
 - **Review-Pipeline:** Phase 3, 11/11 automatische AKs grün
-- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit `257304e` (PXZ_VERSION 2.7.5)
+- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`c4f18ba`** (**PXZ_VERSION 2.7.6**, S2.0c Design-System-Konsolidierung). Design-Autorität: `DESIGN_GUIDELINES.md` v3.0 (§0 Cortex-DS-Backstop, §2 4-Schichten, §7 konsolidiert, §17 Austausch-Protokoll). Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ abgeschlossen 2026-04-19; S2.1 Seiten-Inventar Spec freigegeben, wartet auf Umsetzung in nächster Session.
 - **Juvantis-Site:** `sites/juvantis-webseite/` (Docs-Schicht), Theme-Pointer auf Commit `1fbc35b` (GitHub-Remote `shopify-theme`)
 
 ### §1.1 Phasen-Status
@@ -230,23 +230,27 @@ Items 14–16 aus §0 oben.
 
 ## §6 Sofort-Status-Frage für nächste Session
 
-> **„Cortex-Web Phase 5 (Juvantis-Web-Subsumierung) abgeschlossen — 12/12 AKs grün,
-> 8+ Commits, Juvantis-Web-Docs-Schicht in `sites/juvantis-webseite/` integriert,
-> Shopify-Theme-Klon und Live-Site unberührt. Cortex-Web-Aufbau Phase 0–5 damit
-> vollständig.**
+> **„Praxis-Sprint 2 / S2.0c (Design-System-Konsolidierung) abgeschlossen —
+> 12/12 AKs grün, 3 Commits, PXZ_VERSION 2.7.6 live, `DESIGN_GUIDELINES.md`
+> v3.0 als einzige Design-Autorität mit Cortex-DS als §0-Backstop, 4-Schichten-
+> Token-Modell verankert, Tutorial 09 geschrieben, Cortex-DS-Artifact
+> git-trackbar im Repo. MD5-Null-Delta im 3-Weg-Beweis bestätigt.**
 >
-> **Dr. Stracke hat für die nächste Session festgelegt: Praxis-Redesign
-> fortsetzen — zuerst Design + Content, danach SFTP/Staging-Sprint.
-> Welche Front konkret?**
+> **Die S2.1-Spec (Seiten-Inventar) ist freigegeben und wartet auf Umsetzung.
+> Entscheidungen bereits getroffen: E1-Hybrid+SEO · E2a · E3a · E4c. Welche Front?**
 >
-> A. **Praxis-Sprint 2 / S2.1 — Seiten-Inventar & Content-Audit** (empfohlen
->    als logischer Folgeschritt, Vorbedingung für Kernseiten-Batches).
->    Einstieg: `cd sites/praxis-webseite && cat SESSION_RESUME.md`
-> B. **Praxis-Sprint 2 / S2.0b — Komponenten-Abstraktion** (wenn Token-SSoT
->    weitergedacht werden soll, bevor neue Seiten entstehen).
-> C. **Andere Praxis-Sprint-Front** (Dr. Stracke nennt).
-> D. **Doch zuerst Juvantis-Web oder Phase 2b Medien** (wenn sich die
->    Priorität ändert)."
+> A. **Praxis-Sprint 2 / S2.1 — Seiten-Inventar ausfüllen (empfohlen)** —
+>    `specs/sprint-2/page-inventory.md` mit ~27 Einträgen (8 Kern + 9 Fachrichtungen
+>    + 9 Ärzte + Karriere). Spec liegt bereit, Umsetzung ~20 min bis Self-Check.
+> B. **Praxis-Sprint 2 / S2.0b — Komponenten-Bibliothek** — `components.css`
+>    mit semantischen Klassen, eliminiert Legacy-Alias-Block.
+>    Kann parallel zu S2.1 laufen.
+> C. **Praxis-Sprint 2 / S2.3 Batch A — Datenschutz + Impressum** (Legal
+>    vorziehen, Vorbedingung: Rechtssicherheit-Quellen-Entscheidung).
+> D. **Sprint 1 reanimieren** — Credentials liegen vor, aber Dr. Stracke
+>    hat Design+Content Vorrang gegeben. Nur bei Kurskorrektur.
+> E. **Juvantis-Trunk-Content-Ausbau** oder **Phase 2b Medien** —
+>    wenn die Priorität weg von Praxis kippt."
 
 Keine Code-Änderung vor Ihrer Wahl.
 
@@ -294,8 +298,9 @@ Keine Code-Änderung vor Ihrer Wahl.
 | 5 | 2026-04-19 | 3 (Review) | Review-Pipeline 12/12 AKs ✅, 6 Dimensionen automatisiert, Pattern + Tutorial 07 | `98d1f67`, `314a41c` |
 | 6 | 2026-04-19 | 4 (Subsumierung Praxis) | Praxis-Subsumierung ✅ via `git subtree add` (E1a/E2b/E3a), 12/12 AKs, 5 Lessons, Pattern `cross-repo-subsumption.md` + Tutorial 08 | `c350b05`, `94e6e91`, `77adfc7`, `dd38922`, `61b5187`, `b7266ab`, `89de007`, `7515822` |
 | **7** | **2026-04-19** | **5 (Subsumierung Juvantis)** | **Juvantis-Web-Docs-Subsumierung ✅ via `mv` + SHOPIFY_THEME_POINTER (E1a+E2a+E3a+E4a), 12/12 AKs, 5 Lessons PH5-LL-1…5, Pattern-Erweiterung Variante B + Tutorial 08 §7 erweitert, Theme-Klon unberührt** | **`799d674`, `2d67a06`, `2b0d1ba`, `304859e`, `cad5a70`, `cb04976` + T9-Session-Ende-Commits** |
-| *(8)* | *tbd* | *Praxis-Sprint 2 / S2.1* | *Seiten-Inventar & Content-Audit (von Dr. Stracke festgelegt)* | — |
+| **8** | **2026-04-19** | **Praxis-Sprint 2 / S2.0c** | **Design-System-Konsolidierung ✅ — `DESIGN_GUIDELINES.md` v3.0 (§0 Cortex-DS-Backstop, §2 4-Schichten-Modell, §7 Spacing konsolidiert, §17 Austausch-Protokoll), `tokens.css` v2 mit 4-Schichten + Legacy-Alias-Block, Cortex-DS-Artifact git-trackbar, Tutorial 09 `vier-schichten-design-tokens.md`, 3-Weg-MD5-Null-Delta-Beweis, 12/12 AKs. S2.1-Spec freigegeben (wartet auf Umsetzung).** | Theme: **`c4f18ba`**. Docs: **`560e3d6`**, **`0edab20`** + Session-Ende-Commit. Nexus: **`8054be7`** (Tutorial 09 via Auto-Sync), Pattern `design-token-ssot.md` §8 erweitert. |
+| *(9)* | *tbd* | *Praxis-Sprint 2 / S2.1* | *Seiten-Inventar ausfüllen (Spec freigegeben, Entscheidungen E1-Hybrid+SEO/E2a/E3a/E4c getroffen)* | — |
 
 ---
 
-*Stand: 2026-04-19, Ende Session 7. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–D aus §6 wählen. Erwartete Wahl laut Dr.-Stracke-Ankündigung: A (Praxis-Sprint 2 / S2.1).*
+*Stand: 2026-04-19, Ende Session 8. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–E aus §6 wählen. Erwartete Wahl: A (Praxis-Sprint 2 / S2.1 Seiten-Inventar ausfüllen).*

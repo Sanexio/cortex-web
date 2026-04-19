@@ -30,44 +30,45 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-18 Abend, nach S2.0 Design-Token-SSoT)
+## §1 Stand & Version (gültig: 2026-04-19 nach S2.0c Design-System-Konsolidierung)
 
-- **PXZ_VERSION:** **2.7.5** live auf Local by Flywheel (Cluster-Mini-02). Stand: Design-Token-SSoT in `assets/css/tokens.css`, keine Optik-Änderung gegenüber v2.7.4 (MD5-byte-identisch).
+- **PXZ_VERSION:** **2.7.6** live auf Local by Flywheel (Cluster-Mini-02). Stand: 4-Schichten-Token-Modell in `assets/css/tokens.css` v2, keine Optik-Änderung gegenüber v2.7.5 (MD5-byte-identisch unter Gleich-Tag-Bedingungen, 3-Weg-Beweis).
+- **Design-Autorität:** `DESIGN_GUIDELINES.md` v3.0 (§0 Cortex-DS-Backstop, §2 4-Schichten, §7 Spacing konsolidiert, §17 Austausch-Protokoll). Ältere Versionen in `DESIGN_GUIDELINES.v2.3.md` archiviert.
+- **Cortex-DS-Backstop-Artifact:** `design-system/Cortex-Design-System.html` (git-trackbar, MD5 `c36b8cac63c2de3538a94ee74412e269`).
 - **Site-Root:** `/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/`
 - **URL:** `https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local`
 - **Child-Theme:** `wp-content/themes/praxiszentrum/`
-- **Homepage + Karriere** weiter abgenommen, visuelle Abnahme v2.7.5 durch Dr. Stracke 2026-04-18.
+- **Homepage + Karriere** weiter abgenommen; S2.0c ist Architektur-Infra ohne Optik-Änderung, visuelle v2.7.5-Abnahme bleibt gültig.
 
-### Sprint-Status (Stand 2026-04-18 Abend)
+### Sprint-Status (Stand 2026-04-19 Ende Session 8)
 
 | Sprint | Status | Kommentar |
 |---|---|---|
-| Sprint 0 — Foundation | ✅ abgeschlossen (S0.3 final als S2.0 in Sprint 2 erledigt) |
-| **Sprint 1 — Rollout-Infrastruktur** | ⏸ **PAUSIERT** | DF-Support wegen fehlender SFTP-Credentials angeschrieben. Spec bleibt gültig. Reanimieren, sobald Credentials in `.env.sprint1.local` eingetragen sind. Check beim Einstieg: `SFTP_DE_HOST` in `.env.sprint1.local` nicht mehr leer? |
-| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🟢 **aktiv, S2.0 ✅** | **S2.0 (Token-SSoT) abgeschlossen 2026-04-18 v2.7.5**, 0-Delta-Verifizierung. Offen: S2.0b (Komponenten-Abstraktion, optional), S2.1 (Seiten-Inventar), S2.2 (Template-Typologie), S2.3 (Kernseiten in Batches), S2.4 (Menü), S2.5 (QA-Audit). |
-| Sprint 2b — Legacy-Content-Migration | ⏳ nach Sprint 2 | 172 Legacy-Seiten, verschoben. |
+| Sprint 0 — Foundation | ✅ abgeschlossen | |
+| **Sprint 1 — Rollout-Infrastruktur** | ⏸ **PAUSIERT (bewusst)** | SFTP-Credentials liegen vor (`.env.sprint1.local` gefüllt, 2026-04-19 09:24). Dr. Stracke hat explizit entschieden: **„zuerst Design und Content"** (Cortex-Web SESSION_RESUME §4 P0). Sprint 1 erst nach Kernseiten. |
+| **Sprint 2 — Kernseiten-Ausbau + Design-System** | 🟢 **aktiv, S2.0 ✅ + S2.0c ✅** | S2.0 (Token-SSoT 2-Schicht, v2.7.5) + **S2.0c (4-Schichten-Konsolidierung + Cortex-DS-Backstop, v2.7.6, 12/12 AKs) abgeschlossen 2026-04-19.** Spec `S2.1_page-inventory.md` freigegeben, wartet auf Umsetzung. Offen danach: S2.0b Komponenten (optional), S2.2 Template-Typologie, S2.3 Kernseiten-Batches, S2.4 Menü, S2.5 QA-Audit. |
+| Sprint 2b — Legacy-Content-Migration | ⏳ nach Sprint 2 | 172 Legacy-Seiten. |
 | Sprint 3 — Mehrsprachigkeit (WPML) | ⏳ geplant | |
 | Sprint 4 — Go-Live (SEO/Schema/Cut-Over) | ⏳ geplant | |
 
-- **`tools/verify.sh`:** alle 4 Checks grün (Split, Reset, Computed-Style via Registry 54/54, Alignment) — zuletzt 2026-04-18 nach S2.0-Commit.
+- **`tools/verify.sh`:** alle 4 Checks grün (Split, Reset, Computed-Style 54/54, Alignment 10/10) — zuletzt 2026-04-19 nach S2.0c-Commit.
 
 ### Theme-Repo (`praxiszentrum/`) Commit-Stand
 
 ```
+c4f18ba  feat(s2.0c): tokens.css v2 with 4-layer model; bump PXZ_VERSION 2.7.5 → 2.7.6
 257304e  feat(s2.0): design-token SSoT; bump PXZ_VERSION 2.7.4 → 2.7.5
 914af8d  feat(s0.2): extract karriere CSS; bump PXZ_VERSION 2.7.3 → 2.7.4
 c3f7db7  feat(s0.2): extract homepage CSS from inline to assets/css/homepage.css
 8c9d0fa  chore: baseline v2.7.3 (homepage + karriere + mfa-formular)
 ```
 
-### Docs-Repo (`projects/praxis-redesign/`) Commit-Stand
+### Cortex-Web-Repo — Praxis-spezifische Commits (seit Subsumierung)
 
 ```
-6dbd214  chore: v2.7.5 verify shots (S2.0 token-SSoT, md5-identical to pre-S2.0)
-29383cd  docs(sprint-2): S2.0 design-token SSoT spec
-519c4e1  docs(sprint-1): spec + env template; pause for DF-support; preschedule sprint 2
-bee530a  docs: S0.2 abschließen (v2.7.4) + Session-Resume finalisieren
-7de7ee0  chore: verify-shots from S0.2 extraction (2026-04-18 v2.7.4)
+0edab20  chore(sprint-2/s2.0c): self-check 12/12 grün — AK-12 Commit-Hashes nachgezogen
+560e3d6  docs(sprint-2/s2.0c): DESIGN_GUIDELINES v3.0 + 4-layer model + Cortex-DS backstop
+ceaf380  docs(phase-5): session 7 close (Juvantis-Subsumierung abgeschlossen)
 ```
 
 ---
@@ -95,21 +96,19 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 Nach Pflicht-Init + Pre-Flight grün, fragt Claude:
 
-> „Sprint 2 / S2.0 Design-Token-SSoT ist ✅ abgeschlossen (v2.7.5, 0-Delta-verifiziert). Sprint 1 weiter pausiert (DF-Support-Antwort abwarten). Welche Front bearbeiten wir?
+> „Sprint 2 / S2.0c Design-System-Konsolidierung ist ✅ abgeschlossen (v2.7.6, `DESIGN_GUIDELINES.md` v3.0, 4-Schichten-Tokens, Cortex-DS-Backstop, 12/12 AKs grün). S2.1-Spec liegt freigegeben bereit. Dr. Stracke hat in Session 8 explizit entschieden: zuerst Design + Content, Sprint 1 (SFTP/Staging) später trotz vorhandener Credentials.
 >
-> A. **Sprint 2 / S2.1 — Seiten-Inventar & Content-Audit** — Muss-Seiten-Liste, Content-Quellen klären (Prod-Übernahme/Neu-Text). Vorbereitung für S2.3 Kernseiten-Implementierung.
-> B. **Sprint 2 / S2.0b — Komponenten-Abstraktion** — `assets/css/components.css` mit `.pxz-card--dark/--light`, `.pxz-section`, `.pxz-eyebrow`, `.pxz-btn`. Additiv, risikoarm; reduziert Duplikation der drei Card-Klassen. Optional, nicht blockierend für S2.1.
-> C. **Sprint 2 / S2.3 Batch A — Datenschutz + Impressum** — Legal-Textseiten vorziehen (parallele Front zu S2.1). Vorbedingung: Rechtssicherheit-Entscheidung (Anwalt/Generator/Prod-Text).
-> D. **Sprint 1 reanimieren** — nur falls DF-Support SFTP-Credentials geliefert hat. Check: `SFTP_DE_HOST` in `.env.sprint1.local` nicht mehr leer?
-> E. **Backlog 2026-04-18** — CTA-Anschnitt @ 1440 px · PHP-Deprecation `theme-freesia-demo-import` · Mobile-Eyebrow MFA.
+> A. **Sprint 2 / S2.1 — Seiten-Inventar & Content-Audit (empfohlen, Spec freigegeben)** — Tabelle in `page-inventory.md` mit ~27 Einträgen (8 Kern + 9 Fachrichtungen + 9 Ärzte + Karriere) ausfüllen. Entscheidungen bereits getroffen: E1-Hybrid+SEO · E2a · E3a · E4c. Erwartete Dauer: ~20 min bis Self-Check.
+> B. **Sprint 2 / S2.0b — Komponenten-Bibliothek** — `assets/css/components.css` mit semantischen `.pxz-card`, `.pxz-btn`, `.pxz-section` auf Schicht-2-Tokens. Additiv, eliminiert Legacy-Alias-Block in `tokens.css`. Kann auch parallel zu S2.1 laufen.
+> C. **Sprint 2 / S2.3 Batch A — Datenschutz + Impressum** — Legal-Textseiten vorziehen. Vorbedingung: Rechtssicherheit-Entscheidung (Anwalt / e-recht24 / Prod-Text).
+> D. **Sprint 1 reanimieren** — SFTP-Credentials liegen vor, aber Dr. Stracke hat Design+Content Vorrang gegeben. Nur bei expliziter Kurskorrektur.
+> E. **Backlog** — CTA-Anschnitt @ 1440 px · PHP-Deprecation `theme-freesia-demo-import` · Mobile-Eyebrow MFA.
 > F. **Andere konkrete Änderung** — Sie nennen."
 
 Keine Code-Änderung vor expliziter Wahl.
 
-**Checks vor der Antwort auf die Status-Frage:**
-- `grep -E "^SFTP_DE_HOST=." .env.sprint1.local` — leer? dann D nicht möglich.
-- Gibt es eine Mail vom DF-Support? → D möglich
-- Sonst: A (S2.1) ist der direkt nutzbare nächste Schritt, weil er die Voraussetzung für Kernseiten-Batches schafft
+**Empfohlener Default:** A (S2.1). Spec ist fertig, Entscheidungen getroffen,
+direkt umsetzbar. Die S2.1-Tabelle ist Vorbedingung für S2.2 + S2.3.
 
 ---
 
@@ -127,6 +126,98 @@ Keine Code-Änderung vor expliziter Wahl.
 ---
 
 ## §5 Letzte Session — Was wurde erledigt
+
+### Session 8 — 2026-04-19 — Sprint 2 / S2.0c Design-System-Konsolidierung (v2.7.6)
+
+**Auftrag Dr. Stracke:** Praxis-Sprint 2 / S2.1 starten. Beim Einstieg Verweis
+auf `~/Library/CloudStorage/.../Cortex-Design-System.html` als Design-
+Referenz. Nach Klärung: S2.1 pausiert, S2.0c (Design-System-Konsolidierung)
+vorgezogen als blockierendes Fundament.
+
+**Entscheidungs-Kette:**
+1. **E1-Hybrid+SEO, E2a, E3a, E4c** — Content-Strategie für S2.1 festgelegt
+   (Prod-Texte übernehmen + lockerer + SEO-opt., alle ~24 Kandidaten inventarisieren,
+   reine Markdown-Tabelle, Content-Extrakt pro S2.3-Batch).
+2. **γ-prime (Konsolidierung)** — Cortex-DS NICHT als visueller Stack,
+   sondern als Meta-Regel + Entscheidungs-Backstop. Apple HIG / SF Pro bleibt.
+3. **S2.0c vor S2.1 einschieben**.
+4. **Tutorial 09 einpflegen** + **Cortex-DS ins Repo kopieren** (AK-9 der Spec).
+
+**Architekten-Modus 4-Phasen-Durchlauf:**
+
+- **Phase 1 Verständnis:** Ziel Null-Delta, Constraints (kein Touch an
+  homepage.css/karriere.css), Annahmen (SF Pro bleibt, Rot+Amber bleiben),
+  FK-Bezug (FK-4 Iteration, FK-5 Kontextverlust).
+- **Phase 2 Lösungsdesign:** Spec `specs/sprint-2/S2.0c_design-system-consolidation.md`
+  mit 4-Schichten-Modell (Primitives/Semantic/Components/Pages),
+  `tokens.css` v2 Struktur, `DESIGN_GUIDELINES.md` v3.0 Umbau-Plan (§0
+  Cortex-DS-Backstop + §2 4-Schichten-Modell + §17 Austausch-Protokoll),
+  12 Akzeptanzkriterien, Rollback.
+- **Phase 3 Umsetzung:**
+  - Theme `praxiszentrum/`: `tokens.css` v2 (180 Zeilen, Schicht 1 +
+    Schicht 2 + Legacy-Alias-Block mit 18 Aliasen für byteidentischen
+    Output), `functions.php` `PXZ_VERSION` 2.7.5 → 2.7.6, `CHANGELOG.md`
+    v2.7.6-Eintrag. Commit `c4f18ba`.
+  - Cortex-Web `sites/praxis-webseite/`: `DESIGN_GUIDELINES.md` v3.0
+    (20 §-Abschnitte, 608 Zeilen, §7 Spacing konsolidiert — alte §3.3-Tabelle
+    gestrichen statt nur als obsolet markiert), `DESIGN_GUIDELINES.v2.3.md`
+    als Historien-Backup, `design-system/Cortex-Design-System.html` (2 MB,
+    MD5-identisch zum GDrive-Original) + `design-system/README.md`,
+    `specs/sprint-2/S2.0c_*.md` + `S2.1_*.md` + `evidence/*_self-check.md`.
+    Commits `560e3d6` + `0edab20`.
+  - Nexus: Tutorial 09 `vier-schichten-design-tokens.md` (TUT-001,
+    8-Abschnitte-Aufbau, MD5-Null-Delta-Erklärung), Auto-Sync-Commit `8054be7`.
+    Pattern `design-token-ssot.md` um §8 4-Schichten-Modell + S2.0c-Lessons
+    erweitert.
+- **Phase 4 Selbstprüfung:** `evidence/2026-04-19_s2.0c_self-check.md` —
+  **12/12 AKs grün**.
+
+**Null-Delta-3-Weg-Beweis:**
+
+| Vergleich | Desktop | Tablet | Mobile |
+|-----------|:-:|:-:|:-:|
+| v2.7.6 ↔ v2.7.5 (Vortags-Baseline, home) | ✅ | ⚠️ (externe Drift) | ✅ |
+| v2.7.6 ↔ v2.7.5 (Vortags-Baseline, karriere) | ✅ | ✅ | ✅ |
+| v2.7.5-rebaseline ↔ v2.7.5 (A/A-Drift-Kontrolle home) | ✅ | ⚠️ | ✅ |
+| **v2.7.6 ↔ v2.7.5-rebaseline (gleich-Tag, home)** | **✅** | **✅** | **✅** |
+
+Der 4. Vergleich (beide Shots heute aufgenommen, nur CSS-Stand anders) ist
+byteidentisch auf allen Home-Viewports. Die MD5-Divergenz zur Vortags-Baseline
+auf Home-Tablet ist **externe Drift** (vermutlich WP/Blocksy-Auto-Update
+zwischen 2026-04-18 und 2026-04-19), **nicht** S2.0c.
+
+**Lessons Learned (S2.0c-LL-1 … 3):**
+
+- **S2.0c-LL-1** — MD5-Null-Delta braucht **gleich-Tag-Baseline-Check**
+  als Kontrollgruppe. Ohne das werden externe Drifts fälschlich als eigener
+  Fehler interpretiert.
+- **S2.0c-LL-2** — Legacy-Alias-Block entkoppelt Token-Refactor sauber
+  von Component-Refactor. Additives Pattern, kein Breaking-Risk.
+- **S2.0c-LL-3** — Cortex-DS-Repo-Kopie (git-trackbar, MD5-verifiziert)
+  robuster als GDrive-Pfad — portabel zwischen Geräten, nicht von
+  CloudStorage-Sync abhängig.
+
+**Nexus-Architektur-Updates (Session-Ende LL-042 Schritte 2+3):**
+
+- `Nexus/_memory/MEMORY.md` — praxis-webseite-Zeile auf S2.0c ✅ v2.7.6
+  aktualisiert, Theme-Commit-Hash `c4f18ba` eingetragen, neuer Pfad-Eintrag
+  für Design-System (`DESIGN_GUIDELINES.md` v3.0, `tokens.css` v2,
+  `design-system/Cortex-Design-System.html` mit MD5-Integrity-Hash,
+  Tutorial 09). Letzte-Aktualisierung-Zeile auf 2026-04-19 Session 8.
+- `Nexus/_memory/patterns/design-token-ssot.md` — neue §8 „Erweiterung —
+  4-Schichten-Modell (S2.0c, 2026-04-19)" mit Austausch-Protokoll, Grep-Test,
+  Lessons; Querverweise um v3.0 + Tutorial 09 ergänzt.
+
+**Offene Punkte für nächste Session:**
+
+- **S2.1 Phase 3 Umsetzung** — Tabelle `page-inventory.md` ausfüllen
+  (~27 Einträge). Spec freigegeben, Entscheidungen getroffen.
+- **Sprint 1 SFTP/Staging** — Credentials liegen vor (2026-04-19 09:24),
+  Reanimation zurückgestellt per Dr.-Stracke-Entscheidung „Design zuerst".
+- **Backlog unverändert:** CTA-Anschnitt @ 1440 px · PHP-Deprecation
+  `theme-freesia-demo-import` · Mobile-Eyebrow MFA.
+
+---
 
 ### Session 2026-04-18 (Abend) — Sprint 2 / S2.0 Design-Token-SSoT (v2.7.5)
 
