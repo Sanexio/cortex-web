@@ -2,6 +2,61 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionierung: SemVer.
 
+## [0.5.0] — 2026-04-19 (Session 6)
+
+### Phase 4 abgeschlossen — Subsumierung praxis-redesign → sites/praxis-webseite/ (12/12 AKs grün)
+
+#### Hinzugefügt
+- `sites/praxis-webseite/` — komplette Subsumierung von `~/Cortex/projects/praxis-redesign/` per `git subtree add` (E1a). Alle 13 praxis-Commits via `git log <hash>` erreichbar (Caveat: pfad-gefilterter `git log <pfad>` funktioniert nicht, siehe PH4-LL-2)
+- `sites/praxis-webseite/THEME_POINTER.md` — dokumentiert das WordPress-Theme, das physisch am Local-by-Flywheel-Pfad bleibt (Entscheidung 2a). Enthält absoluten Pfad, aktuellen Theme-HEAD `257304e` (PXZ_VERSION 2.7.5), Versionskette, Wiederherstellungs-Anleitung
+- `specs/phase-4/SUBSUMPTION.md` — Architekten-Modus-Spec (Phase 1+2): 8-Punkt-Zielzustand, 8-Punkt-Constraints, 6 implizite Annahmen, 4 Pre-Audit-Befunde, 3 Entscheidungspunkte E1/E2/E3, 7-Schritte-Plan T0–T7, 12 AKs, 7-Risiken-Matrix, Rollback-Plan
+- `specs/phase-4/evidence/2026-04-19_self-check.md` — Self-Check 12/12 grün mit objektiver Evidenz pro AK + 5 Lessons Learned (PH4-LL-1…5) für Phase 5
+- `specs/bridge-strategy/` — Promotion der drei Strategie-Dokumente aus `praxis-redesign/specs/bridge-strategy/` ins Dach (Entscheidung 3b): `00_BRAINSTORMING_KONZEPT.md`, `01_COMMON_TRUNK_LOKALE_ENTWICKLUNG.md`, `02_ENTSCHEIDUNGEN_FINAL.md`
+
+#### Geändert (Pfad-Updates)
+- `CLAUDE.md`, `PROJECT.md`, `README.md`, `SESSION_RESUME.md` — Pfad-Verweise von `projects/praxis-redesign/...` auf `sites/praxis-webseite/...`
+- `_rules/ARCHITECTURE.md` — Phase-4-Status auf ✅ 2026-04-19, §5 bridge-strategy-Pfade auf Cortex-Web
+- `_rules/WORKING_MODE.md`, `_rules/PRE_FLIGHT_CHECKLIST.md` — Pointer auf neuen Praxis-Site-Pfad mit historischem Klammer-Hinweis
+- `specs/phase-1/POC_WP_ADAPTER.md` — Vorgänger-Entscheidungs-Pfad aktualisiert
+- Nexus (Auto-Sync): `_memory/MEMORY.md`, `CLAUDE.md`, `SYSTEM_MAP.md`, `.config/devices.json` — Praxis als `praxis-webseite`-Sub-Site eingetragen, alte praxis-redesign-Einträge umbenannt/entfernt
+
+#### Verifiziert (12/12 Akzeptanzkriterien)
+- AK-1 `sites/praxis-webseite/` enthält 123 tracked files (≥118 erwartet)
+- AK-2 `specs/bridge-strategy/` hat 3 Dokumente
+- AK-3 THEME_POINTER referenziert Theme-Commit `257304e`
+- AK-4 13 praxis-Commits erreichbar via `git log c519852 --oneline | wc -l = 13`
+- AK-5 `sites/praxis-webseite/tools/verify.sh` → §3 Computed-Style 54/54 + §4 Alignment 10/10 grün
+- AK-6 `tools/validate.sh` basic + CHECK_SHOPIFY beide Exit 0
+- AK-6b `tools/review.sh` → 11/11 AKs (Phase-3-Funktionalität unberührt durch Subsumierung)
+- AK-7 PXZ_VERSION 2.7.5 weiterhin live (Computed-Style-Probe-Beweis)
+- AK-8 Keine aktiven `projects/praxis-redesign`-Pfade mehr (34 historische Verweise klassifiziert: 19 in SUBSUMPTION-Spec selbst, Rest in Logs/Tutorials/Strategie-Docs)
+- AK-9 `~/Cortex/projects/praxis-redesign/` existiert nicht mehr (E3a, `rm -rf`)
+- AK-10 Working Trees clean vor Subsumierung (T1: 3 Cleanup-Commits)
+- AK-11 Theme-Repo HEAD `257304e7e9...` unverändert, working tree clean
+- AK-12 Self-Check vorhanden
+
+#### Pre-Subsumierungs-Sicherheit
+- `.env.sprint1.local` (gitignored, 13 echte Werte) per `cp` + `chmod 600` nach `sites/praxis-webseite/` migriert. MD5-Beweis: beide Dateien `1c2675e95c423784cf5b9b04f8a65c9c`. `git check-ignore` bestätigt: durch `.env.*` abgedeckt
+- Erkenntnis: gitignored-Daten-Sicherheits-Check ist ab jetzt Pflicht-Bestandteil des `rm -rf`-Schritts (PH4-LL-1)
+
+#### Entfernt
+- `~/Cortex/projects/praxis-redesign/` komplett (E3a). Historie ist über die 13 Commits in Cortex-Web erhalten.
+- Pflicht-Init: praxis-redesign hat kein eigenes `„Projekt fortsetzen"` mehr — Einstieg läuft über `„Projekt fortsetzen Cortex-Web"`, dann zu `sites/praxis-webseite/SESSION_RESUME.md`.
+
+#### Nexus-Architektur-Updates
+- `Nexus/_memory/patterns/cross-repo-subsumption.md` — neuer wiederverwendbarer Pattern aus PH4-LL-1…5 (7-Schritte-Plan, gitignored-Sicherheits-Check, Subtree-Log-Caveat, Externer-Repo-Pointer-Pattern)
+- `Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/08-cross-repo-subsumption-mit-git-subtree.md` — Tutorial für Dr. Stracke (Live-Beispiel Phase 4, Mentalmodell, 6 Schritte mit konkreten Befehlen, AK-Liste, Caveats)
+
+#### Commits (in Reihenfolge)
+- `c350b05` — `docs(phase-4): promote bridge-strategy from praxis-redesign` (T1)
+- `94e6e91` — `Add 'sites/praxis-webseite/' from commit 'c5198525...'` (T2 Subtree-Add)
+- `77adfc7` — `docs(phase-4): add THEME_POINTER for Local-WP theme repo` (T3)
+- `dd38922` — `docs(phase-4): path refs + SUBSUMPTION spec + post-subsumption verify shots` (T4 + T6)
+- `61b5187` — `chore(phase-3): refresh review evidence after phase-4 (still 11/11 green)` (T6 evidence-Refresh)
+- `b7266ab` — `docs(phase-4): self-check 12/12 green` (T7)
+
+---
+
 ## [0.4.0] — 2026-04-19 (Session 5)
 
 ### Phase 3 abgeschlossen — Review-Pipeline 12/12 AKs grün
