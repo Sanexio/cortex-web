@@ -2,6 +2,85 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionierung: SemVer.
 
+## [0.6.0] — 2026-04-19 (Session 7)
+
+### Phase 5 abgeschlossen — Subsumierung Juvantis-Web-Docs → sites/juvantis-webseite/ (12/12 AKs grün)
+
+**Cortex-Web-Aufbau (Phase 0–5) damit vollständig.** Beide Site-Ökosysteme
+(Praxis-WP, Juvantis-Shopify) sind unter dem Dach sichtbar, mit jeweils
+externem Theme-Repo via Pointer-Datei.
+
+#### Entscheidung (Dr. Stracke 2026-04-19, „Ich folge deiner Entscheidung")
+- **E1a** — Alles außer `theme/` wandert (Docs-Schicht)
+- **E2a** — Shopify-Theme-Klon bleibt am Juvantis-Pfad
+- **E3a** — Einfacher `mv` + `git commit` (kein Subtree, da Source kein Git hat)
+- **E4a** — `Juvantis/juvantis-web/` bleibt als Theme-Halter (nur `theme/`)
+
+#### Hinzugefügt
+- `sites/juvantis-webseite/shopify-sync.sh` — Deploy-Wrapper, `THEME_DIR` auf
+  absoluten Pfad über `$HOME` umgestellt (geräte-portabel)
+- `sites/juvantis-webseite/shopify_export/` — Theme-Backup-ZIPs (transferiert)
+- `sites/juvantis-webseite/knowledge-graph/` — Medical-Knowledge-Graph
+  (Content-Referenz für Avatar-/DHT-Pages, transferiert)
+- `sites/juvantis-webseite/SHOPIFY_THEME_POINTER.md` — Remote-Repo-Pointer-
+  Variante des Phase-4-Patterns: GitHub-URL, Branch `shopify-theme`, Store
+  `medzpoint`, Theme-ID `181128757515`, HEAD `1fbc35b`, Auto-Sync-Charakter
+- `sites/juvantis-webseite/README.md` + `SESSION_RESUME.md` — Sub-Site-
+  Dokumentation nach SESSION_LIFECYCLE §3-Pflichtformat
+- `specs/phase-5/SUBSUMPTION.md` — Architekten-Modus-Spec (Phase 1+2+3):
+  4 Entscheidungspunkte E1/E2/E3/E4, 7-Schritte-Plan T0–T9, 12 AKs,
+  5 Risiken-Matrix, 7 Out-of-Scope-Punkte
+- `specs/phase-5/evidence/2026-04-19_self-check.md` — Self-Check 12/12 grün
+  + 5 Lessons Learned (PH5-LL-1…5)
+
+#### Geändert (Pfad-Updates)
+- Nexus: `CLAUDE.md` Cortex-Web-Sektion + Phasen-Plan (Phase 5 ✅),
+  `_memory/MEMORY.md` Aktive-Projekte-Tabelle + Pfad-Referenz-Tabelle
+  (Shopify-Theme-Klon als operativer Pfad, Docs-Schicht als Cortex-Web-Pfad),
+  `SYSTEM_MAP.md` §3.5 UP1 + Tools-Tabelle + Baum
+- Cortex-Web: `CLAUDE.md` Verbundene-Projekte (Site + Theme-Klon getrennt
+  ausgewiesen), `PROJECT.md` + `_rules/ARCHITECTURE.md` Phase 5 ✅,
+  `SESSION_RESUME.md` Phasen-Status-Tabelle + Inhalt für v0.6.0
+- Juvantis: `PROJECT.md` §Cortex-Web-Integration auf „Status seit Phase 5"
+  umgeschrieben, `CLAUDE.md` UP1-Sektion um Cortex-Web-Docs-Split ergänzt,
+  `_config/RULES.md` Ordnerstruktur + Theme-Klon-Notiz aktualisiert
+
+#### Verifiziert (12/12 Akzeptanzkriterien)
+- AK-1 `sites/juvantis-webseite/` enthält alle 6 Einträge
+- AK-2 `shopify-sync.sh` THEME_DIR = `$HOME/Cortex/projects/Juvantis/juvantis-web/theme`
+- AK-3 `SHOPIFY_THEME_POINTER.md` referenziert HEAD + Remote + Branch + Store + Theme-ID (21 grep-Treffer)
+- AK-4 `Juvantis/juvantis-web/` enthält nur `theme/`
+- AK-5 Theme-Repo unverändert: HEAD `1fbc35b313f52beb00da850491277edcabf86be0`, status clean
+- AK-6 `tools/validate.sh` + `CHECK_SHOPIFY=1 validate.sh` beide Exit 0
+- AK-7 Nexus-Pfad-Referenzen korrekt (11 Treffer, alle zeigen auf Theme-Klon-Pfad oder enthalten narrativen Kontext)
+- AK-8 Juvantis-Doku (PROJECT/CLAUDE/RULES) weist Subsumierung aus
+- AK-9 Cortex-Web-Doku Phase 5 ✅ durchgezogen
+- AK-10 `CHANGELOG.md` v0.6.0-Eintrag (diese Datei)
+- AK-11 Self-Check-Datei vorhanden
+- AK-12 `git status --short` clean in Cortex-Web
+
+#### Nexus-Architektur-Updates
+- `Nexus/_memory/patterns/cross-repo-subsumption.md` erweitert um
+  **Variante B — Container ohne Git + Remote-Repo-Pointer** (aus Phase 5),
+  inkl. Entscheidungs-Matrix Variante-A-vs-B und Remote-Pointer-Struktur
+- `Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/08-cross-repo-subsumption-mit-git-subtree.md`
+  erweitert um §7 Variante B mit 5 PH5-Lessons und Entscheidungs-Flowchart
+
+#### Entfernt
+- Aus `Juvantis/juvantis-web/` transferiert: `shopify-sync.sh`, `shopify_export/`,
+  `knowledge-graph/`. Theme-Klon bleibt unverändert.
+
+#### Commits Session 7 (in Reihenfolge)
+- `799d674` — `docs(phase-5): add SUBSUMPTION spec for Juvantis-web` (T1)
+- `2d67a06` — `feat(phase-5): transfer juvantis-web docs to sites/juvantis-webseite (T2)`
+- `2b0d1ba` — `docs(phase-5): add SHOPIFY_THEME_POINTER for Juvantis-web (T3)`
+- `304859e` — `docs(phase-5): add README + SESSION_RESUME for sites/juvantis-webseite (T4)`
+- `cad5a70` — `docs(phase-5): path refs + phase-5 green across Cortex-Web docs (T5)`
+- `cb04976` — `docs(phase-5): self-check 10/12 green at T8 (AK-10/12 pending T9)`
+- (weitere Commits aus Session-Ende-Workflow T9)
+
+---
+
 ## [0.5.0] — 2026-04-19 (Session 6)
 
 ### Phase 4 abgeschlossen — Subsumierung praxis-redesign → sites/praxis-webseite/ (12/12 AKs grün)

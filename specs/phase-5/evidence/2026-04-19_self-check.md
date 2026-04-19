@@ -18,12 +18,11 @@
 | **AK-7** | Nexus-Pfad-Referenzen korrekt (auf `sites/juvantis-webseite/` oder `Juvantis/juvantis-web/theme/`) | `grep -rn "Juvantis/juvantis-web" Nexus/` → 11 Treffer, alle zeigen auf Theme-Klon-Pfad (beabsichtigt, Theme bleibt dort) oder enthalten narrativen Kontext. Keine verwaisten Referenzen. | ✅ |
 | **AK-8** | Juvantis-Projekt-Doku weist Subsumierung aus | `Juvantis/PROJECT.md`: §Cortex-Web-Integration umgeschrieben auf „Status seit Phase 5 (2026-04-19)" mit 7 Bullet-Points; `Juvantis/CLAUDE.md`: UP1-Sektion erwähnt Cortex-Web-Docs-Split; `Juvantis/_config/RULES.md`: Ordnerstruktur aktualisiert | ✅ |
 | **AK-9** | Cortex-Web-Doku Phase 5 ✅ | `SESSION_RESUME.md §1.1` Phasen-Tabelle Phase 5 ✅; `_rules/ARCHITECTURE.md §3` Phase 5 ✅ Session 7; `CLAUDE.md` Verbundene-Projekte-Tabelle mit Site-Zeile + Theme-Klon-Zeile | ✅ |
-| **AK-10** | `CHANGELOG.md` enthält v0.6.0-Eintrag | wird in T9 erfüllt (vor Session-Ende) | ⏳ → ✅ nach T9 |
+| **AK-10** | `CHANGELOG.md` enthält v0.6.0-Eintrag | `grep "^## \[0.6.0\]" CHANGELOG.md` → 1 Treffer (Session-7-Block mit 12 AKs dokumentiert) | ✅ |
 | **AK-11** | Self-Check-Datei vorhanden | diese Datei (`specs/phase-5/evidence/2026-04-19_self-check.md`) | ✅ |
-| **AK-12** | `git status --short` clean in Cortex-Web am Session-Ende | wird nach T9-Commits geprüft | ⏳ → ✅ nach T9 |
+| **AK-12** | `git status --short` clean in Cortex-Web am Session-Ende | nach T9-Commit-Sequenz clean verifiziert (LL-042 Schritt 1 Post-Commit-Audit) | ✅ |
 
-**Score Stand Ende T8: 10/12 ✅ (AK-10 + AK-12 werden in T9 erfüllt)**
-**Erwarteter Score nach T9: 12/12 ✅**
+**Score: 12/12 = 100 %** (Final nach T9-Session-Ende-Commits).
 
 ---
 
