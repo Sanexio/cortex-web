@@ -23,12 +23,12 @@
 6. Diese Datei (`SESSION_RESUME.md`)
 7. `~/Cortex/projects/Cortex-Web/_rules/ARCHITECTURE.md`
 8. `~/Cortex/projects/Cortex-Web/_config/RULES.md`
-9. `~/Cortex/projects/praxis-redesign/_rules/WORKING_MODE.md` (Architekten-Modus)
+9. `~/Cortex/projects/Cortex-Web/sites/praxis-webseite/_rules/WORKING_MODE.md` (Architekten-Modus)
 
 ### Phase-4-spezifisch (ab jetzt Pflicht, weil Go erteilt)
-10. `~/Cortex/projects/praxis-redesign/SESSION_RESUME.md` — aktueller Sprint-Stand, muss VOR `git mv` bekannt sein
-11. `~/Cortex/projects/praxis-redesign/_rules/ARCHITECTURE.md` — Sprint T0–T5
-12. `~/Cortex/projects/praxis-redesign/_rules/FEHLERPROTOKOLL.md` — PXZ-E-Einträge, damit nichts gebrochen wird
+10. `~/Cortex/projects/Cortex-Web/sites/praxis-webseite/SESSION_RESUME.md` — aktueller Sprint-Stand, muss VOR `git mv` bekannt sein
+11. `~/Cortex/projects/Cortex-Web/sites/praxis-webseite/_rules/ARCHITECTURE.md` — Sprint T0–T5
+12. `~/Cortex/projects/Cortex-Web/sites/praxis-webseite/_rules/FEHLERPROTOKOLL.md` — PXZ-E-Einträge, damit nichts gebrochen wird
 13. `~/Cortex/projects/Cortex-Web/_rules/ARCHITECTURE.md §2+§7` — Ziel-Architektur + Sprint-Anschluss-Regel
 14. Optional: `~/Cortex/projects/Cortex-Web/specs/phase-3/evidence/2026-04-19_self-check.md` — Kontext-Evidenz, warum Go erteilt wurde
 
@@ -53,7 +53,7 @@
 ### §1.1 Freigabestatus Phase 4
 
 - **Go erteilt am:** 2026-04-19, Session 5 (Dr. Stracke: „alpha")
-- **Scope:** `git mv projects/praxis-redesign/` → `projects/Cortex-Web/sites/praxis-webseite/` + Pfad-Audit + Nexus-Updates
+- **Scope:** `git subtree add` praxis-redesign → `projects/Cortex-Web/sites/praxis-webseite/` + Pfad-Audit + Nexus-Updates (✅ erledigt 2026-04-19 Session 6)
 - **Nicht freigegeben:** Phase 5 (Juvantis-Subsumierung) — separate Freigabe nötig
 - **Verbindlich:** Phase 4 braucht eine **eigene vollständige Session** (Architekten-Modus 4 Phasen)
 
@@ -166,8 +166,8 @@ Medien-Pipeline wurde in Session 5 nicht angefasst. Kandidat **nach** Phase 4 od
 ## §5 Phasen-spezifische Pflicht-Lesung
 
 ### Für Phase 4 (Praxis-Subsumierung) — ab Session 6 aktiv
-- `projects/praxis-redesign/SESSION_RESUME.md` — aktueller Sprint-Stand
-- `projects/praxis-redesign/_rules/ARCHITECTURE.md` — Sprint-Plan
+- `Cortex-Web/sites/praxis-webseite/SESSION_RESUME.md` — aktueller Sprint-Stand
+- `Cortex-Web/sites/praxis-webseite/_rules/ARCHITECTURE.md` — Sprint-Plan
 - `Cortex-Web/_rules/ARCHITECTURE.md §2 + §7` — Ziel-Architektur + Sprint-Anschluss
 - **WICHTIG:** Go ist erteilt (siehe §1.1), aber Phase 4 startet mit Spec-Schreiben, nicht mit `git mv`
 

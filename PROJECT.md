@@ -1,11 +1,11 @@
 ---
 name: Cortex-Web
-version: "0.1"
+version: "0.5"
 status: aktiv
 geraete: [home-mac-mini]
 erstellt: 2026-04-18
-aktualisiert: 2026-04-18
-phase: "Phase 0 abgeschlossen — Skelett"
+aktualisiert: 2026-04-19
+phase: "Phasen 0–4 abgeschlossen — Praxis subsumiert"
 ---
 
 # Cortex-Web — Projekt-Container-Manifest
@@ -39,12 +39,11 @@ jeweils mit separatem Go von Dr. Stracke via `git mv` (Historie bleibt erhalten)
 
 ## Strategie-Dokumente
 
-- `/projects/praxis-redesign/specs/bridge-strategy/00_BRAINSTORMING_KONZEPT.md`
-- `/projects/praxis-redesign/specs/bridge-strategy/01_COMMON_TRUNK_LOKALE_ENTWICKLUNG.md`
-- `/projects/praxis-redesign/specs/bridge-strategy/02_ENTSCHEIDUNGEN_FINAL.md`
+- `Cortex-Web/specs/bridge-strategy/00_BRAINSTORMING_KONZEPT.md`
+- `Cortex-Web/specs/bridge-strategy/01_COMMON_TRUNK_LOKALE_ENTWICKLUNG.md`
+- `Cortex-Web/specs/bridge-strategy/02_ENTSCHEIDUNGEN_FINAL.md`
 
-Diese drei Dokumente bilden die Entscheidungshistorie. Nach Phase 4 werden sie
-nach `Cortex-Web/specs/bridge-strategy/` mitverschoben.
+Diese drei Dokumente bilden die Entscheidungshistorie. Seit Phase 4 (2026-04-19, Entscheidung 3b) hier im Dach.
 
 ## Abhängigkeiten
 
@@ -59,7 +58,7 @@ nach `Cortex-Web/specs/bridge-strategy/` mitverschoben.
 - `Nexus/_rules/GLOBAL_RULES.md` (LL-001 … LL-043+)
 - `Nexus/_rules/SESSION_LIFECYCLE.md` (LL-042/043)
 - `Nexus/_memory/MEMORY.md` (aktive Projekte, Top-Fehler)
-- Architekten-Modus wird aus `projects/praxis-redesign/_rules/WORKING_MODE.md` referenziert (Phase 0 Entscheidung)
+- Architekten-Modus wird aus `sites/praxis-webseite/_rules/WORKING_MODE.md` referenziert (Phase 0 Entscheidung; vor Phase 4: `projects/praxis-redesign/_rules/WORKING_MODE.md`)
 
 ## Datenvolumen (initial, wächst)
 
@@ -74,22 +73,22 @@ nach `Cortex-Web/specs/bridge-strategy/` mitverschoben.
 
 | Phase | Ziel | Session | Status |
 |-------|------|:-------:|:-----:|
-| **0** | Skelett + Regel-Infrastruktur + Nexus-Eintragung | 1 | ✅ heute |
-| **1** | POC WordPress-Adapter (1 Produkt → WP-Page lokal) | 1 | ⏳ nächste |
-| **2** | POC Shopify-Adapter (gleiches Produkt → Shopify) | 1 | ⏳ |
-| **3** | Review & Go/No-Go | 1 | ⏳ |
-| **4** | Subsumierung praxis-redesign → sites/praxis-webseite/ | 1 | ⏳ |
-| **5** | Subsumierung Juvantis/juvantis-web → sites/juvantis-webseite/ | 1 | ⏳ |
+| **0** | Skelett + Regel-Infrastruktur + Nexus-Eintragung | 1 | ✅ 2026-04-18 |
+| **1** | POC WordPress-Adapter (1 Produkt → WP-Page lokal) | 2 | ✅ 2026-04-18 |
+| **2** | POC Shopify-Adapter (gleiches Produkt → Shopify) | 3+4 | ✅ 2026-04-18/19 |
+| **3** | Review & Go/No-Go | 5 | ✅ 2026-04-19 |
+| **4** | Subsumierung praxis-redesign → sites/praxis-webseite/ | 6 | ✅ 2026-04-19 |
+| **5** | Subsumierung Juvantis/juvantis-web → sites/juvantis-webseite/ | tbd | ⏳ kein Go |
 
 ## Regeln
 
 - `_config/RULES.md` — Projekt-spezifische Regeln (CW-001+)
 - `_rules/ARCHITECTURE.md` — Phasen-Plan + Sprint-Roadmap
-- Architekten-Modus: Referenz auf `projects/praxis-redesign/_rules/WORKING_MODE.md`
+- Architekten-Modus: Referenz auf `sites/praxis-webseite/_rules/WORKING_MODE.md`
   (wird nach Promotion zum globalen Pattern nach `Nexus/_rules/` verschoben)
 
 ## Hinweise
 
-- Sprint 2 praxis-redesign + Juvantis-Weiterentwicklung laufen PARALLEL weiter, keine Blockade durch Cortex-Web-Phasen 0–3.
-- Phasen 4/5 (Subsumierung) pausieren die jeweilige Site für ca. 30 Min (git mv).
+- Praxis-Sprint 2 (jetzt unter `sites/praxis-webseite/`) + Juvantis-Weiterentwicklung laufen PARALLEL weiter, keine Blockade durch verbleibende Cortex-Web-Phasen.
+- Phase 5 (Juvantis-Subsumierung) pausiert die Juvantis-Site für ca. 30 Min (`git subtree add` analog Phase 4).
 - Alle Medien bekommen lokale Originale in `_media-source/` — auch bei M-3c. Das sichert den späteren Umzug auf M-3d (NAS).

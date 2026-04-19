@@ -33,5 +33,6 @@ Noch kein aktiver Pre-Flight — keine Adapter implementiert.
 
 ## Referenz
 
-Vorbild: `projects/praxis-redesign/_rules/PRE_FLIGHT_CHECKLIST.md`. Viele Checks
-werden von dort übernommen, sobald Adapter existieren.
+Vorbild: `Cortex-Web/sites/praxis-webseite/_rules/PRE_FLIGHT_CHECKLIST.md` (vor
+2026-04-19: `projects/praxis-redesign/_rules/PRE_FLIGHT_CHECKLIST.md`). Viele
+Checks werden von dort übernommen, sobald Adapter existieren.
