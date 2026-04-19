@@ -27,3 +27,8 @@ adapters/*/.cache/
 # Lokale Logs
 *.log
 logs/
+
+# Archivierte Binär-Blobs (z. B. entfernte WP-Plugins in _archive/)
+# Metadaten zu Archiven gehören in specs/*/evidence/ bzw. in Self-Check-Dokumente,
+# nicht als vollständiger Ordner ins Git. README bleibt lokal im Archive-Ordner.
+_archive/
