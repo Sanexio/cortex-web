@@ -752,3 +752,60 @@ Stresstest des Modells.
   Card-Referenz-Pattern; §15 Anti-Patterns aus Session dokumentiert.
 - **v2.0** (2026-04-17) — Komplette Neufassung nach Apple HIG.
 - **v1.x** (2026-04-17) — Initialfassung.
+
+---
+
+## §18 Content-Page-Typografie + Header-Branding (v3.1, 2026-04-19 S2.3-B)
+
+Eingezogen nach Sprint 2 / S2.3 Batch B, Dr.-Stracke-Feedback 2026-04-19.
+
+### §18.1 H1-Klassenwahl für Content-Pages
+
+Für **Content-Pages** (Praxis, Team, Datenschutz, Impressum, 404 etc.) gilt:
+
+| Kontext | Klasse | Clamp-Größe |
+|---|---|---|
+| Home-Hero, Landing-Hero | `.pxz-display` | 40 – 104 px |
+| Page-Hero mit großem Hero-Bild | `.pxz-title-1` | 36 – 80 px |
+| **Standard Content-Page-H1** | **`.pxz-title-2`** | 28 – 48 px |
+| Sub-Section-H2 | `.pxz-title-3` | 22 – 30 px |
+
+**Regel:** `.pxz-display` ist **reserviert** für Marketing-Hero-Flächen (Home-Landing).
+Für Content-Pages, die Text vermitteln, ist `.pxz-display` zu dominant
+(füllt bei langen Titeln über 80 px Höhe auf 1440 px) → Lesefluss leidet.
+`.pxz-title-2` ist die verbindliche Basis für Content-Page-H1s.
+
+**Anti-Pattern:** Inhaltsseite mit H1 in `.pxz-display` (80 – 104 px) bei langer Headline.
+**Korrekt:** `.pxz-title-2` (max 48 px) — Hero wirkt dadurch kompakt und führt schnell in den Lesefluss.
+
+Betroffene Templates (S2.3-B-Revision):
+- `template-standard.php` → `.pxz-title-2` (Praxis + weitere künftige Standard-Pages)
+- `404.php` → `.pxz-title-2`
+- `template-team.php` → `.pxz-title-2`
+
+### §18.2 Header-Branding-Konsistenz
+
+**Regel:** Der Header (Nav-Logo + Wortmarke) ist **Site-weit identisch**, gespeist aus:
+
+1. `assets/logo.svg` — SVG-Logo (rotes Rounded-Rect mit weißem Kreuz)
+2. `wp_options.blogname` — Wortmarke, darf niemals ein unkontrollierter Default sein
+3. Theme-eigenes Header-Fragment (`template-parts/*` oder `header.php`) — gemeinsame Quelle für alle Seiten
+
+**Aktueller Stand (S2.3-B, 2026-04-19):**
+- `blogname` = `Praxiszentrum Dr. Stracke und Kollegen`
+- Header rendert `.pxz-nav-logo` mit `<span class="top">Praxiszentrum</span>` + `<span class="sub">Dr. Stracke & Kollegen</span>`
+
+**Seiten-spezifisches Header-Branding** (Ausnahme, seit S2.3-B):
+- Auf `/team/` wird der Site-Title per `pre_option_blogname`-Filter zu `Praxisgemeinschaft Sanexio` überschrieben (`pxz_override_blogname_for_team()` in `functions.php`).
+- Der Filter ist URL-basiert (REQUEST_URI regex), funktioniert also vor WP_Query-Init.
+- Weitere Seiten-spezifische Brands dürfen nur mit dokumentierter Begründung (Spec-Eintrag) hinzugefügt werden; unkontrollierte Pro-Page-Brands sind verboten.
+
+**Anti-Pattern:**
+- Plugin-generierter Default-Site-Title ("GP Medical Center Westend" von Blocksy-Demo-Import) bleibt aktiv.
+- Header-Fragment pro Page individuell erstellt → Divergenz.
+
+**Korrekt:**
+- `blogname`-Option ist authoritative.
+- Theme-Header-Fragment liest `bloginfo('name')` → picks up URL-basierten Filter.
+- Logo + Wortmarke sind **immer** gemeinsam gerendert (Logo alleine ohne Text = NG; Text alleine ohne Logo = NG).
+

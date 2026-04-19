@@ -138,11 +138,13 @@ export const pages = [
     viewports: [1440, 768, 430],
     expected: {},
     exists: [
-      ".pxz-standard",
-      ".pxz-standard-hero",
-      "h1.pxz-standard-title",
-      ".pxz-standard-content",
-      ".pxz-standard-cta",
+      // Team page rebuilt to doctor-grid in S2.3-B revision
+      ".pxz-team",
+      ".pxz-team-hero",
+      "h1.pxz-team-title",
+      ".pxz-team-grid",
+      ".pxz-team-card",
+      ".pxz-team-cta",
       'script[type="application/ld+json"]',
       'link[rel="canonical"]',
       'meta[name="description"]',
