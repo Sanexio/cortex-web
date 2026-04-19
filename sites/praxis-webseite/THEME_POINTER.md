@@ -33,19 +33,24 @@ Verbindung.
 
 ---
 
-## Aktueller Theme-Stand (Stand Phase-4-Subsumierung)
+## Aktueller Theme-Stand (Stand 2026-04-19 nach S2.2)
 
 | Eintrag | Wert |
 |---------|------|
-| Commit-Hash | `257304e7e9473d77a3a57d7f1b5c39b74e5dc13d` (`257304e`) |
-| Commit-Message | `feat(s2.0): design-token SSoT; bump PXZ_VERSION 2.7.4 → 2.7.5` |
-| PXZ_VERSION | `2.7.5` |
-| Bedeutung | S2.0 Design-Token-SSoT (Token-Datei `assets/css/tokens.css`), MD5-byte-identisch zu v2.7.4 (visuell unverändert) |
-| Letzte Dr.-Stracke-Freigabe | 2026-04-18 („Das sieht gut aus") |
+| Commit-Hash | `dd3e4e1` (Hotfix nach `6c02cb4`) |
+| Commit-Message | `fix(s2.2): comment strings triggering WP page-template auto-discovery` |
+| PXZ_VERSION | `2.7.7` |
+| Bedeutung | S2.2 Template-Typologie — 8 Skelett-Templates angelegt (Layout-Hülle, kein Echt-Content; Content folgt in S2.3 Batch A–G). Hotfix gegen Comment-Strings, die WP Page-Template-Auto-Discovery triggerten. |
+| Architektonische Verschiebung | Sprint-Reihenfolge: S2.2 → **S2.0b (Component-Refactor, eingeschoben)** → S2.3 (Content) → S2.4 → S2.5 |
+| Verify.sh-Stand | grün (Home + Karriere unberührt, AK-7 erfüllt) |
+| Letzte Dr.-Stracke-Freigabe | 2026-04-19 (S2.2-Spec freigegeben, Architekten-Entscheidungen delegiert) |
 
-### Versionskette des Themes (Stand 2026-04-19)
+### Versionskette des Themes (Stand 2026-04-19, Ende S2.2)
 
 ```
+dd3e4e1  fix(s2.2): comment strings triggering WP page-template auto-discovery
+6c02cb4  feat(s2.2): 8 skelett-templates + functions.php enqueue + PXZ_VERSION 2.7.7
+c4f18ba  feat(s2.0c): tokens.css v2 with 4-layer model; bump PXZ_VERSION 2.7.5 → 2.7.6
 257304e  feat(s2.0): design-token SSoT; bump PXZ_VERSION 2.7.4 → 2.7.5
 914af8d  feat(s0.2): extract karriere CSS; bump PXZ_VERSION 2.7.3 → 2.7.4
 c3f7db7  feat(s0.2): extract homepage CSS from inline to assets/css/homepage.css
