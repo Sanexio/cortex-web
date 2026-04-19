@@ -45,6 +45,10 @@ const PROBED_PROPS = [
   "textAlign",
   "color",
   "maxWidth",
+  // S2.0e — Component-Probe: Typografie- und Transform-Properties
+  "textTransform",
+  "fontWeight",
+  "fontSize",
 ];
 
 let failures = 0;

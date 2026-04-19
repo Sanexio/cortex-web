@@ -46,6 +46,43 @@ grep_split() {
   fi
 }
 
+# === §1b Split-Location-Check CSS-Schichten (S2.0e / S2.0b AK-10) ===
+grep_split_css() {
+  echo ""
+  echo "=== §1b Split-Location-Check CSS-Schichten (S2.0b-AK-10) ==="
+  local components="$THEME_DIR/assets/css/components.css"
+  local homepage="$THEME_DIR/assets/css/homepage.css"
+  local karriere="$THEME_DIR/assets/css/karriere.css"
+  local tmp_c tmp_h tmp_k
+  tmp_c=$(mktemp); tmp_h=$(mktemp); tmp_k=$(mktemp)
+  grep -oE '^\.pxz-[A-Za-z0-9_-]+' "$components" 2>/dev/null | sort -u > "$tmp_c"
+  grep -oE '^\.pxz-[A-Za-z0-9_-]+' "$homepage"   2>/dev/null | sort -u > "$tmp_h"
+  grep -oE '^\.pxz-[A-Za-z0-9_-]+' "$karriere"   2>/dev/null | sort -u > "$tmp_k"
+
+  local pair_fail=0
+  # Paare als Parallel-Arrays (bash kennt keine Array-of-Arrays)
+  local names=("components:homepage" "components:karriere" "homepage:karriere")
+  local files_a=("$tmp_c" "$tmp_c" "$tmp_h")
+  local files_b=("$tmp_h" "$tmp_k" "$tmp_k")
+  local i
+  for i in 0 1 2; do
+    local name="${names[$i]}"
+    local a="${files_a[$i]}"
+    local b="${files_b[$i]}"
+    local dupes
+    dupes=$(comm -12 "$a" "$b")
+    if [ -n "$dupes" ]; then
+      echo "  ✗ Doppelte Basis-Selektoren in [$name]:"
+      echo "$dupes" | sed 's/^/    /'
+      pair_fail=$((pair_fail + 1))
+    else
+      echo "  ✓ Keine doppelten Basis-Selektoren in [$name]"
+    fi
+  done
+  rm -f "$tmp_c" "$tmp_h" "$tmp_k"
+  [ "$pair_fail" -gt 0 ] && FAIL=$((FAIL + 1))
+}
+
 # === §2 Reset-Scope-Check (PXZ-E-002) ===
 reset_scope() {
   echo ""
@@ -100,6 +137,86 @@ probe() {
   fi
 }
 
+# === §3b Component-Probe (S2.0e / S2.0b AK-8) ===
+# Zweistufige Probe fuer Schicht 3 (components.css):
+#   Stufe A — Datei-Korrektheit: grep auf 8 erwartete Komponenten-Regeln
+#             in der CSS-Datei selbst (pinnt IST-Werte aus Theme-Commit 8f596f7).
+#   Stufe B — Enqueue-Korrektheit: curl auf Home-URL + grep auf <link>-Tag,
+#             das components.css mit korrekter Version-Query referenziert.
+# Rewrite-Rule-unabhaengig, kein Puppeteer, keine Probe-Page noetig.
+component_probe() {
+  echo ""
+  echo "=== §3b Component-Probe (S2.0b-AK-8) ==="
+  local components="$THEME_DIR/assets/css/components.css"
+  local stage_fail=0
+
+  # --- Stufe A: Datei-Regeln ---
+  echo "  --- Stufe A: components.css Datei-Korrektheit ---"
+  if [ ! -f "$components" ]; then
+    echo "  ✗ $components not found"
+    stage_fail=$((stage_fail + 1))
+  else
+    # 8 Assertions — Format (Beschreibung|Startanker-Regex|Inhalts-Regex|Kontext-Lines).
+    # Zweistufig: Startanker findet Regel-Kopf (Selektor-Zeile), dann wird in N
+    # Folgezeilen der Inhalts-Regex gesucht. Funktioniert fuer single-line- UND
+    # multi-line-CSS-Regeln.
+    local assertions=(
+      "pxz-container max-width:1280px|^\.pxz-container[[:space:]]*\{|max-width:[[:space:]]*1280px|1"
+      "pxz-btn border-radius:9999px|^\.pxz-btn[[:space:]]*\{|border-radius:[[:space:]]*9999px|12"
+      "pxz-eyebrow text-transform:uppercase|^\.pxz-eyebrow[[:space:]]|text-transform:[[:space:]]*uppercase|1"
+      "pxz-hero background:#fff|^\.pxz-hero[[:space:]]*\{|background:[[:space:]]*#fff|1"
+      "pxz-display font-weight:600|^\.pxz-display[[:space:]]|font-weight:[[:space:]]*600|1"
+      "pxz-title-1 font-weight:600|^\.pxz-title-1[[:space:]]|font-weight:[[:space:]]*600|1"
+      "pxz-headline font-weight:600|^\.pxz-headline[[:space:]]|font-weight:[[:space:]]*600|1"
+      "pxz-body font-size:17px|^\.pxz-body[[:space:]]|font-size:[[:space:]]*17px|1"
+    )
+    local a
+    for a in "${assertions[@]}"; do
+      local desc head content ctx
+      IFS='|' read -r desc head content ctx <<< "$a"
+      # grep findet den Selektor-Kopf mit N Folgezeilen, dann im Ergebnis
+      # nach Inhalts-Regex suchen.
+      if grep -E "$head" -A "$ctx" "$components" 2>/dev/null | grep -qE "$content"; then
+        echo "  ✓ $desc"
+      else
+        echo "  ✗ $desc  (Regel fehlt/abweichend in components.css)"
+        stage_fail=$((stage_fail + 1))
+      fi
+    done
+  fi
+
+  # --- Stufe B: Enqueue via Home-HTML ---
+  echo "  --- Stufe B: components.css Enqueue-Korrektheit ---"
+  local home_html
+  home_html=$(curl -sk "$URL" 2>/dev/null)
+  if [ -z "$home_html" ]; then
+    echo "  ✗ Home-URL $URL nicht erreichbar"
+    stage_fail=$((stage_fail + 1))
+  else
+    # Link-Tag zu components.css muss existieren mit pxz-components-ID
+    if echo "$home_html" | grep -qE "id=['\"]pxz-components-css['\"]"; then
+      echo "  ✓ <link id='pxz-components-css'> im Home-HTML vorhanden"
+    else
+      echo "  ✗ <link id='pxz-components-css'> fehlt im Home-HTML"
+      stage_fail=$((stage_fail + 1))
+    fi
+    # URL auf components.css in irgendeinem <link> Tag
+    if echo "$home_html" | grep -qE "assets/css/components\.css\?ver="; then
+      echo "  ✓ href enthaelt assets/css/components.css?ver=..."
+    else
+      echo "  ✗ href fuer components.css mit ?ver=-Query nicht gefunden"
+      stage_fail=$((stage_fail + 1))
+    fi
+  fi
+
+  if [ "$stage_fail" -gt 0 ]; then
+    FAIL=$((FAIL + 1))
+    echo "  ✗ Component-Probe FAILED ($stage_fail Assertion(s) fehlgeschlagen)"
+  else
+    echo "  ✓ Component-Probe OK (Stufe A: 8 Regeln, Stufe B: Enqueue)"
+  fi
+}
+
 # === §4 Alignment-Probe (PXZ-E-008) ===
 alignment() {
   echo ""
@@ -114,12 +231,14 @@ alignment() {
 }
 
 case "$MODE" in
-  --grep-split)   grep_split ;;
-  --reset-scope)  reset_scope ;;
-  --screenshots)  take_screenshots ;;
-  --probe)        probe ;;
-  --alignment)    alignment ;;
-  --all|"")       grep_split; reset_scope; take_screenshots; probe; alignment ;;
+  --grep-split)      grep_split ;;
+  --grep-split-css)  grep_split_css ;;
+  --reset-scope)     reset_scope ;;
+  --screenshots)     take_screenshots ;;
+  --probe)           probe ;;
+  --component-probe) component_probe ;;
+  --alignment)       alignment ;;
+  --all|"")          grep_split; grep_split_css; reset_scope; take_screenshots; probe; component_probe; alignment ;;
   *) echo "Unknown mode: $MODE"; exit 2 ;;
 esac
 
