@@ -1,0 +1,27 @@
+# Credentials
+.env
+_config/.env
+*.env.local
+
+# WP-Core (nicht versionieren)
+wp-admin/
+wp-includes/
+wp-config.php
+wp-config-sample.php
+
+# Uploads + Cache
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/backup*/
+wp-content/w3tc-config/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
