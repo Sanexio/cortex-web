@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-18T22:45:39.534Z",
+  "timestamp": "2026-04-19T07:26:33.468Z",
   "trunk_id": "basic-check",
   "wp": {
     "ok": true,
@@ -39,7 +39,7 @@
       "vendor": "Sanexio",
       "product_type": "bluttests",
       "handle": "basic-check",
-      "updated_at": "2026-04-19T00:44:47+02:00",
+      "updated_at": "2026-04-19T00:45:44+02:00",
       "published_at": null,
       "tags": "bluttests, cortex-web",
       "status": "draft",

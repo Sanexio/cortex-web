@@ -14,7 +14,7 @@
       "step": "adapter-run",
       "exit": 0,
       "stdout_tail": [
-        "  \"updated_at\": \"2026-04-19T00:45:44+02:00\",",
+        "  \"updated_at\": \"2026-04-19T09:26:38+02:00\",",
         "  \"admin_url\": \"https://juvantis.myshopify.com/admin/products/10940942844171\"",
         "}",
         "sync-shopify: OK"
@@ -26,5 +26,5 @@
       "published_at": null
     }
   ],
-  "timestamp": "2026-04-18T22:45:39.534Z"
+  "timestamp": "2026-04-19T07:26:33.468Z"
 }
