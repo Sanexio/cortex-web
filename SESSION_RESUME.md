@@ -830,58 +830,61 @@ Items 14–16 aus §0 oben.
 
 ---
 
-## §6 Sofort-Status-Frage für nächste Session (Session 16)
+## §6 Sofort-Status-Frage für nächste Session (Session 17)
 
-> **„Praxis-Sprint 2 / S2.3-D Phase 1 (Mojibake-Fix + Trunk-ready Inventar)
-> ist ✅ abgeschlossen. 20/177 publish-Pages gefixt (Idempotenz bewiesen,
-> 0 Residuen). 189-Zeilen-CSV-Inventar mit 15 Spalten (inkl. `trunk_candidate` +
-> `cross_site_potential` + `image_count` für spätere Bridge + Medien-Pipeline).
-> **Schlüssel-Erkenntnis:** 134/189 Pages sind i18n-Dubletten → nur **55 deutsche
-> kuratur-relevante Pages**. 13/13 AKs. 3 neue Patterns, Tutorial 16.
+> **„Praxis-Sprint 2 / S2.3-D Phase 2 (Content-Archive 189 Pages + 3-way
+> MD5-Integritätskette) ist ✅ abgeschlossen. Alle 189 Pages liegen als
+> Markdown-Dateien mit YAML-Front-Matter + RAW-HTML-Body 1:1 in `_content-archive/`
+> (Git-tracked, thematisch nach Cluster/Sprache sortiert). Verifier bestätigt
+> Body-File ↔ Front-Matter-`content_md5` ↔ DB-`MD5(post_content)` für 189/189.
+> Idempotenz bewiesen (Lauf 2 = 0 writes). 12/12 AKs. 2 neue Patterns
+> (`content-archive-pre-curation`, `yaml-front-matter-md5-contract`) + Tutorial 17.
 > Theme unberührt (HEAD `ae9b1b8`, PXZ 2.7.13).
 >
-> Damit ist das **Fundament für Full-Content-Migration gelegt**. Ab jetzt:
-> echte Content-Batches pro Cluster. Welche Front?**
+> **Content-Migration-Fundament ist 3-fach gesichert:** Mojibake sauber (P1),
+> Inventar vollständig (P1), Original-Archive im Git (P2). Ab jetzt kann jede
+> Kurations-Session Seite für Seite das Original nebendran haben, `git diff`
+> zeigt jede nicht-übernommene Stelle. Welche Front?**
 >
-> **A (Architekten-Tendenz).** **S2.3-D Phase 2 / Cluster `kern`** —
-> 7 P0-Pages (`Karriere`, `Datenschutz`, `Impressum`, `Sprechstunden`,
-> `Kontakt`, + 2 schon in S2.3-B drin). Hoher Hebel, mittlerer Scope.
-> Datenschutz + Impressum blockiert → faktisch 5 Pages in dieser Session.
+> **A (Architekten-Tendenz).** **Phase 3 / Cluster `kern`** — 5 kuratur-
+> relevante Pages: `Karriere`, `Sprechstunden`, `Kontakt`, + Home-Aktualisierung.
+> (Praxis, Team sind schon aus S2.3-B drin; Datenschutz + Impressum blockiert.)
+> Größter sichtbarer Patienten-Hebel. Archive-Referenzen unter
+> `_content-archive/kern/de/`.
 >
-> **B.** **S2.3-D Phase 2 / Cluster `checkups`** — 6 P0-Pages mit starkem
+> **B.** **Phase 3 / Cluster `checkups`** — 6 P0-Pages mit starkem
 > Bridge-Potenzial (alle haben `cross_site_potential = basic-check` o. ä.).
-> Kombiniert gut mit Juvantis-Trunk-Ausbau (Bridge-Brücke real werden lassen).
+> Hier wird der Common-Trunk-Gedanke (Praxis ↔ Sanexio) zum ersten Mal produktiv.
+> Archive-Referenzen unter `_content-archive/checkups/de/`.
 >
-> **C.** **S2.3-D Phase 2 / Cluster `fachrichtung` + `aerzte`** —
-> 1 + 2 = 3 P1-Pages, kleiner Single-Session-Scope. Nutzt `template-fachrichtung.php`
-> + `template-arzt.php` (S2.2-Skelette).
+> **C.** **Phase 3 / Cluster `diagnostik` oder `services`** — 10 P1 oder 4 P1
+> Pages, sekundärer Patienten-Kontext.
 >
 > **D.** **S2.4 Menü-Restrukturierung** — Neue Top-Nav mit Submenus
 > (Fachrichtungen, Ärzte, Check-Ups) basierend auf Inventar-Clustern.
-> Kann parallel laufen, aber sichtbarer Nutzen erst nach ≥ 1 Content-Cluster.
+> Sichtbarer Nutzen erst nach ≥ 1 Content-Cluster.
 >
-> **E.** **Phase 2b Medien-Pipeline** — aus Inventar-Spalte `image_count`
-> heraus Medien-Trunk aufbauen. Kandidat parallel zu Content-Batches.
+> **E.** **Phase 2b Medien-Pipeline** — Bilder-Trunk aus Archive-`image_urls`-
+> Listen aufbauen. Entlastet spätere Content-Sessions.
 >
 > **F.** **Juvantis-Trunk-Content-Ausbau** — weitere YAML-Produktquellen
-> (Body Checks, Blood Tests, DHT). Ermöglicht später Bridge zu Praxis-Pages
-> aus B.
+> (Body Checks, Blood Tests, DHT). Kombiniert mit B als Bridge-Pfad-Paar.
 >
 > **G.** **S2.3-A Datenschutz + Impressum** — **blockiert** (Rechtsquelle
 > wählen: Anwalt / e-recht24 / Prod-Text). Sie nennen Entscheidung → starten.
 >
 > **H.** **Strukturhygiene** — SESSION_START.md-Legacy-Pfade, 5 Plugin-
-> Phantom-Templates, Team-Arzt-Intros + Fotos (Batch D vorziehen).
+> Phantom-Templates, Team-Arzt-Intros + Fotos, draft-Page `s2-0b-probe-9670` löschen.
 >
 > **I.** **Santapress-Archiv auflösen** — fällig ab 2026-05-19 (nicht jetzt).
 >
 > **J.** **Andere konkrete Änderung** — Sie nennen."
 
 Keine Code-Änderung vor Ihrer Wahl. Architekten-Tendenz: **A (Cluster `kern`)** —
-größter sichtbarer Hebel (offizielle Kern-Seiten für Patienten), alle 5 kuratur-
-relevanten Pages sind Single-Session-Kandidaten (Datenschutz/Impressum bleiben
-blockiert bis Sie Rechtsquelle wählen). Alternativ **B (Cluster `checkups`)** —
-strategischer, weil Bridge-Pfad zu Juvantis direkt nutzbar wird.
+größter sichtbarer Hebel (die Seiten, die Patienten am häufigsten ansteuern),
+5 Single-Session-Kandidaten. Archive steht bereit (`_content-archive/kern/de/`),
+Kuration kann mit Git-Diff-Sicherheit starten. Alternativ **B (Cluster `checkups`)**
+— strategischer, weil Bridge-Pfad zu Juvantis direkt nutzbar wird.
 
 ---
 
