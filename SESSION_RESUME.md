@@ -39,15 +39,15 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.6.3` — Cortex-Web-Aufbau (Phase 0–5) ✅ vollständig · Praxis-Sprint 2 fortgeführt (+ Infra-Mini S2.0f)
-- **Stand:** 2026-04-19, **Session 13 abgeschlossen** (Praxis-Sprint 2 / S2.0f Santapress-Plugin-Entfernung)
-- **Working Tree:** clean
+- **Version:** `0.6.4` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Batches gestartet (S2.3-B ✅)
+- **Stand:** 2026-04-19, **Session 14 abgeschlossen** (Praxis-Sprint 2 / S2.3-B ✅ inkl. 3 Revisions: SEO-Layer + Branding + Sanexio-Brand-Switch)
+- **Working Tree:** clean (Cortex-Web + Theme)
 - **Cortex-Web-Aufbau (Phase 0–5):** ✅ **vollständig**
 - **Trunk-Content:** unverändert, 1 Produkt (`basic-check.yaml`)
 - **WP-Adapter:** Phase 1, idempotent, HWG-konform, Review-geprüft
 - **Shopify-Adapter:** Phase 2, idempotent, draft-only, Review-geprüft
 - **Review-Pipeline:** Phase 3, 11/11 automatische AKs grün
-- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`8f596f7`** (**PXZ_VERSION 2.7.8**, **unverändert seit S2.0b** — S2.0e und S2.0f haben das Theme nicht angefasst). Design-Autorität: `DESIGN_GUIDELINES.md` v3.0. Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅ + S2.0b ✅ + S2.0e ✅ + **S2.0f ✅** (Santapress-Plugin aus Local-WP entfernt: `active_plugins` 26→25, Rewrite-Rules 13085→10979 Bytes, `wp_posts`-Count identisch vor/nach (2860, kein Content verloren), Plugin archiviert in `_archive/santapress-2026-04-19/` mit Verfallsdatum 2026-05-19, neues `tools/smoke-http.sh` (5 URLs × HTTP 200), 6/6 AKs grün, Cortex-Web-Commits `e036328`+`a6cc6f3`+`ced4e0a`). **S2.3 Content-Batches weiterhin freigeschaltet:** B/C/G verfügbar, A blockiert durch Rechtssicherheitsquelle.
+- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`dd1de0f`** (**PXZ_VERSION 2.7.12**). Design-Autorität: `DESIGN_GUIDELINES.md` v3.1 (§18 Content-Page-Typografie + Header-Branding + Logo-Marken-Zuordnung neu). Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅ + S2.0b ✅ + S2.0e ✅ + S2.0f ✅ + **S2.3-B ✅** (3 P0-Pages `/praxis/` + `/team/` + 404 live auf Local-WP mit Echt-Content, SEO-Optimierung, Unified Site-Header, URL-basierter Brand-Switch `/team/` → Praxisgemeinschaft Sanexio-Logo, alle anderen Seiten → Praxiszentrum-Roundel. smoke-seo 21/21 grün, Home MD5-Null-Delta 3/3, 4 neue Patterns, Tutorial 15). **S2.3 Content-Batches freigeschaltet:** C/G/0d verfügbar, A blockiert durch Rechtssicherheitsquelle.
 - **Juvantis-Site:** `sites/juvantis-webseite/` (Docs-Schicht), Theme-Pointer auf Commit `1fbc35b` (GitHub-Remote `shopify-theme`)
 
 ### §1.1 Phasen-Status
@@ -60,10 +60,10 @@
 | 2 (Adapter) | POC Shopify-Adapter | ✅ |
 | 3 | Review-Pipeline + Go/No-Go | ✅ |
 | 4 | Subsumierung praxis-redesign → sites/praxis-webseite/ | ✅ |
-| **5** | **Subsumierung Juvantis-Web-Docs → sites/juvantis-webseite/ (Theme-Klon bleibt)** | **✅ 2026-04-19** |
+| 5 | Subsumierung Juvantis-Web-Docs → sites/juvantis-webseite/ | ✅ |
+| **Praxis-S2.3-B** | **3 P0-Pages mit Echt-Content + SEO-Layer + Unified Header + Brand-Switch** | **✅ 2026-04-19 Session 14** |
 
-**Cortex-Web-Aufbau damit abgeschlossen.** Weitere Arbeit findet in den
-subsumierten Sub-Sites oder am Trunk-Content statt.
+**Cortex-Web-Aufbau damit abgeschlossen.** Content-Batches laufen; nächster Schritt: S2.3-C oder S2.3-G.
 
 ---
 
@@ -106,7 +106,55 @@ Erwartet: `AK automatisch: 11/11 grün`, Exit 0.
 
 ---
 
-## §3 Letzte Session — Session 13, 2026-04-19
+## §3 Letzte Session — Session 14, 2026-04-19 (Praxis-Sprint 2 / S2.3-B inkl. 3 Revisions)
+
+### Ziel
+3 P0-Pages aus Page-Inventar #2 (`/praxis/`), #3 (`/team/`), #8 (404) mit Echt-Content, SEO-Layer, semantischem Markup, HWG-konform. Content-Ton "moderne Praxis, am Puls der Zeit, Rundumversorgung". Primär-Keyword: Innere Medizin / Internist Frankfurt Westend.
+
+### Durchgeführt — ursprünglich + 3 Revisions
+
+**rev0 (Architekten-Modus Phase 1–4):** Spec `S2.3-B_praxis-team-404.md` (FREIGEGEBEN, Dr.-Stracke-Delegation). Neue Theme-Module `inc/seo-data.php` + `inc/seo-meta.php` unterdrücken AIOSEO auf überschriebenen Seiten (S2.3-B-LL-3). `template-standard.php` dynamisiert Hero aus post_meta. `tools/migrations/2026-04-19_s2.3-b_pages.php` legt Pages via mysqli an (inkl. WPML-Translations-Eintrag nach LL-2). CSS-Finals `standard.css` + `404.css` (Tokens-only). `tools/smoke-seo.sh` neu (21 Assertions, pipefail-frei nach LL-4). Theme-Commit `74a9512` (PXZ 2.7.9). Cortex-Web-Commits `68a0db1` (Spec) + `9d503fc` (Tools+Evidence+Self-Check).
+
+**rev1 (Dr.-Stracke-Review Runde 1):** Branding (`blogname` → "Praxiszentrum Dr. Stracke und Kollegen"), H1-Klassen von `.pxz-display` auf `.pxz-title-2` (40–104 px → 28–48 px), Hero-Padding reduziert, Team pivotiert von narrativ zu **Ärzte-Grid** (`template-team.php` + `inc/team-data.php` mit 8 Ärzten, Avatar-Placeholder mit Initialen, 3 Accent-Varianten), 404-Rippenspreizer-SVG-Cartoon. DESIGN_GUIDELINES §18.1+§18.2 neu. Theme-Commit `81d3f62` (PXZ 2.7.10). Cortex-Web-Commit `41cf66e`.
+
+**rev2 (Dr.-Stracke-Review Runde 2 — "der Header sieht auf anderen Seiten anders aus!"):** Diagnose: `.pxz-nav` war hartkodiert nur in `template-homepage.php`. Extraktion nach `template-parts/header-nav.php` + Include in allen Templates + neue `assets/css/nav.css` mit dupliziertem `.pxz-nav` Rule-Set und `#header.ct-header { display: none !important }` zum Site-weiten Ausblenden des Blocksy-Default. Home 3/3 MD5-Match bleibt erhalten (dupliziertes CSS via later-in-cascade). `inc/team-data.php` auf echte Arztnamen aus `pxz_team_members()` synchronisiert. Theme-Commit `e2bb7b1` (PXZ 2.7.11). Cortex-Web-Commit `81e98ff`.
+
+**rev3 (Sanexio-Logo für /team/):** ZIP-Asset entpackt, sanexio-red.svg als `assets/logo-sanexio.svg` aktiviert, compact-Variante als Reserve. URL-basierter Brand-Switch in `header-nav.php` (`is_sanexio = preg_match('#^/team/?#', $uri)`). CSS-Overrides `.pxz-nav-logo-sanexio img { width: 200..400px; aspect-ratio: 800/270 }`. DESIGN_GUIDELINES §18.3 neu (verbindliche Logo-Marken-Zuordnung). Initials-Fix: `méd.` (mit Akzent) + Komma/Punkt-Stripping in `pxz_doctor_initials()` → Saul zeigt "SS" statt "MS". Theme-Commit `dd1de0f` (PXZ 2.7.12). Cortex-Web-Commit `ee76e1b`.
+
+### Verifiziert
+
+| Check | Ergebnis |
+|---|:---:|
+| `verify.sh` §1 + §1b + §2 + §3 + §3b + §4 | VERIFY OK ✓ |
+| `smoke-seo.sh` | 21/21 Assertions ✓ |
+| `smoke-http.sh` | 5/5 URLs < 5xx ✓ |
+| `validate.sh` (Cortex-Web) | OK ✓ |
+| Home MD5-Null-Delta (3 Viewports) | **3/3 MATCH ✓** |
+| Karriere MD5 (3 Viewports) | 3/3 DELTA (gewollt — Header-Fix) |
+| `/praxis/`, `/team/`, `/` HTTP | 200 ✓ |
+| 404-Fallback inkl. Rippenspreizer-Cartoon | ✓ |
+| Theme + Cortex-Web Working Tree | beide clean ✓ |
+
+### Lessons Learned (4 neue Patterns)
+
+- **S2.3-B-LL-2** `wpml-translations-direct-sql.md` — Bei SQL-Page-Inserts mit aktivem WPML muss ein Eintrag in `wp_icl_translations` geschrieben werden, sonst 404 trotz publish. Idempotente `upsert_wpml_de()` im Migration-Skript.
+- **S2.3-B-LL-3** `wp-plugin-head-override.md` — AIOSEO rendert auf zwei Kampfplätzen (`wp_head` prio 1 und `pre_get_document_title` prio 99999). Überschreibung braucht auf beiden einen expliziten `remove_action`/`remove_filter`, nicht nur höhere Priorität.
+- **S2.3-B-LL-4** `bash-sigpipe-grep-trap.md` — `set -o pipefail` + `grep -q` + `curl` erzeugt false-negatives bei grossen Outputs (SIGPIPE). Fix: pipefail weglassen ODER curl-Output in Variable buffern.
+- **S2.3-B-rev2/3** `wp-unified-site-header.md` — Nav in `template-parts/header-nav.php` extrahieren, Parent-Theme-Default-Header via CSS ausblenden, URL-basierter Brand-Switch für Multi-Brand-Setup. Mit MD5-Null-Delta-sicherer CSS-Duplication-Strategie.
+
+### DESIGN_GUIDELINES §18 neu (v3.1)
+
+- §18.1 Content-Page-Typografie: `.pxz-display` reserviert für Home-Hero; Content-Page-H1 verbindlich `.pxz-title-2`.
+- §18.2 Header-Branding-Konsistenz: Site-weit einheitlicher Nav, `blogname` als Single-Source, URL-basierte Overrides dokumentationspflichtig.
+- §18.3 Logo-Marken-Zuordnung: Praxis-URLs → Praxiszentrum-Roundel + Text-Wortmarke; `/team/` → Sanexio-Horizontal-Wortmarke (integrierter Text). Anti-Pattern: Logos mischen.
+
+### Tutorial 15 (Nexus)
+
+`Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/15-seo-und-header-branding-im-theme.md` — SEO-Layer theme-eigen, AIOSEO-Override, Multi-Brand-Header, URL-basierter blogname-Filter.
+
+---
+
+## §3b Vor-vorletzte Session — Session 13, 2026-04-19
 
 ### Ziel
 Praxis-Sprint 2 / S2.0f Santapress-Plugin-Entfernung — das in S2.0e als Interferenz-Quelle identifizierte Santapress-Plugin aus Local-WP entfernen. Freigabe durch Dr. Stracke in Session 12. Reversibel, regressions-frei, audit-nachvollziehbar.
@@ -554,18 +602,35 @@ Shopify-Theme-Klon, ohne Eingriff in Theme-Repo oder Live-Site.
 
 ### P0 — Praxis-Sprint 2 fortsetzen (Dr. Stracke-Direktive „zuerst Design und Content" bleibt)
 
-S2.0b ✅, S2.0e ✅ und S2.0f ✅ abgeschlossen. **Sprint-Reihenfolge:** S2.2 ✅ → S2.0b ✅ →
-S2.0e ✅ → S2.0f ✅ → **S2.3 Content-Batches freigeschaltet** → S2.4 → S2.5. Ein optionaler
-Mini-Sprint verbleibt (S2.0d Rename).
+S2.0b ✅, S2.0e ✅, S2.0f ✅ und **S2.3-B ✅** abgeschlossen. **Sprint-Reihenfolge:** S2.2 ✅ → S2.0b ✅ →
+S2.0e ✅ → S2.0f ✅ → S2.3-B ✅ → **C / G / 0d Mini verfügbar** → S2.4 → S2.5. A blockiert.
 
-**P0a — S2.3 Content-Batch B/C/G (Hauptlinie, freigeschaltet)**
-- Pfad: `sites/praxis-webseite/`
-- Skelett-Templates (S2.2) + Komponenten-Bibliothek (S2.0b) + Verify-Hardening (S2.0e) + Santapress-Interferenz-Quelle entfernt (S2.0f) → jetzt können die 7 freien P0-Seiten mit Echt-Content befüllt werden.
-- Batch B: Praxis + Team + 404 (3 Seiten)
-- Batch C: Fachrichtungen-Landing + Ärzte-Übersicht (2 Seiten, Card-Grid)
-- Batch G: Sprechstunden + Kontakt (2 Seiten, Doctolib-Workaround)
-- Je Batch eigene Spec `S2.3-<letter>_<name>.md`, Architekten-Modus.
-- **Neu (S2.0f-LL-1):** Jede in S2.3 neu angelegte WP-Page gehört zur Definition-of-Done in `tools/page-registry.mjs` (Registry hat aktuell nur 2 Einträge: home, karriere).
+**P0a — S2.3-C Fachrichtungen-Landing + Ärzte-Übersicht (2 P0-Seiten)**
+- Pfad: `sites/praxis-webseite/`, neue Spec `specs/sprint-2/S2.3-C_fachrichtungen-aerzte.md` im Architekten-Modus.
+- Fachrichtungen-Landing nutzt `template-fachrichtung-landing.php` (S2.2-Skelett) — Grid über 8 Einzelfachrichtungen.
+- Ärzte-Übersicht nutzt `template-team.php` — aber Vorsicht: /team/ wurde in S2.3-B bereits auf `template-team.php` gepivoted. Entscheidung nötig: Ärzte-Übersicht (Zeile #18) separat oder in /team/ integriert?
+- WPML-Translations-Einträge pro neuer Page (Pattern `wpml-translations-direct-sql.md`).
+
+**P0b — S2.3-G Sprechstunden + Kontakt (2 P0-Seiten)**
+- Sprechstunden: `template-sprechstunden.php`, offene Entscheidung Doctolib-Einbettung (Nr. 3).
+- Kontakt: `template-kontakt.php`, Adresse + Kontakt-Formular.
+
+**P0c — S2.0d Mini (optional)**
+- `kar` → `karriere` Rename in `karriere.css` und `template-karriere.php` (sprechende Slugs, S2.2-LL-4).
+- Semantic-Token `--pxz-space-card-padding-sm` nachziehen, `.pxz-card` in `components.css` umstellen.
+- Legacy-Alias-Abbau in `tokens.css` (DESIGN_GUIDELINES §2.1) — optional.
+
+**P0d — S2.3-A Datenschutz + Impressum — blockiert**
+- **Vorbedingung:** Rechtssicherheits-Quelle wählen (Anwalt / e-recht24 / Prod-Text). Ohne Dr.-Stracke-Entscheidung bleibt Batch A blockiert.
+
+**P0e — Santapress-Plugin-Archiv auflösen (fällig ab 2026-05-19)**
+- `sites/praxis-webseite/_archive/santapress-2026-04-19/` hat Verfallsdatum 2026-05-19 (30 Tage). Dann eigene Kurz-Session zur Entscheidung: gelöscht oder reaktiviert.
+
+**Offen aus S2.3-B (nicht blockierend):**
+- 5 Plugin-Phantom-Templates (`alter-front-page-template.php` etc.) aus `theme-freesia-demo-import` erscheinen im Admin-Template-Dropdown. Aufräumen optional.
+- `SESSION_START.md` hat 5 Legacy-Pfad-Referenzen auf `projects/praxis-redesign/`. Zu 1-Zeilen-Pointer auf SESSION_RESUME.md reduzieren ODER löschen (Dr. Stracke-Entscheidung).
+- Team-Page-Arzt-Intros (6 Ärzte): Aktuell "Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin." Echte Vorstellungs-Texte + Fotos folgen in Batch D.
+- 404-Slug `/diese-seite-gibt-es-nicht-s23b-probe/` in `tools/page-registry.mjs` war arbitrary; umbenennen in neutralen Probe-Namen zur Session-C hin.
 
 **P0b — S2.0d Mini (optional, vor oder nach S2.3)**
 - `kar` → `karriere` Rename in `karriere.css` und `template-karriere.php`. Vereinheitlichung mit sprechenden Slugs (S2.2-LL-4). MD5-Null-Delta-Beweis erforderlich.
@@ -626,6 +691,52 @@ Items 14–16 aus §0 oben.
 ---
 
 ## §6 Sofort-Status-Frage für nächste Session
+
+> **„Praxis-Sprint 2 / S2.3-B Content-Batch (Praxis + Team + 404) ist ✅
+> abgeschlossen — inklusive 3 Revisions: SEO-Layer theme-eigen (AIOSEO auf
+> überschriebenen Seiten unterdrückt), H1-Klassen auf `.pxz-title-2` reduziert
+> (DG §18.1), Team pivotiert zu Ärzte-Grid mit 8 Doctors aus `pxz_team_members()`,
+> 404-Rippenspreizer-SVG-Cartoon, Unified Site-Header per
+> `template-parts/header-nav.php` + `nav.css` (Blocksy-Default hidden site-weit),
+> URL-basierter Brand-Switch `/team/` → Sanexio-Logo + Wortmarke
+> ‚Praxisgemeinschaft Sanexio', alle anderen Seiten → Praxiszentrum-Roundel + Text.
+> PXZ_VERSION 2.7.8 → 2.7.12. Home MD5-Null-Delta 3/3 ✅ (auch der vorher als
+> Bug bekannte home_tablet768-Delta ist weg). Karriere 3/3 DELTA — gewollt
+> (Header-Konsistenz-Fix). smoke-seo.sh 21/21, verify.sh, smoke-http.sh alle grün.
+> 4 neue Patterns, DG §18.1+§18.2+§18.3, Tutorial 15. Welche Front?**
+>
+> A. **Praxis S2.3-C — Fachrichtungen-Landing + Ärzte-Übersicht** (2 P0-Seiten,
+>    Card-Grid-Templates). Entscheidung nötig: Ärzte-Übersicht (Zeile #18)
+>    separat von /team/ oder integriert? /team/ nutzt bereits `template-team.php`.
+>
+> B. **Praxis S2.3-G — Sprechstunden + Kontakt** (2 P0-Seiten). Doctolib-
+>    Einbettungs-Entscheidung nötig (Folgeentscheidung Nr. 3).
+>
+> C. **Praxis S2.0d Mini** — `kar`→`karriere`-Rename + Semantic-Token
+>    `--pxz-space-card-padding-sm` nachziehen + Legacy-Alias-Audit in tokens.css.
+>
+> D. **Praxis S2.3-A — Datenschutz + Impressum** — **blockiert** durch
+>    Rechtssicherheits-Quelle (Anwalt / e-recht24 / Prod).
+>
+> E. **Juvantis-Trunk-Content-Ausbau** oder **Phase 2b Medien-Pipeline**
+>    (wenn Priorität weg von Praxis kippt).
+>
+> F. **Sprint 1 reanimieren** — SFTP-Credentials sind da. Staging-Setup
+>    aktivierbar, Design-first-Direktive gilt noch.
+>
+> G. **Strukturhygiene:** SESSION_START.md-Legacy-Pfade bereinigen,
+>    5 Plugin-Phantom-Templates aufräumen, oder Team-Arzt-Intros + Fotos
+>    (Batch D vorziehen).
+>
+> H. **Andere konkrete Änderung** — Sie nennen."
+
+Keine Code-Änderung vor Ihrer Wahl. Architekten-Tendenz: **A (S2.3-C)** — Content-Momentum
+nach S2.3-B halten, Fachrichtungen-Landing ist die nächste logische Content-Lücke im
+Menü. Vor Start kurze Entscheidung zum /team/ vs. /aerzte/-Scope klären.
+
+---
+
+## §6-legacy (historisch, vor S2.3-B)
 
 > **„Praxis-Sprint 2 / S2.0f Santapress-Plugin-Entfernung ist ✅ abgeschlossen —
 > Plugin aus Local-WP entfernt (26 → 25 active_plugins), Rewrite-Rules
@@ -722,8 +833,8 @@ alle Vorbedingungen stehen, Content-Momentum nutzen. Dieser Batch ist größer
 | **11** | **2026-04-19** | **Praxis-Sprint 2 / S2.0b** | **Komponenten-Bibliothek ✅ — Schicht 3 eingezogen per `components.css` (6 Blöcke: Container + Typografie + Buttons + Section + Card + Hero), globaler Enqueue zwischen `praxiszentrum` und page-CSS. PXZ_VERSION 2.7.8. Home MD5-Null-Delta verifiziert (3/3 MATCH). Karriere −9 px am `.wpforms-submit` (WCAG-Accessibility-Gewinn, dokumentiert). In-Session-Fix S2.0b-LL-1: Spezifitäts-Kollision mit `.pxz-home :where(p)`-Reset gefixt per page-scope Overrides. 10/12 AKs grün (AK-8 + AK-10 verschoben auf S2.0e). 5 Lessons Learned.** | Theme: **`08f40ff`** (feat components+enqueue+version+changelog) + **`8f596f7`** (refactor homepage-trim+specificity-fix). Cortex-Web: **`2056e3e`** (Spec) + **`df50333`** (Self-Check+Pointer+Evidence+12 Shots). Nexus: 2 neue Patterns `css-layer3-promotion.md` + `local-wp-mysql-socket.md` + Tutorial 12 + MEMORY/CLAUDE/SYSTEM_MAP. |
 | **12** | **2026-04-19** | **Praxis-Sprint 2 / S2.0e** | **Verify-Hardening ✅ — `tools/verify.sh` um §1b `grep_split_css()` + §3b `component_probe()` (zweistufige Bash-Probe: 8 Datei-Assertions + 2 Enqueue-Checks) erweitert. Architektur-Pivot unter Umsetzung wegen WP-Rewrite-Rule-Grenze bei direkt-SQL-Page-Inserts (Santapress-Interaktion). Bash-Probe architektonisch sauberer (trennt Code-Korrektheit von Integrations-Korrektheit). Theme unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). S2.0b-Self-Check rückwirkend auf 12/12. 8/8 AKs. 5 Lessons S2.0e-LL-1…5. Dr.-Stracke-Freigabe: Santapress-Plugin darf entfernt werden.** | Cortex-Web: **`88290b0`** (Spec) + **`6352b1e`** (Tool+Self-Check+Nachtrag). Nexus: neues Pattern `verify-probe-code-vs-integration.md` + Erweiterung `local-wp-mysql-socket.md` §Grenze + Tutorial 13 + MEMORY/CLAUDE-Update. |
 | **13** | **2026-04-19** | **Praxis-Sprint 2 / S2.0f** | **Santapress-Plugin-Entfernung ✅ — 5-Schritt-Protokoll (T1 Pre-Snapshot + T2 Dependency-Audit 0 externe Referenzen + T3 active_plugins-Update via mysqli-prepared + Archive-mv + T4 Rewrite-Rules-Regenerierung −2106 Bytes + T5 verify.sh + neues smoke-http.sh beide grün). `wp_posts`-Count identisch vor/nach (F7b: kein Content verloren). Archive in `_archive/santapress-2026-04-19/` (gitignored, Verfallsdatum 2026-05-19). Theme unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). 6/6 AKs. 5 Lessons S2.0f-LL-1…5.** | Cortex-Web: **`e036328`** (Spec) + **`a6cc6f3`** (Tool+Evidenz+Self-Check, 16 Files) + **`ced4e0a`** (.gitignore-Hygiene). Nexus: neues Pattern `wp-plugin-safe-removal.md` + Tutorial 14 + MEMORY/CLAUDE-Update. |
-| *(14)* | *tbd* | *S2.3 Batch B oder weitere Front* | *A (S2.3 Batch B: Praxis + Team + 404) empfohlen — alle Vorbedingungen stehen. Batch A weiter blockiert (Rechtsquelle). S2.0d Mini optional.* | — |
+| **14** | **2026-04-19** | **Praxis-Sprint 2 / S2.3-B + 3 Revisions** | **3 P0-Pages `/praxis/` + `/team/` + 404 live auf Local-WP mit Echt-Content ✅ — SEO-Layer theme-eigen (AIOSEO auf überschriebenen Seiten unterdrückt), H1-Klassen `.pxz-title-2` (statt `.pxz-display`) gemäß DG §18.1, Team pivotiert zu Ärzte-Grid (`template-team.php` + `inc/team-data.php`, 8 Ärzte aus `pxz_team_members()`), 404-Rippenspreizer-SVG-Cartoon, Unified Site-Header via `template-parts/header-nav.php` + `nav.css` (Blocksy-Default site-weit ausgeblendet), URL-basierter Brand-Switch `/team/` → Sanexio-Logo + Wortmarke "Praxisgemeinschaft Sanexio" (DG §18.3). PXZ_VERSION 2.7.8 → 2.7.12 (4 Bumps). Home MD5-Null-Delta 3/3 ✅. Karriere 3/3 DELTA (gewollt — Header-Konsistenz-Fix). smoke-seo.sh 21/21 grün. 4 neue Patterns, DG §18.1+§18.2+§18.3, Tutorial 15.** | Theme: **`74a9512`** (SEO-Layer+Pages+404) → **`81d3f62`** (Branding+Team-Grid+Cartoon) → **`e2bb7b1`** (Unified-Header) → **`dd1de0f`** (Sanexio-Brand-Switch). Cortex-Web: **`68a0db1`** (Spec) + **`9d503fc`** (Tools+Evidence+Self-Check) + **`41cf66e`** (rev-pointer) + **`81e98ff`** (rev2-pointer) + **`ee76e1b`** (Sanexio-assets+DG §18.3). Nexus: 4 neue Patterns `wpml-translations-direct-sql.md` + `wp-unified-site-header.md` + `wp-plugin-head-override.md` + `bash-sigpipe-grep-trap.md` + Tutorial 15 + MEMORY/CLAUDE-Update. |
 
 ---
 
-*Stand: 2026-04-19, Ende Session 13. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–I aus §6 wählen. Architekten-Tendenz: A (S2.3 Batch B), weil alle Vorbedingungen stehen (Skelett, Komponenten, Verify-Hardening, Plugin-Interferenz entfernt) und Content-Momentum aufgebaut werden soll.*
+*Stand: 2026-04-19, Ende Session 14. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Status-Frage A–H aus §6 wählen. Architekten-Tendenz: A (S2.3-C Fachrichtungen-Landing + Ärzte-Übersicht), weil Content-Momentum nach S2.3-B gehalten werden sollte und die Fachrichtungs-Struktur die nächste logische Menü-Lücke ist.*
