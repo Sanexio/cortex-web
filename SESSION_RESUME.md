@@ -761,7 +761,62 @@ Items 14–16 aus §0 oben.
 
 ---
 
-## §6 Sofort-Status-Frage für nächste Session
+## §6 Sofort-Status-Frage für nächste Session (Session 16)
+
+> **„Praxis-Sprint 2 / S2.3-D Phase 1 (Mojibake-Fix + Trunk-ready Inventar)
+> ist ✅ abgeschlossen. 20/177 publish-Pages gefixt (Idempotenz bewiesen,
+> 0 Residuen). 189-Zeilen-CSV-Inventar mit 15 Spalten (inkl. `trunk_candidate` +
+> `cross_site_potential` + `image_count` für spätere Bridge + Medien-Pipeline).
+> **Schlüssel-Erkenntnis:** 134/189 Pages sind i18n-Dubletten → nur **55 deutsche
+> kuratur-relevante Pages**. 13/13 AKs. 3 neue Patterns, Tutorial 16.
+> Theme unberührt (HEAD `ae9b1b8`, PXZ 2.7.13).
+>
+> Damit ist das **Fundament für Full-Content-Migration gelegt**. Ab jetzt:
+> echte Content-Batches pro Cluster. Welche Front?**
+>
+> **A (Architekten-Tendenz).** **S2.3-D Phase 2 / Cluster `kern`** —
+> 7 P0-Pages (`Karriere`, `Datenschutz`, `Impressum`, `Sprechstunden`,
+> `Kontakt`, + 2 schon in S2.3-B drin). Hoher Hebel, mittlerer Scope.
+> Datenschutz + Impressum blockiert → faktisch 5 Pages in dieser Session.
+>
+> **B.** **S2.3-D Phase 2 / Cluster `checkups`** — 6 P0-Pages mit starkem
+> Bridge-Potenzial (alle haben `cross_site_potential = basic-check` o. ä.).
+> Kombiniert gut mit Juvantis-Trunk-Ausbau (Bridge-Brücke real werden lassen).
+>
+> **C.** **S2.3-D Phase 2 / Cluster `fachrichtung` + `aerzte`** —
+> 1 + 2 = 3 P1-Pages, kleiner Single-Session-Scope. Nutzt `template-fachrichtung.php`
+> + `template-arzt.php` (S2.2-Skelette).
+>
+> **D.** **S2.4 Menü-Restrukturierung** — Neue Top-Nav mit Submenus
+> (Fachrichtungen, Ärzte, Check-Ups) basierend auf Inventar-Clustern.
+> Kann parallel laufen, aber sichtbarer Nutzen erst nach ≥ 1 Content-Cluster.
+>
+> **E.** **Phase 2b Medien-Pipeline** — aus Inventar-Spalte `image_count`
+> heraus Medien-Trunk aufbauen. Kandidat parallel zu Content-Batches.
+>
+> **F.** **Juvantis-Trunk-Content-Ausbau** — weitere YAML-Produktquellen
+> (Body Checks, Blood Tests, DHT). Ermöglicht später Bridge zu Praxis-Pages
+> aus B.
+>
+> **G.** **S2.3-A Datenschutz + Impressum** — **blockiert** (Rechtsquelle
+> wählen: Anwalt / e-recht24 / Prod-Text). Sie nennen Entscheidung → starten.
+>
+> **H.** **Strukturhygiene** — SESSION_START.md-Legacy-Pfade, 5 Plugin-
+> Phantom-Templates, Team-Arzt-Intros + Fotos (Batch D vorziehen).
+>
+> **I.** **Santapress-Archiv auflösen** — fällig ab 2026-05-19 (nicht jetzt).
+>
+> **J.** **Andere konkrete Änderung** — Sie nennen."
+
+Keine Code-Änderung vor Ihrer Wahl. Architekten-Tendenz: **A (Cluster `kern`)** —
+größter sichtbarer Hebel (offizielle Kern-Seiten für Patienten), alle 5 kuratur-
+relevanten Pages sind Single-Session-Kandidaten (Datenschutz/Impressum bleiben
+blockiert bis Sie Rechtsquelle wählen). Alternativ **B (Cluster `checkups`)** —
+strategischer, weil Bridge-Pfad zu Juvantis direkt nutzbar wird.
+
+---
+
+## §6-legacy-session14 (historisch, vor S2.3-D Phase 1)
 
 > **„Praxis-Sprint 2 / S2.3-B Content-Batch (Praxis + Team + 404) ist ✅
 > abgeschlossen — inklusive 3 Revisions: SEO-Layer theme-eigen (AIOSEO auf
@@ -907,7 +962,8 @@ alle Vorbedingungen stehen, Content-Momentum nutzen. Dieser Batch ist größer
 | **12** | **2026-04-19** | **Praxis-Sprint 2 / S2.0e** | **Verify-Hardening ✅ — `tools/verify.sh` um §1b `grep_split_css()` + §3b `component_probe()` (zweistufige Bash-Probe: 8 Datei-Assertions + 2 Enqueue-Checks) erweitert. Architektur-Pivot unter Umsetzung wegen WP-Rewrite-Rule-Grenze bei direkt-SQL-Page-Inserts (Santapress-Interaktion). Bash-Probe architektonisch sauberer (trennt Code-Korrektheit von Integrations-Korrektheit). Theme unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). S2.0b-Self-Check rückwirkend auf 12/12. 8/8 AKs. 5 Lessons S2.0e-LL-1…5. Dr.-Stracke-Freigabe: Santapress-Plugin darf entfernt werden.** | Cortex-Web: **`88290b0`** (Spec) + **`6352b1e`** (Tool+Self-Check+Nachtrag). Nexus: neues Pattern `verify-probe-code-vs-integration.md` + Erweiterung `local-wp-mysql-socket.md` §Grenze + Tutorial 13 + MEMORY/CLAUDE-Update. |
 | **13** | **2026-04-19** | **Praxis-Sprint 2 / S2.0f** | **Santapress-Plugin-Entfernung ✅ — 5-Schritt-Protokoll (T1 Pre-Snapshot + T2 Dependency-Audit 0 externe Referenzen + T3 active_plugins-Update via mysqli-prepared + Archive-mv + T4 Rewrite-Rules-Regenerierung −2106 Bytes + T5 verify.sh + neues smoke-http.sh beide grün). `wp_posts`-Count identisch vor/nach (F7b: kein Content verloren). Archive in `_archive/santapress-2026-04-19/` (gitignored, Verfallsdatum 2026-05-19). Theme unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). 6/6 AKs. 5 Lessons S2.0f-LL-1…5.** | Cortex-Web: **`e036328`** (Spec) + **`a6cc6f3`** (Tool+Evidenz+Self-Check, 16 Files) + **`ced4e0a`** (.gitignore-Hygiene). Nexus: neues Pattern `wp-plugin-safe-removal.md` + Tutorial 14 + MEMORY/CLAUDE-Update. |
 | **14** | **2026-04-19/20** | **Praxis-Sprint 2 / S2.3-B + 4 Revisions (inkl. Option A)** | **S2.3-B: 3 P0-Pages (`/praxis/`, `/team/`, 404) mit Echt-Content + SEO-Layer + Unified Header + Sanexio-Brand-Switch. S2.3-B-rev4 (Option A): Universal `page.php` + `wp_body_open`-Hook → **178/178 Pages** im branded Design (statt vorher 4/178 = 2,2 %). Dr.-Stracke-Scope-Korrektur: Full-Content-Migration ist Sprint-2-Hauptziel. PXZ_VERSION 2.7.8 → 2.7.13 (5 Bumps). 5 neue Patterns, DG §18.1+§18.2+§18.3, Tutorial 15.** | Theme: `74a9512` → `81d3f62` → `e2bb7b1` → `dd1de0f` → **`ae9b1b8`** (Option A). Cortex-Web: `68a0db1` → `9d503fc` → `41cf66e` → `81e98ff` → `ee76e1b` → `6ea13a2` (SESSION_RESUME Session 14). Nexus: Patterns `wpml-translations-direct-sql` + `wp-unified-site-header` + `wp-plugin-head-override` + `bash-sigpipe-grep-trap` + **`wp-universal-page-fallback`** (Option A) + Tutorial 15 + MEMORY/CLAUDE-Update. |
+| **15** | **2026-04-20** | **Praxis-Sprint 2 / S2.3-D Phase 1** | **Vorbereitungs-Pass Full-Content-Migration ✅ — (1) Mojibake-Fix via PHP `mb_convert_encoding`-Paar auf 20/177 publish-Pages (Architekten-Pivot weg von statischer SQL-REPLACE-Kette nach Pre-Count-Befund "1/15 Muster getroffen"); Idempotenz bewiesen (Lauf 2 = 0 Changes), 0 Residuen, mysqldump-Rollback. (2) Trunk-ready Page-Inventar 189 Zeilen CSV (15 Spalten inkl. `trunk_candidate` + `cross_site_potential` + `image_count`) + MD mit Cluster-Summary. **Schlüssel-Erkenntnis: 134/189 = i18n-Dubletten → 55 deutsche kuratur-relevante Pages.** 13/13 AKs. 5 Lessons S2.3-D-LL-1…5. Theme unberührt (HEAD `ae9b1b8`, PXZ 2.7.13).** | Cortex-Web: **`f50110c`** (Spec) + **`2c6e881`** (Migration+Inventar+Evidenz+Self-Check, 8 Files inkl. mysqldump 1.5 MB) + **`6346b91`** (SESSION_RESUME). Nexus: 3 neue Patterns `wp-mojibake-mb-convert-fix.md` + `trunk-ready-page-inventory.md` + `mysql-utf8mb4-binary-rejection-proof.md` + Tutorial 16 + MEMORY-Update. |
 
 ---
 
-*Stand: 2026-04-20, Ende Session 14 (final — inkl. Option A als rev4). **Dr.-Stracke-Direktive** für nächste Sessions: komplette Content-Migration aller 178 Pages als Hauptziel, dann Menü, dann Bilder, dann Design-Feinschliff. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Architekten-Tendenz: **A (S2.3-D Content-Kuration Phase 1** = Inventar + UTF-8-Mojibake-Fix via SQL-Batch-Replace).*
+*Stand: 2026-04-20, Ende Session 15 (final — S2.3-D Phase 1 ✅). Fundament für Full-Content-Migration gelegt. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Architekten-Tendenz: **A (Cluster `kern` 5 Pages)** oder **B (Cluster `checkups` 6 P0 mit Bridge-Potenzial)**.*
