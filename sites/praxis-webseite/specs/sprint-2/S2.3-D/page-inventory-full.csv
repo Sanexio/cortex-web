@@ -1,190 +1,190 @@
-id,slug,title,status,parent_id,template,wpml_lang,content_length,image_count,image_source_hint,mojibake_hits_pre,cluster,priority,trunk_candidate,cross_site_potential
-3,datenschutzerklaerung,Datenschutzerklärung,publish,0,default,de,6695,0,none,0,kern,P0,maybe,no
-192,contact-us,Kontakt,publish,0,page-templates/contact-template.php,de,841,0,none,0,diagnostik,P1,maybe,no
-249,home,Home,publish,0,page-templates/freesiaempire-corporate.php,de,0,0,none,0,kern,P0,maybe,no
-261,internistische-schwerpunktpraxis-hausaerztliche-grundversorgung,"Unsere Leistungen",publish,0,default,de,2661,1,wp-upload,0,services,P1,yes,no
-272,gesundheits-check-up,"Gesundheits Check Up",publish,0,default,de,12707,1,wp-upload,0,checkups,P0,yes,basic-check
-277,ultraschalldiagnostik,Ultraschalldiagnostik,publish,0,default,de,4975,1,wp-upload,0,diagnostik,P1,maybe,no
-289,belastungs-ekg,Belastungs-EKG,publish,0,default,de,1473,0,none,0,diagnostik,P1,yes,heart-check
-292,lungenfunktion,Lungenfunktion,publish,0,default,de,5798,1,wp-upload,0,diagnostik,P1,maybe,no
-296,labordiagnostik,Labordiagnostik,publish,0,default,de,1986,1,wp-upload,0,diagnostik,P1,maybe,no
-299,impfungen,Impfungen,publish,0,default,de,3045,1,wp-upload,0,services,P1,yes,no
-302,projekt-docvocat,"Digitale Patientenakte",publish,0,default,de,6113,2,wp-upload,0,legacy,P2,no,no
-336,cardio-check-up,"Cardio Check Up",publish,0,default,de,4205,1,wp-upload,0,checkups,P0,yes,basic-check
-339,angio-check-up,"Angio Check Up",publish,0,default,de,4013,1,wp-upload,0,checkups,P0,yes,basic-check
-348,tumorscreening,Tumorscreening,publish,0,default,de,1851,0,none,0,checkups,P0,yes,no
-351,echokardiographie,Echokardiographie,publish,0,default,de,2966,1,wp-upload,0,fachrichtung,P1,yes,heart-check
-354,carotis-duplex,"Carotis Duplex",publish,0,default,de,1896,1,wp-upload,0,legacy,P2,no,no
-357,schilddruesen-sonographie,Schilddrüsen-Sonographie,publish,0,default,de,2918,1,wp-upload,0,diagnostik,P1,maybe,no
-360,ultraschall-der-beingefaesse,"Ultraschall Beingefäße",publish,0,default,de,2321,1,wp-upload,0,diagnostik,P1,maybe,no
-368,arzt-team,Ärzte-Team,publish,0,default,de,1390,1,wp-upload,0,aerzte,P1,no,no
-375,docteur-en-med-s-saul,"Docteur en méd. S. Saul",publish,0,default,de,6586,1,wp-upload,0,legacy,P2,no,no
-382,dr-siegbert-stracke-mba,"Dr. Siegbert Stracke",publish,0,default,de,5732,1,wp-upload,0,aerzte,P1,no,no
-398,frequently-asked-questions,"Frequently Asked Questions",publish,0,default,de,878,0,none,0,legacy,P2,no,no
-405,unsere-sprechzeiten,"Unsere Sprechzeiten",publish,0,default,de,7048,0,none,0,legacy,P2,no,no
-461,check-ups,"Check Up´s",publish,0,default,de,4805,0,none,0,checkups,P0,yes,basic-check
-466,arbeitsunfaehigkeit,Arbeitsunfähigkeit,publish,0,default,de,3062,0,none,0,legacy,P2,no,no
-469,ein-und-ueberweisungen,"Ein- und Überweisungen",publish,0,default,de,3904,0,none,0,legacy,P2,no,no
-472,rund-ums-impfen,"Rund ums Impfen",publish,0,default,de,8576,0,none,0,services,P1,yes,no
-475,rund-ums-labor,"Rund ums Labor",publish,0,default,de,1415,0,none,0,diagnostik,P1,maybe,no
-4011,terminanfrage,Terminanfrage,publish,0,default,de,327,0,none,0,legacy,P2,no,no
-4014,rezeptbestellung,Rezeptbestellung,publish,0,default,de,863,0,none,0,legacy,P2,no,no
-4017,ueberweisung,Überweisung,publish,0,default,de,371,0,none,0,legacy,P2,no,no
-4024,fragebogen-bauchschmerzen,"Fragebogen Bauchschmerzen",publish,0,default,de,71,0,none,0,legacy,P2,no,no
-4026,beschwerden-beim-wasserlassen,"Beschwerden beim Wasserlassen",publish,0,default,de,144,0,none,0,legacy,P2,no,no
-4028,covid-19-risikofragebogen,"Corona Fragebogen",publish,0,default,de,1288,0,none,0,legacy,P2,no,no
-4206,sono-atlas,Sono-Atlas,publish,0,default,de,4221,5,wp-upload,0,diagnostik,P1,maybe,no
-4223,datenschutzerklaerung-2,Datenschutzerklärung,publish,0,default,de,8839,0,none,0,i18n-dublette,P2,no,no
-4226,impressum,Impressum,publish,0,default,de,4586,0,none,0,kern,P0,maybe,no
-4238,cookie-richtlinie-eu,"Cookie-Richtlinie (EU)",publish,0,default,de,104,0,none,0,legacy,P2,no,no
-4244,proteccion-de-datos,"Protección de Datos",publish,0,default,es,9210,0,none,0,i18n-dublette,P2,no,no
-4248,directive-concernant-les-cookie-ue,"Directive concernant les Cookie (UE)",publish,0,default,fr,104,0,none,0,i18n-dublette,P2,no,no
-4252,cookie-directive-eu,"Cookie Directive (EU)",publish,0,default,en,104,0,none,0,i18n-dublette,P2,no,no
-4256,impressum,Impressum,publish,0,default,es,5159,0,none,0,i18n-dublette,P2,no,no
-4260,impressum,Impressum,publish,0,default,fr,5234,0,none,0,i18n-dublette,P2,no,no
-4266,impressum,Impressum,publish,0,default,en,4833,0,none,0,i18n-dublette,P2,no,no
-4270,politique-de-confidentialite,"Politique de confidentialité",publish,0,default,fr,9753,0,none,0,i18n-dublette,P2,no,no
-4276,privacy-policy,"Privacy policy",publish,0,default,en,8494,0,none,0,i18n-dublette,P2,no,no
-4281,sono-atlas,"Sono Atlas",publish,0,,es,4428,5,wp-upload,0,i18n-dublette,P2,no,no
-4291,atlas-dechographie,"Atlas d'échographie",publish,0,,fr,4402,5,wp-upload,0,i18n-dublette,P2,no,no
-4297,sono-atlas,Sono-Atlas,publish,0,default,de,0,0,none,0,diagnostik,P1,maybe,no
-4298,sono-atlas,Sono-Atlas,publish,0,,en,4424,5,wp-upload,0,i18n-dublette,P2,no,no
-4304,cuestionario-covid-19,"Cuestionario COVID-19",publish,0,,es,1260,0,none,0,i18n-dublette,P2,no,no
-4310,questionnaire-concernant-les-risques-davoir-une-infection-covid-19,"Questionnaire concernant les risques d'avoir une infection COVID-19",publish,0,,fr,1325,0,none,0,i18n-dublette,P2,no,no
-4316,covid-19-risk-questionnaire,"COVID-19 Risk Questionnaire",publish,0,,en,1188,0,none,0,i18n-dublette,P2,no,no
-4320,dificultades-molestias-al-orinar,"Dificultades / molestias al orinar",publish,0,default,de,172,0,none,0,legacy,P2,no,no
-4321,dificultades-molestias-al-orinar-2,"Dificultades / Molestias al orinar",publish,0,default,es,172,0,none,0,i18n-dublette,P2,no,no
-4326,difficultes-a-uriner,"Plaintes urinaires",publish,0,default,fr,172,0,none,0,i18n-dublette,P2,no,no
-4328,discomfort-during-urination,"Discomfort during urination",publish,0,default,en,172,0,none,0,i18n-dublette,P2,no,no
-4334,cuestionario-dolor-abdominal,"Cuestionario dolor abdominal",publish,0,default,es,71,0,none,0,i18n-dublette,P2,no,no
-4340,questionnaire-sur-les-douleurs-abdominales,"Questionnaire a compléter en cas de douleurs abdominales",publish,0,default,fr,71,0,none,0,i18n-dublette,P2,no,no
-4344,abdominal-pain-questionnaire,"Abdominal pain questionnaire",publish,0,default,en,71,0,none,0,i18n-dublette,P2,no,no
-4356,questionnaire-sur-les-douleurs-thoraciques-2,"Questionnaire sur les douleurs thoraciques",publish,0,default,de,583,0,none,0,i18n-dublette,P2,no,no
-4374,referencias-a-otras-especialidades,"Referencias a otras especialidades",publish,0,default,es,460,0,none,0,i18n-dublette,P2,no,no
-4380,orientation-vers-dautres-specialistes,"Orientation vers d'autres spécialistes",publish,0,default,fr,453,0,none,0,i18n-dublette,P2,no,no
-4384,referral-to-other-specialists,"Referral to other specialists",publish,0,default,en,373,0,none,0,i18n-dublette,P2,no,no
-4390,pedido-de-recetas-medicas,"Pedido de recetas medicas",publish,0,default,es,940,0,none,0,i18n-dublette,P2,no,no
-4396,commande-de-prescriptions-de-medicaments,"Commande de prescriptions de médicaments",publish,0,default,fr,988,0,none,0,i18n-dublette,P2,no,no
-4400,order-a-prescription,"Order a prescription",publish,0,default,en,870,0,none,0,i18n-dublette,P2,no,no
-4406,solicitar-una-cita-medica,"Solicitar una cita medica",publish,0,,es,337,0,none,0,i18n-dublette,P2,no,no
-4410,demande-de-date-rendez-vous,"Demande de rendez-vous",publish,0,,fr,329,0,none,0,i18n-dublette,P2,no,no
-4416,appointment-enquiry,"Appointment enquiry",publish,0,,en,309,0,none,0,i18n-dublette,P2,no,no
-4422,medicamentos,medicamentos,publish,0,default,es,1251,0,none,0,i18n-dublette,P2,no,no
-4430,medicaments,Médicaments,publish,0,default,fr,1303,0,none,0,i18n-dublette,P2,no,no
-4434,medication,Medication,publish,0,default,en,1178,0,none,0,i18n-dublette,P2,no,no
-4438,en-torno-al-laboratorio,"En torno al laboratorio",publish,0,default,es,1601,0,none,0,i18n-dublette,P2,no,no
-4442,au-sujet-du-laboratoire,"Au sujet du laboratoire",publish,0,default,fr,1603,0,none,0,i18n-dublette,P2,no,no
-4452,all-around-the-laboratory,"All around the laboratory",publish,0,default,en,1433,0,none,0,i18n-dublette,P2,no,no
-4458,todo-sobre-la-vacunacion,"Todo sobre la vacunación",publish,0,default,es,9533,0,none,0,i18n-dublette,P2,no,no
-4493,tout-sur-la-vaccination,"Tout au sujet de la vaccination",publish,0,default,fr,10062,0,none,0,i18n-dublette,P2,no,no
-4497,all-about-vaccination,"All about vaccination",publish,0,default,en,8959,0,none,0,i18n-dublette,P2,no,no
-4499,ein-und-ueberweisungen-transferencias-a-otras-especialidades,"Ein- und Überweisungen / transferencias a otras especialidades",publish,0,default,es,4700,0,none,0,i18n-dublette,P2,no,no
-4501,hospitalisations-et-envoi-a-dautre-specialites,"Hospitalisations et référence envers d'autres spécialités",publish,0,default,fr,4559,0,none,0,i18n-dublette,P2,no,no
-4505,hospitalizations-and-referrals-to-other-specialties,"Hospitalizations and referrals to other specialties",publish,0,default,en,4116,0,none,0,i18n-dublette,P2,no,no
-4511,incapacidad-laboral-temporal-it-baja-medica,"Incapacidad laboral temporal (IT)/ baja medica:",publish,0,default,es,3303,0,none,0,i18n-dublette,P2,no,no
-4519,arret-maladie,"Arrêt maladie",publish,0,default,fr,3451,0,none,0,i18n-dublette,P2,no,no
-4527,sickness-leave,"Sickness leave",publish,0,default,en,3092,0,none,0,i18n-dublette,P2,no,no
-4531,check-ups,"Check Up´s",publish,0,default,es,5361,0,none,0,i18n-dublette,P2,yes,basic-check
-4534,check-ups,"Check Up´s",publish,0,default,fr,5530,0,none,0,i18n-dublette,P2,yes,basic-check
-4537,check-ups,"Check Up´s",publish,0,default,en,4967,0,none,0,i18n-dublette,P2,yes,basic-check
-4545,nuestros-horarios,"Nuestros horarios",publish,0,,es,7960,0,none,0,i18n-dublette,P2,no,no
-4551,nos-horaires-de-consultations,"Nos Horaires de consultations",publish,0,,fr,8016,0,none,0,i18n-dublette,P2,no,no
-4553,frequently-asked-questions,"Frequently Asked Questions",publish,0,default,es,940,0,none,0,i18n-dublette,P2,no,no
-4557,citas,Citas,publish,0,,es,2420,0,none,0,i18n-dublette,P2,no,no
-4563,our-appointment-hours,"Our Timetable",publish,0,,en,7270,0,none,0,i18n-dublette,P2,no,no
-4567,frequently-asked-questions,"Frequently Asked Questions",publish,0,default,fr,938,0,none,0,i18n-dublette,P2,no,no
-4571,frequently-asked-questions,"Frequently Asked Questions",publish,0,default,en,881,0,none,0,i18n-dublette,P2,no,no
-4575,rendez-vous,Rendez-vous,publish,0,,fr,2410,0,none,0,i18n-dublette,P2,no,no
-4581,appointments,Appointments,publish,0,,en,2393,0,none,0,i18n-dublette,P2,no,no
-4587,dr-siegbert-stracke,"Dr. Siegbert Stracke",publish,0,,es,6199,1,wp-upload,0,i18n-dublette,P2,no,no
-4593,dr-siegbert-stracke,"Dr. Siegbert Stracke",publish,0,,fr,6307,1,wp-upload,0,i18n-dublette,P2,no,no
-4598,dr-siegbert-stracke,"Dr. Siegbert Stracke",publish,0,,en,6005,1,wp-upload,0,i18n-dublette,P2,no,no
-4606,docteur-en-med-s-saul,"Docteur en méd. S. Saul",publish,0,,es,6565,1,wp-upload,0,i18n-dublette,P2,no,no
-4611,docteur-en-med-s-saul,"Docteur en méd. S. Saul",publish,0,,fr,6830,1,wp-upload,0,i18n-dublette,P2,no,no
-4617,equipo-medico,"Equipo médico",publish,0,,es,1357,1,wp-upload,0,i18n-dublette,P2,no,no
-4623,lequipe-de-medecins,"L'équipe de médecins",publish,0,,fr,1394,1,wp-upload,0,i18n-dublette,P2,no,no
-4627,kontakt,Kontakt,publish,0,page-templates/contact-template.php,es,878,0,none,0,i18n-dublette,P2,no,no
-4630,contactez-nous,Contactez-nous,publish,0,page-templates/contact-template.php,fr,879,0,none,0,i18n-dublette,P2,no,no
-4634,contact,Contact,publish,0,page-templates/contact-template.php,en,861,0,none,0,i18n-dublette,P2,no,no
-4638,home,Inicio,publish,0,page-templates/freesiaempire-corporate.php,es,0,0,none,0,i18n-dublette,P2,no,no
-4640,home,Accueil,publish,0,page-templates/freesiaempire-corporate.php,fr,0,0,none,0,i18n-dublette,P2,no,no
-4642,home,Home,publish,0,page-templates/freesiaempire-corporate.php,en,0,0,none,0,i18n-dublette,P2,no,no
-4644,blog,Blog,publish,0,default,es,0,0,none,0,i18n-dublette,P2,no,no
-4646,blog,Blog,publish,0,default,fr,0,0,none,0,i18n-dublette,P2,no,no
-4648,blog,Blog,publish,0,default,en,0,0,none,0,i18n-dublette,P2,no,no
-4654,nos-services,"Nos services",publish,0,,fr,2353,1,wp-upload,0,i18n-dublette,P2,no,no
-4663,docteur-en-med-s-saul,"Docteur en méd. S. Saul",publish,0,,en,6644,1,wp-upload,0,i18n-dublette,P2,no,no
-4667,doctors-team,"Doctors team",publish,0,,en,1326,1,wp-upload,0,i18n-dublette,P2,no,no
-4677,echografia-de-los-vasos-de-la-pierna,"Echografía de los vasos de la pierna",publish,0,default,es,2594,1,wp-upload,0,i18n-dublette,P2,no,no
-4681,echographie-des-vaisseaux-de-jambe,"Échographie des vaisseaux de jambe",publish,0,default,fr,2559,1,wp-upload,0,i18n-dublette,P2,no,no
-4687,ultrasound-of-leg-vessels,"Ultrasound of leg vessels",publish,0,default,en,2416,1,wp-upload,0,i18n-dublette,P2,no,no
-4691,ecografia-de-la-glandula-tiroides,"Ecografía de la glandula tiroides",publish,0,default,es,3136,1,wp-upload,0,i18n-dublette,P2,no,no
-4695,duplex-de-los-vasos-carotideos,"DÁºplex de los vasos carotídeos",publish,0,default,es,2078,1,wp-upload,0,i18n-dublette,P2,no,no
-4701,ecocardiografia,Ecocardiografía,publish,0,default,es,3393,1,wp-upload,0,i18n-dublette,P2,no,no
-4703,depistaje-de-enfermedades-tumorales,"Depistaje de enfermedades tumorales",publish,0,default,de,0,0,none,0,legacy,P2,no,no
-4704,depistaje-de-enfermedades-tumorales,"Depistaje de enfermedades tumorales",publish,0,default,es,2191,0,none,0,i18n-dublette,P2,no,no
-4709,checl-up-cardiovascular,"Check Up cardiovascular",publish,0,default,es,4449,1,wp-upload,0,i18n-dublette,P2,no,no
-4725,registro-de-paciente-digital,"Registro de paciente digital",publish,0,,es,6344,2,wp-upload,0,i18n-dublette,P2,no,no
-4737,echographie-thyroidienne,"Échographie thyroÁ¯dienne",publish,0,default,fr,3227,1,wp-upload,0,i18n-dublette,P2,no,no
-4741,thyroid-gland-sonography,"Thyroid gland sonography",publish,0,default,en,2847,1,wp-upload,0,i18n-dublette,P2,no,no
-4745,duplex-carotidien,"Duplex carotidien",publish,0,default,fr,2078,1,wp-upload,0,i18n-dublette,P2,no,no
-4749,carotid-duplex,"Carotid duplex",publish,0,default,en,1987,1,wp-upload,0,i18n-dublette,P2,no,no
-4753,echocardiographie,Échocardiographie,publish,0,default,de,0,0,none,0,legacy,P2,no,no
-4754,echocardiographie,Échocardiographie,publish,0,default,fr,3545,1,wp-upload,0,i18n-dublette,P2,no,no
-4761,echocardiography,Echocardiography,publish,0,default,en,3119,1,wp-upload,0,i18n-dublette,P2,no,no
-4765,depistage-de-tumeurs,"Dépistage de tumeurs",publish,0,default,fr,2246,0,none,0,i18n-dublette,P2,no,no
-4774,tumor-screening,"Tumor screening",publish,0,default,en,1985,0,none,0,i18n-dublette,P2,no,no
-4776,check-up-vasculaire,"Check-up vasculaire",publish,0,default,fr,4484,1,wp-upload,0,i18n-dublette,P2,yes,basic-check
-4780,nuestros-servicios,"Nuestros servicios",publish,0,,es,2245,1,wp-upload,0,i18n-dublette,P2,no,no
-4784,our-services,"Our services",publish,0,,en,2078,1,wp-upload,0,i18n-dublette,P2,no,no
-4804,examen-chequeo-de-salud,"Examen/chequeo de salud",publish,0,default,es,13625,1,wp-upload,0,i18n-dublette,P2,no,no
-4807,angio-check-up,"Angio Check Up",publish,0,default,en,4053,1,wp-upload,0,i18n-dublette,P2,yes,basic-check
-4810,checkup-cardiologique,"Checkup cardiologique",publish,0,default,fr,4525,1,wp-upload,0,i18n-dublette,P2,yes,basic-check
-4816,cardio-check-up,"Cardio check up",publish,0,default,en,4101,1,wp-upload,0,i18n-dublette,P2,yes,basic-check
-4820,dossier-patient-digital,"Dossier patient digital",publish,0,,fr,6591,2,wp-upload,0,i18n-dublette,P2,no,no
-4826,digital-patient-file,"Digital patient file",publish,0,,en,6126,2,wp-upload,0,i18n-dublette,P2,no,no
-4832,vacunas,Vacunas,publish,0,default,es,3427,1,wp-upload,0,i18n-dublette,P2,no,no
-4836,les-vaccins,"Les vaccins",publish,0,default,fr,3567,1,wp-upload,0,i18n-dublette,P2,no,no
-4839,vaccinations,Vaccinations,publish,0,default,en,3307,1,wp-upload,0,i18n-dublette,P2,no,no
-4843,analiticas-de-sangre,"Analíticas de sangre",publish,0,default,es,2194,1,wp-upload,0,i18n-dublette,P2,no,no
-4849,diagnostic-de-laboratoire,"Diagnostic de laboratoire",publish,0,default,fr,2230,1,wp-upload,0,i18n-dublette,P2,no,no
-4855,laboratory-diagnostics,"Laboratory diagnostics",publish,0,default,en,2063,1,wp-upload,0,i18n-dublette,P2,no,no
-4863,funcion-pulmonar,"Función pulmonar",publish,0,default,es,6320,1,wp-upload,0,i18n-dublette,P2,no,no
-4869,fonction-pulmonaire,"Fonction pulmonaire",publish,0,default,fr,6479,1,wp-upload,0,i18n-dublette,P2,no,no
-4875,lung-function,"Lung function",publish,0,default,en,5882,1,wp-upload,0,i18n-dublette,P2,no,no
-4879,prueba-de-esfuerzo,"Prueba de esfuerzo",publish,0,default,es,1595,0,none,0,i18n-dublette,P2,no,no
-4883,ecg-deffort,"ECG d'effort",publish,0,default,fr,1583,0,none,0,i18n-dublette,P2,no,no
-4887,stress-ecg,"Stress ECG",publish,0,default,en,1449,0,none,0,i18n-dublette,P2,no,no
-4895,diagnostico-por-ultrasonido,"Diagnóstico por ultrasonido",publish,0,default,es,5261,1,wp-upload,0,i18n-dublette,P2,no,no
-4899,diagnostic-par-ultrasons,"Diagnostic par ultrasons",publish,0,default,fr,5575,1,wp-upload,0,i18n-dublette,P2,no,no
-4903,ultrasound-diagnostics,"Ultrasound diagnostics",publish,0,default,de,0,0,none,0,legacy,P2,no,no
-4904,ultrasound-diagnostics-2,"Ultrasound diagnostics",publish,0,default,en,5129,1,wp-upload,0,i18n-dublette,P2,no,no
-4910,bilan-de-sante,"Bilan de santé",publish,0,default,fr,14155,1,wp-upload,0,i18n-dublette,P2,no,no
-4917,health-check-up,"Health check up",publish,0,default,en,12941,1,wp-upload,0,i18n-dublette,P2,yes,basic-check
-5703,under-construction,"UNDER CONSTRUCTION !",publish,0,default,de,300,1,wp-upload,0,legacy,P2,no,no
-5709,corona-impfung,Corona,publish,0,default,de,3054,0,none,0,services,P1,yes,no
-5746,vaccination-aganist-sars-cov-2,Corona,publish,0,,en,3158,0,none,0,i18n-dublette,P2,no,no
-6493,corona,Corona,publish,0,,fr,3487,0,none,0,i18n-dublette,P2,no,no
-6495,corona,Corona,publish,0,,es,3347,0,none,0,i18n-dublette,P2,no,no
-8199,weihnachtskalender,Weihnachtskalender,publish,0,default,de,317,0,none,0,legacy,P2,no,no
-8922,fragebogen-personalisierte-medizin,"Fragebogen Personalisierte Medizin",publish,0,default,de,1869,0,none,0,legacy,P2,no,no
-9430,standort-alte-oper,"Standort Alte Oper",publish,0,default,de,2054,2,wp-upload,0,legacy,P2,no,no
-9498,neupatienten-new-patient-enrollment,"Neupatienten / New patients",publish,0,default,de,2029,0,none,0,legacy,P2,no,no
-9501,new-patients-new-patient-enrollment,"New patients / New patient enrollment",publish,0,,en,1466,0,none,0,i18n-dublette,P2,no,no
-9663,home-neu,"Praxiszentrum — Home",publish,0,template-homepage.php,de,0,0,none,0,kern,P0,maybe,no
-9666,karriere,Karriere,publish,0,template-karriere.php,de,981,0,none,0,kern,P0,maybe,no
-9668,basic-check,"Laborcheck Basis — Informationen",publish,0,default,de,1256,0,none,0,checkups,P0,yes,basic-check
-9671,praxis,"Unsere Praxis",publish,0,template-standard.php,de,2920,0,none,0,kern,P0,maybe,no
-9672,team,"Unser Team",publish,0,template-team.php,de,2068,0,none,0,kern,P0,maybe,no
-4022,fragebogen-brustschmerzen,"Fragebogen Brustschmerzen",private,0,default,de,507,0,none,0,legacy,P2,no,no
-4350,cuestionario-dolor-toracico,"Cuestionario dolor torácico",private,0,,es,587,0,none,0,i18n-dublette,P2,no,no
-4357,questionnaire-sur-les-douleurs-thoraciques,"Questionnaire a compléter en cas de douleurs thoraciques",private,0,,fr,593,0,none,0,i18n-dublette,P2,no,no
-4366,chest-pain-questionnaire,"Chest pain questionnaire",private,0,,en,539,0,none,0,i18n-dublette,P2,no,no
-5081,jobs,Jobs,private,0,default,de,4569,0,none,0,legacy,P2,no,no
-5649,jobs,Jobs,private,0,,en,3585,0,none,0,i18n-dublette,P2,no,no
-5651,offre-demplois,"Offre d'Emplois",private,0,,fr,3807,0,none,0,i18n-dublette,P2,no,no
-5653,trabajos,Trabajos,private,0,,es,3743,0,none,0,i18n-dublette,P2,no,no
-4788,,"Protección de Datos",draft,0,default,es,7377,0,none,0,i18n-dublette,P2,no,no
-4790,,"Déclaration de confidentialité",draft,0,default,fr,7730,0,none,0,i18n-dublette,P2,no,no
-4796,,"Privacy policy",draft,0,default,en,6757,0,none,0,i18n-dublette,P2,no,no
-9670,s2-0b-probe,"S2.0b Probe (Components)",draft,0,template-standard.php,-,0,0,none,0,i18n-dublette,P2,no,no
+id,slug,title,status,parent_id,template,wpml_lang,content_length,image_count,image_source_hint,mojibake_hits_pre,cluster,priority,trunk_candidate,cross_site_potential,archive_path
+3,datenschutzerklaerung,Datenschutzerklärung,publish,0,default,de,6695,0,none,0,kern,P0,maybe,no,kern/de/datenschutzerklaerung-3.md
+192,contact-us,Kontakt,publish,0,page-templates/contact-template.php,de,841,0,none,0,diagnostik,P1,maybe,no,diagnostik/de/contact-us-192.md
+249,home,Home,publish,0,page-templates/freesiaempire-corporate.php,de,0,0,none,0,kern,P0,maybe,no,kern/de/home-249.md
+261,internistische-schwerpunktpraxis-hausaerztliche-grundversorgung,"Unsere Leistungen",publish,0,default,de,2661,1,wp-upload,0,services,P1,yes,no,services/de/internistische-schwerpunktpraxis-hausaerztliche-grundversorgung-261.md
+272,gesundheits-check-up,"Gesundheits Check Up",publish,0,default,de,12707,1,wp-upload,0,checkups,P0,yes,basic-check,checkups/de/gesundheits-check-up-272.md
+277,ultraschalldiagnostik,Ultraschalldiagnostik,publish,0,default,de,4975,1,wp-upload,0,diagnostik,P1,maybe,no,diagnostik/de/ultraschalldiagnostik-277.md
+289,belastungs-ekg,Belastungs-EKG,publish,0,default,de,1473,0,none,0,diagnostik,P1,yes,heart-check,diagnostik/de/belastungs-ekg-289.md
+292,lungenfunktion,Lungenfunktion,publish,0,default,de,5798,1,wp-upload,0,diagnostik,P1,maybe,no,diagnostik/de/lungenfunktion-292.md
+296,labordiagnostik,Labordiagnostik,publish,0,default,de,1986,1,wp-upload,0,diagnostik,P1,maybe,no,diagnostik/de/labordiagnostik-296.md
+299,impfungen,Impfungen,publish,0,default,de,3045,1,wp-upload,0,services,P1,yes,no,services/de/impfungen-299.md
+302,projekt-docvocat,"Digitale Patientenakte",publish,0,default,de,6113,2,wp-upload,0,legacy,P2,no,no,legacy/de/projekt-docvocat-302.md
+336,cardio-check-up,"Cardio Check Up",publish,0,default,de,4205,1,wp-upload,0,checkups,P0,yes,basic-check,checkups/de/cardio-check-up-336.md
+339,angio-check-up,"Angio Check Up",publish,0,default,de,4013,1,wp-upload,0,checkups,P0,yes,basic-check,checkups/de/angio-check-up-339.md
+348,tumorscreening,Tumorscreening,publish,0,default,de,1851,0,none,0,checkups,P0,yes,no,checkups/de/tumorscreening-348.md
+351,echokardiographie,Echokardiographie,publish,0,default,de,2966,1,wp-upload,0,fachrichtung,P1,yes,heart-check,fachrichtung/de/echokardiographie-351.md
+354,carotis-duplex,"Carotis Duplex",publish,0,default,de,1896,1,wp-upload,0,legacy,P2,no,no,legacy/de/carotis-duplex-354.md
+357,schilddruesen-sonographie,Schilddrüsen-Sonographie,publish,0,default,de,2918,1,wp-upload,0,diagnostik,P1,maybe,no,diagnostik/de/schilddruesen-sonographie-357.md
+360,ultraschall-der-beingefaesse,"Ultraschall Beingefäße",publish,0,default,de,2321,1,wp-upload,0,diagnostik,P1,maybe,no,diagnostik/de/ultraschall-der-beingefaesse-360.md
+368,arzt-team,Ärzte-Team,publish,0,default,de,1390,1,wp-upload,0,aerzte,P1,no,no,aerzte/de/arzt-team-368.md
+375,docteur-en-med-s-saul,"Docteur en méd. S. Saul",publish,0,default,de,6586,1,wp-upload,0,legacy,P2,no,no,legacy/de/docteur-en-med-s-saul-375.md
+382,dr-siegbert-stracke-mba,"Dr. Siegbert Stracke",publish,0,default,de,5732,1,wp-upload,0,aerzte,P1,no,no,aerzte/de/dr-siegbert-stracke-mba-382.md
+398,frequently-asked-questions,"Frequently Asked Questions",publish,0,default,de,878,0,none,0,legacy,P2,no,no,legacy/de/frequently-asked-questions-398.md
+405,unsere-sprechzeiten,"Unsere Sprechzeiten",publish,0,default,de,7048,0,none,0,legacy,P2,no,no,legacy/de/unsere-sprechzeiten-405.md
+461,check-ups,"Check Up´s",publish,0,default,de,4805,0,none,0,checkups,P0,yes,basic-check,checkups/de/check-ups-461.md
+466,arbeitsunfaehigkeit,Arbeitsunfähigkeit,publish,0,default,de,3062,0,none,0,legacy,P2,no,no,legacy/de/arbeitsunfaehigkeit-466.md
+469,ein-und-ueberweisungen,"Ein- und Überweisungen",publish,0,default,de,3904,0,none,0,legacy,P2,no,no,legacy/de/ein-und-ueberweisungen-469.md
+472,rund-ums-impfen,"Rund ums Impfen",publish,0,default,de,8576,0,none,0,services,P1,yes,no,services/de/rund-ums-impfen-472.md
+475,rund-ums-labor,"Rund ums Labor",publish,0,default,de,1415,0,none,0,diagnostik,P1,maybe,no,diagnostik/de/rund-ums-labor-475.md
+4011,terminanfrage,Terminanfrage,publish,0,default,de,327,0,none,0,legacy,P2,no,no,legacy/de/terminanfrage-4011.md
+4014,rezeptbestellung,Rezeptbestellung,publish,0,default,de,863,0,none,0,legacy,P2,no,no,legacy/de/rezeptbestellung-4014.md
+4017,ueberweisung,Überweisung,publish,0,default,de,371,0,none,0,legacy,P2,no,no,legacy/de/ueberweisung-4017.md
+4024,fragebogen-bauchschmerzen,"Fragebogen Bauchschmerzen",publish,0,default,de,71,0,none,0,legacy,P2,no,no,legacy/de/fragebogen-bauchschmerzen-4024.md
+4026,beschwerden-beim-wasserlassen,"Beschwerden beim Wasserlassen",publish,0,default,de,144,0,none,0,legacy,P2,no,no,legacy/de/beschwerden-beim-wasserlassen-4026.md
+4028,covid-19-risikofragebogen,"Corona Fragebogen",publish,0,default,de,1288,0,none,0,legacy,P2,no,no,legacy/de/covid-19-risikofragebogen-4028.md
+4206,sono-atlas,Sono-Atlas,publish,0,default,de,4221,5,wp-upload,0,diagnostik,P1,maybe,no,diagnostik/de/sono-atlas-4206.md
+4223,datenschutzerklaerung-2,Datenschutzerklärung,publish,0,default,de,8839,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/unknown/datenschutzerklaerung-2-4223.md
+4226,impressum,Impressum,publish,0,default,de,4586,0,none,0,kern,P0,maybe,no,kern/de/impressum-4226.md
+4238,cookie-richtlinie-eu,"Cookie-Richtlinie (EU)",publish,0,default,de,104,0,none,0,legacy,P2,no,no,legacy/de/cookie-richtlinie-eu-4238.md
+4244,proteccion-de-datos,"Protección de Datos",publish,0,default,es,9210,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/proteccion-de-datos-4244.md
+4248,directive-concernant-les-cookie-ue,"Directive concernant les Cookie (UE)",publish,0,default,fr,104,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/directive-concernant-les-cookie-ue-4248.md
+4252,cookie-directive-eu,"Cookie Directive (EU)",publish,0,default,en,104,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/cookie-directive-eu-4252.md
+4256,impressum,Impressum,publish,0,default,es,5159,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/impressum-4256.md
+4260,impressum,Impressum,publish,0,default,fr,5234,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/impressum-4260.md
+4266,impressum,Impressum,publish,0,default,en,4833,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/impressum-4266.md
+4270,politique-de-confidentialite,"Politique de confidentialité",publish,0,default,fr,9753,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/politique-de-confidentialite-4270.md
+4276,privacy-policy,"Privacy policy",publish,0,default,en,8494,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/privacy-policy-4276.md
+4281,sono-atlas,"Sono Atlas",publish,0,,es,4428,5,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/sono-atlas-4281.md
+4291,atlas-dechographie,"Atlas d'échographie",publish,0,,fr,4402,5,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/atlas-dechographie-4291.md
+4297,sono-atlas,Sono-Atlas,publish,0,default,de,0,0,none,0,diagnostik,P1,maybe,no,diagnostik/de/sono-atlas-4297.md
+4298,sono-atlas,Sono-Atlas,publish,0,,en,4424,5,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/sono-atlas-4298.md
+4304,cuestionario-covid-19,"Cuestionario COVID-19",publish,0,,es,1260,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/cuestionario-covid-19-4304.md
+4310,questionnaire-concernant-les-risques-davoir-une-infection-covid-19,"Questionnaire concernant les risques d'avoir une infection COVID-19",publish,0,,fr,1325,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/questionnaire-concernant-les-risques-davoir-une-infection-covid-19-4310.md
+4316,covid-19-risk-questionnaire,"COVID-19 Risk Questionnaire",publish,0,,en,1188,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/covid-19-risk-questionnaire-4316.md
+4320,dificultades-molestias-al-orinar,"Dificultades / molestias al orinar",publish,0,default,de,172,0,none,0,legacy,P2,no,no,legacy/de/dificultades-molestias-al-orinar-4320.md
+4321,dificultades-molestias-al-orinar-2,"Dificultades / Molestias al orinar",publish,0,default,es,172,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/dificultades-molestias-al-orinar-2-4321.md
+4326,difficultes-a-uriner,"Plaintes urinaires",publish,0,default,fr,172,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/difficultes-a-uriner-4326.md
+4328,discomfort-during-urination,"Discomfort during urination",publish,0,default,en,172,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/discomfort-during-urination-4328.md
+4334,cuestionario-dolor-abdominal,"Cuestionario dolor abdominal",publish,0,default,es,71,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/cuestionario-dolor-abdominal-4334.md
+4340,questionnaire-sur-les-douleurs-abdominales,"Questionnaire a compléter en cas de douleurs abdominales",publish,0,default,fr,71,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/questionnaire-sur-les-douleurs-abdominales-4340.md
+4344,abdominal-pain-questionnaire,"Abdominal pain questionnaire",publish,0,default,en,71,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/abdominal-pain-questionnaire-4344.md
+4356,questionnaire-sur-les-douleurs-thoraciques-2,"Questionnaire sur les douleurs thoraciques",publish,0,default,de,583,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/unknown/questionnaire-sur-les-douleurs-thoraciques-2-4356.md
+4374,referencias-a-otras-especialidades,"Referencias a otras especialidades",publish,0,default,es,460,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/referencias-a-otras-especialidades-4374.md
+4380,orientation-vers-dautres-specialistes,"Orientation vers d'autres spécialistes",publish,0,default,fr,453,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/orientation-vers-dautres-specialistes-4380.md
+4384,referral-to-other-specialists,"Referral to other specialists",publish,0,default,en,373,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/referral-to-other-specialists-4384.md
+4390,pedido-de-recetas-medicas,"Pedido de recetas medicas",publish,0,default,es,940,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/pedido-de-recetas-medicas-4390.md
+4396,commande-de-prescriptions-de-medicaments,"Commande de prescriptions de médicaments",publish,0,default,fr,988,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/commande-de-prescriptions-de-medicaments-4396.md
+4400,order-a-prescription,"Order a prescription",publish,0,default,en,870,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/order-a-prescription-4400.md
+4406,solicitar-una-cita-medica,"Solicitar una cita medica",publish,0,,es,337,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/solicitar-una-cita-medica-4406.md
+4410,demande-de-date-rendez-vous,"Demande de rendez-vous",publish,0,,fr,329,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/demande-de-date-rendez-vous-4410.md
+4416,appointment-enquiry,"Appointment enquiry",publish,0,,en,309,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/appointment-enquiry-4416.md
+4422,medicamentos,medicamentos,publish,0,default,es,1251,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/medicamentos-4422.md
+4430,medicaments,Médicaments,publish,0,default,fr,1303,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/medicaments-4430.md
+4434,medication,Medication,publish,0,default,en,1178,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/medication-4434.md
+4438,en-torno-al-laboratorio,"En torno al laboratorio",publish,0,default,es,1601,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/en-torno-al-laboratorio-4438.md
+4442,au-sujet-du-laboratoire,"Au sujet du laboratoire",publish,0,default,fr,1603,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/au-sujet-du-laboratoire-4442.md
+4452,all-around-the-laboratory,"All around the laboratory",publish,0,default,en,1433,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/all-around-the-laboratory-4452.md
+4458,todo-sobre-la-vacunacion,"Todo sobre la vacunación",publish,0,default,es,9533,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/todo-sobre-la-vacunacion-4458.md
+4493,tout-sur-la-vaccination,"Tout au sujet de la vaccination",publish,0,default,fr,10062,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/tout-sur-la-vaccination-4493.md
+4497,all-about-vaccination,"All about vaccination",publish,0,default,en,8959,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/all-about-vaccination-4497.md
+4499,ein-und-ueberweisungen-transferencias-a-otras-especialidades,"Ein- und Überweisungen / transferencias a otras especialidades",publish,0,default,es,4700,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/ein-und-ueberweisungen-transferencias-a-otras-especialidades-4499.md
+4501,hospitalisations-et-envoi-a-dautre-specialites,"Hospitalisations et référence envers d'autres spécialités",publish,0,default,fr,4559,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/hospitalisations-et-envoi-a-dautre-specialites-4501.md
+4505,hospitalizations-and-referrals-to-other-specialties,"Hospitalizations and referrals to other specialties",publish,0,default,en,4116,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/hospitalizations-and-referrals-to-other-specialties-4505.md
+4511,incapacidad-laboral-temporal-it-baja-medica,"Incapacidad laboral temporal (IT)/ baja medica:",publish,0,default,es,3303,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/incapacidad-laboral-temporal-it-baja-medica-4511.md
+4519,arret-maladie,"Arrêt maladie",publish,0,default,fr,3451,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/arret-maladie-4519.md
+4527,sickness-leave,"Sickness leave",publish,0,default,en,3092,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/sickness-leave-4527.md
+4531,check-ups,"Check Up´s",publish,0,default,es,5361,0,none,0,i18n-dublette,P2,yes,basic-check,i18n-dublette/es/check-ups-4531.md
+4534,check-ups,"Check Up´s",publish,0,default,fr,5530,0,none,0,i18n-dublette,P2,yes,basic-check,i18n-dublette/fr/check-ups-4534.md
+4537,check-ups,"Check Up´s",publish,0,default,en,4967,0,none,0,i18n-dublette,P2,yes,basic-check,i18n-dublette/en/check-ups-4537.md
+4545,nuestros-horarios,"Nuestros horarios",publish,0,,es,7960,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/nuestros-horarios-4545.md
+4551,nos-horaires-de-consultations,"Nos Horaires de consultations",publish,0,,fr,8016,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/nos-horaires-de-consultations-4551.md
+4553,frequently-asked-questions,"Frequently Asked Questions",publish,0,default,es,940,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/frequently-asked-questions-4553.md
+4557,citas,Citas,publish,0,,es,2420,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/citas-4557.md
+4563,our-appointment-hours,"Our Timetable",publish,0,,en,7270,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/our-appointment-hours-4563.md
+4567,frequently-asked-questions,"Frequently Asked Questions",publish,0,default,fr,938,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/frequently-asked-questions-4567.md
+4571,frequently-asked-questions,"Frequently Asked Questions",publish,0,default,en,881,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/frequently-asked-questions-4571.md
+4575,rendez-vous,Rendez-vous,publish,0,,fr,2410,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/rendez-vous-4575.md
+4581,appointments,Appointments,publish,0,,en,2393,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/appointments-4581.md
+4587,dr-siegbert-stracke,"Dr. Siegbert Stracke",publish,0,,es,6199,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/dr-siegbert-stracke-4587.md
+4593,dr-siegbert-stracke,"Dr. Siegbert Stracke",publish,0,,fr,6307,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/dr-siegbert-stracke-4593.md
+4598,dr-siegbert-stracke,"Dr. Siegbert Stracke",publish,0,,en,6005,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/dr-siegbert-stracke-4598.md
+4606,docteur-en-med-s-saul,"Docteur en méd. S. Saul",publish,0,,es,6565,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/docteur-en-med-s-saul-4606.md
+4611,docteur-en-med-s-saul,"Docteur en méd. S. Saul",publish,0,,fr,6830,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/docteur-en-med-s-saul-4611.md
+4617,equipo-medico,"Equipo médico",publish,0,,es,1357,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/equipo-medico-4617.md
+4623,lequipe-de-medecins,"L'équipe de médecins",publish,0,,fr,1394,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/lequipe-de-medecins-4623.md
+4627,kontakt,Kontakt,publish,0,page-templates/contact-template.php,es,878,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/kontakt-4627.md
+4630,contactez-nous,Contactez-nous,publish,0,page-templates/contact-template.php,fr,879,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/contactez-nous-4630.md
+4634,contact,Contact,publish,0,page-templates/contact-template.php,en,861,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/contact-4634.md
+4638,home,Inicio,publish,0,page-templates/freesiaempire-corporate.php,es,0,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/home-4638.md
+4640,home,Accueil,publish,0,page-templates/freesiaempire-corporate.php,fr,0,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/home-4640.md
+4642,home,Home,publish,0,page-templates/freesiaempire-corporate.php,en,0,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/home-4642.md
+4644,blog,Blog,publish,0,default,es,0,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/blog-4644.md
+4646,blog,Blog,publish,0,default,fr,0,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/blog-4646.md
+4648,blog,Blog,publish,0,default,en,0,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/blog-4648.md
+4654,nos-services,"Nos services",publish,0,,fr,2353,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/nos-services-4654.md
+4663,docteur-en-med-s-saul,"Docteur en méd. S. Saul",publish,0,,en,6644,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/docteur-en-med-s-saul-4663.md
+4667,doctors-team,"Doctors team",publish,0,,en,1326,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/doctors-team-4667.md
+4677,echografia-de-los-vasos-de-la-pierna,"Echografía de los vasos de la pierna",publish,0,default,es,2594,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/echografia-de-los-vasos-de-la-pierna-4677.md
+4681,echographie-des-vaisseaux-de-jambe,"Échographie des vaisseaux de jambe",publish,0,default,fr,2559,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/echographie-des-vaisseaux-de-jambe-4681.md
+4687,ultrasound-of-leg-vessels,"Ultrasound of leg vessels",publish,0,default,en,2416,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/ultrasound-of-leg-vessels-4687.md
+4691,ecografia-de-la-glandula-tiroides,"Ecografía de la glandula tiroides",publish,0,default,es,3136,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/ecografia-de-la-glandula-tiroides-4691.md
+4695,duplex-de-los-vasos-carotideos,"DÁºplex de los vasos carotídeos",publish,0,default,es,2078,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/duplex-de-los-vasos-carotideos-4695.md
+4701,ecocardiografia,Ecocardiografía,publish,0,default,es,3393,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/ecocardiografia-4701.md
+4703,depistaje-de-enfermedades-tumorales,"Depistaje de enfermedades tumorales",publish,0,default,de,0,0,none,0,legacy,P2,no,no,legacy/de/depistaje-de-enfermedades-tumorales-4703.md
+4704,depistaje-de-enfermedades-tumorales,"Depistaje de enfermedades tumorales",publish,0,default,es,2191,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/depistaje-de-enfermedades-tumorales-4704.md
+4709,checl-up-cardiovascular,"Check Up cardiovascular",publish,0,default,es,4449,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/checl-up-cardiovascular-4709.md
+4725,registro-de-paciente-digital,"Registro de paciente digital",publish,0,,es,6344,2,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/registro-de-paciente-digital-4725.md
+4737,echographie-thyroidienne,"Échographie thyroÁ¯dienne",publish,0,default,fr,3227,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/echographie-thyroidienne-4737.md
+4741,thyroid-gland-sonography,"Thyroid gland sonography",publish,0,default,en,2847,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/thyroid-gland-sonography-4741.md
+4745,duplex-carotidien,"Duplex carotidien",publish,0,default,fr,2078,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/duplex-carotidien-4745.md
+4749,carotid-duplex,"Carotid duplex",publish,0,default,en,1987,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/carotid-duplex-4749.md
+4753,echocardiographie,Échocardiographie,publish,0,default,de,0,0,none,0,legacy,P2,no,no,legacy/de/echocardiographie-4753.md
+4754,echocardiographie,Échocardiographie,publish,0,default,fr,3545,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/echocardiographie-4754.md
+4761,echocardiography,Echocardiography,publish,0,default,en,3119,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/echocardiography-4761.md
+4765,depistage-de-tumeurs,"Dépistage de tumeurs",publish,0,default,fr,2246,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/depistage-de-tumeurs-4765.md
+4774,tumor-screening,"Tumor screening",publish,0,default,en,1985,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/tumor-screening-4774.md
+4776,check-up-vasculaire,"Check-up vasculaire",publish,0,default,fr,4484,1,wp-upload,0,i18n-dublette,P2,yes,basic-check,i18n-dublette/fr/check-up-vasculaire-4776.md
+4780,nuestros-servicios,"Nuestros servicios",publish,0,,es,2245,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/nuestros-servicios-4780.md
+4784,our-services,"Our services",publish,0,,en,2078,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/our-services-4784.md
+4804,examen-chequeo-de-salud,"Examen/chequeo de salud",publish,0,default,es,13625,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/examen-chequeo-de-salud-4804.md
+4807,angio-check-up,"Angio Check Up",publish,0,default,en,4053,1,wp-upload,0,i18n-dublette,P2,yes,basic-check,i18n-dublette/en/angio-check-up-4807.md
+4810,checkup-cardiologique,"Checkup cardiologique",publish,0,default,fr,4525,1,wp-upload,0,i18n-dublette,P2,yes,basic-check,i18n-dublette/fr/checkup-cardiologique-4810.md
+4816,cardio-check-up,"Cardio check up",publish,0,default,en,4101,1,wp-upload,0,i18n-dublette,P2,yes,basic-check,i18n-dublette/en/cardio-check-up-4816.md
+4820,dossier-patient-digital,"Dossier patient digital",publish,0,,fr,6591,2,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/dossier-patient-digital-4820.md
+4826,digital-patient-file,"Digital patient file",publish,0,,en,6126,2,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/digital-patient-file-4826.md
+4832,vacunas,Vacunas,publish,0,default,es,3427,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/vacunas-4832.md
+4836,les-vaccins,"Les vaccins",publish,0,default,fr,3567,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/les-vaccins-4836.md
+4839,vaccinations,Vaccinations,publish,0,default,en,3307,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/vaccinations-4839.md
+4843,analiticas-de-sangre,"Analíticas de sangre",publish,0,default,es,2194,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/analiticas-de-sangre-4843.md
+4849,diagnostic-de-laboratoire,"Diagnostic de laboratoire",publish,0,default,fr,2230,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/diagnostic-de-laboratoire-4849.md
+4855,laboratory-diagnostics,"Laboratory diagnostics",publish,0,default,en,2063,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/laboratory-diagnostics-4855.md
+4863,funcion-pulmonar,"Función pulmonar",publish,0,default,es,6320,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/funcion-pulmonar-4863.md
+4869,fonction-pulmonaire,"Fonction pulmonaire",publish,0,default,fr,6479,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/fonction-pulmonaire-4869.md
+4875,lung-function,"Lung function",publish,0,default,en,5882,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/lung-function-4875.md
+4879,prueba-de-esfuerzo,"Prueba de esfuerzo",publish,0,default,es,1595,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/prueba-de-esfuerzo-4879.md
+4883,ecg-deffort,"ECG d'effort",publish,0,default,fr,1583,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/ecg-deffort-4883.md
+4887,stress-ecg,"Stress ECG",publish,0,default,en,1449,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/stress-ecg-4887.md
+4895,diagnostico-por-ultrasonido,"Diagnóstico por ultrasonido",publish,0,default,es,5261,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/es/diagnostico-por-ultrasonido-4895.md
+4899,diagnostic-par-ultrasons,"Diagnostic par ultrasons",publish,0,default,fr,5575,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/diagnostic-par-ultrasons-4899.md
+4903,ultrasound-diagnostics,"Ultrasound diagnostics",publish,0,default,de,0,0,none,0,legacy,P2,no,no,legacy/de/ultrasound-diagnostics-4903.md
+4904,ultrasound-diagnostics-2,"Ultrasound diagnostics",publish,0,default,en,5129,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/en/ultrasound-diagnostics-2-4904.md
+4910,bilan-de-sante,"Bilan de santé",publish,0,default,fr,14155,1,wp-upload,0,i18n-dublette,P2,no,no,i18n-dublette/fr/bilan-de-sante-4910.md
+4917,health-check-up,"Health check up",publish,0,default,en,12941,1,wp-upload,0,i18n-dublette,P2,yes,basic-check,i18n-dublette/en/health-check-up-4917.md
+5703,under-construction,"UNDER CONSTRUCTION !",publish,0,default,de,300,1,wp-upload,0,legacy,P2,no,no,legacy/de/under-construction-5703.md
+5709,corona-impfung,Corona,publish,0,default,de,3054,0,none,0,services,P1,yes,no,services/de/corona-impfung-5709.md
+5746,vaccination-aganist-sars-cov-2,Corona,publish,0,,en,3158,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/vaccination-aganist-sars-cov-2-5746.md
+6493,corona,Corona,publish,0,,fr,3487,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/fr/corona-6493.md
+6495,corona,Corona,publish,0,,es,3347,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/es/corona-6495.md
+8199,weihnachtskalender,Weihnachtskalender,publish,0,default,de,317,0,none,0,legacy,P2,no,no,legacy/de/weihnachtskalender-8199.md
+8922,fragebogen-personalisierte-medizin,"Fragebogen Personalisierte Medizin",publish,0,default,de,1869,0,none,0,legacy,P2,no,no,legacy/de/fragebogen-personalisierte-medizin-8922.md
+9430,standort-alte-oper,"Standort Alte Oper",publish,0,default,de,2054,2,wp-upload,0,legacy,P2,no,no,legacy/de/standort-alte-oper-9430.md
+9498,neupatienten-new-patient-enrollment,"Neupatienten / New patients",publish,0,default,de,2029,0,none,0,legacy,P2,no,no,legacy/de/neupatienten-new-patient-enrollment-9498.md
+9501,new-patients-new-patient-enrollment,"New patients / New patient enrollment",publish,0,,en,1466,0,none,0,i18n-dublette,P2,no,no,i18n-dublette/en/new-patients-new-patient-enrollment-9501.md
+9663,home-neu,"Praxiszentrum — Home",publish,0,template-homepage.php,de,0,0,none,0,kern,P0,maybe,no,kern/de/home-neu-9663.md
+9666,karriere,Karriere,publish,0,template-karriere.php,de,981,0,none,0,kern,P0,maybe,no,kern/de/karriere-9666.md
+9668,basic-check,"Laborcheck Basis — Informationen",publish,0,default,de,1256,0,none,0,checkups,P0,yes,basic-check,checkups/de/basic-check-9668.md
+9671,praxis,"Unsere Praxis",publish,0,template-standard.php,de,2920,0,none,0,kern,P0,maybe,no,kern/de/praxis-9671.md
+9672,team,"Unser Team",publish,0,template-team.php,de,2068,0,none,0,kern,P0,maybe,no,kern/de/team-9672.md
+4022,fragebogen-brustschmerzen,"Fragebogen Brustschmerzen",private,0,default,de,507,0,none,0,legacy,P2,no,no,_status/private/fragebogen-brustschmerzen-4022.md
+4350,cuestionario-dolor-toracico,"Cuestionario dolor torácico",private,0,,es,587,0,none,0,i18n-dublette,P2,no,no,_status/private/cuestionario-dolor-toracico-4350.md
+4357,questionnaire-sur-les-douleurs-thoraciques,"Questionnaire a compléter en cas de douleurs thoraciques",private,0,,fr,593,0,none,0,i18n-dublette,P2,no,no,_status/private/questionnaire-sur-les-douleurs-thoraciques-4357.md
+4366,chest-pain-questionnaire,"Chest pain questionnaire",private,0,,en,539,0,none,0,i18n-dublette,P2,no,no,_status/private/chest-pain-questionnaire-4366.md
+5081,jobs,Jobs,private,0,default,de,4569,0,none,0,legacy,P2,no,no,_status/private/jobs-5081.md
+5649,jobs,Jobs,private,0,,en,3585,0,none,0,i18n-dublette,P2,no,no,_status/private/jobs-5649.md
+5651,offre-demplois,"Offre d'Emplois",private,0,,fr,3807,0,none,0,i18n-dublette,P2,no,no,_status/private/offre-demplois-5651.md
+5653,trabajos,Trabajos,private,0,,es,3743,0,none,0,i18n-dublette,P2,no,no,_status/private/trabajos-5653.md
+4788,,"Protección de Datos",draft,0,default,es,7377,0,none,0,i18n-dublette,P2,no,no,_status/draft/no-slug-4788-4788.md
+4790,,"Déclaration de confidentialité",draft,0,default,fr,7730,0,none,0,i18n-dublette,P2,no,no,_status/draft/no-slug-4790-4790.md
+4796,,"Privacy policy",draft,0,default,en,6757,0,none,0,i18n-dublette,P2,no,no,_status/draft/no-slug-4796-4796.md
+9670,s2-0b-probe,"S2.0b Probe (Components)",draft,0,template-standard.php,-,0,0,none,0,i18n-dublette,P2,no,no,_status/draft/s2-0b-probe-9670.md
