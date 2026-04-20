@@ -39,9 +39,9 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.6.6` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Migration läuft · **S2.3-D Phase 1 ✅ (2026-04-20 Session 15)**
-- **Stand:** 2026-04-20, **Session 15 abgeschlossen** (Praxis-Sprint 2 / S2.3-D Phase 1 ✅ — Mojibake-Fix auf 20/177 publish-Pages + Trunk-ready Page-Inventar 189 Zeilen + 13/13 AKs)
-- **Working Tree:** Cortex-Web commits `f50110c` (Spec) + `2c6e881` (Migration+Inventar+Evidenz+Self-Check); Theme unverändert HEAD `ae9b1b8`
+- **Version:** `0.6.7` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Migration läuft · **S2.3-D Phase 2 ✅ (2026-04-20 Session 16)**
+- **Stand:** 2026-04-20, **Session 16 abgeschlossen** (Praxis-Sprint 2 / S2.3-D Phase 2 ✅ — Content-Archive 189 Pages + 3-way MD5-Integritätskette + 12/12 AKs)
+- **Working Tree:** Cortex-Web commits `661a4cd` (Spec Phase 2) + `d5051eb` (Skript+Archive+Evidenz, 194 Files); Theme unverändert HEAD `ae9b1b8`
 - **🔴 DR.-STRACKE-SCOPE-KORREKTUR (Ende Session 14):** Der **komplette Content-Umzug aller Prod-Seiten** ist Hauptziel von Sprint 2, nicht nur die 27 Kern-Seiten. Reihenfolge: **Content → Menü → Bilder → Design-Feinschliff**. Option A (Session 14) hat die Fundament-Schicht gelegt (178/178 Pages im branded Header + Content-Scope), nächste Sessions kuratieren Content pro Seite.
 - **Cortex-Web-Aufbau (Phase 0–5):** ✅ **vollständig**
 - **Trunk-Content:** unverändert, 1 Produkt (`basic-check.yaml`)
@@ -64,8 +64,9 @@
 | 5 | Subsumierung Juvantis-Web-Docs → sites/juvantis-webseite/ | ✅ |
 | **Praxis-S2.3-B** | **3 P0-Pages mit Echt-Content + SEO-Layer + Unified Header + Brand-Switch** | **✅ 2026-04-19 Session 14** |
 | **Praxis-S2.3-D-P1** | **Mojibake-Fix + Trunk-ready Page-Inventar (Vorbereitungs-Pass)** | **✅ 2026-04-20 Session 15** |
+| **Praxis-S2.3-D-P2** | **Content-Archive 189 Pages mit 3-way MD5-Kette (Sicherungs-Pass)** | **✅ 2026-04-20 Session 16** |
 
-**Cortex-Web-Aufbau damit abgeschlossen.** Content-Batches laufen; nächster Schritt: S2.3-C oder S2.3-G.
+**Cortex-Web-Aufbau damit abgeschlossen. Full-Content-Migration-Fundament gelegt** (Mojibake sauber, Inventar vollständig, Original-Archive im Git). Nächster Schritt: **Phase 3 Cluster-Kuration**, beginnend mit `kern` (5–7 Pages).
 
 ---
 
@@ -108,7 +109,75 @@ Erwartet: `AK automatisch: 11/11 grün`, Exit 0.
 
 ---
 
-## §3 Letzte Session — Session 15, 2026-04-20 (Praxis-Sprint 2 / S2.3-D Phase 1)
+## §3 Letzte Session — Session 16, 2026-04-20 (Praxis-Sprint 2 / S2.3-D Phase 2)
+
+### Ziel
+Content-Archive als Sicherungs-Schicht **vor** der Cluster-weisen Kuration. Dr.-Stracke-Leitprinzip wörtlich: *„Ich möchte es richtig und ohne Informationsverlust machen — du entscheidest."* Konsequente Interpretation: jede Page im aktuellen Local-WP-Stand bekommt eine unveränderliche Kopie im Git, bevor irgendeine Kurations-Entscheidung fällt.
+
+### Durchgeführt (Architekten-Modus 4 Phasen)
+
+1. **Phase 1 Verständnis-Sicherung** — Dr. Stracke delegiert alle Architektur-Entscheidungen an Claude (expliziter Auftrag „du entscheidest"). 13 Entscheidungspunkte (F1–F13) direkt in §2 der Spec dokumentiert.
+2. **Phase 2 Lösungsdesign** — Spec `specs/sprint-2/S2.3-D_Phase2_content-extraction.md` (398 Zeilen, 12 AKs, 10 Risiken + Mitigationen, Rollback-Plan, Out-of-Scope-Bekräftigung). Commit A `661a4cd`.
+3. **Phase 3 Umsetzung (13 T-Tasks):**
+   - T0 Spec committed (Commit A `661a4cd`).
+   - T2 Generator-Skript `tools/migrations/2026-04-20_s2.3-d-p2_content-extract.php` (~300 Zeilen, PHP-CLI, mysqli + Local-WP-Socket, MySQL 8 sql_mode-Override, deterministische YAML-Serialisierung ohne ext-yaml-Abhängigkeit).
+   - T3 `_content-archive/README.md` mit Format-Doku, MD5-Contract, Pfad-Schema, Reverse-Lookup-Hinweisen.
+   - T4 Generator Lauf 1: `created=189, errors=0` → alle 189 Archive-Dateien angelegt.
+   - T5 Generator Lauf 2: `skipped=189, created=0` → Idempotenz bewiesen.
+   - T6 Verifier-Skript `..._verify-md5.php` (~80 Zeilen): dreifacher MD5-Check (Body ↔ Front-Matter ↔ DB) → `OK: 189/189, FAIL: 0`.
+   - T7 `find _content-archive -name '*.md' -not -name 'README.md' \| wc -l` = 189.
+   - T8 Inventar-CSV um Spalte `archive_path` erweitert (16 Spalten, pro Zeile nicht-leer).
+   - T9 verify.sh + smoke-http.sh + validate.sh alle grün.
+   - T10 Home+Karriere MD5-Null-Delta trivial (Theme unberührt, keine DB-Content-Mutation).
+   - T11 Self-Check `evidence/2026-04-20_s2.3-d-p2_self-check.md` mit 12/12 AKs grün und 5 Lessons.
+   - T12 Commit B `d5051eb` (194 Files: Spec-Skripte + 189 Archive + README + CSV-Update + Self-Check).
+   - T13 SESSION_RESUME Session-16-Block + §8-Historie.
+4. **Phase 4 Selbstprüfung** — 12/12 AKs = 100 %. FK-Check 0/5 eingetreten.
+
+### Verifiziert
+
+| Check | Ergebnis |
+|---|:---:|
+| Generator Lauf 1 | `created=189, errors=0` ✓ |
+| Generator Lauf 2 (Idempotenz) | `created=0, skipped=189` ✓ |
+| verify-md5 3-way match | 189/189 ✓ |
+| Archive-Dateien | 189 ✓ |
+| CSV-Spalte `archive_path` | vorhanden, pro Zeile belegt ✓ |
+| verify.sh | §1+§1b+§2+§3+§3b+§4 grün ✓ |
+| smoke-http.sh | 5/5 HTTP 200 ✓ |
+| validate.sh | OK ✓ |
+| Theme Working Tree | clean, HEAD `ae9b1b8` ✓ |
+| Cortex-Web Working Tree | clean (nach Commit B) ✓ |
+| Self-Check AKs | 12/12 = 100 % ✓ |
+
+### Lessons Learned (5 neue Pattern-Kandidaten)
+
+- **S2.3-D-P2-LL-1** `content-archive-pre-curation.md` — Unveränderliches Original-Archive vor Kuration ist billigste Versicherung gegen Informationsverlust. Kosten: ~2 MB Git-Wachstum. Nutzen: jede Folge-Session hat Original nebendran, Diff trivial.
+- **S2.3-D-P2-LL-2** `yaml-front-matter-md5-contract.md` — Dreifache MD5-Verankerung (Body-File ↔ Front-Matter-Hash ↔ DB-Hash) als deterministischer, automatisch prüfbarer Integritäts-Contract für Dateisystem ↔ DB-Kohärenz.
+- **S2.3-D-P2-LL-3** — Slug ist in WPML-Setups nie eindeutig (3× impressum, 3× home, 7× frequently-asked-questions). Dateinamen immer `<slug>-<id>`, nie Slug alleine.
+- **S2.3-D-P2-LL-4** — YAML-Front-Matter ohne ext-yaml: ~30 Zeilen eigene Serialisierung (strings always-quoted, Zahlen bare, Blocks als Listen) sind diff-freundlich und deterministisch.
+- **S2.3-D-P2-LL-5** — Ordner-Hierarchie ist zugleich Storage und Planungs-Artefakt. `ls kern/de/` zeigt die nächste Kurations-Session. Flache Ablage speichert dasselbe, aber der kognitive Nutzen wäre null.
+
+### Archive-Verteilung (189 Dateien)
+
+| Bereich | Anzahl |
+|---|--:|
+| `kern/de/` | 7 |
+| `checkups/de/` | 6 |
+| `services/de/` | 4 |
+| `aerzte/de/` | 2 |
+| `fachrichtung/de/` | 1 |
+| `diagnostik/de/` | 10 |
+| `legacy/de/` | 23 |
+| `i18n-dublette/{en,fr,es,unknown}` | 42+41+39+2 = 124 |
+| `_status/{draft,private}` | 4+8 = 12 |
+| **Gesamt** | **189** |
+
+→ **30 deutsche kuratur-relevante Pages** (kern+checkups+services+aerzte+fachrichtung+diagnostik) + 23 legacy (teils fremdsprachig) + 124 i18n-Dubletten + 12 Status-abweichend. Phase 3 beginnt mit Cluster `kern`.
+
+---
+
+## §3-legacy (historisch) — Session 15, 2026-04-20 (Praxis-Sprint 2 / S2.3-D Phase 1)
 
 ### Ziel
 Vorbereitungs-Pass für Full-Content-Migration: (1) UTF-8-Mojibake systematisch aus 177 publish-Pages entfernen, (2) vollständiges Trunk-ready Page-Inventar (189 Zeilen, 15 Spalten) für thematische Folge-Sessions, (3) Scope-Klarheit über echte kuratur-relevante Page-Anzahl schaffen.
@@ -963,7 +1032,8 @@ alle Vorbedingungen stehen, Content-Momentum nutzen. Dieser Batch ist größer
 | **13** | **2026-04-19** | **Praxis-Sprint 2 / S2.0f** | **Santapress-Plugin-Entfernung ✅ — 5-Schritt-Protokoll (T1 Pre-Snapshot + T2 Dependency-Audit 0 externe Referenzen + T3 active_plugins-Update via mysqli-prepared + Archive-mv + T4 Rewrite-Rules-Regenerierung −2106 Bytes + T5 verify.sh + neues smoke-http.sh beide grün). `wp_posts`-Count identisch vor/nach (F7b: kein Content verloren). Archive in `_archive/santapress-2026-04-19/` (gitignored, Verfallsdatum 2026-05-19). Theme unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). 6/6 AKs. 5 Lessons S2.0f-LL-1…5.** | Cortex-Web: **`e036328`** (Spec) + **`a6cc6f3`** (Tool+Evidenz+Self-Check, 16 Files) + **`ced4e0a`** (.gitignore-Hygiene). Nexus: neues Pattern `wp-plugin-safe-removal.md` + Tutorial 14 + MEMORY/CLAUDE-Update. |
 | **14** | **2026-04-19/20** | **Praxis-Sprint 2 / S2.3-B + 4 Revisions (inkl. Option A)** | **S2.3-B: 3 P0-Pages (`/praxis/`, `/team/`, 404) mit Echt-Content + SEO-Layer + Unified Header + Sanexio-Brand-Switch. S2.3-B-rev4 (Option A): Universal `page.php` + `wp_body_open`-Hook → **178/178 Pages** im branded Design (statt vorher 4/178 = 2,2 %). Dr.-Stracke-Scope-Korrektur: Full-Content-Migration ist Sprint-2-Hauptziel. PXZ_VERSION 2.7.8 → 2.7.13 (5 Bumps). 5 neue Patterns, DG §18.1+§18.2+§18.3, Tutorial 15.** | Theme: `74a9512` → `81d3f62` → `e2bb7b1` → `dd1de0f` → **`ae9b1b8`** (Option A). Cortex-Web: `68a0db1` → `9d503fc` → `41cf66e` → `81e98ff` → `ee76e1b` → `6ea13a2` (SESSION_RESUME Session 14). Nexus: Patterns `wpml-translations-direct-sql` + `wp-unified-site-header` + `wp-plugin-head-override` + `bash-sigpipe-grep-trap` + **`wp-universal-page-fallback`** (Option A) + Tutorial 15 + MEMORY/CLAUDE-Update. |
 | **15** | **2026-04-20** | **Praxis-Sprint 2 / S2.3-D Phase 1** | **Vorbereitungs-Pass Full-Content-Migration ✅ — (1) Mojibake-Fix via PHP `mb_convert_encoding`-Paar auf 20/177 publish-Pages (Architekten-Pivot weg von statischer SQL-REPLACE-Kette nach Pre-Count-Befund "1/15 Muster getroffen"); Idempotenz bewiesen (Lauf 2 = 0 Changes), 0 Residuen, mysqldump-Rollback. (2) Trunk-ready Page-Inventar 189 Zeilen CSV (15 Spalten inkl. `trunk_candidate` + `cross_site_potential` + `image_count`) + MD mit Cluster-Summary. **Schlüssel-Erkenntnis: 134/189 = i18n-Dubletten → 55 deutsche kuratur-relevante Pages.** 13/13 AKs. 5 Lessons S2.3-D-LL-1…5. Theme unberührt (HEAD `ae9b1b8`, PXZ 2.7.13).** | Cortex-Web: **`f50110c`** (Spec) + **`2c6e881`** (Migration+Inventar+Evidenz+Self-Check, 8 Files inkl. mysqldump 1.5 MB) + **`6346b91`** (SESSION_RESUME). Nexus: 3 neue Patterns `wp-mojibake-mb-convert-fix.md` + `trunk-ready-page-inventory.md` + `mysql-utf8mb4-binary-rejection-proof.md` + Tutorial 16 + MEMORY-Update. |
+| **16** | **2026-04-20** | **Praxis-Sprint 2 / S2.3-D Phase 2** | **Content-Archive-Sicherungs-Pass ✅ — 189 Pages (177 publish + 4 draft + 8 private) als Markdown-Dateien mit YAML-Front-Matter + RAW-HTML-Body 1:1 in `_content-archive/` (Git-tracked). 3-way MD5-Integritätskette (Body-File ↔ Front-Matter-Hash ↔ DB-Hash) — Verifier 189/189 grün. Idempotenz bewiesen (Lauf 2 = 0 writes, 189 skipped). Dr.-Stracke-Leitprinzip „richtig und ohne Informationsverlust" architektonisch umgesetzt: Scope=alle 189 Pages, DB unberührt, Theme unberührt, Rollback trivial (`rm -rf _content-archive/`). 12/12 AKs. 5 Lessons S2.3-D-P2-LL-1…5. 2 Pattern-Kandidaten (`content-archive-pre-curation`, `yaml-front-matter-md5-contract`).** | Cortex-Web: **`661a4cd`** (Spec Phase 2) + **`d5051eb`** (Skript + verify-md5 + Archive 189 Files + README + CSV-Update + Self-Check, 194 Files, +14685/-190). Nexus-Pattern+Tutorial-Updates folgen im „Session beenden"-Workflow. |
 
 ---
 
-*Stand: 2026-04-20, Ende Session 15 (final — S2.3-D Phase 1 ✅). Fundament für Full-Content-Migration gelegt. Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Architekten-Tendenz: **A (Cluster `kern` 5 Pages)** oder **B (Cluster `checkups` 6 P0 mit Bridge-Potenzial)**.*
+*Stand: 2026-04-20, Ende Session 16 (final — S2.3-D Phase 2 ✅). Content-Migration-Fundament dreifach gesichert (Mojibake sauber, Inventar vollständig, Original-Archive im Git). Nächste Session: per „Projekt fortsetzen Cortex-Web" (LL-043) → Architekten-Tendenz: **Phase 3 Cluster-Kuration `kern`** (5 kuratur-relevante Pages, Datenschutz+Impressum blockiert bis Rechtsquelle) oder **Phase 3 Cluster `checkups`** (6 P0 mit Bridge-Potenzial zu Juvantis).*
