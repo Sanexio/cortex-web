@@ -33,22 +33,26 @@ Verbindung.
 
 ---
 
-## Aktueller Theme-Stand (Stand 2026-04-19 nach S2.3-B)
+## Aktueller Theme-Stand (Stand 2026-04-21 nach S2.3-kern)
 
 | Eintrag | Wert |
 |---------|------|
-| Commit-Hash | `ae9b1b8` (auf `dd1de0f` folgend) |
-| Commit-Message | `feat(s2.3-b-rev4 / Option A): universal page.php + site-wide nav via wp_body_open` |
-| PXZ_VERSION | `2.7.13` |
+| Commit-Hash | `058b062` (auf `15cf331` → `70d1b29` → `ae9b1b8` folgend) |
+| Commit-Message | `feat(s2.3-kern): populate sprechstunden page + aktuelles setting` |
+| PXZ_VERSION | `2.7.14` |
+| S2.3-kern-Bedeutung | Cluster `kern` Content-Migration: Kontakt auf `template-kontakt.php` mit Google-Maps + Parkplatz-Hinweisen + Formular-Fallback · Sprechstunden-Page neu (ID 9673) mit Sprechzeiten-Tabelle + offener Sprechstunde + Doctolib-CTA + bedingter Aktuelles-Sektion (WP-Option-editierbar) · `inc/practice-data.php` als Single-Source-of-Truth für Adressen/Sprechzeiten/Telefone/Doctolib-URL · Home MD5-Null-Delta bewiesen (normalisiert `?ver=`/`?v=`) · Karriere-Archive-MD5 MATCH, keine Änderung. Siehe `specs/sprint-2/evidence/2026-04-21_s2.3-kern_self-check.md` (12/13 AK grün, 1 partial).
 | Bedeutung | S2.3 Batch B Content — 3 P0-Seiten mit Echt-Content + theme-eigene SEO-Meta-Schicht. `inc/seo-data.php` + `inc/seo-meta.php` unterdrücken AIOSEO auf überschriebenen Seiten. `template-standard.php` dynamisiert aus `post_meta`. `standard.css` + `404.css` Finals (Tokens-only). 404.php erweitert um Search-Form + 3 Top-Links. 21/21 smoke-seo-Assertions grün. Home+Karriere 5/6 MD5-MATCH, 1/6 Delta (home_tablet768, dokumentiert S2.3-B-LL-1). |
 | Architektonische Verschiebung | Sprint-Reihenfolge: S2.2 ✅ → S2.0b ✅ → S2.0e ✅ → S2.0f ✅ → S2.3-B ✅ → S2.3-C + S2.3-G + S2.0d verbleiben |
 | Verify.sh-Stand | grün (§1–§4, alle Computed-Styles + 10/10 Alignment + Component-Probe) |
 | smoke-seo.sh-Stand | **21/21 grün** (title/meta/canonical/og/jsonld auf praxis+team+404) |
 | Letzte Dr.-Stracke-Freigabe | 2026-04-19 (S2.3-B-Spec freigegeben, Architekten-Entscheidungen F1…F7 delegiert, Content-Ton-Direktive: modern/Puls der Zeit/Rundumversorgung) |
 
-### Versionskette des Themes (Stand 2026-04-19, Ende S2.3-B)
+### Versionskette des Themes (Stand 2026-04-21, Ende S2.3-kern)
 
 ```
+058b062  feat(s2.3-kern): populate sprechstunden page + aktuelles setting (2.7.14)
+15cf331  feat(s2.3-kern): populate kontakt page (template + css + DB template switch)
+70d1b29  feat(s2.3-kern): extract practice-data SSoT from homepage-data (2.7.14)
 ae9b1b8  feat(s2.3-b-rev4 / Option A): universal page.php + site-wide nav via wp_body_open
 dd1de0f  feat(s2.3-b-rev3): Sanexio logo for /team/ brand switch
 e2bb7b1  feat(s2.3-b-rev2): unified site header via template-part + nav.css
