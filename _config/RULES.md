@@ -93,8 +93,71 @@ Vermischung = rechtliches Risiko (Abmahnung, steuerliche Einordnung, Berufsrecht
 
 ---
 
+## CW-006 — Gerichteter, expliziter Transfer (Cross-Site)
+
+**Regel:** Jeder Transfer zwischen den beiden Sites ist ein bewusst ausgelöster,
+gerichteter Befehl. Kein Auto-Sync, keine Webhooks, keine Zwei-Wege-Merges.
+Die Transfer-Richtung ist im Befehlsverb explizit enthalten (push/pull).
+
+**Warum:** Bidirektionaler Live-Sync hat drei teure Probleme: Konflikt-Auflösung,
+HWG-Verletzungsrisiko (CW-005), und Debugging-Aufwand bei Ghost-Writes. Explizit
+gerichtete Transfers sind vorhersagbar, auditierbar (Git-Historie), und
+rollback-fähig.
+
+**Wie anwenden:**
+- Verb im Befehl: `push` (Trunk→Site) oder `pull` (Site→Trunk)
+- Meta-Orchestrator: `tools/cw-transfer <verb> <target>:<type> <arg>`
+- Keine Automatisierung ohne Dr.-Stracke-Auslösung
+- Bei Bedarf: Cron/Hook nur für `pull` + Diff-Report, nie für automatisches `push`
+
+---
+
+## CW-007 — Trunk ist alleinige Brücke (Bridge-Pflicht)
+
+**Regel:** Zwischen WordPress und Shopify existiert NIEMALS ein direkter
+Datenfluss. Jeder Cross-Site-Transfer läuft Site → Trunk → Site, auch wenn
+dazwischen keine menschliche Kuration stattfindet.
+
+**Warum:**
+- Single Source of Truth für jeden Transfer (auditierbar)
+- Schema-Validation als Mittelstation (CW-002)
+- HWG-View-Overrides müssen explizit durchlaufen werden (CW-005)
+- Rollback-Point ist immer der Trunk-Commit
+
+**Wie anwenden:**
+- Keine Adapter-zu-Adapter-Aufrufe. Wenn ein Shopify-Inhalt zu WordPress soll:
+  1. `cw-transfer pull shopify:<type> <id>` → Proto-JSON
+  2. Kuration → `trunk/...`
+  3. `cw-transfer push wp:<type> <trunk-yaml>`
+- Direkte Shopify→WP-Extraktoren sind verboten, auch als "Bequemlichkeits-Shortcut"
+
+**Ausnahmen:** Keine.
+
+---
+
+## CW-008 — Backup vor destruktivem Push
+
+**Regel:** Jeder Push, der existierenden Site-Content überschreibt, legt VOR dem
+Write ein lokales Backup an. Ohne Backup: kein Write.
+
+**Warum:** Shopify/WordPress haben keine nativen Versions-History-APIs für
+Pages/Templates mit angemessener Granularität. Ein falsch gepushter Trunk-Build
+kann Wochen an Admin-Edits zerstören.
+
+**Wie anwenden:**
+- `adapters/<target>/.backups/<ISO-timestamp>_<asset-key-or-id>.<ext>`
+- Backup-Speicherort ist git-ignoriert (`.backups/` in `.gitignore`)
+- Im Adapter-Output-Summary: `backup_path` (null wenn create, Pfad wenn update)
+- Bereits implementiert: `adapters/shopify/template-to-shopify.mjs`
+- Zu erweitern (geplant): `pages-to-shopify.mjs`, WP-Page-Adapter
+
+**Anti-Pattern:**
+❌ „Ich setze `ALLOW_OVERWRITE=1` einfach — ist ja nur ein Test"
+✅ Backup automatisch, dann `ALLOW_OVERWRITE=1` als bewusstes Go
+
+---
+
 ## Weitere Regeln (wachsen beim POC)
 
-- CW-006+ werden bei Phasen 1/2 (POC) ergänzt, sobald die Adapter-Realität
-  weitere Pattern zeigt (z. B. Cache-Buster-Strategie, Adapter-Idempotenz,
-  Medien-Upload-Dedupe, o. ä.).
+- CW-009+ werden bei Phasen C2/D/F (Extraktion/Design/Funktion) ergänzt,
+  sobald die jeweilige Transfer-Realität weitere Patterns zeigt.
