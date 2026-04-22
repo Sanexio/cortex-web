@@ -39,10 +39,12 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.6.9` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Migration läuft · **S2.3-checkups ✅ (2026-04-22 Session 18) + Common-Trunk-Bridge Praxis ↔ Juvantis erstmals produktiv**
-- **Stand:** 2026-04-22, **Session 18 abgeschlossen** (Praxis-Sprint 2 / S2.3-checkups ✅ — 6 Pages Cluster checkups + Bridge `/basic-check/` aus Trunk gerendert, **12/12 AK = 100 %**)
-- **Working Tree:** Cortex-Web commits `606676f` (Spec) + `ebe9acf` (Migration + Evidence + Self-Check + Pointer); Theme HEAD `c7acaf7` (PXZ_VERSION **2.7.15**)
-- **NEUE PRIORITÄT 2026-04-22 (Dr.-Stracke-Direktive Session-18-Ende):** S2.4 Menü-Restrukturierung kommt **vor** weiteren Cluster-Migrationen (aerzte/services/diagnostik/legacy). Begründung: Inhalte müssen für Patienten via Menü auffindbar sein, sonst sind sie da, aber nicht entdeckbar. Aktuelles `wp_list_pages`-Fallback ist chaotisch.
+- **Version:** `0.6.10` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Migration läuft · **S2.4 Menü-Restrukturierung ✅ (2026-04-22 Session 19) — kuratierte Top-Nav + Mobile-Drawer + Check-Ups-Submenu live**
+- **Stand:** 2026-04-22, **Session 19 abgeschlossen** (Praxis-Sprint 2 / S2.4 ✅ — 7 Top-Items + Submenu `Check-Ups ▼` (5 Kinder) + Burger/Drawer, **12/12 AK = 100 %**, 0 tote Menü-Links nach R-5-Auflösung)
+- **Working Tree:** Cortex-Web commits `758aba1` (Spec FREIGEGEBEN) + `80e4f11` (Migration + Evidence + Self-Check + Pointer 2.7.16); Theme HEAD `e2336e2` (PXZ_VERSION **2.7.16**)
+- **Vorheriger Stand (Session 18):** S2.3-checkups ✅ mit Bridge-Roundtrip `/basic-check/` aus Trunk (`606676f`, `ebe9acf`, `20ae3a1`), Theme `c7acaf7` / PXZ 2.7.15.
+- **Dr.-Stracke-Kommentar zum Abschluss S2.4 (Session 19):** *„Das Design müssen wir anpassen, machen wir aber beim Feintuning"* → Design-Feintuning als eigener Arbeitspunkt festgehalten (siehe §4 P1-Neu).
+- **NEUE PRIORITÄT 2026-04-22 (Dr.-Stracke-Direktive Session-18-Ende) — umgesetzt:** S2.4 Menü steht. Nächster Block bleibt: nach jedem Content-Cluster wächst das Menü mit (Regel gilt weiterhin für Cluster `aerzte` / weitere).
 - **🔴 DR.-STRACKE-SCOPE-KORREKTUR (Ende Session 14):** Der **komplette Content-Umzug aller Prod-Seiten** ist Hauptziel von Sprint 2, nicht nur die 27 Kern-Seiten. Reihenfolge: **Content → Menü → Bilder → Design-Feinschliff**. Option A (Session 14) hat die Fundament-Schicht gelegt (178/178 Pages im branded Header + Content-Scope), nächste Sessions kuratieren Content pro Seite.
 - **Cortex-Web-Aufbau (Phase 0–5):** ✅ **vollständig**
 - **Trunk-Content:** unverändert, 1 Produkt (`basic-check.yaml`)
@@ -68,8 +70,9 @@
 | **Praxis-S2.3-D-P2** | **Content-Archive 189 Pages mit 3-way MD5-Kette (Sicherungs-Pass)** | **✅ 2026-04-20 Session 16** |
 | **Praxis-S2.3-kern** | **Cluster `kern`: Karriere + Kontakt + Sprechstunden + Home-Refactor SSoT** | **✅ 2026-04-21 Session 17** |
 | **Praxis-S2.3-checkups** | **Cluster `checkups`: 6 Pages + Bridge Praxis↔Juvantis erstmals produktiv (Adapter-Roundtrip CW-001)** | **✅ 2026-04-22 Session 18** |
+| **Praxis-S2.4** | **Menü-Restrukturierung: kuratierte Top-Nav + Check-Ups-Submenu + Mobile-Drawer + `/fachrichtungen/`-Stub** | **✅ 2026-04-22 Session 19** |
 
-**Cortex-Web-Aufbau damit abgeschlossen. Common-Trunk-Bridge funktional bewiesen.** Nächster Schritt: **S2.4 Menü-Restrukturierung** (NEU priorisiert), dann weiter mit Cluster `aerzte`/`services`/`diagnostik`/`legacy`.
+**Cortex-Web-Aufbau damit abgeschlossen. Common-Trunk-Bridge funktional bewiesen. Menü-Infrastruktur steht.** Nächster Schritt: **Cluster `aerzte`** (löst den entfernten `/aerzte/`-Menüpunkt wieder ein) oder **S2.4b Footer-Umbau** (Blocksy-Default ersetzen), dann weiter mit Cluster `services`/`diagnostik`/`legacy`.
 
 ---
 
@@ -112,7 +115,137 @@ Erwartet: `AK automatisch: 11/11 grün`, Exit 0.
 
 ---
 
-## §3 Letzte Session — Session 16, 2026-04-20 (Praxis-Sprint 2 / S2.3-D Phase 2)
+## §3 Letzte Session — Session 19, 2026-04-22 (Praxis-Sprint 2 / S2.4 Menü-Restrukturierung)
+
+### Ziel
+Kuratierte Top-Navigation + Mobile-Drawer statt hart codierter Home-Scroll-
+Anchor-Liste. Dr.-Stracke-Direktive Session-18-Ende: *„Sobald Inhalts-
+cluster fertig migriert sind, muss das Menü mitwachsen, bevor der nächste
+Cluster begonnen wird."* Aktuelles `wp_list_pages`-Fallback chaotisch.
+
+### Durchgeführt (Architekten-Modus 4 Phasen, Dr.-Stracke-Delegation „du kannst entscheiden")
+
+1. **Phase 1 Verständnis** — Ist-Analyse: `pxz_nav_list` hart codiert in
+   `inc/homepage-data.php:131` mit 5 Fragment-Anchors (`#service`, `#team`
+   etc.), auf Non-Home-Pages tot. Kein Mobile-Menü (display:none < 1100 px,
+   kein Burger). Blocksy-Footer rendert alphabetisches `wp_list_pages`-
+   Fallback. 7 Architektur-Fragen F1–F7 formuliert.
+
+2. **Phase 2 Lösungsdesign** — Spec `S2.4_menu-restructure.md` (348 Zeilen,
+   12 AK, 8 Risiken). Architekten-Entscheidungen: **F1b** PHP-Array
+   `inc/nav-data.php` (statt WP-Menu-API oder Trunk-YAML) · **F2b**
+   Desktop-Submenu-Hover pure-CSS · **F3a** Burger + Off-Canvas-Drawer +
+   `<details>`-Accordion · **F4b** Footer NICHT im Scope (→ S2.4b) ·
+   **F5a** Submenus nur wenn Kinder existieren (heute: nur `Check-Ups ▼`) ·
+   **F6a** `.is-active` + `aria-current` · **F7a** 1 Theme-Commit + PXZ
+   2.7.15 → 2.7.16. Commit A `758aba1` (Spec FREIGEGEBEN).
+
+3. **Phase 3 Umsetzung (T1–T12) mit R-5-Auflösung unterwegs:**
+   - **T1 Baseline:** Home-HTML-MD5 `92c007dc…` festgehalten. Pre-Check
+     13 geplanter Nav-URLs zeigt **10/13 OK, 2× 404 (`/fachrichtungen/`,
+     `/aerzte/`), 1× 301 (`/kontakt/` → `/contact-us/`)**.
+   - **R-5-Entscheidungen** live getroffen: `/aerzte/` aus Menü
+     entfernen (Cluster noch nicht migriert; `/team/` deckt Ärzte-Grid
+     seit S2.3-B ab); `/kontakt/` direkt auf `/contact-us/` (kein 301-
+     Roundtrip); `/fachrichtungen/` Stub-Page anlegen auf
+     `template-standard.php` mit ehrlichem „Detailseiten in Vorbereitung"-
+     Content. → **7 Top-Items statt 8** (ehrlich).
+   - **T2 `inc/nav-data.php` neu** — `pxz_nav_data()` (4 Sprachen:
+     DE/EN/FR/ES), `pxz_nav_primary()`, `pxz_nav_is_active()` mit
+     Trailing-Slash-Normalisierung.
+   - **T3 `template-parts/header-nav.php` Rewrite** — `pxz_render_nav_item()`
+     rendert flat / has-children / Submenu-Kinder, parallel Desktop-Hover-
+     Variante + Mobile-`<details>`-Accordion-Variante. Active-State via
+     `.is-active` + `.is-active-parent` + `aria-current="page"`. Burger-
+     Button + `<aside id="pxz-nav-drawer" role="dialog" aria-modal inert>` +
+     `<div class="pxz-nav-drawer-backdrop" hidden>`.
+   - **T4 `assets/css/nav.css` append (~220 Z.)** — Active-State-Block,
+     Desktop-Submenu-Block (hover + focus-within + Chevron-Rotation),
+     Burger-Block (mit `[aria-expanded="true"]`-Morph zu X), Drawer-Block
+     (transform + transition + scroll-lock), Accordion-Block (`<details>`-
+     Reset, Chevron), `.pxz-nav-list { display: none !important }` unter
+     1100 px (Drawer übernimmt), Reduced-Motion-Block.
+   - **T5 `assets/js/nav.js` neu (~95 Z. vanilla)** — Burger-Toggle mit
+     2-Frame-rAF-Muster für saubere Transition, Scroll-Lock-Klasse,
+     ESC-/Backdrop-/Close-Btn-Schließen, Submenu-Keyboard-Enhancement
+     (Space toggled `aria-expanded`), Sticky-Scroll-Shadow.
+   - **T6 `functions.php`** — `require_once PXZ_PATH . '/inc/nav-data.php'`
+     + `wp_enqueue_script( 'pxz-nav', ..., true )` (footer) + PXZ_VERSION
+     2.7.15 → 2.7.16.
+   - **T7 CHANGELOG** — `[2.7.16] — S2.4 Menü-Restrukturierung` mit
+     vollständigem Block.
+   - **Stub-Migration** `tools/migrations/2026-04-22_s2.4_fachrichtungen-stub.php`
+     ausgeführt: `/fachrichtungen/` (ID 9674) auf `template-standard.php`
+     mit WPML-DE-Eintrag (trid 1126). Warmup 2× HTTP 200.
+   - **T8 verify.sh** — §1 + §1b + §2 + §3 (54/54) + §3b + §4
+     (Alignment 10/10) alle grün, Exit 0.
+   - **T9 smoke-http.sh + Nav-URL-Matrix** — 5/5 smoke OK, **12/12 Nav-
+     URLs HTTP 200** (inkl. neu /fachrichtungen/-Stub).
+   - **HTML-Assertions** — pxz-nav-list ×1, pxz-nav-sub ×2
+     (Desktop+Drawer), Burger ×4 (1 Button + 3 Bars), Drawer ×1,
+     Backdrop ×1, nav.js ×1. Alle 7 Top-Labels + 5 Submenu-Kinder im
+     HTML. `/praxis/` → `is-active" aria-current="page"`. `/team/` → 1×
+     `logo-sanexio.svg` (Brand-Switch intakt). `/gesundheits-check-up/` →
+     Check-Ups `is-active-parent`. Alle grün.
+   - **T10 Puppeteer-Screenshots** bewusst übersprungen (Logik-Beweis
+     AK-11 ausreichend: `template-homepage.php` + `homepage-data.php`
+     nicht angefasst → Hero byte-identisch). Design-Feintuning fällt in
+     Folge-Session.
+   - **T11 Self-Check** `evidence/2026-04-22_s2.4_self-check.md` (12/12 AK,
+     5 LL, 0 FK) + Baseline `evidence/2026-04-22_s2.4_baseline.md`.
+   - **Theme-Commit `e2336e2`** (6 Files, +614 Z.).
+   - **Cortex-Web-Commit B `80e4f11`** (4 Files: Migration + Baseline +
+     Self-Check + THEME_POINTER 2.7.16).
+
+4. **Phase 4 Selbstprüfung** — 12/12 AK = 100 %. FK-Check 0/5 eingetreten.
+   R-5 (problematische URLs) wurde früh im Pre-Check erkannt und
+   architektonisch entschieden, nicht nachgelagert. Home-MD5-Delta
+   akzeptiert als gewollter Nav-Umbau (R-1).
+
+### Verifiziert
+
+| Check | Ergebnis |
+|---|:---:|
+| `verify.sh` §1 + §1b + §2 + §3 + §3b + §4 | VERIFY OK ✓ |
+| `smoke-http.sh` (5 URLs) | 5/5 HTTP 200 ✓ |
+| 12 Nav-URLs (curl-Matrix) | 12/12 HTTP 200 ✓ |
+| `validate.sh` (Cortex-Web) | OK ✓ |
+| Theme HEAD | `e2336e2` (PXZ 2.7.16) ✓ |
+| Working Trees (beide) | clean ✓ |
+| Brand-Switch `/team/` → Sanexio-Logo | 1× `logo-sanexio.svg` ✓ |
+| `.is-active` + `aria-current="page"` auf `/praxis/` | ✓ |
+| `.is-active-parent` auf Check-Ups bei Detail-Pages | ✓ |
+| Submenu 5 Kinder im HTML | 5/5 ✓ |
+| Self-Check AK | **12/12 = 100 %** ✓ |
+
+### Lessons Learned (5 neue Pattern-Kandidaten — S2.4-LL-1…5)
+
+- **S2.4-LL-1** `wp-nav-progressive-enhancement.md` — `<details>`-Accordion
+  + Drawer-HTML mit `inert` gibt funktionierende Grundstruktur ohne JS.
+  JS ist nur UX-Enhancement (Focus-Lock, ESC, Scroll-Lock).
+- **S2.4-LL-2** `nav-data-ssot.md` (entspricht `menu-scope-honest-entries.md`
+  teilweise) — PHP-Array als Nav-SSoT statt WP-Menu-API, wenn Git-
+  Trackbarkeit + Review-Pflicht wichtiger sind als Admin-UI.
+- **S2.4-LL-3** `nav-active-state-url-match.md` — `$_SERVER['REQUEST_URI']`-
+  Match + Trailing-Slash-Normalisierung funktioniert vor dem Main-Query,
+  das `is_page()` nicht tut.
+- **S2.4-LL-4** `menu-scope-honest-entries.md` — Pre-Check-HTTP-Matrix vor
+  Menü-Commit; 404/301 pro URL dokumentiert entschieden (Stub / Remove /
+  Umlenken). Keine toten Links.
+- **S2.4-LL-5** — „Menü wächst mit Content" als operationalisierte
+  Architektur-Regel: `/aerzte/` vorerst weg, bis Cluster migriert.
+
+### Drei neue Patterns + Tutorial 20
+
+- Pattern `menu-scope-honest-entries.md` (plattform-agnostisch)
+- Pattern `wp-nav-progressive-enhancement.md` (WP-spezifisch)
+- Pattern `nav-active-state-url-match.md` (WP-spezifisch)
+- Tutorial `20-navigation-restrukturierung-und-mobile-drawer.md` (didaktisch,
+  inkl. Progressive-Enhancement-Diskussion)
+
+---
+
+## §3-legacy-session16 (historisch) — Session 16, 2026-04-20 (Praxis-Sprint 2 / S2.3-D Phase 2)
 
 ### Ziel
 Content-Archive als Sicherungs-Schicht **vor** der Cluster-weisen Kuration. Dr.-Stracke-Leitprinzip wörtlich: *„Ich möchte es richtig und ohne Informationsverlust machen — du entscheidest."* Konsequente Interpretation: jede Page im aktuellen Local-WP-Stand bekommt eine unveränderliche Kopie im Git, bevor irgendeine Kurations-Entscheidung fällt.
@@ -733,20 +866,43 @@ Shopify-Theme-Klon, ohne Eingriff in Theme-Repo oder Live-Site.
 
 ## §4 Offene Tasks (Priorität absteigend)
 
-### P0 ⭐ NEU PRIORISIERT 2026-04-22 (Dr.-Stracke-Direktive Session 18 Ende): S2.4 Menü-Restrukturierung VOR weiteren Content-Clustern
+### P0 ✅ ABGESCHLOSSEN Session 19 (2026-04-22): S2.4 Menü-Restrukturierung
 
-**Neue Leitlinie ergänzend zur 2026-04-20-Direktive:** Sobald Inhaltscluster fertig migriert sind, muss das Menü mitwachsen, bevor der nächste Cluster begonnen wird. Sonst sind Inhalte vorhanden, aber für den Patienten unauffindbar. Das aktuelle `wp_list_pages`-Fallback (alphabetische Liste aller Pages) ist seit S2.3-checkups deutlich sichtbar im Footer als chaotische Auflistung — nicht patientenfreundlich.
+**Ergebnis:** Top-Menü kuratiert (7 Items + Submenu `Check-Ups ▼` mit 5
+Kindern), Mobile-Burger + Off-Canvas-Drawer mit Accordion, Active-State-
+Markierung. Stub-Page `/fachrichtungen/`. `/aerzte/` vorerst aus Menü
+(kommt mit Cluster zurück). PXZ_VERSION 2.7.16. 12/12 AK.
 
-- Pfad: `sites/praxis-webseite/`, neue Spec `specs/sprint-2/S2.4_menu-restructure.md` im Architekten-Modus.
-- Zielstruktur (aus S2.1-Inventar abgeleitet): **Praxis · Team · Fachrichtungen ▼ · Ärzte ▼ · Check-Ups ▼ (Submenu mit den 6 S2.3-checkups-Pages) · Sprechstunden · Kontakt · Karriere**
-- Submenu „Check-Ups" ist mit S2.3-checkups (Session 18) inhaltlich vollständig — alle 6 Pages live.
-- Submenu „Sprechstunden" + „Kontakt" sind mit S2.3-kern (Session 17) inhaltlich vollständig.
-- Submenu „Fachrichtungen" + „Ärzte" sind noch leer (kommen via S2.3-Rest).
-- Footer-Menü: Datenschutz/Impressum (blockiert) + Karriere + Kontakt + Sitemap.
-- Tablet-/Mobile-Burger statt `wp_list_pages`.
-- Cortex-Web-Trunk-Konzept für `nav.yaml` (Common-Trunk-Idee) als Architekten-Frage in der Spec.
+**Regel bleibt gültig:** Nach jedem abgeschlossenen Inhalts-Cluster wächst
+das Menü mit (Direktive „Menü wächst mit Content"). Gilt für `aerzte`,
+`services`, `diagnostik`, `legacy/de` etc.
 
-**Reihenfolge ab Session 19:** S2.4 (Menü) → Cluster `aerzte` (2) → Cluster `services` (4) → Cluster `diagnostik` (10) → Cluster `legacy/de` (23) → S2.3-A (blockiert) → S2.5 QA-Audit. **Nach jedem neuen Inhalts-Cluster: Menü mitwachsen lassen.**
+### P0 — nächste Fronten (Session 20 Kandidaten, absteigend)
+
+**P0a — Cluster `aerzte` (2 P0-Pages + Menü-Re-Insert `/aerzte/`)**
+- Pfad: `sites/praxis-webseite/`, neue Spec `specs/sprint-2/S2.3-C-aerzte.md`.
+- Archive-Referenzen `_content-archive/aerzte/de/` (2 Pages).
+- Nach Abschluss: `/aerzte/` zurück ins Menü (Edit `inc/nav-data.php`) +
+  optional Submenu `Ärzte ▼` wenn Einzel-Arztprofile mitkommen.
+- Architekten-Tendenz Session 20.
+
+**P0b — S2.4b Footer-Umbau**
+- Eigener `footer.php` im Child-Theme.
+- Kuratiertes Footer-Menü: `Impressum · Datenschutz · Karriere · Kontakt · Sitemap`.
+- Blocksy-Default-`wp_list_pages` ausblenden/ersetzen.
+- Optional kombinierbar mit Notfall-Hinweis-Block („116 117 / 112").
+- Einzige verbleibende Nav-Baustelle.
+
+### P1 — Design-Feintuning S2.4-Menü (Dr.-Stracke-Wunsch Session-19-Ende)
+
+**Zitat Dr. Stracke (2026-04-22, nach S2.4-Abschluss):** *„Das Design müssen wir anpassen, machen wir aber beim Feintuning."*
+
+- Visuelle Überarbeitung Submenu-Styling, Active-State-Optik, Drawer-Ästhetik, Mobile-Anmutung.
+- Kurze Mini-Spec + Screenshot-Review.
+- Kann jederzeit in Session 20+ adressiert werden, ggf. als eigener Mini-Sprint `S2.4-fine`.
+- **Nicht blockierend** — Menü funktioniert voll, nur Optik ist offen.
+
+### P0 — Praxis-Sprint 2: Full-Content-Migration (Dr.-Stracke-Direktive 2026-04-20)
 
 ### P0 — Praxis-Sprint 2: Full-Content-Migration (Dr.-Stracke-Direktive 2026-04-20)
 
@@ -848,7 +1004,39 @@ Items 14–16 aus §0 oben.
 
 ---
 
-## §6 Sofort-Status-Frage für nächste Session (Session 19)
+## §6 Sofort-Status-Frage für nächste Session (Session 20)
+
+> **„Praxis-Sprint 2 / S2.4 Menü-Restrukturierung ist ✅ abgeschlossen. Kuratiertes Top-Menü mit 7 Items (Praxis · Team · Fachrichtungen · Check-Ups ▼ · Sprechstunden · Kontakt · Karriere) + 5-Kinder-Submenu `Check-Ups ▼`. Mobile-Burger + Off-Canvas-Drawer mit `<details>`-Accordion (Progressive Enhancement). Active-State `.is-active` + `.is-active-parent` + `aria-current="page"`. `/aerzte/` bewusst aus Menü entfernt (kommt mit Cluster `aerzte` zurück), `/kontakt/` → direkt `/contact-us/` (kein 301), `/fachrichtungen/` Stub-Page angelegt (ID 9674). Brand-Switch `/team/` → Sanexio-Logo weiterhin funktional. Home-Hero visuell unverändert (Template + Daten unberührt). PXZ_VERSION 2.7.16. Theme-Commit `e2336e2`. Cortex-Web-Commits `758aba1` (Spec) + `80e4f11` (Migration+Evidence+Pointer). 12/12 AK grün. 3 neue Patterns + Tutorial 20.
+>
+> **Dr.-Stracke-Kommentar zum Abschluss:** *„Das Design müssen wir anpassen, machen wir aber beim Feintuning."* → Design-Feintuning Menü ist offener Arbeitspunkt, nicht blockierend.
+>
+> Welche Front?"**
+>
+> **A (Architekten-Tendenz).** **Cluster `aerzte`** (2 P0-Pages) — schließt direkt den entfernten `/aerzte/`-Menüpunkt wieder ein (Direktive „Menü wächst mit Content"). Archive-Referenzen unter `_content-archive/aerzte/de/`. Nach Abschluss: `/aerzte/` zurück ins Menü + Submenu `Ärzte ▼` optional (wenn Einzel-Profile mitkommen).
+>
+> **B.** **S2.4b Footer-Umbau** — Blocksy-Default-`wp_list_pages` ersetzen durch kuratiertes Footer-Menü (`Impressum · Datenschutz · Karriere · Kontakt · Sitemap`). Bewusst in S2.4 out-of-scope gehalten. Einzige offene Nav-Baustelle.
+>
+> **C.** **S2.4 Design-Feintuning** (Dr.-Stracke-Kommentar Session-19-Ende) — Visuell-stilistische Überarbeitung des neuen Menüs: Submenu-Styling, Active-State-Optik, Drawer-Ästhetik, Mobile-Anmutung. Kurze Mini-Spec + Screenshot-Review.
+>
+> **D.** **Cluster `services`** (4 P1-Pages) — sekundärer Patienten-Kontext.
+>
+> **E.** **Cluster `diagnostik`** (10 P1-Pages) — größerer Scope (~2 Sessions).
+>
+> **F.** **Cluster `legacy/de`** (23) — Triage (publizieren / löschen / redirecten).
+>
+> **G.** **Notfall-Hinweise im Footer** (kombinierbar mit B) — Theme-weiter Umbau mit „116 117 / 112 / Bereitschaftsdienst"-Block.
+>
+> **H.** **S2.3-A Datenschutz + Impressum** — **blockiert** durch Rechtsquelle.
+>
+> **I.** **Strukturhygiene** — SESSION_START.md-Legacy-Pfade, 5 Plugin-Phantom-Templates, AK-11 smoke-http-URL-Liste erweitern.
+>
+> **J.** **Andere konkrete Änderung** — Sie nennen."
+
+Keine Code-Änderung vor Ihrer Wahl. Architekten-Tendenz: **A (Cluster `aerzte`)** — schließt kleinsten offenen Menü-Kreis (`/aerzte/` zurück in Nav) und nutzt Cluster-Content-Momentum. Alternativ **C (Design-Feintuning Menü)** als Vorzug, wenn Dr. Stracke das neue Menü gleich in die finale Optik bringen möchte — Single-Session-Kandidat, ohne Content-Pflicht.
+
+---
+
+## §6-legacy-session19 (historisch, war §6 nach Session 18 vor Umsetzung S2.4)
 
 > **„Praxis-Sprint 2 / S2.3-checkups (Cluster `checkups` Content-Migration + Bridge zu Juvantis) ist ✅ abgeschlossen.
 > 6 Pages live auf Local-WP: Hub `/check-ups/` mit Card-Grid (NEU `template-checkup-hub.php`), 4 Detail-Pages auf `template-standard.php` mit Hero-Image und modernisiertem Content, Bridge `/basic-check/` (NEU `template-bridge-product.php`) wird vom WP-Adapter aus `trunk/content/products/bluttests/basic-check.yaml` (views.praxis) gerendert — **CW-001 Roundtrip-Beweis erneuert**, Common-Trunk-Bridge Praxis ↔ Juvantis erstmals produktiv. Cross-Brand-CTA-Helper (`pxz_cross_brand_cta`, registry-basiert, wiederverwendbar) angelegt. PXZ_VERSION 2.7.14 → 2.7.15. Theme-Commit `c7acaf7`. Cortex-Web-Commits `606676f`+`ebe9acf`. 12/12 AK grün. Home + Karriere unverändert (CSS-Audit + 0 neue Klassen).
@@ -1130,6 +1318,7 @@ alle Vorbedingungen stehen, Content-Momentum nutzen. Dieser Batch ist größer
 
 | Session | Datum | Phase | Ergebnis | Commits |
 |---------|-------|:-----:|----------|---------|
+| 19 | 2026-04-22 | 2/S2.4 | Menü-Restrukturierung ✅ · Top-Nav + Drawer + Submenu + Stub · 12/12 AK | Cortex-Web `758aba1` + `80e4f11`; Theme `e2336e2` |
 | 1 | 2026-04-18 | 0 | Skelett + Regeln + Nexus ✅ | `6178d2f`, `d9577cd` |
 | 2 | 2026-04-18 | 1 | POC WP-Adapter End-to-End ✅, Local-WP-Setup, Pattern + Tutorial | `778635c`, `19fd8ce` |
 | 3 | 2026-04-18 | 2 (Setup) | Shopify Custom App + Admin-API-Token ✅, OAuth-Catcher, Tutorial 05 | `48c4170` |

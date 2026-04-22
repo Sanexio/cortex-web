@@ -30,9 +30,22 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-22 Ende Session 18 nach S2.3-checkups)
+## §1 Stand & Version (gültig: 2026-04-22 Ende Session 19 nach S2.4)
 
-- **PXZ_VERSION:** **2.7.15** live auf Local by Flywheel (Cluster-Mini-02). Theme-HEAD `c7acaf7`. S2.3-checkups Cluster-`checkups`-Content-Migration abgeschlossen: 6 Pages.
+- **PXZ_VERSION:** **2.7.16** live auf Local by Flywheel (Cluster-Mini-02). Theme-HEAD `e2336e2`. S2.4 Menü-Restrukturierung abgeschlossen:
+  - **Top-Nav kuratiert:** 7 Items (Praxis · Team · Fachrichtungen · Check-Ups ▼ · Sprechstunden · Kontakt · Karriere) + Submenu `Check-Ups ▼` mit 5 Kindern (Gesundheits/Cardio/Angio/Tumor/Basic).
+  - **Mobile-Burger + Off-Canvas-Drawer** mit `<details>`-Accordion (Progressive Enhancement). Scroll-Lock, ESC-/Backdrop-Close, Focus-Management.
+  - **Active-State** `.is-active` + `.is-active-parent` + `aria-current="page"` auf aktueller Seite und Submenu-Parent bei Kind-Page.
+  - **Neue Daten-Quelle `inc/nav-data.php`** (F1b: PHP-Array, DE/EN/FR/ES) mit Helpers `pxz_nav_primary()` + `pxz_nav_is_active()`.
+  - **R-5-Auflösung:** `/aerzte/` aus Menü entfernt (Cluster nicht migriert, `/team/` deckt Ärzte-Grid); `/kontakt/` zeigt direkt auf `/contact-us/` (kein 301); `/fachrichtungen/` Stub-Page angelegt (ID 9674, `template-standard.php`) mit ehrlichem „Detailseiten in Vorbereitung"-Content.
+  - **Brand-Switch `/team/`** → Sanexio-Logo weiterhin funktional (DG §18.3).
+  - **Home-Hero** visuell unverändert (`template-homepage.php` + `homepage-data.php` nicht angefasst). Home-HTML-MD5-Delta gewollt wegen Nav-Umbau (dokumentiert R-1).
+  - **12/12 Nav-URLs HTTP 200** (keine toten Links).
+  - Theme-Commit `e2336e2`. Cortex-Web-Commits `758aba1` (Spec) + `80e4f11` (Migration + Evidence + Self-Check + Pointer 2.7.16).
+  - **12/12 AK = 100 %.** 5 Lessons S2.4-LL-1…5. 3 neue Patterns (`menu-scope-honest-entries`, `wp-nav-progressive-enhancement`, `nav-active-state-url-match`) + Tutorial 20 (`20-navigation-restrukturierung-und-mobile-drawer.md`).
+  - **Dr.-Stracke-Kommentar:** „Das Design müssen wir anpassen, machen wir aber beim Feintuning." → P1-Folgearbeit, nicht blockierend.
+
+**[Vorheriger Stand, historisch — Session 18]:** PXZ_VERSION 2.7.15 nach S2.3-checkups (Theme-HEAD `c7acaf7`). Cluster-`checkups`-Content-Migration abgeschlossen: 6 Pages.
   - `/check-ups/` NEU `template-checkup-hub.php` mit 5-Card-Grid (Hub).
   - `/gesundheits-check-up/` + `/cardio-check-up/` + `/angio-check-up/` auf `template-standard.php` mit Hero-Image + modernisiertem Content (Tippfehler raus, Großschreibung normalisiert, Doppeltext in Gesundheits-Check-Up durch Verlinkungen ersetzt).
   - `/tumorscreening/` auf `template-standard.php` (kein Hero).
