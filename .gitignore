@@ -36,3 +36,6 @@ _archive/
 # Transient Verify-Screenshots (neu generiert bei jedem verify.sh-Lauf).
 # Echte Evidenz-Screenshots gehören nach specs/*/evidence/, nicht ins Rolling-Archiv.
 sites/*/screenshots/claude/
+
+# CW-008 — Cross-site-transfer backups (local only)
+adapters/*/.backups/

@@ -1,0 +1,154 @@
+#!/usr/bin/env bun
+// Cortex-Web — Meta-Orchestrator für alle cross-site Transfers.
+// Dispatcht auf die bestehenden sync-*.sh / extract-*.mjs Tools und ergänzt
+// sie mit einer einheitlichen Verb-Grammatik.
+//
+// cross-site-transfer v1, 2026-04-22.
+//
+// Verbs:
+//   push <target>:<type> <trunk-yaml>    — Trunk -> Site
+//   pull <source>:<type> <identifier>    — Site -> Trunk (proto-JSON)
+//   diff <target>:<type> <trunk-yaml>    — Trunk vs. Site (read-only)
+//   list                                 — alle bekannten Transfers
+//   help                                 — dieses Dokument
+//
+// Target/Source: "shopify" | "wp"
+// Type: "page" | "template" | "product" | "theme-file"
+//
+// Examples:
+//   cw-transfer push shopify:template trunk/content/pages/_shared/ueber-uns.yaml
+//   cw-transfer push shopify:page     trunk/content/pages/_shared/ueber-uns.yaml
+//   cw-transfer pull shopify:page     uber-uns
+//   cw-transfer pull shopify:template page.uber-uns
+//   cw-transfer pull wp:page          team
+//   cw-transfer list
+
+import { spawnSync } from "node:child_process";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { RENDERER_REGISTRY as SHOPIFY_RENDERERS } from "../adapters/shopify/lib/renderer-registry.mjs";
+import { EXTRACTOR_REGISTRY as SHOPIFY_EXTRACTORS } from "../adapters/shopify/lib/extractor-registry.mjs";
+import { RENDERER_REGISTRY as WP_RENDERERS } from "../adapters/wordpress/lib/renderer-registry.mjs";
+import { EXTRACTOR_REGISTRY as WP_EXTRACTORS } from "../adapters/wordpress/lib/extractor-registry.mjs";
+
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+
+function die(code, msg) {
+  process.stderr.write(`cw-transfer: ${msg}\n`);
+  process.exit(code);
+}
+
+function printHelp() {
+  process.stdout.write(`cw-transfer — Cortex-Web cross-site transfer orchestrator
+
+Usage:
+  cw-transfer push <target>:<type> <trunk-yaml>
+  cw-transfer pull <source>:<type> <identifier>
+  cw-transfer diff <target>:<type> <trunk-yaml>
+  cw-transfer list
+  cw-transfer help
+
+Target/Source:
+  shopify    juvantis.myshopify.com (sanexio.eu)
+  wp         Local-WP Praxis-Webseite
+
+Type:
+  page       Simple content page (body_html)
+  template   Theme template with sections (pattern B)
+  product    Shopify product / WP partner product
+  theme-file Theme file via filesystem (planned)
+
+See specs/cross-site-transfer/PATTERNS.md for the 6 transfer patterns.
+`);
+}
+
+// --- dispatch tables ---
+
+// Push dispatch: maps <target>:<type> -> shell tool to invoke
+const PUSH_TOOLS = {
+  "shopify:page":     "tools/sync-page-shopify.sh",
+  "shopify:template": "tools/sync-template-shopify.sh",
+  "shopify:product":  "tools/sync-shopify.sh",
+  "wp:product":       "tools/sync-wp.sh"
+};
+
+// Pull dispatch: maps <source>:<type> -> extractor tool
+const PULL_TOOLS = {
+  "shopify:page":     "adapters/shopify/extract-page.mjs",
+  "shopify:template": "adapters/shopify/extract-template.mjs",
+  "wp:page":          "adapters/wordpress/extract-page.mjs"
+};
+
+function runShell(cmd, args) {
+  const res = spawnSync(cmd, args, { cwd: REPO_ROOT, stdio: "inherit" });
+  if (res.status !== 0) process.exit(res.status ?? 1);
+}
+
+function runStdoutCapture(cmd, args) {
+  const res = spawnSync(cmd, args, { cwd: REPO_ROOT, stdio: ["inherit", "inherit", "inherit"] });
+  if (res.status !== 0) process.exit(res.status ?? 1);
+}
+
+// --- verbs ---
+
+function cmdPush(spec, target) {
+  if (!target) die(1, `push: missing trunk-yaml argument`);
+  const tool = PUSH_TOOLS[spec];
+  if (!tool) die(1, `push: no tool registered for "${spec}" (try: cw-transfer list)`);
+  runShell("bash", [tool, target]);
+}
+
+function cmdPull(spec, identifier) {
+  if (!identifier) die(1, `pull: missing identifier argument`);
+  const tool = PULL_TOOLS[spec];
+  if (!tool) die(1, `pull: no extractor registered for "${spec}" (try: cw-transfer list)`);
+  runStdoutCapture("bun", [tool, identifier]);
+}
+
+function cmdDiff(spec, target) {
+  // Read-only diff: build the payload locally, then fetch the current site state,
+  // and show a minimal summary. Not yet implemented as a full diff tool —
+  // placeholder so the verb is registered.
+  process.stderr.write(`cw-transfer diff: not yet implemented. Planned: build ${spec} locally, fetch site state, emit diff.\n`);
+  process.exit(1);
+}
+
+function cmdList() {
+  const all = [
+    { section: "shopify / renderers (push)",   entries: SHOPIFY_RENDERERS },
+    { section: "shopify / extractors (pull)",  entries: SHOPIFY_EXTRACTORS },
+    { section: "wordpress / renderers (push)", entries: WP_RENDERERS },
+    { section: "wordpress / extractors (pull)", entries: WP_EXTRACTORS }
+  ];
+  for (const block of all) {
+    process.stdout.write(`\n== ${block.section} ==\n`);
+    const keys = Object.keys(block.entries);
+    if (keys.length === 0) { process.stdout.write("  (none)\n"); continue; }
+    for (const key of keys) {
+      const v = block.entries[key];
+      const status = v.status || "?";
+      process.stdout.write(`  [${status.padEnd(9)}] ${key}\n`);
+      if (v.tool)         process.stdout.write(`              tool   : ${v.tool}\n`);
+      if (v.source_shape) process.stdout.write(`              source : ${v.source_shape}\n`);
+      if (v.target_shape) process.stdout.write(`              target : ${v.target_shape}\n`);
+      if (v.input)        process.stdout.write(`              input  : ${v.input}\n`);
+      if (v.output)       process.stdout.write(`              output : ${v.output}\n`);
+    }
+  }
+  process.stdout.write("\nSee specs/cross-site-transfer/PATTERNS.md for context.\n");
+}
+
+// --- main ---
+
+const [, , verb, spec, arg] = process.argv;
+switch (verb) {
+  case "push": cmdPush(spec, arg); break;
+  case "pull": cmdPull(spec, arg); break;
+  case "diff": cmdDiff(spec, arg); break;
+  case "list": cmdList(); break;
+  case "help":
+  case undefined:
+  case "--help":
+  case "-h": printHelp(); break;
+  default: die(1, `unknown verb "${verb}" — try: cw-transfer help`);
+}
