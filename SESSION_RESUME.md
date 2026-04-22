@@ -39,9 +39,10 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.6.8` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Migration läuft · **S2.3-kern ✅ (2026-04-21 Session 17)**
-- **Stand:** 2026-04-21, **Session 17 abgeschlossen** (Praxis-Sprint 2 / S2.3-kern ✅ — 4 Pages Cluster kern umgezogen, 12/13 AK grün, 1 partial AK-11)
-- **Working Tree:** Cortex-Web commit `2000c03` (Spec + Self-Check + Evidenz + THEME_POINTER); Theme HEAD `058b062` (PXZ_VERSION 2.7.14, 3 S2.3-kern-Commits `70d1b29`+`15cf331`+`058b062`)
+- **Version:** `0.6.9` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Migration läuft · **S2.3-checkups ✅ (2026-04-22 Session 18) + Common-Trunk-Bridge Praxis ↔ Juvantis erstmals produktiv**
+- **Stand:** 2026-04-22, **Session 18 abgeschlossen** (Praxis-Sprint 2 / S2.3-checkups ✅ — 6 Pages Cluster checkups + Bridge `/basic-check/` aus Trunk gerendert, **12/12 AK = 100 %**)
+- **Working Tree:** Cortex-Web commits `606676f` (Spec) + `ebe9acf` (Migration + Evidence + Self-Check + Pointer); Theme HEAD `c7acaf7` (PXZ_VERSION **2.7.15**)
+- **NEUE PRIORITÄT 2026-04-22 (Dr.-Stracke-Direktive Session-18-Ende):** S2.4 Menü-Restrukturierung kommt **vor** weiteren Cluster-Migrationen (aerzte/services/diagnostik/legacy). Begründung: Inhalte müssen für Patienten via Menü auffindbar sein, sonst sind sie da, aber nicht entdeckbar. Aktuelles `wp_list_pages`-Fallback ist chaotisch.
 - **🔴 DR.-STRACKE-SCOPE-KORREKTUR (Ende Session 14):** Der **komplette Content-Umzug aller Prod-Seiten** ist Hauptziel von Sprint 2, nicht nur die 27 Kern-Seiten. Reihenfolge: **Content → Menü → Bilder → Design-Feinschliff**. Option A (Session 14) hat die Fundament-Schicht gelegt (178/178 Pages im branded Header + Content-Scope), nächste Sessions kuratieren Content pro Seite.
 - **Cortex-Web-Aufbau (Phase 0–5):** ✅ **vollständig**
 - **Trunk-Content:** unverändert, 1 Produkt (`basic-check.yaml`)
@@ -65,8 +66,10 @@
 | **Praxis-S2.3-B** | **3 P0-Pages mit Echt-Content + SEO-Layer + Unified Header + Brand-Switch** | **✅ 2026-04-19 Session 14** |
 | **Praxis-S2.3-D-P1** | **Mojibake-Fix + Trunk-ready Page-Inventar (Vorbereitungs-Pass)** | **✅ 2026-04-20 Session 15** |
 | **Praxis-S2.3-D-P2** | **Content-Archive 189 Pages mit 3-way MD5-Kette (Sicherungs-Pass)** | **✅ 2026-04-20 Session 16** |
+| **Praxis-S2.3-kern** | **Cluster `kern`: Karriere + Kontakt + Sprechstunden + Home-Refactor SSoT** | **✅ 2026-04-21 Session 17** |
+| **Praxis-S2.3-checkups** | **Cluster `checkups`: 6 Pages + Bridge Praxis↔Juvantis erstmals produktiv (Adapter-Roundtrip CW-001)** | **✅ 2026-04-22 Session 18** |
 
-**Cortex-Web-Aufbau damit abgeschlossen. Full-Content-Migration-Fundament gelegt** (Mojibake sauber, Inventar vollständig, Original-Archive im Git). Nächster Schritt: **Phase 3 Cluster-Kuration**, beginnend mit `kern` (5–7 Pages).
+**Cortex-Web-Aufbau damit abgeschlossen. Common-Trunk-Bridge funktional bewiesen.** Nächster Schritt: **S2.4 Menü-Restrukturierung** (NEU priorisiert), dann weiter mit Cluster `aerzte`/`services`/`diagnostik`/`legacy`.
 
 ---
 
@@ -730,9 +733,24 @@ Shopify-Theme-Klon, ohne Eingriff in Theme-Repo oder Live-Site.
 
 ## §4 Offene Tasks (Priorität absteigend)
 
+### P0 ⭐ NEU PRIORISIERT 2026-04-22 (Dr.-Stracke-Direktive Session 18 Ende): S2.4 Menü-Restrukturierung VOR weiteren Content-Clustern
+
+**Neue Leitlinie ergänzend zur 2026-04-20-Direktive:** Sobald Inhaltscluster fertig migriert sind, muss das Menü mitwachsen, bevor der nächste Cluster begonnen wird. Sonst sind Inhalte vorhanden, aber für den Patienten unauffindbar. Das aktuelle `wp_list_pages`-Fallback (alphabetische Liste aller Pages) ist seit S2.3-checkups deutlich sichtbar im Footer als chaotische Auflistung — nicht patientenfreundlich.
+
+- Pfad: `sites/praxis-webseite/`, neue Spec `specs/sprint-2/S2.4_menu-restructure.md` im Architekten-Modus.
+- Zielstruktur (aus S2.1-Inventar abgeleitet): **Praxis · Team · Fachrichtungen ▼ · Ärzte ▼ · Check-Ups ▼ (Submenu mit den 6 S2.3-checkups-Pages) · Sprechstunden · Kontakt · Karriere**
+- Submenu „Check-Ups" ist mit S2.3-checkups (Session 18) inhaltlich vollständig — alle 6 Pages live.
+- Submenu „Sprechstunden" + „Kontakt" sind mit S2.3-kern (Session 17) inhaltlich vollständig.
+- Submenu „Fachrichtungen" + „Ärzte" sind noch leer (kommen via S2.3-Rest).
+- Footer-Menü: Datenschutz/Impressum (blockiert) + Karriere + Kontakt + Sitemap.
+- Tablet-/Mobile-Burger statt `wp_list_pages`.
+- Cortex-Web-Trunk-Konzept für `nav.yaml` (Common-Trunk-Idee) als Architekten-Frage in der Spec.
+
+**Reihenfolge ab Session 19:** S2.4 (Menü) → Cluster `aerzte` (2) → Cluster `services` (4) → Cluster `diagnostik` (10) → Cluster `legacy/de` (23) → S2.3-A (blockiert) → S2.5 QA-Audit. **Nach jedem neuen Inhalts-Cluster: Menü mitwachsen lassen.**
+
 ### P0 — Praxis-Sprint 2: Full-Content-Migration (Dr.-Stracke-Direktive 2026-04-20)
 
-**Neue Leitlinie:** Jede Information der alten Prod-Seite muss auf der neuen Seite ankommen. Erst **Content** vollständig, dann **Menü** kuratieren, dann **Bilder**, dann **Design-Feinschliff** punktuell. Die ursprüngliche S2.1-Inventar-Liste (27 Kern-Seiten) ist **Teilmenge**, nicht Scope-Grenze.
+**Leitlinie:** Jede Information der alten Prod-Seite muss auf der neuen Seite ankommen. Erst **Content** vollständig, dann **Menü** kuratieren, dann **Bilder**, dann **Design-Feinschliff** punktuell. Die ursprüngliche S2.1-Inventar-Liste (27 Kern-Seiten) ist **Teilmenge**, nicht Scope-Grenze.
 
 **P0a — S2.3-D Content-Kuration pro Page (Hauptlinie, Mehr-Sessions)**
 - Pfad: `sites/praxis-webseite/`, neue Spec `specs/sprint-2/S2.3-D_content-curation.md` im Architekten-Modus.
@@ -830,7 +848,36 @@ Items 14–16 aus §0 oben.
 
 ---
 
-## §6 Sofort-Status-Frage für nächste Session (Session 18)
+## §6 Sofort-Status-Frage für nächste Session (Session 19)
+
+> **„Praxis-Sprint 2 / S2.3-checkups (Cluster `checkups` Content-Migration + Bridge zu Juvantis) ist ✅ abgeschlossen.
+> 6 Pages live auf Local-WP: Hub `/check-ups/` mit Card-Grid (NEU `template-checkup-hub.php`), 4 Detail-Pages auf `template-standard.php` mit Hero-Image und modernisiertem Content, Bridge `/basic-check/` (NEU `template-bridge-product.php`) wird vom WP-Adapter aus `trunk/content/products/bluttests/basic-check.yaml` (views.praxis) gerendert — **CW-001 Roundtrip-Beweis erneuert**, Common-Trunk-Bridge Praxis ↔ Juvantis erstmals produktiv. Cross-Brand-CTA-Helper (`pxz_cross_brand_cta`, registry-basiert, wiederverwendbar) angelegt. PXZ_VERSION 2.7.14 → 2.7.15. Theme-Commit `c7acaf7`. Cortex-Web-Commits `606676f`+`ebe9acf`. 12/12 AK grün. Home + Karriere unverändert (CSS-Audit + 0 neue Klassen).
+>
+> **NEUE PRIORITÄT (Dr.-Stracke-Direktive 2026-04-22 Session-18-Ende): S2.4 Menü-Restrukturierung VOR weiteren Content-Clustern.** Sobald ein Cluster fertig migriert ist, soll das Menü mitwachsen — sonst sind Inhalte vorhanden, aber für den Patienten unauffindbar (aktuelles `wp_list_pages`-Fallback ist chaotisch). Welche Front?"**
+>
+> **A (Architekten-Tendenz, Dr.-Stracke-Direktive).** **S2.4 Menü-Restrukturierung** — Neue Spec `specs/sprint-2/S2.4_menu-restructure.md`. Zielstruktur: Praxis · Team · Fachrichtungen ▼ · Ärzte ▼ · Check-Ups ▼ (Submenu mit den 6 S2.3-checkups-Pages) · Sprechstunden · Kontakt · Karriere. Tablet-/Mobile-Burger. WP-Menu-API oder optional Trunk-Konzept `nav.yaml`. Sichtbarer Nutzen sofort: alle bisherigen Inhalte (kern + checkups) werden entdeckbar.
+>
+> **B.** **Cluster `aerzte`** (2 P0-Pages) — schließt toten Link `/team/` → `/aerzte/`, baut Substanz für das spätere Submenu „Ärzte". Dr.-Stracke-Direktive sagt: erst nach S2.4.
+>
+> **C.** **Cluster `services`** (4 P1) — sekundärer Patienten-Kontext.
+>
+> **D.** **Cluster `diagnostik`** (10 P1) — medizinische Angebotsseiten, größerer Scope (~2 Sessions).
+>
+> **E.** **Cluster `legacy/de`** (23) — Triage (publizieren / löschen / redirecten).
+>
+> **F.** **Notfall-Hinweise im Footer** — Theme-weiter Footer-Umbau mit „116 117 / 112 / Bereitschaftsdienst"-Block.
+>
+> **G.** **S2.3-A Datenschutz + Impressum** — **blockiert** durch Rechtsquelle.
+>
+> **H.** **Strukturhygiene** — SESSION_START.md-Legacy-Pfade, 5 Plugin-Phantom-Templates, draft-Page `s2-0b-probe-9670` löschen, AK-11 smoke-http-URL-Liste erweitern.
+>
+> **I.** **Andere konkrete Änderung** — Sie nennen."
+
+Keine Code-Änderung vor Ihrer Wahl. Architekten-Tendenz: **A (S2.4 Menü)** — exakt nach Ihrer Direktive vom 2026-04-22 Session-18-Ende. Sichtbarer Patienten-Nutzen sofort.
+
+---
+
+## §6-legacy-session18 (historisch, vor S2.4-Direktive)
 
 > **„Praxis-Sprint 2 / S2.3-kern (Cluster `kern` Content-Migration) ist ✅
 > abgeschlossen. Vier Pages live: Karriere MD5-MATCH (keine Änderung),
@@ -843,7 +890,7 @@ Items 14–16 aus §0 oben.
 > URL-Liste zu erweitern). 3 neue Patterns (`practice-data-ssot`,
 > `md5-null-delta-version-normalization`, `wp-page-insert-settings-api`) +
 > Tutorial 18 (WordPress & CSS). Praxis+Team aus S2.3-B unverändert;
-> Datenschutz+Impressum bleiben blockiert. Welche Front?**
+> Datenschutz+Impressum bleiben blockiert. Welche Front?"**
 >
 > **A (Architekten-Tendenz).** **Cluster `checkups`** — 6 P0-Pages mit
 > Bridge-Potenzial zu Juvantis (alle haben `cross_site_potential =
