@@ -33,13 +33,14 @@ Verbindung.
 
 ---
 
-## Aktueller Theme-Stand (Stand 2026-04-22 nach S2.3-checkups)
+## Aktueller Theme-Stand (Stand 2026-04-22 nach S2.4)
 
 | Eintrag | Wert |
 |---------|------|
-| Commit-Hash | `c7acaf7` (auf `058b062` → `15cf331` → `70d1b29` → `ae9b1b8` folgend) |
-| Commit-Message | `feat(s2.3-checkups): cluster checkups + bridge zu Juvantis (PXZ_VERSION 2.7.15)` |
-| PXZ_VERSION | `2.7.15` |
+| Commit-Hash | `e2336e2` (auf `c7acaf7` → `058b062` → `15cf331` → `70d1b29` → `ae9b1b8` folgend) |
+| Commit-Message | `feat(s2.4): top-nav restructure + mobile drawer + Check-Ups submenu (PXZ_VERSION 2.7.16)` |
+| PXZ_VERSION | `2.7.16` |
+| S2.4-Bedeutung | Menü-Restrukturierung (Dr.-Stracke-Direktive 2026-04-22): kuratierte Top-Navigation mit 7 Items (Praxis · Team · Fachrichtungen · Check-Ups ▼ · Sprechstunden · Kontakt · Karriere) und 5-Kinder-Submenu `Check-Ups ▼`. Neue Daten-Quelle `inc/nav-data.php` (F1b: PHP-Array, 4 Sprachen). Mobile-Burger + Off-Canvas-Drawer + Accordion via `<details>` (Progressive Enhancement). Desktop-Submenu pure-CSS-Hover mit `:focus-within`. Active-State `.is-active` + `.is-active-parent` + `aria-current="page"`. `/aerzte/` aus Menü entfernt (Cluster noch nicht migriert — Direktive „Menü wächst mit Content"). `/kontakt/` → direkt `/contact-us/` (kein 301). Stub-Page `/fachrichtungen/` auf `template-standard.php` via Cortex-Web-Migration angelegt. Footer NICHT im Scope (→ S2.4b). Brand-Switch `/team/` → Sanexio-Logo weiterhin funktional. Home-Hero visuell unverändert (Template + homepage-data.php unberührt). 12/12 AK grün. Siehe `specs/sprint-2/evidence/2026-04-22_s2.4_self-check.md`. |
 | S2.3-checkups-Bedeutung | Cluster `checkups` Content-Migration (6 P0): Hub `/check-ups/` mit Card-Grid (NEU `template-checkup-hub.php`) · Detail-Pages Gesundheits/Cardio/Angio/Tumor auf `template-standard.php` mit Hero-Image + modernisiertem Content (Doppeltexte raus durch Verlinkung auf Detail-Pages) · Bridge `/basic-check/` (NEU `template-bridge-product.php`) → vom WP-Adapter aus `trunk/content/products/bluttests/basic-check.yaml` (views.praxis) gerendert, **CW-001 Roundtrip-Beweis erneuert**. NEU: `inc/cross-brand-cta.php` (`pxz_cross_brand_cta($partner,$product,$variant)` mit Registry, Card-/Inline-Variante) + `assets/css/cross-brand-cta.css`. 6 SEO-Funktionen in `inc/seo-data.php` (MedicalProcedure / MedicalClinic). 3 Detail-Pages verlinken auf `/basic-check/`, Bridge verlinkt auf sanexio.eu. HWG-konform. Home + Karriere unverändert (CSS-Audit + 0 neue Klassen). 12/12 AKs grün. Siehe `specs/sprint-2/evidence/2026-04-22_s2.3-checkups/self-check.md`. |
 | S2.3-kern-Bedeutung | Cluster `kern` Content-Migration: Kontakt auf `template-kontakt.php` mit Google-Maps + Parkplatz-Hinweisen + Formular-Fallback · Sprechstunden-Page neu (ID 9673) mit Sprechzeiten-Tabelle + offener Sprechstunde + Doctolib-CTA + bedingter Aktuelles-Sektion (WP-Option-editierbar) · `inc/practice-data.php` als Single-Source-of-Truth für Adressen/Sprechzeiten/Telefone/Doctolib-URL · Home MD5-Null-Delta bewiesen (normalisiert `?ver=`/`?v=`) · Karriere-Archive-MD5 MATCH, keine Änderung. Siehe `specs/sprint-2/evidence/2026-04-21_s2.3-kern_self-check.md` (12/13 AK grün, 1 partial).
 | Bedeutung | S2.3 Batch B Content — 3 P0-Seiten mit Echt-Content + theme-eigene SEO-Meta-Schicht. `inc/seo-data.php` + `inc/seo-meta.php` unterdrücken AIOSEO auf überschriebenen Seiten. `template-standard.php` dynamisiert aus `post_meta`. `standard.css` + `404.css` Finals (Tokens-only). 404.php erweitert um Search-Form + 3 Top-Links. 21/21 smoke-seo-Assertions grün. Home+Karriere 5/6 MD5-MATCH, 1/6 Delta (home_tablet768, dokumentiert S2.3-B-LL-1). |
@@ -48,9 +49,10 @@ Verbindung.
 | smoke-seo.sh-Stand | **21/21 grün** (title/meta/canonical/og/jsonld auf praxis+team+404) |
 | Letzte Dr.-Stracke-Freigabe | 2026-04-19 (S2.3-B-Spec freigegeben, Architekten-Entscheidungen F1…F7 delegiert, Content-Ton-Direktive: modern/Puls der Zeit/Rundumversorgung) |
 
-### Versionskette des Themes (Stand 2026-04-22, Ende S2.3-checkups)
+### Versionskette des Themes (Stand 2026-04-22, Ende S2.4)
 
 ```
+e2336e2  feat(s2.4): top-nav restructure + mobile drawer + Check-Ups submenu (PXZ_VERSION 2.7.16)
 c7acaf7  feat(s2.3-checkups): cluster checkups + bridge zu Juvantis (PXZ_VERSION 2.7.15)
 058b062  feat(s2.3-kern): populate sprechstunden page + aktuelles setting (2.7.14)
 15cf331  feat(s2.3-kern): populate kontakt page (template + css + DB template switch)
