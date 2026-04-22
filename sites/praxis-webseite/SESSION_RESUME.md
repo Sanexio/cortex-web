@@ -30,9 +30,22 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-21 Ende Session 17 nach S2.3-kern)
+## §1 Stand & Version (gültig: 2026-04-22 Ende Session 18 nach S2.3-checkups)
 
-- **PXZ_VERSION:** **2.7.14** live auf Local by Flywheel (Cluster-Mini-02). Theme-HEAD `058b062`. S2.3-kern Cluster-`kern`-Content-Migration abgeschlossen: 4 Pages umgezogen (Karriere MD5-MATCH/keine Änderung, Kontakt `/contact-us/` Template-Wechsel auf `template-kontakt.php` mit Google-Maps + Parkplatz-Hinweise + WPForms-Fallback, Sprechstunden `/sprechstunden/` NEU (ID 9673) mit Sprechzeiten + Doctolib-CTA + bedingter „Aktuelles"-Sektion via Settings-API, Home Refactor mit `inc/practice-data.php` als Single-Source-of-Truth in 4 Sprachen und MD5-Null-Delta `e3b79c0e8d2cdf73458dc4dc01930468` nach `?ver=`/`?v=`-Normalisierung bewiesen). 3 Theme-Commits `70d1b29` (practice-data SSoT) + `15cf331` (Kontakt) + `058b062` (Sprechstunden+Settings). Cortex-Web-Commit `2000c03`. 12/13 AK grün (1 partial AK-11 smoke-http-Liste zu erweitern). 3 neue Patterns + Tutorial 18. Datenschutz+Impressum weiter blockiert. Praxis+Team aus S2.3-B unverändert.
+- **PXZ_VERSION:** **2.7.15** live auf Local by Flywheel (Cluster-Mini-02). Theme-HEAD `c7acaf7`. S2.3-checkups Cluster-`checkups`-Content-Migration abgeschlossen: 6 Pages.
+  - `/check-ups/` NEU `template-checkup-hub.php` mit 5-Card-Grid (Hub).
+  - `/gesundheits-check-up/` + `/cardio-check-up/` + `/angio-check-up/` auf `template-standard.php` mit Hero-Image + modernisiertem Content (Tippfehler raus, Großschreibung normalisiert, Doppeltext in Gesundheits-Check-Up durch Verlinkungen ersetzt).
+  - `/tumorscreening/` auf `template-standard.php` (kein Hero).
+  - **`/basic-check/` NEU `template-bridge-product.php` — vom WP-Adapter aus `trunk/content/products/bluttests/basic-check.yaml` (views.praxis) gerendert. CW-001 Roundtrip-Beweis erneuert. Bridge Praxis ↔ Juvantis erstmals produktiv.**
+  - NEU: `inc/cross-brand-cta.php` (`pxz_cross_brand_cta`, registry-basiert, Card-/Inline-Variante).
+  - 6 SEO-Funktionen in `inc/seo-data.php` (MedicalProcedure / MedicalClinic). AIOSEO unterdrückt.
+  - 3 Detail-Pages verlinken auf `/basic-check/` als Selbstzahler-Alternative; Bridge verlinkt auf `sanexio.eu`.
+  - Theme-Commit `c7acaf7`. Cortex-Web-Commits `606676f` (Spec) + `ebe9acf` (Migration + Evidence + Self-Check + Pointer).
+  - **12/12 AK = 100 %.** Home + Karriere unverändert (CSS-Audit + 0 neue Klassen). 5 Lessons S2.3-checkups-LL-1…5.
+
+- **NEUE PRIORITÄT 2026-04-22 (Dr.-Stracke-Direktive Session-18-Ende):** S2.4 Menü-Restrukturierung kommt **vor** weiteren Cluster-Migrationen. Patient muss alle Inhalte über Menü erreichen können.
+
+**[Vorheriger Stand, historisch — Session 17]:** PXZ_VERSION 2.7.14 nach S2.3-kern (Theme-HEAD `058b062`). 4 Pages: Karriere MD5-MATCH, Kontakt-Template-Wechsel, Sprechstunden NEU (ID 9673), Home-Refactor mit `inc/practice-data.php` SSoT. Cortex-Web-Commit `2000c03`. 12/13 AK grün. 3 Patterns + Tutorial 18.
 
 **[Vorheriger Stand, historisch:]** PXZ_VERSION 2.7.8 nach S2.0f / Theme-HEAD `8f596f7`. Stand des Themes wie nach S2.0b: Schicht 3 (Components) per `assets/css/components.css` mit 6 Blöcken eingezogen, globaler Enqueue zwischen `praxiszentrum` und page-CSS, Home MD5-Null-Delta verifiziert, Karriere −9 px WCAG-Accessibility-Gewinn (dokumentiert). Theme-Commits: `08f40ff` (feat components) + `8f596f7` (refactor specificity-fix).
 - **S2.0f-Abschluss (Session 13):** Santapress-Plugin aus Local-WP entfernt (`wp_options.active_plugins` 26 → 25, Rewrite-Rules 13085 → 10979 Bytes, `wp_posts`-Count identisch vor/nach = 2860). Plugin archiviert in `_archive/santapress-2026-04-19/` mit Verfallsdatum **2026-05-19**. Neues Tool `tools/smoke-http.sh` (5 URLs × HTTP 200, 5xx-Fail-Regel). 6/6 AKs grün. Cortex-Web-Commits: `e036328` (Spec) + `a6cc6f3` (Tool+Evidenz+Self-Check) + `ced4e0a` (.gitignore-Hygiene).
@@ -111,20 +124,21 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 Praxis-Sub-Site-Einstieg läuft standardmäßig über Cortex-Web-Dach („Projekt fortsetzen Cortex-Web"). Die vollständige Status-Frage lebt in `projects/Cortex-Web/SESSION_RESUME.md §6`. Kurzfassung für Direkteinstieg:
 
-> „Sprint 2 / S2.0f Santapress-Plugin-Entfernung ist ✅ abgeschlossen — Plugin aus Local-WP entfernt, Rewrite-Rules regeneriert, keine Regression (verify.sh + smoke-http.sh grün), Archive bis 2026-05-19. Theme unberührt (HEAD `8f596f7`, PXZ_VERSION 2.7.8). 6/6 AKs, 5 Lessons. Welche Front?
+> „S2.3-checkups ist ✅ abgeschlossen — 6 Pages live (Cluster `checkups`), Bridge `/basic-check/` aus Trunk via WP-Adapter (CW-001 Roundtrip-Beweis erneuert), Cross-Brand-CTA-Helper, 12/12 AK = 100 %. Theme HEAD `c7acaf7`, PXZ_VERSION 2.7.15. Welche Front?
 >
-> A. **S2.3 Batch B — Praxis + Team + 404** (Hauptlinie, alle Vorbedingungen stehen, 3 P0-Seiten mit Echt-Content, neue Spec `specs/sprint-2/S2.3-B_praxis-team-404.md` im Architekten-Modus).
-> B. **S2.3 Batch C — Fachrichtungen-Landing + Ärzte-Übersicht** (2 P0, Card-Grid).
-> C. **S2.3 Batch G — Sprechstunden + Kontakt** (2 P0, Doctolib-Workaround).
-> D. **S2.0d Mini** — `kar`→`karriere`-Rename + Semantic-Token nachziehen + Legacy-Alias-Audit.
-> E. **S2.3 Batch A — Datenschutz + Impressum** — **blockiert** durch Rechtssicherheits-Quelle.
-> F. **Strukturhygiene-Block** — SESSION_START.md-Legacy-Pfade + 5 Plugin-Phantom-Templates aufräumen.
-> G. **Sprint 1 reanimieren** — SFTP-Credentials seit 2026-04-19 verfügbar, Design-first-Direktive gilt aber.
-> H. **Andere konkrete Änderung** — Sie nennen."
+> **A (Architekten-Tendenz, Dr.-Stracke-Direktive 2026-04-22).** **S2.4 Menü-Restrukturierung** — neue Spec `specs/sprint-2/S2.4_menu-restructure.md`. Zielstruktur: Praxis · Team · Fachrichtungen ▼ · Ärzte ▼ · Check-Ups ▼ · Sprechstunden · Kontakt · Karriere. Tablet-/Mobile-Burger.
+> B. **Cluster `aerzte`** (2 P0) — schließt toten Link `/team/` → `/aerzte/`. Empfohlen NACH S2.4.
+> C. **Cluster `services`** (4 P1) — sekundärer Patienten-Kontext.
+> D. **Cluster `diagnostik`** (10 P1) — größerer Scope (~2 Sessions).
+> E. **Cluster `legacy/de`** (23) — Triage.
+> F. **Notfall-Footer-Block** — Theme-weiter Umbau („116 117 / 112 / Bereitschaftsdienst").
+> G. **S2.3-A Datenschutz + Impressum** — **blockiert** durch Rechtsquelle.
+> H. **Strukturhygiene** — SESSION_START.md-Legacy-Pfade, Phantom-Templates, AK-11 smoke-http erweitern.
+> I. **Andere konkrete Änderung** — Sie nennen."
 
 Keine Code-Änderung vor expliziter Wahl.
 
-**Architekten-Tendenz:** A (S2.3 Batch B) — alle Vorbedingungen stehen (Skelette S2.2, Komponenten S2.0b, Verify-Hardening S2.0e, Plugin-Interferenz entfernt S2.0f). Content-Momentum aufbauen. Batch B ist ein Mehr-Session-Kandidat, deshalb sinnvollerweise mit frischem Chat beginnen.
+**Architekten-Tendenz:** A (S2.4 Menü) — exakt nach Dr.-Stracke-Direktive vom 2026-04-22 Session-18-Ende. Sichtbarer Patienten-Nutzen sofort: alle bisherigen Inhalte (kern + checkups) werden durch das kuratierte Menü entdeckbar. Aktuelles `wp_list_pages`-Fallback ist chaotisch.
 
 ---
 

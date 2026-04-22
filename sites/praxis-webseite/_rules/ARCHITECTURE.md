@@ -167,11 +167,12 @@ Detail: `specs/sprint-0/README.md` + `specs/sprint-0/OPEN_DECISIONS.md`.
 
 **Kontext:** Während Sprint 1 pausiert ist, wird auf Local weitergebaut — Design + Content der Kernseiten (Praxis, Team, Sprechstunden, Fachrichtungen, Kontakt, Datenschutz, Impressum, 404). Keine DF-Credentials nötig.
 
-- S2.0 Design-Token-SSoT nachziehen (ehem. S0.3) — **Vorbedingung**, damit neue Seiten nicht erneut Token redeklarieren
-- S2.1 Seiten-Inventar & Content-Audit (welche Seiten braucht die neue Site mindestens?)
-- S2.2 Template-Typologie (Standard-Textseite, Fachrichtung, Team-Einzelseite)
-- S2.3 Implementierung Kernseiten in Batches à 2–3 Seiten
-- S2.4 Menü „Hauptnavigation" befüllen (alter HANDOFF-Task 4)
+- S2.0 Design-Token-SSoT nachziehen (ehem. S0.3) — **Vorbedingung**, damit neue Seiten nicht erneut Token redeklarieren ✅
+- S2.1 Seiten-Inventar & Content-Audit (welche Seiten braucht die neue Site mindestens?) ✅
+- S2.2 Template-Typologie (Standard-Textseite, Fachrichtung, Team-Einzelseite) ✅
+- S2.3 Implementierung Kernseiten in Batches à 2–3 Seiten — **TEILWEISE** (B + D + kern + checkups ✅; aerzte/services/diagnostik/legacy offen)
+- **S2.4 Menü-Restrukturierung — `Hauptnavigation` mit kuratierten Submenus (Fachrichtungen, Ärzte, Check-Ups, Sprechstunden, Kontakt, Karriere). PRIORITÄT-NEU 2026-04-22 (Dr.-Stracke-Direktive Session 18 Ende): vor weiteren S2.3-Cluster-Migrationen umsetzen, damit ALLE bisherigen Inhalte (kern + checkups) sofort über das Menü erreichbar sind.**
+- S2.3 (Rest) Kernseiten-Cluster `aerzte` (2), `services` (4), `diagnostik` (10), `legacy/de` (23) — **NACH S2.4**, damit jede neue Seite sofort ihren Menü-Eintrag erhält
 - S2.5 QA-Audit gegen `DESIGN_GUIDELINES.md` §13–§16
 
 ### Sprint 2b — Legacy-Content-Migration (verschoben nach Sprint 4 oder separat)
