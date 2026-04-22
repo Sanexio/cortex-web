@@ -1,0 +1,15 @@
+id: dr-jawich
+slug: dr-jawich
+order: 5
+name: "Dr. Issa Jawich"
+role:
+  de: "Facharzt für Innere Medizin"
+languages: [de, en]
+intro:
+  de: |
+    Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.
+accent: ink
+image: null
+profile_urls:
+  praxis: /dr-jawich/
+  juvantis: null

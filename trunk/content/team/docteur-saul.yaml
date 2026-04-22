@@ -1,0 +1,23 @@
+id: docteur-saul
+slug: docteur-saul
+order: 2
+name: "Docteur en méd. Sonja Saul"
+role:
+  de: "Fachärztin für Innere Medizin"
+languages: [de, en, fr, es]
+intro:
+  de: |
+    Ausbildung in Deutschland, Frankreich und Belgien. Anamnese und Befundbesprechung in Deutsch, Englisch, Französisch und Spanisch – zuletzt leitende Oberärztin in Spanien.
+accent: amber
+image: null
+image_asset_juvantis: dr-saul.jpg
+qualifications:
+  - Allgemeinmedizin
+  - Ultraschalldiagnostik
+  - "Sprachen: DE/EN/FR/ES"
+bio:
+  de: |
+    Nach einer Kindheit zwischen Deutschland, Frankreich und Belgien, Abitur an der Europaschule in Brüssel mit anschließendem Medizinstudium an der Université Catholique de Louvain ist für Frau Docteur en méd. Saul eine Anamnese in Deutsch, Englisch, Französisch und Spanisch kein Problem. Zuletzt war sie als leitende Oberärztin in Spanien tätig.
+profile_urls:
+  praxis: /docteur-saul/
+  juvantis: null

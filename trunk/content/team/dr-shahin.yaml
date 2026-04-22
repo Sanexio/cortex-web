@@ -1,0 +1,15 @@
+id: dr-shahin
+slug: dr-shahin
+order: 6
+name: "Dr. George Shahin"
+role:
+  de: "Facharzt für Innere Medizin"
+languages: [de, en]
+intro:
+  de: |
+    Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.
+accent: ink
+image: null
+profile_urls:
+  praxis: /dr-shahin/
+  juvantis: null

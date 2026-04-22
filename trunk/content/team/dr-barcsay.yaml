@@ -1,0 +1,15 @@
+id: dr-barcsay
+slug: dr-barcsay
+order: 3
+name: "Dr. Fabian Barcsay"
+role:
+  de: "Facharzt für Innere Medizin"
+languages: [de, en]
+intro:
+  de: |
+    Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.
+accent: ink
+image: null
+profile_urls:
+  praxis: /dr-barcsay/
+  juvantis: null

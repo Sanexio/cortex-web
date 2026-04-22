@@ -9,7 +9,7 @@ set -euo pipefail
 
 CLIENT_ID="19fe6e2bd121da1592ac75d27b167e72"
 SHOP="juvantis.myshopify.com"
-SCOPES="read_products,write_products,read_files,write_files"
+SCOPES="read_products,write_products,read_files,write_files,read_content,write_content,read_themes,write_themes"
 REDIRECT_URI="http://localhost:53682/callback"
 STATE="cortexweb-$(date +%s)"
 

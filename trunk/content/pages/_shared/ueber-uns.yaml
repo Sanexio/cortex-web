@@ -1,0 +1,62 @@
+# Shared Page — Ärzte & Team
+# Quelle Erst-Extraktion: WP /team/ (Theme praxiszentrum, S2.3-B + S2.3-aerzte-services)
+# Ziel 1: Shopify sanexio.eu/pages/uber-uns (content-bridge-v1)
+# Ziel 2 (später): WP /team/ aus Trunk rendern (Folge-Spec)
+
+id: ueber-uns
+site: shared
+slugs:
+  praxis: team
+  juvantis: uber-uns
+title:
+  de: "Ärzte & Team"
+  en: "Doctors & Team"
+status_juvantis: draft
+
+sections:
+  - type: intro
+    heading:
+      de: "Unsere Praxisgemeinschaft"
+    body_md:
+      de: |
+        Acht Ärztinnen und Ärzte – unterschiedliche Schwerpunkte, ein gemeinsamer Anspruch: Medizin, die am Menschen denkt.
+
+        Die Praxisgemeinschaft Sanexio im Frankfurter Westend verbindet internistische Kompetenz mit modernen, digital unterstützten Abläufen. Von der Vorsorge über die umfassende Diagnostik bis zur langfristigen Begleitung chronischer Erkrankungen arbeiten wir mehrsprachig, persönlich und auf dem aktuellen Stand der Wissenschaft.
+
+  - type: team-grid
+    heading:
+      de: "Ihr Team"
+    members: all
+
+views:
+  juvantis:
+    # Rendert in Shopify-Theme-Section `juvantis-ueber-uns` (Apple-inspired Design).
+    # Kein HTML — nur Section-Settings + Block-Daten aus dem Trunk.
+    hero:
+      heading: "Die Menschen hinter Sanexio"
+      description: "Ärzte und Health-Tech-Experten aus Frankfurt mit einer Mission: Gesundheit verständlich und zugänglich machen — für jeden."
+    mission:
+      heading: "Unsere Mission"
+      text: "Wir glauben, dass jeder Mensch das Recht hat, seine eigene Gesundheit zu verstehen. Nicht in abstrakten Laborwerten, sondern visuell, motivierend und auf Augenhöhe. Sanexio verbindet ärztliche Expertise mit modernster Technologie — für eine Gesundheitsversorgung, die informiert statt verunsichert."
+    team:
+      heading: "Unser Ärzteteam"
+    history:
+      heading: "Von der Hausarztpraxis zum Digital Health Pioneer"
+      text: "Was als internistische Schwerpunktpraxis im Frankfurter Westend begann, hat sich zu einem Vorreiter für digitale Gesundheitsvorsorge entwickelt. Mit der Gründung der Sanexio GmbH und dem Juvantis-Projekt verbinden wir über 15 Jahre klinische Erfahrung mit der Vision eines Digital Health Twins — einem 3D-Avatar, der deine Gesundheit sichtbar macht."
+    values:
+      heading: "Unsere Werte"
+      items:
+        - title: "Evidenzbasiert"
+          text: "Jede Empfehlung basiert auf medizinischer Evidenz und deinen individuellen Daten."
+        - title: "Transparent"
+          text: "Keine versteckten Kosten, keine Überraschungen. Du siehst genau, was wir tun und warum."
+        - title: "Patientenzentriert"
+          text: "Deine Gesundheit, deine Daten, deine Entscheidungen. Wir beraten — du entscheidest."
+        - title: "Innovativ"
+          text: "Vom Digital Health Twin bis zur KI-Empfehlung: Wir nutzen Technologie, die einen echten Unterschied macht."
+    cta:
+      label: "Lerne uns kennen — buche deinen ersten Check-up"
+      link: "shopify://collections/alle-untersuchungen"
+    padding:
+      top: 0
+      bottom: 52

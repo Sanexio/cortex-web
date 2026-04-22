@@ -1,0 +1,15 @@
+id: dr-landeberg
+slug: dr-landeberg
+order: 7
+name: "Linne Landeberg"
+role:
+  de: "Ärztin"
+languages: [de, en]
+intro:
+  de: |
+    Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.
+accent: ink
+image: null
+profile_urls:
+  praxis: /dr-landeberg/
+  juvantis: null

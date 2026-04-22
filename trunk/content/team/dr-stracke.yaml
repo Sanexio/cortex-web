@@ -1,0 +1,25 @@
+# Source: inc/team-data.php (Theme praxiszentrum, S2.3-aerzte-services 2026-04-22)
+id: dr-stracke
+slug: dr-stracke
+order: 1
+name: "Dr. med. Siegbert Stracke, MBA"
+role:
+  de: "Facharzt für Innere Medizin · Praxisinhaber"
+languages: [de, en]
+intro:
+  de: |
+    Schwerpunkt Innere Medizin, Diabetologie und Ernährungsmedizin. Als Praxisinhaber verbindet er klinische Erfahrung mit modernen digitalen Prozessen – für Medizin, die nicht nur Symptome behandelt, sondern am Patienten denkt.
+accent: red
+image: null
+image_asset_juvantis: dr-stracke.jpg
+qualifications:
+  - Innere Medizin
+  - MBA Health Care Management
+  - Notfallmedizin
+  - CEO Sanexio GmbH
+bio:
+  de: |
+    Nach dem Studium der Humanmedizin beginnt Dr. Stracke 2005 seine klinische Weiterbildung am Universitätsklinikum Gießen. Nach Facharztbezeichnung Innere Medizin und Zusatzbezeichnung Notfallmedizin liegt sein Schwerpunkt in der kardiologischen Intensivmedizin. 2012 ergänzt er seine medizinische Expertise um einen MBA Health Care Management an der EBS. In der Überzeugung, dass das Gesundheitswesen neue Wege der Informationsorganisation braucht, gründet er die Sanexio GmbH.
+profile_urls:
+  praxis: /dr-stracke/
+  juvantis: null

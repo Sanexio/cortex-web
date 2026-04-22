@@ -1,0 +1,15 @@
+id: dr-arbitmann
+slug: dr-arbitmann
+order: 8
+name: "Anna Arbitmann"
+role:
+  de: "Ärztin"
+languages: [de, en]
+intro:
+  de: |
+    Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.
+accent: ink
+image: null
+profile_urls:
+  praxis: /dr-arbitmann/
+  juvantis: null
