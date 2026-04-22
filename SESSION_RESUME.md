@@ -39,10 +39,10 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.6.11` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Migration läuft · **S2.3-aerzte-services ✅ (2026-04-22 Session 20) — Block B1: 8 Arzt-Detail-Pages (Stracke voll + 7 Stub) + Services-Hub `/leistungen/` + Impf-Konsolidierung**
-- **Stand:** 2026-04-22, **Session 20 abgeschlossen** (Praxis-Sprint 2 / S2.3-aerzte-services ✅ — 8 Doctor Profiles mit „Weitere Ärzte"-Cross-Navigation, Brand-Switch site-konsistent auf 9 Sanexio-URIs, Menü-Label „Team" → „Ärzte", **12/12 AK = 100 %**, Migration idempotent)
-- **Working Tree:** Cortex-Web commits `5cfd012` (Spec FREIGEGEBEN) + `c88de56` (Migration + Evidence + Self-Check + Pointer 2.7.17); Theme HEAD `c090173` (PXZ_VERSION **2.7.17**)
-- **Vorheriger Stand (Session 19):** S2.4 Menü-Restrukturierung ✅ — kuratierte Top-Nav 7 Items + Check-Ups-Submenu + Mobile-Drawer + `/fachrichtungen/`-Stub. Theme `e2336e2` / PXZ 2.7.16. Cortex-Web `c993308`.
+- **Version:** `0.6.12` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Migration läuft · **S2.3-diagnostik ✅ (2026-04-22 Session 21) — Cluster Diagnostik: Hub + 4 Hauptkategorien + 3 Nested-Sono-Kinder, atlas als draft (R-7 DSGVO gated)**
+- **Stand:** 2026-04-22, **Session 21 abgeschlossen** (Praxis-Sprint 2 / S2.3-diagnostik ✅ — eigener Top-Nav-Bereich, `/diagnostik/` Hub + `/sonographie/` Sub-Hub mit 3 Nested-Kindern + 3 flache Details, Mojibake bereinigt, dichtes Cross-Link-Netz, **12/12 AK = 100 %**, Migration idempotent, In-Session-Bug-Fixes R-7-Gate + WP-Old-Slug-Redirect für Pages)
+- **Working Tree:** Cortex-Web commits folgen (Spec + Migration + Evidence + Self-Check + THEME_POINTER 2.7.18); Theme HEAD `25662ad` (PXZ_VERSION **2.7.18**)
+- **Vorheriger Stand (Session 20):** S2.3-aerzte-services ✅ — 8 Arzt-Detail-Pages (Stracke voll + 7 Stub) + Services-Hub `/leistungen/` + Impf-Konsolidierung. Theme `c090173` / PXZ 2.7.17. Cortex-Web `c88de56`.
 - **Dr.-Stracke-Constraint Session 20 (umgesetzt):** *„Bei den Ärzten müssen immer auch alle anderen Kollegen aus der Praxisgemeinschaft mitauftauchen. Platzhalter für Fotos und Content sind OK, aber alle Ärzte müssen wählbar sein."* → Doppelt umgesetzt: (a) `/team/`-Grid alle 8 klickbar, (b) auf jeder Detail-Page „Weitere Ärzte"-Sektion mit den 7 Kollegen.
 - **Dr.-Stracke-Kommentar offen (Session 19):** *„Das Design müssen wir anpassen, machen wir aber beim Feintuning"* → Design-Feintuning weiterhin offener Arbeitspunkt (S2.4 + S2.3-aerzte-services), siehe §4.
 - **Direktive „Menü wächst mit Content" (Session 18):** in Session 20 eingelöst durch Label-Swap „Team" → „Ärzte". Cluster `aerzte` ist jetzt erreichbar; weitere Cluster-Migrationen folgen.
@@ -73,8 +73,9 @@
 | **Praxis-S2.3-checkups** | **Cluster `checkups`: 6 Pages + Bridge Praxis↔Juvantis erstmals produktiv (Adapter-Roundtrip CW-001)** | **✅ 2026-04-22 Session 18** |
 | **Praxis-S2.4** | **Menü-Restrukturierung: kuratierte Top-Nav + Check-Ups-Submenu + Mobile-Drawer + `/fachrichtungen/`-Stub** | **✅ 2026-04-22 Session 19** |
 | **Praxis-S2.3-aerzte-services** | **Block B1: 8 Arzt-Detail-Pages (alle wählbar, mit Other-Doctors-Cross-Nav) + Services-Hub `/leistungen/` + Impf-Konsolidierung** | **✅ 2026-04-22 Session 20** |
+| **Praxis-S2.3-diagnostik** | **Cluster Diagnostik: Hub `/diagnostik/` + Sub-Hub `/sonographie/` mit 3 Nested-Kindern + 3 flache Details (Belastungs-EKG, Lungenfunktion, Labor); atlas auf draft gated (R-7 DSGVO); eigenes Top-Nav-Item + 4 Submenu-Kinder** | **✅ 2026-04-22 Session 21** |
 
-**Cortex-Web-Aufbau abgeschlossen. Common-Trunk-Bridge funktional bewiesen. Menü-Infrastruktur steht. Cluster aerzte+services migriert.** Nächster Schritt: **Cluster `diagnostik`** (10 P1, größter verbleibender Block — Architekten-Tendenz) oder **S2.4b Footer-Umbau** oder **Design-Feintuning** (Dr.-Stracke-Wunsch S19 + S20).
+**Cortex-Web-Aufbau abgeschlossen. Common-Trunk-Bridge funktional bewiesen. Menü-Infrastruktur steht. 6 von 7 Haupt-Clustern migriert (kern, checkups, aerzte, services, diagnostik ✅).** Verbleibender DE-Content: legacy/de (23 P2, größtenteils archivierbar). Parallele Fronten: S2.4b Footer-Umbau, Design-Feintuning (Dr.-Stracke-Wunsch S19+S20), Echt-Content Arzt-Stubs, R-7 DSGVO sono-atlas-Klärung.
 
 ---
 
@@ -113,7 +114,7 @@ cd ~/Cortex/projects/Cortex-Web && bash tools/review.sh
 ```
 Erwartet: `AK automatisch: 11/11 grün`, Exit 0.
 
-**Stand Ende Session 20:** validate ✅, verify.sh (Praxis) ✅, smoke-http.sh ✅ (5/5 HTTP 200), 11 Nav-URLs HTTP 200 (8 Arzt + /team/ + /leistungen/ + /impfungen/), 5 obsolete URLs HTTP 404 (rund-ums-impfen, corona-impfung, arzt-team, dr-siegbert-stracke-mba, internistische-…). Beide Repos clean. Theme HEAD `c090173` (PXZ 2.7.17). Cortex-Web-Commits dieser Session: `5cfd012` (Spec) + `c88de56` (Migration + Evidence + Self-Check + Pointer 2.7.17).
+**Stand Ende Session 21:** validate ✅, verify.sh (§1 + §3 Teil-Läufe grün — Full-Run hatte unrelated Puppeteer-Chrome-Hang), smoke-http.sh ✅ (5/5 HTTP 200), 7 neue Diagnostik-URLs HTTP 200 (diagnostik, sonographie + 2 nested, belastungs-ekg, lungenfunktion, labor), 4 alte Slugs → HTTP 301 (ultraschalldiagnostik, schilddruesen-sonographie, ultraschall-der-beingefaesse, labordiagnostik), 3 URLs HTTP 404 (sono-atlas-2, rund-ums-labor, sono-atlas). Beide Repos clean. Theme HEAD `25662ad` (PXZ 2.7.18). Migration Lauf 2 idempotent (0 Mutationen, 10 skipped). Cortex-Web-Commits folgen (Spec + Migration + Evidence + Self-Check + Pointer 2.7.18).
 
 ---
 
