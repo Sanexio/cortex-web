@@ -31,7 +31,15 @@ logs/
 # Archivierte Binär-Blobs (z. B. entfernte WP-Plugins in _archive/)
 # Metadaten zu Archiven gehören in specs/*/evidence/ bzw. in Self-Check-Dokumente,
 # nicht als vollständiger Ordner ins Git. README bleibt lokal im Archive-Ordner.
-_archive/
+# Root-_archive/: partial tracking (sessions + sanitizer-Text-Backups)
+# — klein, projekt-spezifisch, wiederherstellbar. LL-044 / Session 23 / Sanitizer V4.
+/_archive/*
+!/_archive/sessions/
+!/_archive/sessions/**
+!/_archive/sanitizer/
+!/_archive/sanitizer/**
+# Sub-Projekt-Archive (z. B. sites/praxis-webseite/_archive/santapress-*) bleiben ignoriert
+sites/*/_archive/
 
 # Transient Verify-Screenshots (neu generiert bei jedem verify.sh-Lauf).
 # Echte Evidenz-Screenshots gehören nach specs/*/evidence/, nicht ins Rolling-Archiv.
