@@ -39,16 +39,16 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.6.7` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Migration läuft · **S2.3-D Phase 2 ✅ (2026-04-20 Session 16)**
-- **Stand:** 2026-04-20, **Session 16 abgeschlossen** (Praxis-Sprint 2 / S2.3-D Phase 2 ✅ — Content-Archive 189 Pages + 3-way MD5-Integritätskette + 12/12 AKs)
-- **Working Tree:** Cortex-Web commits `661a4cd` (Spec Phase 2) + `d5051eb` (Skript+Archive+Evidenz, 194 Files); Theme unverändert HEAD `ae9b1b8`
+- **Version:** `0.6.8` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Migration läuft · **S2.3-kern ✅ (2026-04-21 Session 17)**
+- **Stand:** 2026-04-21, **Session 17 abgeschlossen** (Praxis-Sprint 2 / S2.3-kern ✅ — 4 Pages Cluster kern umgezogen, 12/13 AK grün, 1 partial AK-11)
+- **Working Tree:** Cortex-Web commit `2000c03` (Spec + Self-Check + Evidenz + THEME_POINTER); Theme HEAD `058b062` (PXZ_VERSION 2.7.14, 3 S2.3-kern-Commits `70d1b29`+`15cf331`+`058b062`)
 - **🔴 DR.-STRACKE-SCOPE-KORREKTUR (Ende Session 14):** Der **komplette Content-Umzug aller Prod-Seiten** ist Hauptziel von Sprint 2, nicht nur die 27 Kern-Seiten. Reihenfolge: **Content → Menü → Bilder → Design-Feinschliff**. Option A (Session 14) hat die Fundament-Schicht gelegt (178/178 Pages im branded Header + Content-Scope), nächste Sessions kuratieren Content pro Seite.
 - **Cortex-Web-Aufbau (Phase 0–5):** ✅ **vollständig**
 - **Trunk-Content:** unverändert, 1 Produkt (`basic-check.yaml`)
 - **WP-Adapter:** Phase 1, idempotent, HWG-konform, Review-geprüft
 - **Shopify-Adapter:** Phase 2, idempotent, draft-only, Review-geprüft
 - **Review-Pipeline:** Phase 3, 11/11 automatische AKs grün
-- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`ae9b1b8`** (**PXZ_VERSION 2.7.13**, Option A aktiv: 178/178 Pages branded). Design-Autorität: `DESIGN_GUIDELINES.md` v3.1 (§18 Content-Page-Typografie + Header-Branding + Logo-Marken-Zuordnung neu). Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅ + S2.0b ✅ + S2.0e ✅ + S2.0f ✅ + **S2.3-B ✅** (3 P0-Pages `/praxis/` + `/team/` + 404 live auf Local-WP mit Echt-Content, SEO-Optimierung, Unified Site-Header, URL-basierter Brand-Switch `/team/` → Praxisgemeinschaft Sanexio-Logo, alle anderen Seiten → Praxiszentrum-Roundel. smoke-seo 21/21 grün, Home MD5-Null-Delta 3/3, 4 neue Patterns, Tutorial 15). **S2.3 Content-Batches freigeschaltet:** C/G/0d verfügbar, A blockiert durch Rechtssicherheitsquelle.
+- **Praxis-Site:** `sites/praxis-webseite/`, Theme-Pointer auf Commit **`058b062`** (**PXZ_VERSION 2.7.14**, S2.3-kern Cluster kern Content-Migration: Kontakt + Sprechstunden neu, Home-Refactor mit Practice-Data-SSoT byte-pixelgleich). Design-Autorität: `DESIGN_GUIDELINES.md` v3.1 (§18 Content-Page-Typografie + Header-Branding + Logo-Marken-Zuordnung neu). Praxis-Sprint 2: S2.0 ✅ + S2.0c ✅ + S2.1 ✅ + S2.2 ✅ + S2.0b ✅ + S2.0e ✅ + S2.0f ✅ + **S2.3-B ✅** (3 P0-Pages `/praxis/` + `/team/` + 404 live auf Local-WP mit Echt-Content, SEO-Optimierung, Unified Site-Header, URL-basierter Brand-Switch `/team/` → Praxisgemeinschaft Sanexio-Logo, alle anderen Seiten → Praxiszentrum-Roundel. smoke-seo 21/21 grün, Home MD5-Null-Delta 3/3, 4 neue Patterns, Tutorial 15). **S2.3 Content-Batches freigeschaltet:** C/G/0d verfügbar, A blockiert durch Rechtssicherheitsquelle.
 - **Juvantis-Site:** `sites/juvantis-webseite/` (Docs-Schicht), Theme-Pointer auf Commit `1fbc35b` (GitHub-Remote `shopify-theme`)
 
 ### §1.1 Phasen-Status
@@ -830,7 +830,70 @@ Items 14–16 aus §0 oben.
 
 ---
 
-## §6 Sofort-Status-Frage für nächste Session (Session 17)
+## §6 Sofort-Status-Frage für nächste Session (Session 18)
+
+> **„Praxis-Sprint 2 / S2.3-kern (Cluster `kern` Content-Migration) ist ✅
+> abgeschlossen. Vier Pages live: Karriere MD5-MATCH (keine Änderung),
+> Kontakt `/contact-us/` auf neues Template + Google-Maps + Parkplatz-Hinweise,
+> Sprechstunden `/sprechstunden/` NEU mit Sprechzeiten + Doctolib-CTA +
+> editierbarem „Aktuelles"-Block (WP-Option), Home Refactor mit
+> `inc/practice-data.php` als Single-Source-of-Truth und MD5-Null-Delta
+> bewiesen. PXZ_VERSION 2.7.14, Theme-Commits `70d1b29`+`15cf331`+`058b062`,
+> Cortex-Web-Commit `2000c03`. 12/13 AK grün, 1 partial (AK-11 smoke-http-
+> URL-Liste zu erweitern). 3 neue Patterns (`practice-data-ssot`,
+> `md5-null-delta-version-normalization`, `wp-page-insert-settings-api`) +
+> Tutorial 18 (WordPress & CSS). Praxis+Team aus S2.3-B unverändert;
+> Datenschutz+Impressum bleiben blockiert. Welche Front?**
+>
+> **A (Architekten-Tendenz).** **Cluster `checkups`** — 6 P0-Pages mit
+> Bridge-Potenzial zu Juvantis (alle haben `cross_site_potential =
+> basic-check` o. ä.). Hier wird der Common-Trunk-Gedanke (Praxis ↔ Sanexio)
+> zum ersten Mal produktiv. Archive-Referenzen unter `_content-archive/checkups/de/`.
+>
+> **B.** **Cluster `aerzte`** — 2 P0-Pages für die Arzt-Übersicht/-Profile.
+> Löst den toten Link aus `/team/` auf `/aerzte/`.
+>
+> **C.** **Cluster `services`** — 4 P1-Pages, sekundärer Patienten-Kontext.
+>
+> **D.** **Cluster `diagnostik`** — 10 P1-Pages, medizinische Angebotsseiten.
+>
+> **E.** **Cluster `legacy/de`** — 23 Seiten, Triage (publizieren / löschen /
+> redirecten). Aufräum-Session.
+>
+> **F.** **Notfall-Hinweise im Footer** (Dr.-Stracke Q9 aus Session 17) —
+> Theme-weiter Footer-Umbau mit „116 117 / 112 / Bereitschaftsdienst"-Block.
+> Gilt für alle Pages, kein Cluster-spezifisch.
+>
+> **G.** **S2.4 Menü-Restrukturierung** — Neue Top-Nav mit Submenus
+> (Fachrichtungen, Ärzte, Check-Ups, Sprechstunden, Kontakt) aus Inventar-Clustern.
+> Sichtbarer Nutzen erst nach ≥ 2 Content-Clustern — jetzt 1 Cluster fertig.
+>
+> **H.** **Strukturhygiene** — SESSION_START.md-Legacy-Pfade, 5 Plugin-
+> Phantom-Templates, draft-Page `s2-0b-probe-9670` löschen, Legacy-Home 249
+> archivieren, AK-11 smoke-http-URL-Liste erweitern.
+>
+> **I.** **Folge-Aufgaben Kontakt/Sprechstunden durch Dr. Stracke erledigt?**
+> (a) WPForms-Formular angelegt + Marker `pxz_kontakt_form_v1` gesetzt?
+> (b) Google My Map mit 3 Markern angelegt + Share-Embed-URL? (c) Aktuelles-
+> Inhalt befüllt? → Falls ja: 1–3 kleine Template-Updates + Go-Live-Check.
+>
+> **J.** **S2.3-A Datenschutz + Impressum** — **blockiert** (Rechtsquelle
+> wählen: Anwalt / e-recht24 / Prod-Text). Sie nennen Entscheidung → starten.
+>
+> **K.** **Santapress-Archiv auflösen** — fällig ab 2026-05-19 (nicht jetzt).
+>
+> **L.** **Andere konkrete Änderung** — Sie nennen."
+
+Keine Code-Änderung vor Ihrer Wahl. Architekten-Tendenz: **A (Cluster `checkups`)** —
+strategischer Wert steigt sprunghaft, weil der Bridge-Pfad Praxis ↔ Juvantis
+zum ersten Mal produktiv wird. Alternativ **B (Cluster `aerzte`)** — schließt
+den letzten toten Link aus S2.3-B (`/aerzte/` aus `/team/`) und baut dem
+Menü-Restrukturierung (Option G) Substanz. Beides sind Single-Session-
+Kandidaten.
+
+---
+
+## §6-legacy-session17 (historisch, vor S2.3-kern)
 
 > **„Praxis-Sprint 2 / S2.3-D Phase 2 (Content-Archive 189 Pages + 3-way
 > MD5-Integritätskette) ist ✅ abgeschlossen. Alle 189 Pages liegen als
