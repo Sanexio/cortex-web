@@ -2,21 +2,101 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://cortex-web.local/schema/page.json",
   "title": "Page",
-  "description": "Platzhalter für Seiten-Schema. Wird in Phase 1 konkretisiert.",
+  "description": "Inhaltsseite (shared / praxis-only / juvantis-only). Konkretisiert in content-bridge-v1 (2026-04-22).",
   "type": "object",
-  "required": ["id", "slug", "site", "title"],
+  "required": ["id", "site", "slugs", "title", "sections"],
+  "additionalProperties": false,
   "properties": {
     "id": { "type": "string" },
-    "slug": { "type": "string" },
-    "site": { "enum": ["praxis", "juvantis", "shared"] },
+    "site": {
+      "type": "string",
+      "enum": ["praxis", "juvantis", "shared"]
+    },
+    "slugs": {
+      "type": "object",
+      "description": "Pro-Site-Slug. Bei site=shared sind beide sinnvoll.",
+      "additionalProperties": false,
+      "properties": {
+        "praxis": { "type": "string", "pattern": "^[a-z0-9/-]+$" },
+        "juvantis": { "type": "string", "pattern": "^[a-z0-9-]+$" }
+      }
+    },
     "title": {
       "type": "object",
       "required": ["de"],
+      "additionalProperties": false,
       "properties": {
         "de": { "type": "string" },
         "en": { "type": "string" },
         "fr": { "type": "string" },
         "es": { "type": "string" }
+      }
+    },
+    "status_juvantis": {
+      "type": "string",
+      "enum": ["draft", "active"],
+      "default": "draft"
+    },
+    "views": {
+      "type": "object",
+      "description": "Site-spezifische Settings (HWG-Trennung). Frei-Form pro View, Renderer prüft.",
+      "additionalProperties": true
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["type", "body_md"],
+            "additionalProperties": false,
+            "properties": {
+              "type": { "const": "intro" },
+              "heading": {
+                "type": "object",
+                "required": ["de"],
+                "properties": {
+                  "de": { "type": "string" },
+                  "en": { "type": "string" }
+                }
+              },
+              "body_md": {
+                "type": "object",
+                "required": ["de"],
+                "properties": {
+                  "de": { "type": "string" },
+                  "en": { "type": "string" }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["type", "members"],
+            "additionalProperties": false,
+            "properties": {
+              "type": { "const": "team-grid" },
+              "heading": {
+                "type": "object",
+                "properties": {
+                  "de": { "type": "string" },
+                  "en": { "type": "string" }
+                }
+              },
+              "members": {
+                "oneOf": [
+                  { "const": "all" },
+                  {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+                    "minItems": 1
+                  }
+                ]
+              }
+            }
+          }
+        ]
       }
     }
   }
