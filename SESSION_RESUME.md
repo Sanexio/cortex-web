@@ -146,21 +146,26 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ---
 
-## §3c Aktuelle Session — Session 23, 2026-04-22 (Cortex-Sanitizer V4 Retroaktiv-Kur)
+## §3c Aktuelle Session — Session 23, 2026-04-22 (Cortex-Sanitizer V4 + V5)
 
-- **Anlass:** SESSION_RESUME.md 123 KB + MEMORY.md 53 KB + Nexus/CLAUDE.md 41 KB → Pflicht-Init sprengt Read-Limit
-- **Spec:** `specs/cortex-sanitizer/SPEC.md` (10 Abschnitte, 12 AK, Retention-1)
-- **Retroaktiv umgesetzt:**
-  - 12 Legacy-Session-Blöcke (7, 9, 10, 11, 12, 13, 14, 15, 16, 19, 20, 22) nach `_archive/sessions/2026-04/` extrahiert
-  - SESSION_RESUME.md neu geschrieben (§0–§6 behalten, §3b/§3c kompakt, §7 Archiv-Index, Duplikat-§4 entfernt)
-  - MEMORY.md Aktive-Projekte-Zellen auf 3-Zeilen-Index verdichtet
-  - Nexus/CLAUDE.md Cortex-Web-Abschnitt komprimiert, Sprint-Logs → `Nexus/_archive/claude-md/2026-04.md`
-- **Neu:**
-  - `Nexus/tools/cortex-sanitizer/rotate.sh` (Bash, idempotent, dry-run-fähig)
-  - `Nexus/_rules/GLOBAL_RULES.md` §21 LL-044 Token-Budgets
-  - `Nexus/_rules/SESSION_LIFECYCLE.md` §2 Schritt 3b Sanitizer-Probe
-- **Ziel-Metrik (AK-11):** Pflicht-Init unter 50 k Tokens (vorher ~120 k)
-- **Voller Session-Log:** wird bei Session-Ende angelegt
+**V4 Retroaktiv-Kur** (Spec `specs/cortex-sanitizer/SPEC.md`):
+- 12 Legacy-Session-Blöcke (7, 9-16, 19, 20, 22) → `_archive/sessions/2026-04/`
+- SESSION_RESUME 123 KB → 15 KB (88 %), MEMORY 53 KB → 14 KB (73 %), Nexus/CLAUDE 41 KB → 26 KB (38 %)
+- Nexus/CLAUDE Sprint-Logs → `Nexus/_archive/claude-md/2026-04.md`
+- LL-044 in `GLOBAL_RULES.md §21` + Sanitizer-Probe in `SESSION_LIFECYCLE.md §2 Schritt 3b`
+- Commits: Cortex-Web `03887b8` · Nexus `1440df9` + `652fc9b` + `076a018`
+
+**V5 Selbstlernend + Auto-Apply** (Spec `specs/cortex-sanitizer/SPEC-V5.md`):
+- 3 Probes: `growth-log.sh` (JSONL-Trend), `redundancy-scan.sh` (Paragraphen-Duplikate), `stale-ref-scan.sh` (tote Pfad-Links)
+- `actions/rotate-session-resume.sh` — echter Auto-Apply für §3-legacy-Rotation
+- `rotate.sh` erweitert: `--learn` + echter `--apply`
+- `SESSION_LIFECYCLE §2 Schritt 3b` erweitert: bei Hard-Warn auto `--apply` + immer `--learn` + Dashboard-Integration (✅/🔧/🔴 + Learn-Befunde)
+- Initial-Run: 0 Duplikate (sauber nach V4), 80 stale-refs (meist Platzhalter — V6-Polish)
+- Pattern: `Nexus/_memory/patterns/self-regulating-token-budget.md`
+- Tutorial: `Second Brain/30 Tutorials/Arbeitsweise & Prozess/02-selbstregulierende-memory-systeme.md`
+- Commits: Cortex-Web `ecde8de` · Nexus `52e77be` + `132f3b0`
+
+**Ziel-Metrik erreicht:** Pflicht-Init Summe ~20 k Tokens (vorher ~120 k) — weit unter 50 k Ziel.
 
 ---
 
