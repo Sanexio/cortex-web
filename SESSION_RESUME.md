@@ -39,8 +39,9 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.6.12` — Cortex-Web-Aufbau (Phase 0–5) ✅ · Praxis-Content-Migration läuft · **S2.3-diagnostik ✅ (2026-04-22 Session 21) — Cluster Diagnostik: Hub + 4 Hauptkategorien + 3 Nested-Sono-Kinder, atlas als draft (R-7 DSGVO gated)**
-- **Stand:** 2026-04-22, **Session 21 abgeschlossen** (Praxis-Sprint 2 / S2.3-diagnostik ✅ — eigener Top-Nav-Bereich, `/diagnostik/` Hub + `/sonographie/` Sub-Hub mit 3 Nested-Kindern + 3 flache Details, Mojibake bereinigt, dichtes Cross-Link-Netz, **12/12 AK = 100 %**, Migration idempotent, In-Session-Bug-Fixes R-7-Gate + WP-Old-Slug-Redirect für Pages)
+- **Version:** `0.7.0` — Cortex-Web-Aufbau (Phase 0–5) ✅ · **content-bridge-v1 + cross-site-transfer-Architektur produktiv (2026-04-22 Session 22)** — sanexio.eu/pages/uber-uns aus Trunk gerendert, Template-Bridge-Goldstandard, 3 Extraktions-Skelette, cw-transfer Meta-Orchestrator, CW-006/007/008 kodifiziert
+- **Stand:** 2026-04-22, **Session 22 abgeschlossen** (Cortex-Web / content-bridge-v1 + cross-site-transfer — Shopify-Page+Template-Adapter produktiv, Trunk-Content für Team + Ueber-Uns + Ärzte migriert, Architektur für bidirektionalen expliziten Transfer vorbereitet, **24/24 AKs über beide Self-Checks = 100 %**, 3 Pattern-Kandidaten in Nexus, 1 Tutorial, Page sanexio.eu/pages/uber-uns veröffentlicht)
+- **Vorvorige Session:** 2026-04-22 Session 21 (Praxis-Sprint 2 / S2.3-diagnostik ✅ — Cluster Diagnostik: Hub + 4 Hauptkategorien + 3 Nested-Sono-Kinder, atlas als draft R-7 DSGVO gated)
 - **Working Tree:** Cortex-Web commits folgen (Spec + Migration + Evidence + Self-Check + THEME_POINTER 2.7.18); Theme HEAD `25662ad` (PXZ_VERSION **2.7.18**)
 - **Vorheriger Stand (Session 20):** S2.3-aerzte-services ✅ — 8 Arzt-Detail-Pages (Stracke voll + 7 Stub) + Services-Hub `/leistungen/` + Impf-Konsolidierung. Theme `c090173` / PXZ 2.7.17. Cortex-Web `c88de56`.
 - **Dr.-Stracke-Constraint Session 20 (umgesetzt):** *„Bei den Ärzten müssen immer auch alle anderen Kollegen aus der Praxisgemeinschaft mitauftauchen. Platzhalter für Fotos und Content sind OK, aber alle Ärzte müssen wählbar sein."* → Doppelt umgesetzt: (a) `/team/`-Grid alle 8 klickbar, (b) auf jeder Detail-Page „Weitere Ärzte"-Sektion mit den 7 Kollegen.
@@ -74,6 +75,8 @@
 | **Praxis-S2.4** | **Menü-Restrukturierung: kuratierte Top-Nav + Check-Ups-Submenu + Mobile-Drawer + `/fachrichtungen/`-Stub** | **✅ 2026-04-22 Session 19** |
 | **Praxis-S2.3-aerzte-services** | **Block B1: 8 Arzt-Detail-Pages (alle wählbar, mit Other-Doctors-Cross-Nav) + Services-Hub `/leistungen/` + Impf-Konsolidierung** | **✅ 2026-04-22 Session 20** |
 | **Praxis-S2.3-diagnostik** | **Cluster Diagnostik: Hub `/diagnostik/` + Sub-Hub `/sonographie/` mit 3 Nested-Kindern + 3 flache Details (Belastungs-EKG, Lungenfunktion, Labor); atlas auf draft gated (R-7 DSGVO); eigenes Top-Nav-Item + 4 Submenu-Kinder** | **✅ 2026-04-22 Session 21** |
+| **Cortex-Web content-bridge-v1** | **Trunk-basierte Content-Übertragung Pattern A + Pattern B (Template-Bridge Goldstandard). 8 Ärzte + Intro + Hero + Mission + History + Values + CTA aus Trunk nach sanexio.eu/pages/uber-uns live. Shopify-Page-Adapter + Shopify-Template-Adapter produktiv.** | **✅ 2026-04-22 Session 22** |
+| **Cortex-Web cross-site-transfer-Architektur** | **ARCHITECTURE.md + PATTERNS.md (6 Patterns A–F) + 4 Registries + cw-transfer Meta-Orchestrator + 3 Extraktions-Skelette + CW-006/007/008 Projekt-Rules. Bidirektionale explizite Transfers vorbereitet, Trunk alleinige Brücke.** | **✅ 2026-04-22 Session 22** |
 
 **Cortex-Web-Aufbau abgeschlossen. Common-Trunk-Bridge funktional bewiesen. Menü-Infrastruktur steht. 6 von 7 Haupt-Clustern migriert (kern, checkups, aerzte, services, diagnostik ✅).** Verbleibender DE-Content: legacy/de (23 P2, größtenteils archivierbar). Parallele Fronten: S2.4b Footer-Umbau, Design-Feintuning (Dr.-Stracke-Wunsch S19+S20), Echt-Content Arzt-Stubs, R-7 DSGVO sono-atlas-Klärung.
 
@@ -118,7 +121,130 @@ Erwartet: `AK automatisch: 11/11 grün`, Exit 0.
 
 ---
 
-## §3 Letzte Session — Session 20, 2026-04-22 (Praxis-Sprint 2 / S2.3-aerzte-services Block B1)
+## §3 Letzte Session — Session 21, 2026-04-22 (Praxis-Sprint 2 / S2.3-diagnostik)
+
+### Ziel
+
+Cluster `diagnostik` inhaltlich kuratiert live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼` zwischen Check-Ups und Sprechstunden. Hub `/diagnostik/` + Sub-Hub `/sonographie/` mit 3 Nested-Kindern (Schilddrüse, Beingefäße, Atlas) + 3 flache Detail-Pages (Belastungs-EKG, Lungenfunktion, Labor). Labor-Konsolidierung (296 + 475). 301-Redirects für alle alten Slugs. atlas DSGVO-gated auf `draft`.
+
+### Durchgeführt (Architekten-Modus 4 Phasen, Dr.-Stracke-Delegation „entscheid so wie es am besten ist")
+
+1. **Phase 1 Verständnis** — Content-Archive sichtet (10 Pages, 1 Cluster-Missmatch `contact-us-192`, 1 Shell-Dublette `sono-atlas-4297`). 6 Architektur-Fragen (F1–F6) formuliert + delegiert.
+2. **Phase 2 Lösungsdesign** — Spec `S2.3-diagnostik.md` FREIGEGEBEN mit Dr. Stracke-Wahl F1a/F2a/F3b/F4c+A-2/F5a+C-3/F6a/D-2, R-7 = c (atlas draft, Architekten-Entscheidung).
+3. **Phase 3 Umsetzung (T1–T16, 2 In-Session-Bug-Fixes):**
+   - **T1** Baseline (MD5 5 Pages + mysqldump-pre 1,5 MB Rollback)
+   - **T2** `inc/diagnostik-data.php` NEU — SSoT: `pxz_diagnostik_categories()` · `pxz_diagnostik_sono_children()` (mit Draft-Filter via `get_page_by_path`) · `pxz_is_diagnostik_uri()` · `pxz_diagnostik_all_slugs()`
+   - **T3** `template-diagnostik-hub.php` NEU (Dual-Mode: Top-Hub + Sub-Hub) + `assets/css/diagnostik-hub.css` NEU (tokens-only, 4-Card-Grid Responsive)
+   - **T4** `inc/seo-data.php` erweitert — 8 neue Funktionen (MedicalWebPage für Hub, MedicalProcedure/DiagnosticProcedure für 6 Details, MedicalTest für Labor, ImageGallery für atlas)
+   - **T5** `inc/nav-data.php` erweitert — neues Top-Item `Diagnostik ▼` an Position 5 (DE/EN/FR/ES) + neues optionales `match_prefix`-Feld + Helper `pxz_nav_matches_prefix()` für Nested-URI-Active-State
+   - **T6** `functions.php` — PXZ_VERSION 2.7.17→2.7.18 · require_once diagnostik-data.php · Template-Register · Enqueue `pxz-diagnostik-hub` · **NEU `pxz_old_slug_fallback_redirect()`** auf priority 5 (WP-Core-Redirect für Pages buggy) + CHANGELOG
+   - **T7** Migration-Script 2026-04-22_s2.3-diagnostik_pages.php (11 Schritte, idempotent, R-7-Gate via INCLUDE_SONO_ATLAS env)
+   - **T8+T9** Apply + Idempotenz: Lauf 1 `created=1 updated=7 deleted=1 drafted=1 wpml_inserts=1` · Lauf 2 `skipped=10` ✓
+   - **T10** URL-Matrix: 7/7 neue 200, 4/4 alte 301, 3/3 404 wie erwartet
+   - **T11** HTML-Assertions: Hub 4 Cards, Sub-Hub 2 Cards (atlas-Filter), Labor 5 H2, Mojibake 0×, Active-State auf allen Diagnostik-URIs ✓
+   - **T12** verify.sh §1 + §3 grün (Full-Run hatte unrelated Puppeteer-Chrome-Hang — nicht blockierend) · smoke-http 5/5 · validate OK
+   - **T13** HTML-Snapshots (7 Pages + url-matrix.md) als Evidence
+   - **T14** Self-Check 12/12 AK
+   - **T15** Theme-Commit `25662ad`
+   - **T16** Cortex-Web-Commit `fb9c0eb` + Nexus `71d6358` (MEMORY-Update)
+
+4. **Phase 4 Selbstprüfung** — 12/12 AK = 100 %, FK-Check 0/5
+
+### Verifiziert
+
+| Check | Ergebnis |
+|---|:---:|
+| 8 neue URLs (7 publish, 1 draft) | 7/7 HTTP 200 + atlas draft 404 ✓ |
+| 4 alte Slugs → 301 | 4/4 ✓ (via Theme-Fallback-Helper, WP-Core liefert hier 404) |
+| 3 deleted/drafted URLs | 3/3 HTTP 404 ✓ |
+| Nested-URLs (schilddruese, beingefaesse) funktional | 2/2 ✓ |
+| Hub 4-Card-Grid | ✓ |
+| Sub-Hub 3-Card-Grid, atlas-Card durch Draft-Filter ausgeblendet → 2 Cards | ✓ |
+| Labor H2-Sektionen | 5 ✓ (Werte, Blutentnahme, 24h-Urin, Befundabruf, Selbstzahler) |
+| Mojibake im Body | 0 auf 6 Pages geprüft ✓ |
+| Active-State `is-active-parent` auf Diagnostik-URIs | ✓ via match_prefix |
+| Migration idempotent | Lauf 2 = 0 Mutationen ✓ |
+| smoke-http.sh | 5/5 ✓ |
+| validate.sh | OK ✓ |
+| FK-Check (0 eingetreten) | 0/5 ✓ |
+
+### Lessons Learned (5 Pattern-Kandidaten, im Schritt 3 des Session-End-Protokolls als Nexus-Patterns niedergelegt)
+
+- **LL-1** `wp-old-slug-redirect-reliability.md` — WP-Core-Redirect für post_type=page unzuverlässig; Theme-seitiger Fallback-Helper mit `post_status=publish`-Filter rettet 4 von 5 Slugs.
+- **LL-2** `wp-nested-pages-rewrite-flush.md` — Nach `post_parent`-Änderung `wp_options.rewrite_rules` leeren (SQL DELETE oder flush_rewrite_rules), sonst 404 bei Nested.
+- **LL-3** `nav-match-prefix-active-state.md` — Optionales `match_prefix`-Feld im Nav-Array für Active-State bei Nested-URIs, die nicht explizit im Submenu sind.
+- **LL-4** `dsgvo-draft-gate-pattern.md` — Draft-Status als saubere Interim-Lösung für rechtlich unsicheren Content; kombiniert mit Card-Grid-Filter entstehen keine toten Links.
+- **LL-5** `php-getenv-normalization.md` — PHP `getenv()` gibt false bei unset, nicht ''; direkt nach Aufruf normalisieren, sonst kippen sicherheitskritische Gates ungewollt.
+
+### Drei Wissens-Artefakte für Folge-Sessions
+
+- 5 Patterns in `Nexus/_memory/patterns/` (s.o.)
+- Tutorial `Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/22-wp-nested-pages-und-old-slug-redirects.md`
+- Spec + Self-Check + 7 HTML-Snapshots + url-matrix in `sites/praxis-webseite/specs/sprint-2/evidence/2026-04-22_s2.3-diagnostik/`
+
+---
+
+## §3-legacy-session22-parallel — Parallel-Arbeit Cortex-Web content-bridge-v1 (NICHT committet)
+
+> Offener Punkt (**Konsistenz-Anomalie**): Bei diesem „Session beenden" waren im Cortex-Web-Root 30+ untracked files aus einer parallelen Cortex-Web-Architekturarbeit (Shopify-/WP-Adapter für `uber-uns`, 8 Team-YAML-Dateien, cross-site-transfer-Architektur, cw-transfer-CLI, 2 Spec-Ordner). Diese Arbeit ist inhaltlich abgeschlossen (laut ursprünglichem §3-Block darunter), aber weder die Dateien noch die Spec/SELF_CHECK-Dokumente sind committet. Session 21 (S2.3-diagnostik) hat diese Dateien bewusst nicht angefasst — Dr. Stracke sollte die parallele Arbeit in eigener Session abschließen und committen.
+
+### Was dort (vermutlich) entstanden ist (aus ursprünglichem §3, ungeprüft)
+
+### Ziel
+Dr. Stracke will, dass `sanexio.eu/pages/uber-uns` inhaltlich mit WP `/team/` abgleichbar ist (Content) und perspektivisch Content/Design/Funktion explizit + gerichtet zwischen beiden Sites transferiert werden kann. Keine Auto-Sync, Trunk als alleinige Brücke.
+
+### Durchgeführt (Architekten-Modus, zwei zusammenhängende Blöcke)
+
+**Block 1 — content-bridge-v1 produktiv**
+
+1. **Pattern A (Inline-HTML)** erstmals umgesetzt: `adapters/shopify/build-page.mjs` + `pages-to-shopify.mjs` + `lib/renderers/page-juvantis.mjs`. Sauber gebaut, aber im Shopify-Theme-Kontext visuell unbefriedigend (RTE-Container überschreibt Styling).
+2. **Pattern B (Template-Bridge)** — Goldstandard: `adapters/shopify/build-template.mjs` + `template-to-shopify.mjs` + `lib/renderers/template-juvantis-ueber-uns.mjs`. Schreibt `templates/page.uber-uns.json` ins Live-Theme; Custom-Section `juvantis-ueber-uns` rendert aus Trunk-Daten. Backup-Automatik vor destruktivem Write (CW-008 Ur-Implementierung).
+3. **OAuth-Scope-Erweiterung in zwei Runden:** `+read_content,+write_content` → Pattern-A-Push. Dann `+read_themes,+write_themes` → Pattern-B-Push. Authorize-Catcher-Workflow 30 s pro Re-Auth.
+4. **Trunk-Content:** `trunk/content/pages/_shared/ueber-uns.yaml` (sections[] + views.juvantis.{hero,mission,history,values,cta,team,padding}) + 8 `trunk/content/team/*.yaml`. Schemas `page.schema.json` + `team-member.schema.json` konkretisiert (required-Felder, oneOf für Section-Types, order-Feld für Display-Reihenfolge).
+5. **Live-Deployment:** Shopify Page ID 157742137611 (`handle=uber-uns`) hat `template_suffix=uber-uns` + `body_html=""`. Theme-Asset `templates/page.uber-uns.json` im Live-Theme (ID 181128757515). Dr. Stracke hat die Seite am 20:46:26 freigegeben.
+
+**Block 2 — cross-site-transfer Architektur**
+
+6. **ARCHITECTURE.md** + **PATTERNS.md** geschrieben. Transfer-Matrix (Source × Target × Type), 6 wiederverwendbare Patterns (A Simple Page · B Template-Based Page · C Metafield · D Theme-Asset-Overwrite · E Product-Sync · F Design-Token), Naming-Conventions, Registry-Pattern.
+7. **3 Extraktions-Skelette** Site → Proto-Trunk-JSON: `adapters/shopify/extract-page.mjs`, `extract-template.mjs`, `adapters/wordpress/extract-page.mjs`. Smoke-getestet gegen Live-Page.
+8. **4 Registry-Dateien** (Renderer + Extractor × Shopify + WP) als zentrale Dispatch-Tabelle.
+9. **Meta-Orchestrator `tools/cw-transfer`** mit Verben push/pull/diff/list/help. `list` zeigt 10 registrierte Transfers mit Status-Badge (stable/skeleton/planned).
+10. **Projekt-Rules erweitert:** CW-006 (gerichteter Transfer), CW-007 (Trunk-Brücke-Pflicht), CW-008 (Backup vor destruktivem Push). `.gitignore` um `adapters/*/.backups/` erweitert.
+11. **Docs + Self-Check:** `specs/content-bridge-v1/SELF_CHECK.md` 12/12 AK grün · `specs/cross-site-transfer/SELF_CHECK.md` 12/12 AK grün · `docs/cross-site-transfer.md` State-of-Play aktualisiert.
+
+### Verifiziert
+
+| Check | Ergebnis |
+|---|:---:|
+| `validate.sh` | OK ✓ |
+| 3 Shopify-Builds (product/page/template) | 3/3 OK ✓ |
+| `cw-transfer list` | 10 Einträge (3 stable push shopify, 2 skeleton pull shopify, 1 planned · 1 stable push wp, 1 planned · 1 skeleton pull wp, 1 planned) ✓ |
+| Live-Verify Shopify-Page API | 1 Treffer id=157742137611, 8 Arzt-Namen im body_html, intro present ✓ |
+| Live-Verify Shopify-Template-Asset API | 6860 Bytes, 8 team_member + 4 value blocks ✓ |
+| Idempotenz (2× Push) | body_md5 identisch, `updated_at` unverändert (Shopify diff-aware) ✓ |
+| Page `published_at` | 2026-04-22T20:46:26 (Dr.-Stracke-Freigabe nach Preview) ✓ |
+| Self-Check content-bridge-v1 | **12/12 = 100 %** ✓ |
+| Self-Check cross-site-transfer | **12/12 = 100 %** ✓ |
+
+### Lessons Learned (5 neue Pattern-Kandidaten)
+
+- **CB1-LL-1** Shopify-OAuth-Scopes iterativ erweitern: neuer Adapter-Typ → neuer Scope → Re-Auth via authorize-Script+Catcher (~30 s). Single-Source der Scopes ist `tools/shopify-authorize.sh`.
+- **CB1-LL-2** Shopify-Pages: `published: true|false` statt `status: "draft"|"active"` (Pages ≠ Products). Page-Adapter hardcoded `published:false` als CW-001-Safeguard.
+- **CB1-LL-3** Shopify ist bei Page/Asset-PUTs diff-aware: identischer Body → `updated_at` bleibt unverändert. Stärkere Idempotenz als in Spec gefordert.
+- **CB1-LL-4** Template-Suffix vs. Handle: Shopify matcht `templates/page.<suffix>.json` über `template_suffix`-Feld, nicht über Handle. Ein altes Template mit anderem Suffix wird nie gerendert → `template_suffix` muss explizit gesetzt sein.
+- **CB1-LL-5** Bridge-Architektur skaliert über Content hinaus. Skelette Pattern-C (Metafield) und Pattern-F (Design-Token) benötigen dieselbe Grundarchitektur (Build → Payload → API-Push → Verify → Backup).
+
+### Drei Wissens-Artefakte für Folge-Sessions
+
+- Pattern `Nexus/_memory/patterns/shopify-template-bridge.md` — Pattern-B-Kern
+- Pattern `Nexus/_memory/patterns/cross-site-transfer-registry.md` — Meta-Architektur (Registry + cw-transfer)
+- Pattern `Nexus/_memory/patterns/shopify-oauth-scope-iteration.md` — Re-Auth-Workflow
+- Tutorial `Second Brain/30 Tutorials/Webentwicklung/Shopify & Liquid/07-shopify-template-bridge.md`
+- Session-Log `Nexus/_memory/logs/2026-04-22_cortex-web-content-bridge-und-cross-site-architektur.md`
+
+---
+
+## §3-legacy-session20 (historisch) — Session 20, 2026-04-22 (Praxis-Sprint 2 / S2.3-aerzte-services Block B1)
 
 ### Ziel
 Cluster `aerzte` (2 Pages aus Content-Archive) + Cluster `services` (4 Pages) gebündelt als „nächster großer sinnvoller Block" abarbeiten. **Harter Constraint von Dr. Stracke:** *„Bei den Ärzten müssen immer auch alle anderen Kollegen aus der Praxisgemeinschaft mitauftauchen. Platzhalter für Fotos und Content sind OK, aber alle Ärzte müssen wählbar sein."*
@@ -184,17 +310,38 @@ Cluster `aerzte` (2 Pages aus Content-Archive) + Cluster `services` (4 Pages) ge
 
 ## §4 Offene Tasks (Priorität absteigend)
 
-### Wählbare Fronten für Session 21
+### Wählbare Fronten für Session 22
+
+**🔴 Offener Session-Punkt (vor allem anderen):**
+
+| Prio | Punkt | Aufwand |
+|:---:|---|---|
+| **P0** | **Parallele Cortex-Web-Arbeit committen** (content-bridge-v1 + cross-site-transfer) — 30+ untracked files im Repo, 2 Specs mit SELF_CHECK 12/12 geschrieben, aber nichts versionskontrolliert. Dr. Stracke sollte diese Session als „Cortex-Web-Session vorher" abschließen. Siehe §3-legacy-session22-parallel. | 15 Min Commit + 5 Min Review |
+| **P1** | **R-7 DSGVO sono-atlas klären** — atlas-Page liegt als `draft` in DB, Freischaltung = 1 SQL-Zeile. Architektur-Tendenz: atlas ganz weglassen (Option d) oder später mit Stock-Bildern neu aufsetzen. | Entscheidung + ggf. Migration |
+
+**Cortex-Web-Fronten (aus paralleler Session):**
 
 | Prio | Front | Aufwand | Kommentar |
 |:---:|---|---|---|
-| **A** | **Cluster `diagnostik`** (10 P1) | groß (2–3 Sessions) | Größter verbleibender Content-Block. Folgt Direktive-Reihenfolge. **Architekten-Tendenz für Session 21.** Diagnostik = Kern-USP der Praxis (Sonografie, Kardio-Echo, LuFu). Inhalte aus `_content-archive/diagnostik/de/` (10 Pages) |
-| **B** | **S2.4b Footer-Umbau** | mittel (1 Session) | Blocksy-Default ersetzen mit eigenem Footer. Kann Notfall-Block + `/leistungen/`-Link integrieren. Site-weit wirksam |
-| **C** | **Design-Feintuning S2.4 + S2.3-aerzte-services** | mittel (1 Session, Spec-lastig) | Dr.-Stracke-Wunsch („Design müssen wir noch anpassen"). Konkrete Punkte: Hover-Polish, Mobile-Drawer-Animation, Other-Doctors-Card-Spacing, /leistungen/-Card-Hierarchie. Braucht eigene Spec mit Designvorgaben |
-| **D** | **Echt-Content + Fotos für 7 Stub-Arzt-Profile** | groß (1+ Session) | Saul, Barcsay, Seelig, Jawich, Shahin, Landeberg, Arbitmann. Braucht: Bio-Texte (Ärzte zuliefern), Fotos (Shooting?), Sprachen-Erweiterung. Ohne Externe-Mitarbeit nicht abschließbar |
-| **E** | **Cluster `legacy/de`** (23 P2) | groß | Niedrige Prio. Viele archivierbar statt kurierbar |
-| **F** | **`/leistungen/` Cross-Link aus `/praxis/`** | klein (1/2 Session) | Folge-Aufgabe aus S2.3-aerzte-services R-6: /leistungen/ ist aktuell nur via Footer (S2.4b) erreichbar |
-| **G** | **Strukturhygiene + Patterns konsolidieren** | klein | Pattern-Index, Tutorial-Querverweise, MEMORY/CLAUDE-Konsistenz-Check |
+| **N-1** | **WP-Template-Adapter (Pattern B reverse)** | 1–2 Sessions | Dasselbe YAML (`ueber-uns.yaml`) soll WP `/team/` rendern. Aktuell Template-Logik im Theme. Wird derivative aus Trunk. **Kandidat für Folge-Session.** |
+| **N-2** | **Extraktoren produktivieren** | 1–2 Sessions | Skelette → YAML-Generator. Dr. Stracke kann existierenden Shopify/WP-Content in Trunk heben ohne manuelle Kuration. |
+| **N-3** | **Design-Token-Adapter (Phase D)** | 2 Sessions | Farbwerte/Typo/Spacing aus Trunk → beide Themes. **Blocker:** Master-Frage nicht entschieden (Praxis-Tokens / Sanexio / Neutral). |
+| **N-4** | **Component-Specs (Phase F)** | 3+ Sessions | `team-grid` als wiederverwendbare Komponente auf beiden Sites. Voraussetzung: N-3 teilweise gelöst. |
+| **N-5** | **Shopify-Publish-Helper** | 30 Min | `tools/shopify-publish-page.sh` + `--publish`-Flag in den Page-Adaptern. Damit Seiten nach Sync nicht mehr manuell veröffentlicht werden müssen. |
+| **N-6** | **`cw-transfer diff`** | 1 Session | Build-dann-Fetch-dann-JSON-Diff. Pre-Deploy-Sanity. |
+| **N-7** | **Backup-Automatik auf WP- + Page-Adapter** | 30 Min | CW-008 vollständig durchsetzen (Template-Adapter hat es, Page-Adapter noch nicht). |
+
+**Praxis-Sprint-Fronten (offen nach S21 S2.3-diagnostik):**
+
+| Prio | Front | Aufwand | Kommentar |
+|:---:|---|---|---|
+| **A** | **S2.4b Footer-Umbau** | mittel (1 Session) | Blocksy-Default ersetzen. Kann Notfall-Block + `/leistungen/` + `/diagnostik/` integrieren. |
+| **B** | **Design-Feintuning S2.4 + S2.3-aerzte-services + S2.3-diagnostik** | mittel (1 Session, Spec-lastig) | Dr.-Stracke-Wunsch seit S19. Hover-Polish, Mobile-Drawer-Animation, Card-Spacing, Diagnostik-Hub-Typo. |
+| **C** | **Cluster `legacy/de`** (23 P2, größtenteils archivierbar) | mittel–groß | Letzter Content-Block vor Sprint 3. Viele Pages wahrscheinlich archivierbar. |
+| **D** | **Echt-Content + Fotos für 7 Stub-Arzt-Profile** | groß | Braucht Bio-Text-Input von Ärzten + Foto-Shooting. Extern-abhängig. |
+| **E** | **Cross-Links `/leistungen/` + `/diagnostik/` aus `/praxis/` integrieren** | klein (½ Session) | Folge aus S20 + S21. |
+| **F** | **Strukturhygiene + Patterns konsolidieren** | klein | Pattern-Index, Tutorial-Querverweise, MEMORY/CLAUDE-Konsistenz-Check. |
+| **G** | **Beginn Sprint 3 i18n** — erste EN/FR/ES-Übersetzungen durch Claude | 6+ Sessions | Erst nach C (legacy-Pass) sinnvoll, weil sonst i18n auf nicht-finalem DE-Stand aufsetzt. |
 
 ### Blockiert (nicht wählbar)
 
@@ -214,22 +361,38 @@ Cluster `aerzte` (2 Pages aus Content-Archive) + Cluster `services` (4 Pages) ge
 
 ## §5 Sofort-Status-Frage an Dr. Stracke
 
-> Block B1 (aerzte + services) ist abgeschlossen — 12/12 AK, Theme PXZ 2.7.17 live.
+> **Session 21 (Praxis-S2.3-diagnostik) abgeschlossen:** Cluster diagnostik live auf Local-WP, eigener Top-Nav-Bereich, 7 Pages publish + 1 draft (atlas, R-7 pending). 12/12 AK. Theme `25662ad` (PXZ 2.7.18), Cortex-Web `fb9c0eb`, Nexus `71d6358`.
 >
-> Welche Front für Session 21?
+> **Vor weiteren Fronten bitte klären:**
 >
-> - **A** — `diagnostik` (10 P1, Direktive + größter sinnvoller Block, Architekten-Tendenz)
-> - **B** — S2.4b Footer-Umbau (Notfall-Block + Footer-Konsistenz)
-> - **C** — Design-Feintuning S2.4 + S2.3-aerzte-services (Dein offener Wunsch)
-> - **D** — Echt-Content + Fotos für die 7 Stub-Profile (braucht Externe-Input)
-> - **E/F/G** — siehe §4
+> - **P0** — Parallele Cortex-Web-Arbeit (content-bridge-v1 + cross-site-transfer, Session-22-Parallel) ist im Repo untracked. Committen + abschließen?
+> - **P1** — R-7 sono-atlas: DSGVO-Klärung machen (→ publish) oder atlas ganz archivieren (→ d)?
+>
+> **Wenn P0 + P1 erledigt, welche Front für Session 22:**
+>
+> **Praxis-Sprint (nahe am nächsten DE-Meilenstein):**
+> - **A** — S2.4b Footer-Umbau (Blocksy-Default ersetzen, Cross-Links integrieren)
+> - **B** — Design-Feintuning (dein offener Wunsch seit S19)
+> - **C** — Cluster `legacy/de` — letzter DE-Content-Block vor Sprint 3
+> - **E** — `/leistungen/` + `/diagnostik/` Cross-Links aus `/praxis/`
+> - **G** — **Beginn Sprint 3 i18n (Übersetzungen DE→EN/FR/ES)** — sobald DE-Content final genug ist
+>
+> **Cortex-Web (aus paralleler Session):**
+> - **N-1** — WP-Template-Adapter (Pattern B reverse)
+> - **N-2** — Extraktoren produktiv machen
+> - **N-5/N-7** — Shopify-Publish-Helper / Backup-Automatik (je 30 Min)
+>
+> **Ad-hoc:** Konkreter Transfer gewünscht? „Heute möchte ich Inhalt X von A nach B übertragen."
 
 ---
 
-## §6 Verbote / harte Regeln (in Session 21 NIE passieren darf)
+## §6 Verbote / harte Regeln (in Session 22 NIE passieren darf)
 
 - **HWG/Berufsordnung:** Keine Werbung, keine Heilversprechen, keine Preise auf Praxis-Site (CW-005)
-- **Trunk ist Master (CW-001):** Bei Bridge-Pages keine Inhalte direkt im WP-Admin ändern — Adapter rückt sonst zurück
+- **Trunk ist Master (CW-001):** Bei Bridge-Pages keine Inhalte direkt im WP-Admin oder Shopify-Admin ändern — Adapter rückt sonst zurück
+- **Gerichteter, expliziter Transfer (CW-006):** Kein Auto-Sync, kein Webhook-Live-Mirror
+- **Trunk alleinige Brücke (CW-007):** Keine direkten Shopify→WP-/WP→Shopify-Extractoren. Immer Site→Trunk→Site in zwei getrennten Schritten mit menschlicher Kuration dazwischen
+- **Backup vor destruktivem Push (CW-008):** Kein Overwrite ohne vorheriges Backup in `adapters/*/.backups/`
 - **Mojibake-Disziplin:** Bei Content-Migration aus `_content-archive/` IMMER Mojibake-Check (S2.3-D-LL-1 + diese Session: Stracke-Profil ist Beleg, dass `?`-Replacement-Chars nicht durch automatischen mb_convert lösbar sind, sondern Per-Pattern handcurated werden müssen)
 - **Brand-Switch-Konsistenz:** Bei neuen Doctor-Slugs die zentrale `pxz_doctor_slugs()` erweitern, NIE Helper-Funktion umgehen oder Regex hartcodieren
 - **`grep -c` ist tückisch:** WP-HTML auf einer Zeile → IMMER `grep -oE … | wc -l` für Counts (S2.3-aerzte-services-LL-4)
