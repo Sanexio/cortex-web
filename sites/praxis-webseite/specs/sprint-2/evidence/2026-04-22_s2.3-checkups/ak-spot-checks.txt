@@ -1,0 +1,33 @@
+=== AK-Spot-Checks 2/3/4/5/6 — 2026-04-22 ===
+
+AK-2: Hub-Card-Grid hat 5 Slug-Links + Bridge-Badge
+  ✓ Card-Link → /gesundheits-check-up/
+  ✓ Card-Link → /cardio-check-up/
+  ✓ Card-Link → /angio-check-up/
+  ✓ Card-Link → /tumorscreening/
+  ✓ Card-Link → /basic-check/
+  ✓ Bridge-Badge: 1
+
+AK-3: Bridge → sanexio.eu
+  Hits: 2
+
+AK-4: Detail-Pages 272/336/339 → /basic-check/
+  gesundheits-check-up: 1 href to /basic-check/
+  cardio-check-up: 1 href to /basic-check/
+  angio-check-up: 1 href to /basic-check/
+
+AK-5: HWG (echte Preis/€/EUR/kostet/Preis:-Marker)
+  check-ups: keine
+  gesundheits-check-up: keine
+  cardio-check-up: keine
+  angio-check-up: keine
+  tumorscreening: keine
+  basic-check: keine
+
+AK-6: SEO theme-eigen + AIOSEO unterdrückt
+  check-ups: pxz-seo=2  aioseo=0
+  gesundheits-check-up: pxz-seo=2  aioseo=0
+  cardio-check-up: pxz-seo=2  aioseo=0
+  angio-check-up: pxz-seo=2  aioseo=0
+  tumorscreening: pxz-seo=2  aioseo=0
+  basic-check: pxz-seo=2  aioseo=0
