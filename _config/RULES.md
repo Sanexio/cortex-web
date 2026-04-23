@@ -157,6 +157,59 @@ kann Wochen an Admin-Edits zerstören.
 
 ---
 
+## CW-PRIO-001 — Holistische System-Priorität (seit 2026-04-23, Session 31)
+
+**Regel:** Vor jeder Front-Wahl innerhalb Cortex-Web prüft Claude, auf
+welcher Prio-Stufe (P1–P6 / Ppol / Popt / Pios) die vorgeschlagene Front
+liegt. Fronten der Stufen **P1–P5** dominieren. Stufen **Popt** (Adapter-
+Suite-Vervollständigung) und **Pios** (iOS-Integration / N-3 Design-
+Token) werden nur aufgegriffen, wenn ein **konkreter, benannter
+Pain-Point** sie in die P1–P5-Ebene zieht — nicht wegen akademischer
+Symmetrie oder Architektur-Eleganz.
+
+**Warum:** Session-Audit 2026-04-23 (Session 31) hat gezeigt, dass 7/10
+vorangegangener Sessions in Infrastruktur-Symmetrie gelaufen sind,
+während das holistische 3-Projekt-System (Cortex-Web + Juvantis +
+Praxis-Webseite) in seinem Alltags-Wert nicht entsprechend gewachsen ist.
+Das ist FK-3 (Plausible Scheinlösung) auf Programmleitungs-Ebene: die
+Adapter sehen komplett aus, aber der Content-Pflege-Alltag, die Medien-
+Registry und die Prod-Deploy-Pipelines existieren noch nicht.
+
+**Die Prio-Leiter (von oben nach unten):**
+
+| Prio | Inhalt | Definition „fertig" |
+|:---:|---|---|
+| **P1** | Medien-Registry + `_media-source/`-Flow + N-1b Media-ID-Resolver | Jede Content-Änderung, die Bilder braucht, läuft deterministisch durch den Trunk |
+| **P2** | Prod-Deployment-Pipelines (Praxis via DF/SFTP + Juvantis-Shopify-Sync dokumentiert und wiederholbar) | Von Trunk-Edit bis Prod-Live ≤ 10 Min, ohne manuelle WP-/Shopify-Admin-Klicks |
+| **P3** | Praxis Content-Rest (Cluster C, Impressum/Datenschutz, 7 Arzt-Profile, Aktuelles, WPForms, Google My Map) | Alle Praxis-Pages haben Echt-Content; Stub-Pages sind namentlich dokumentiert mit Blocker-Grund |
+| **P4** | M1: Erster Prod-Push westend-hausarzt.com + Verify | Domain live, HTTPS, alle Cluster erreichbar, SEO-Layer aktiv |
+| **P5** | Juvantis Content-Alltag (2–3 weitere Bridge-Seiten, Content-Pflege als Gewohnheit) | Trunk-Edit → beide Sites upgedatet ist routinierte Operation, kein Einzelnachweis |
+| **P6** | Mehrsprachigkeit Praxis (i18n-Mechanik + externe Übersetzungen + Integration) | Praxis DE + mindestens EN, idealerweise FR/ES |
+| **Ppol** | Design-Polish, A11y-Audit, Mobile-Finish | Accessibility-Score ≥ 90, Mobile-Core-Web-Vitals grün |
+| **Popt** | Adapter-Suite-Vervollständigung (N-6.4, N-6.5, Pattern C Metafield) | **Nur wenn konkreter Pain-Point** — sonst gefrierend offen |
+| **Pios** | N-3 Design-Token-Adapter + iOS-Adapter | **Nur wenn iOS-App-Projekt aktiv wird** — sonst gefrierend offen |
+
+**Wie anwenden:**
+
+- In `SESSION_RESUME.md §0 Roadmap` steht die aktuelle Prio-Position
+  (welcher Block ist dran, welcher als nächstes).
+- `§5 Sofort-Status-Frage` schlägt als Default den nächsten P1–P5-Schritt
+  vor, nicht eine Liste gleichrangiger Fronten.
+- Wenn Claude eine Popt-/Pios-Front vorschlägt, muss der konkrete
+  Pain-Point (was wird heute blockiert, weil das fehlt?) explizit
+  benannt werden. Ohne benannten Pain-Point ist die Antwort: verschieben.
+- Dr. Stracke kann jederzeit über die Prio hinweg entscheiden
+  („Ad-hoc-Front") — aber die Default-Pfad der Session ist
+  Prio-getrieben.
+
+**Anti-Pattern:**
+
+❌ „Lass uns N-6.5 machen, dann ist der Diff-Quadrant 100 % komplett."
+✅ „N-6.5 ist Popt — kein aktueller Pain-Point. Wir machen stattdessen
+P1 (Medien-Registry), weil ohne die alle Content-Flows Torsos bleiben."
+
+---
+
 ## Weitere Regeln (wachsen beim POC)
 
 - CW-009+ werden bei Phasen C2/D/F (Extraktion/Design/Funktion) ergänzt,
