@@ -11,14 +11,21 @@
 // Safety: if the existing page is published (published_at != null),
 // require ALLOW_OVERWRITE=1 to proceed.
 //
+// Pattern-B guard (N-8): if the existing page has template_suffix set
+// (i.e. it renders from a theme Section/Template, per PATTERNS.md Pattern B),
+// a Trunk-A-style push would silently discard the theme binding. Require
+// ALLOW_PATTERN_OVERRIDE=1 to proceed in that case.
+//
 // Env:
-//   SHOPIFY_STORE         (required) <handle>.myshopify.com
-//   SHOPIFY_ADMIN_TOKEN   (required) shpat_…
-//   ALLOW_OVERWRITE       (optional) "1" to overwrite an already-published page
-//   PUBLISH               (optional) "1" to flip published=true at write time
-//                                    (Trunk stays draft-by-default per CW-001;
-//                                    this is an adapter-runtime flag, not a
-//                                    content-state in the trunk)
+//   SHOPIFY_STORE            (required) <handle>.myshopify.com
+//   SHOPIFY_ADMIN_TOKEN      (required) shpat_…
+//   ALLOW_OVERWRITE          (optional) "1" to overwrite an already-published page
+//   ALLOW_PATTERN_OVERRIDE   (optional) "1" to overwrite a Pattern-B page (template_suffix set)
+//                                       with a Pattern-A Trunk payload. Default: refuse.
+//   PUBLISH                  (optional) "1" to flip published=true at write time
+//                                       (Trunk stays draft-by-default per CW-001;
+//                                       this is an adapter-runtime flag, not a
+//                                       content-state in the trunk)
 //
 // Backup (CW-008): before any update, the existing Shopify page is saved as
 //   adapters/shopify/.backups/<ISO-ts>_page<id>_<handle>.json. If the backup
@@ -27,9 +34,11 @@
 // Exit codes:
 //   0 success, summary JSON on stdout
 //   1 config / input error
-//   2 REST error (4xx/5xx, ambiguous handle, refused overwrite, or backup fail)
+//   2 REST error (4xx/5xx, ambiguous handle, refused overwrite, refused
+//     pattern override, or backup fail)
 //
 // content-bridge-v1, 2026-04-22. N-5+N-7 extension 2026-04-22 Session 24.
+// N-8 Pattern-A-vs-B guard 2026-04-23 Session 27.
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -65,6 +74,7 @@ async function readStdinJson() {
 const store = env("SHOPIFY_STORE");
 const token = env("SHOPIFY_ADMIN_TOKEN");
 const allowOverwrite = process.env.ALLOW_OVERWRITE === "1";
+const allowPatternOverride = process.env.ALLOW_PATTERN_OVERRIDE === "1";
 const publishFlag = process.env.PUBLISH === "1";
 
 const payload = await readStdinJson();
@@ -82,7 +92,7 @@ const handle = encodeURIComponent(payload.page.handle);
 
 let lookup;
 try {
-  lookup = await client.get(`/pages.json?handle=${handle}&fields=id,handle,published_at,title,updated_at`);
+  lookup = await client.get(`/pages.json?handle=${handle}&fields=id,handle,published_at,title,updated_at,template_suffix`);
 } catch (err) {
   die(2, `lookup failed: ${err.message}`);
 }
@@ -99,6 +109,7 @@ if (publishFlag) effectivePage.published = true;
 let result;
 let action;
 let backupPath = null;
+let liveTemplateSuffix = null;
 try {
   if (pages.length === 0) {
     action = "create";
@@ -106,6 +117,19 @@ try {
     result = created.page;
   } else if (pages.length === 1) {
     const existing = pages[0];
+
+    // N-8 Pattern-A-vs-B guard — refuse to overwrite a Pattern-B page
+    // (template_suffix set) with a Pattern-A trunk payload, because it
+    // silently strips the theme binding. Pre-empts the published-check
+    // because the grosser action (pattern conversion) should abort first.
+    liveTemplateSuffix = (existing.template_suffix === undefined || existing.template_suffix === null)
+      ? null
+      : existing.template_suffix;
+    const isPatternB = typeof liveTemplateSuffix === "string" && liveTemplateSuffix !== "";
+    if (isPatternB && !allowPatternOverride) {
+      die(2, `target page handle="${payload.page.handle}" id=${existing.id} is Pattern B (template_suffix="${liveTemplateSuffix}") — a Pattern-A push would discard the theme binding. Set ALLOW_PATTERN_OVERRIDE=1 to proceed.`);
+    }
+
     const isPublished = existing.published_at !== null;
     if (isPublished && !allowOverwrite) {
       die(2, `target page handle="${payload.page.handle}" id=${existing.id} is published (published_at=${existing.published_at}) — set ALLOW_OVERWRITE=1 to proceed`);
@@ -160,6 +184,8 @@ const summary = {
   body_html_length: (result.body_html || "").length,
   publish_flag: publishFlag,
   backup_path: backupPath,
+  live_template_suffix: liveTemplateSuffix,
+  pattern_override: allowPatternOverride,
   admin_url: `https://${store.replace(/\.myshopify\.com$/, "")}.myshopify.com/admin/pages/${result.id}`
 };
 process.stdout.write(JSON.stringify(summary, null, 2) + "\n");
