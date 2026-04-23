@@ -59,14 +59,20 @@ Type:
   theme-file Theme file via filesystem (planned)
 
 Diff currently supported for:
-  shopify:page                                      (N-6, MVP)
+  shopify:page                                      (N-6)
+  shopify:template                                  (N-6.2)
 
 Diff env (shopify:page):
   PUBLISH=1                                         compare published flag
   FORMAT=json                                       structured output
 
+Diff env (shopify:template):
+  SHOPIFY_THEME_ID                                  pin theme (default=live role=main)
+  FORMAT=json                                       structured output
+
 See specs/cross-site-transfer/PATTERNS.md for the 6 transfer patterns.
-See specs/cross-site-transfer/N-6_cw-transfer-diff.md for diff design.
+See specs/cross-site-transfer/N-6_cw-transfer-diff.md for page-diff design.
+See specs/cross-site-transfer/N-6.2_cw-transfer-diff-template.md for template-diff design.
 `);
 }
 
@@ -90,7 +96,8 @@ const PULL_TOOLS = {
 // Diff dispatch: maps <target>:<type> -> read-only diff tool
 // (build-then-fetch-then-compare; no writes to the target site)
 const DIFF_TOOLS = {
-  "shopify:page":     "adapters/shopify/diff-page.mjs"
+  "shopify:page":     "adapters/shopify/diff-page.mjs",
+  "shopify:template": "adapters/shopify/diff-template.mjs"
 };
 
 function runShell(cmd, args) {
