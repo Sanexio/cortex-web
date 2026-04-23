@@ -39,13 +39,13 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.7.3` — Session 25: S24-Commits + S2.4b Footer + S2.4d Design-Polish ✅ (2026-04-23, autonom Cluster-Mini-02)
-- **Stand:** 2026-04-23, Cortex-Web-Aufbau (Phase 0–5) ✅ + Content-Bridge + Cross-Site-Transfer ✅ + Praxis-Sprint 2 → 6/7 Cluster ✅ + **Footer-Umbau S2.4b ✅** + **Design-Polish S2.4d ✅**
-- **Jüngste Commits (Session 25, alle sauber):**
-  - Cortex-Web: `d3aea84` (S24 page-adapter) · `b1101ad` (phase-3 evidence refresh) · `247af3f` (S2.4b spec+evidence) · `c94d840` (S2.4d spec)
-  - Theme (praxis-webseite): `f5a9bec` (S2.4c Cross-Links **2.7.19**) · `f85611a` (S2.4b Footer **2.7.20**) · `42001ec` (S2.4d Design-Polish **2.7.21**)
-  - Nexus: `532dd2f` Auto-Sync (MEMORY S24) · weitere Auto-Syncs für S25-Updates folgen
-- **Working Tree:** Cortex-Web sauber (nur diese SESSION_RESUME dirty bis zum finalen commit), Theme sauber, Nexus wird via Auto-Sync gepflegt
+- **Version:** `0.7.4` — Session 26: N-6 `cw-transfer diff shopify:page` ✅ (2026-04-23, autonom Cluster-Mini-02)
+- **Stand:** 2026-04-23, Cortex-Web-Aufbau (Phase 0–5) ✅ + Content-Bridge + Cross-Site-Transfer ✅ (jetzt push/pull/**diff** symmetrisch für `shopify:page`) + Praxis-Sprint 2 → 6/7 Cluster ✅ + Footer-Umbau S2.4b ✅ + Design-Polish S2.4d ✅
+- **Jüngste Commits (Session 26):**
+  - Cortex-Web: `<noch zu erstellen>` (N-6 spec+adapter+evidence + SESSION_RESUME-Closure)
+  - Nexus: `1011494` (S25-Patterns + Tutorial 24, am Ende S25 erstellt) · `<S26-Pattern + Tutorial 03 + MEMORY-Update — Auto-Sync>`
+  - Theme: unverändert seit S25 (`42001ec` PXZ 2.7.21)
+- **Working Tree:** Cortex-Web wird in dieser Session committed (cw-transfer + diff-page.mjs + N-6-Spec + evidence + diese Datei). Theme sauber. Nexus committed lokal, Auto-Sync läuft in Folge.
 
 ### §1.1 Phasen-Status
 
@@ -64,8 +64,9 @@
 | **Page-Adapter N-5+N-7 + Cross-Links E (S2.4c)** | **`PUBLISH=1` Runtime-Flag + CW-008-Backup vor PUT + `/praxis/` Teaser zu `/leistungen/`+`/diagnostik/`** | **✅ Session 24** |
 | **S2.4b Footer-Umbau** | **Blocksy-Default raus, eigener PXZ-Footer mit Brand + 4-Spalten-Grid + Bottom-Bar (footer-data.php SSoT, 4-sprachig)** | **✅ Session 25** |
 | **S2.4d Design-Polish** | **Card-Hover-Normalisierung (4 Files, shadow-card-hi + 180ms cubic-bezier + translateY(-3px)) + iOS-Drawer-Easing + Diagnostik-Typo clamp()** | **✅ Session 25** |
+| **N-6 `cw-transfer diff`** | **Read-only Build-then-Fetch-then-Diff für `shopify:page`. 240-Zeilen-Adapter, 12/12 AKs, Live-Test gegen `/uber-uns` zeigt Pattern-A-vs-B-Drift.** | **✅ Session 26** |
 
-**Status:** Cortex-Web-Aufbau abgeschlossen. Praxis-Footer vollständig gebrandet, global konsistent. Design-Polish über 5 CSS-Dateien harmonisiert. 6/7 Content-Cluster migriert. Verbleibend: `legacy/de` (23 P2, größtenteils archivierbar) · Footer-Legal-Ziele (Impressum, Datenschutz brauchen Content aus S2.3-A).
+**Status:** Cortex-Web-Aufbau abgeschlossen. Adapter-Suite hat jetzt symmetrisch push/pull/diff für `shopify:page`. Praxis-Footer vollständig gebrandet, global konsistent. Design-Polish über 5 CSS-Dateien harmonisiert. 6/7 Content-Cluster migriert. Verbleibend: `legacy/de` (23 P2) · Footer-Legal-Ziele (Impressum, Datenschutz brauchen Content aus S2.3-A) · Pattern-A-vs-B-Push-Schutz für `pages-to-shopify.mjs` (durch N-6 sichtbar geworden).
 
 ---
 
@@ -106,101 +107,97 @@ Erwartet: Alle gepflegten Dateien unter Token-Budget (LL-044). Siehe `Nexus/tool
 
 ---
 
-## §3 Letzte Session — Session 25, 2026-04-23 (S24-Close + S2.4b Footer + S2.4d Design-Polish, autonom)
+## §3 Letzte Session — Session 26, 2026-04-23 (N-6 `cw-transfer diff`, autonom)
 
 ### Gerät
-**Cluster-Mini-02** (home-Mac M2). Dr. Stracke gab Freigabe „ohne eine einzige
-Zwischenfrage fortsetzen, autonom Entscheidungen treffen". Session wurde
-unterbrochen als Dr. Stracke in die Praxis musste — sie wird auf dem
-**Mac Studio (praxis-studio)** mit „Projekt fortsetzen Cortex-Web" wieder
-aufgenommen.
-
-### ⚠️ Mac-Studio-Einschränkung (WICHTIG für Session 26)
-
-**Das Praxis-Theme-Repo liegt NUR auf Cluster-Mini-02** unter
-`/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-…/themes/praxiszentrum/`.
-Local-by-Flywheel ist gerätelokal. Auf dem Mac Studio (Praxis) sind
-daher **keine Theme-PHP-/CSS-Edits möglich**. Fronten die auf Mac Studio
-sinnvoll sind:
-- Cortex-Web Adapter / Trunk / Specs (Git-getrackt, plattformunabhängig)
-- N-1 (WP-Template-Adapter), N-6 (`cw-transfer diff`), N-3 (Design-Token-Adapter)
-- Dokumentation, Pattern-Konsolidierung
-- Legacy-DE-Content-Sichtung in `_content-archive/` (kein Theme-Edit nötig)
-
-Fronten die Cluster-Mini-02 brauchen (Theme-Repo-Zugriff):
-- Alle Theme-CSS-/PHP-Änderungen (Impressum-Content, weitere UI-Polish)
-- `/impressum/` + `/datenschutz/` Content-Füllen für Footer-Legal-Links
+**Cluster-Mini-02** (home-Mac M2). Erwarteter Mac-Studio-Einsatz aus
+Session-25-§5 trat nicht ein — Dr. Stracke kam an Cluster-Mini-02 zurück.
+Damit waren alle Fronten verfügbar (auch Theme-Edits), aber er entschied
+sich für die Trunk/Adapter-Front.
 
 ### Ziel
-Drei Blöcke sauber abschließen:
-1. **Block 1** — offene Session-24-Commits (Cortex-Web + Theme + Nexus via Auto-Sync)
-2. **Block 2** — S2.4b Footer-Umbau (neue Front, Dr.-Stracke-Liste Prio A)
-3. **Block 3** — S2.4d Design-Polish (neue Front, Dr.-Stracke-Wunsch seit S19)
+Zwei Blöcke nach Effizienz-/Effektivitäts-Bewertung (durch Claude):
+1. **Block 1** — Patt: 3 Pattern + Tutorial 24 aus S25 in Nexus einpflegen
+2. **Block 2** — N-6 `cw-transfer diff` (read-only Build-then-Fetch-then-Diff)
 
-### Kernergebnisse
+### Block 1 — Patt: bereits erledigt (Befund)
 
-**Block 1: S24-Closure**
-- Cortex-Web: `d3aea84` feat(shopify-page-adapter) N-5 PUBLISH=1 + N-7 CW-008 backup
-- Cortex-Web: `b1101ad` chore(phase-3) refresh evidence artefacts
-- Theme: `f5a9bec` feat(s2.4c) praxis cross-links + PXZ 2.7.19
-- Nexus-Teil lief bereits via Auto-Sync (`532dd2f`)
+Bei der Vorbereitung stellte sich heraus, dass alle vier Dateien bereits
+Ende S25 committed waren (Nexus-Commit `1011494`):
+- `Nexus/_memory/patterns/blocksy-child-footer-override.md` (95 Z.)
+- `Nexus/_memory/patterns/footer-data-ssot-multilang.md` (100 Z.)
+- `Nexus/_memory/patterns/card-hover-normalisation.md` (113 Z.)
+- `Nexus/Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/24-blocksy-footer-override.md` (134 Z.)
 
-**Block 2: S2.4b Footer-Umbau (neu)**
-- Spec: `sites/praxis-webseite/specs/sprint-2/S2.4b_footer-umbau.md` (12 AK)
-- Theme-Commit `f85611a` (PXZ 2.7.20)
-- NEU `footer.php` (Child-Override für Blocksy, Hooks bleiben wirksam)
-- NEU `template-parts/site-footer.php` (142 Zeilen, Brand + 4-Col + Bottom-Bar)
-- NEU `inc/footer-data.php` (tagline/claim/col_labels/legal_nav/copyright 4-sprachig)
-- NEU `assets/css/footer.css` (241 Zeilen, dark-ink + red-accent, tokens-only,
-  Grid 1fr mobile → 2 tablet → 4 desktop)
-- MOD `functions.php` (require footer-data + enqueue pxz-footer global)
-- Blocksy-Residuen unterdrückt via `#footer.ct-footer { display:none !important }`
-- Selbstprüfung 12/12 AK = 100 %
-  - `pxz-footer` 1× im HTML, `ct-footer` 0× (Override aktiv)
-  - 4 `pxz-footer-col`, 2 `tel:`-Links, 1 `mailto:`, Doctolib-CTA
-  - 8 Nav-Items, 2 Legal-Links, `© 2026` dynamisch
-  - smoke-http 5/5, smoke-seo 21/21
-- Evidence: `sites/praxis-webseite/specs/sprint-2/evidence/2026-04-23_s2.4b_self-check.md`
-- Cortex-Web-Commit: `247af3f` (Spec + Evidence)
+**Konsequenz:** SESSION_RESUME-§4-Eintrag „Patt offen" war eine veraltete
+Angabe. Wurde in dieser Session korrigiert (entfernt aus §4). **0 Min Aufwand.**
 
-**Block 3: S2.4d Design-Polish (neu)**
-- Spec: `sites/praxis-webseite/specs/sprint-2/S2.4d_design-polish.md` (9 AK)
-- Theme-Commit `42001ec` (PXZ 2.7.21)
-- Card-Hover-Normalisierung über 4 CSS-Dateien:
-  `arzt.css`, `leistungen.css`, `diagnostik-hub.css`, `checkup-hub.css`
-  - Vorher: uneinheitlich (120/150ms ease, hardvalue shadows, -2px)
-  - Nachher: alle 180ms `cubic-bezier(0.2, 0, 0, 1)`, `var(--pxz-shadow-card-hi)`, `translateY(-3px)`
-  - Hub-Cards bekommen zusätzlich `border-color: transparent` für sanfteren Lift
-- Mobile-Drawer (nav.css): Slide + Backdrop jetzt 0.32s `cubic-bezier(0.32, 0.72, 0, 1)` (iOS-feel, vorher default ease)
-- Diagnostik + Checkup Card-Titel: `clamp(1.25rem, 2vw, 1.5rem)` (vorher fix 22px)
-- Cortex-Web-Commit: `c94d840` (Spec)
-- Selbstprüfung 9/9 AK = 100 %
+### Block 2 — N-6 `cw-transfer diff`
+
+**Architektur (Pattern „Build-then-Fetch-then-Diff"):**
+- Diff-Adapter spawnt vorhandenen Build-Adapter als Sub-Prozess (Black-Box)
+- Liest dessen JSON-Stdout als Local-Payload
+- GET-only Live-State über Shopify Admin REST
+- Field-by-field Compare mit Normalisierung (template_suffix `null` ↔ `""`)
+  und konditionalen Feldern (published nur bei `PUBLISH=1`)
+- Output text (default) oder JSON (`FORMAT=json`)
+- Exit 0=EQUAL · 1=DIFF · 2=ERROR
+
+**Dateien:**
+- Spec NEU `specs/cross-site-transfer/N-6_cw-transfer-diff.md` (6 §-Sections, 12 AKs)
+- Code NEU `adapters/shopify/diff-page.mjs` (240 Z., read-only verifiziert)
+- Code MOD `tools/cw-transfer` (`DIFF_TOOLS` Dispatch + `cmdDiff` aktiviert + Help-Text)
+- Evidence NEU `specs/cross-site-transfer/evidence/2026-04-23_n-6_self-check.md`
+
+**Selbstprüfung 12/12 AK = 100 %:**
+- AK-1…4 — Spec, Code-LoC, Help-Text, Dispatch-Tabelle ✅
+- AK-5 — Read-only verifiziert (0 Aufruf-Pattern für `client.X(`) ✅
+- AK-6 — Build-Tool reused (6 Erwähnungen, keine Render-Duplikation) ✅
+- AK-7 — Help-Text listet `diff` als produktiv ✅
+- AK-8/9 — Config-/Usage-Fehler liefern Exit 1 mit klarer Message ✅
+- AK-10 — End-to-end Live-Test gegen `juvantis.myshopify.com/pages/uber-uns`
+  - title EQUAL, template_suffix DIFFER, body_html DIFFER, published SKIPPED
+  - Exit 1 (Diff vorhanden) ← korrekt
+- AK-11 — `tools/validate.sh` grün ✅
+- AK-12 — Bundle-Build grün (`Bundled 2 modules in 6ms · 7.53 KB`) ✅
+
+**Bonus-Erkenntnis (Drift-Detection in Aktion):**
+Live-Test enthüllte sofort eine Pattern-A-vs-Pattern-B-Drift bei `/uber-uns`.
+Die Live-Page ist Pattern B (`template_suffix="uber-uns"`, body_html=""),
+aber `cw-transfer push shopify:page` mit der Trunk-YAML würde Pattern-A-Content
+(8505 chars body_html) schreiben → CW-008 würde Backup machen, aber
+Pattern-B-Setup ginge verloren. Das ist genau die Klasse Drift, die N-6
+sichtbar macht. Folge-Schutzregel-Idee (separater Sub-Task, nicht N-6-Scope):
+`pages-to-shopify.mjs` müsste „abort if live has template_suffix unless
+explicitly requested"-Guard bekommen.
 
 ### Pre-Flight-Metriken am Session-Ende
 - `tools/validate.sh` — OK (1 file)
-- `smoke-http.sh` — 5/5 ✅
-- `smoke-seo.sh` — 21/21 ✅
-- Cortex-Sanitizer Probe — alle Dateien im Budget (MEMORY 3641 tok, Nexus/CLAUDE 6410 tok, SESSION_RESUME 4679 tok)
-- Theme-Stand: **PXZ 2.7.21** (`42001ec`)
+- Cortex-Sanitizer Probe — alle 5 Dateien im Budget (MEMORY 3642, Nexus/CLAUDE 6410, GLOBAL_RULES 6171, cortex-agent 1721, Cortex-Web 6198 Tokens)
+- Sanitizer Learn — 0 Duplikate, 88 stale-refs (+7 ggü. S24, durch neue N-6-Spec-Pfade)
+- Theme-Stand: PXZ 2.7.21 (unverändert seit S25)
 
-### Pattern-Kandidaten → Nexus (für Session 26 / auf Mac Studio machbar)
-1. `blocksy-child-footer-override.md` — Child-`footer.php` + Hook-Pass-Through
-2. `footer-data-ssot-multilang.md` — 4-sprachiges Footer-SSoT-PHP-Array
-3. `card-hover-normalisation.md` — shadow-hi + 180ms cubic-bezier + -3px Rezept
-
-### Tutorial-Kandidat (Mac Studio machbar)
-`Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/24-blocksy-footer-override.md`
-- Child-Theme-Override der Parent-footer.php
-- Hook-Pass-Through (blocksy:content:bottom/after, blocksy:footer:before/after)
-- Warum `blocksy_output_footer()` übersprungen werden darf
+### Pattern + Tutorial (geschrieben in dieser Session)
+- Pattern: `Nexus/_memory/patterns/build-then-fetch-then-diff.md` (NEU)
+- Tutorial: `Nexus/Second Brain/30 Tutorials/Arbeitsweise & Prozess/03-cross-site-adapter-diffs.md` (NEU)
 
 ### Nicht erledigt (bewusst verschoben)
-- **N-1 WP-Template-Adapter** — Mac-Studio-Kandidat
-- **N-6 `cw-transfer diff`** — Mac-Studio-Kandidat
-- **Live-Verify N-5/N-7** — nur bei echtem Shopify-Transfer sinnvoll, Mac Studio kann es triggern
-- **Cluster `legacy/de`** — Content-Sichtung machbar auf Mac Studio
-- **`/impressum/` + `/datenschutz/` Content** — Theme-Edit nötig → Cluster-Mini-02
-- **Pattern + Tutorial committen** — Session-Ende-Schritt, hier noch offen
+- **Live-Verify N-5/N-7 mit `PUBLISH=1`** — bewusst nicht autonom (CW-006:
+  Live-Push-Verify ist eigene Operator-Aktion, nicht implizit Adapter-Task)
+- **N-1 WP-Template-Adapter** — eigene Front, 1–2 Sessions
+- **Pattern-A-vs-B-Schutz für `pages-to-shopify.mjs`** — neuer Sub-Task, durch N-6-Live-Test sichtbar geworden
+- **Cluster `legacy/de` Content-Sichtung** — eigene Front, mittlerer Aufwand
+- **`/impressum/` + `/datenschutz/` Content** — Blocker: Rechtsquellen Dr. Stracke
+
+---
+
+## §3-legacy-25 Session 25, 2026-04-23 (S24-Close + S2.4b Footer + S2.4d Design-Polish, autonom)
+
+### Kerninhalt (Vollversion in Git-Historie + Nexus/_archive nach Sanitizer-Rotation)
+- **Block 1 S24-Close:** Cortex-Web `d3aea84`/`b1101ad` + Theme `f5a9bec` (PXZ 2.7.19, S2.4c Praxis-Cross-Links)
+- **Block 2 S2.4b Footer-Umbau:** Theme `f85611a` (PXZ 2.7.20). Eigener `footer.php` Child-Override, `template-parts/site-footer.php` (142 Z.), `inc/footer-data.php` (4-sprachig), `assets/css/footer.css` (241 Z., dark-ink + red-accent). Selbstprüfung 12/12. Cortex-Web `247af3f`.
+- **Block 3 S2.4d Design-Polish:** Theme `42001ec` (PXZ 2.7.21). Card-Hover-Normalisierung (`arzt.css`/`leistungen.css`/`diagnostik-hub.css`/`checkup-hub.css` → 180ms cubic-bezier(0.2,0,0,1) + translateY(-3px) + shadow-card-hi). iOS-Drawer-Easing in `nav.css`. Card-Title clamp(). Selbstprüfung 9/9. Cortex-Web `c94d840`.
+- **Pattern + Tutorial:** 3 Patterns + Tutorial 24 in Nexus committed `1011494`.
 
 ---
 
@@ -326,24 +323,18 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ## §4 Offene Tasks (Priorität absteigend)
 
-### Wählbare Fronten für Session 26 (auf Mac Studio)
-
-**Mac-Studio-machbar (kein Theme-Repo-Zugriff nötig):**
+### Wählbare Fronten für Session 27
 
 | Prio | Front | Aufwand | Kommentar |
 |:---:|---|---|---|
+| **N-5/N-7-Schutz** | **Pattern-A-vs-B-Guard in `pages-to-shopify.mjs`** | 30 Min | Neu durch N-6 sichtbar geworden: Push würde Pattern-B-Page mit Pattern-A-Content überschreiben. „Abort if live has template_suffix unless ALLOW_PATTERN_OVERRIDE=1" |
+| **Live-Verify** | **N-5/N-7 realer Shopify-Push (`ueber-uns`)** | 30 Min | `PUBLISH=1` + CW-008-Backup. **Vorbedingung:** entweder N-5/N-7-Schutz erst (Pattern-Schutz), oder bewusste Pattern-A-Variante akzeptieren |
+| **N-6.2** | **`cw-transfer diff shopify:template`** | 1 Session | Diff für Template-Asset-JSON (Pattern B). Dasselbe Build-then-Fetch-Pattern wie N-6, aber gegen Theme-Asset statt Page. |
 | **N-1** | **WP-Template-Adapter (Pattern B reverse)** | 1–2 Sessions | Dasselbe YAML für WP `/team/`. Rein Cortex-Web-Arbeit. |
-| **N-6** | **`cw-transfer diff`** | 1 Session | Build-then-fetch-then-JSON-diff. Rein Cortex-Web. |
+| **N-6.3** | **`cw-transfer diff wp:page`** | 1 Session | Symmetrische WP-Page-Diff. Setzt N-1 voraus (oder zumindest WP-extract-page-Reuse). |
 | **N-3** | **Design-Token-Adapter (Phase D)** | 2 Sessions | **Blocker:** Master-Frage (Praxis/Sanexio/Neutral). |
-| **Patt** | **3 Pattern-Dateien + 1 Tutorial aus S25** | ½ Session | `blocksy-child-footer-override`, `footer-data-ssot-multilang`, `card-hover-normalisation` + Tutorial 24. Rein Nexus-Arbeit. |
-| **C** | **Cluster `legacy/de` Content-Sichtung** | mittel | Content aus `_content-archive/legacy/de/` sichten, archivierbar-Entscheidung. Theme-Edit erst später. |
-| **Live-Verify** | **N-5/N-7 realer Shopify-Push** | 30 Min | `PUBLISH=1` + Backup-Check. Triggerbar von jedem Gerät mit `.env.local`. |
-
-**Cluster-Mini-02-only (Theme-Repo-Zugriff nötig):**
-
-| Prio | Front | Aufwand | Kommentar |
-|:---:|---|---|---|
-| **S2.3-A** | **`/impressum/` + `/datenschutz/` Content-Füllen** | 1 Session | Theme-Edit (Templates oder `practice-data.php`-Erweiterung). **Blocker:** Rechtsquellen/Textvorlagen Dr. Stracke. |
+| **C** | **Cluster `legacy/de` Content-Sichtung** | mittel | Content aus `_content-archive/legacy/de/` sichten, archivierbar-Entscheidung. |
+| **S2.3-A** | **`/impressum/` + `/datenschutz/` Content-Füllen** | 1 Session | Theme-Edit. **Blocker:** Rechtsquellen/Textvorlagen Dr. Stracke. |
 | **B2** | **Weiterer Design-Polish** | klein | Falls S2.4d-Ergebnis im Browser zeigt dass mehr Tuning nötig ist. |
 
 **Unverändert offen / blockiert:**
@@ -366,30 +357,31 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ## §5 Sofort-Status-Frage an Dr. Stracke
 
-> **Session 25 abgeschlossen (autonom auf Cluster-Mini-02):** Block 1 S24-Closure ✅ + Block 2 Footer-Umbau S2.4b ✅ + Block 3 Design-Polish S2.4d ✅. Alle drei 100 % AK. Theme jetzt **PXZ 2.7.21**. Praxis-Site hat jetzt einen vollständig gebrandeten Footer (Brand · 4-Spalten · Copyright + Legal-Nav) und harmonisierte Card-Hovers mit iOS-Drawer-Easing.
+> **Session 26 abgeschlossen (autonom auf Cluster-Mini-02):** N-6 `cw-transfer diff shopify:page` ✅ (12/12 AK). Adapter-Suite jetzt symmetrisch push/pull/diff. Live-Test enthüllte als Bonus eine Pattern-A-vs-B-Drift bei `/uber-uns` — neuer Sub-Task „N-5/N-7-Schutz" in §4 Top.
 >
-> **Gerätewechsel:** Session 26 auf **Mac Studio (praxis-studio)** startet mit „Projekt fortsetzen Cortex-Web". Beachte die **Einschränkung oben in §3**: Theme-Edits brauchen Cluster-Mini-02, Mac Studio macht Cortex-Web-/Trunk-/Adapter-/Nexus-Arbeit.
+> **Welche Front für Session 27?**
 >
-> **Welche Front für Session 26?**
+> **Quick-Wins (≤ ½ Session):**
+> - **N-5/N-7-Schutz** — `pages-to-shopify.mjs` „abort if live has template_suffix"-Guard (30 Min, schließt durch N-6 entdecktes Loch)
+> - **Live-Verify N-5/N-7** — realer `ueber-uns`-Re-Push mit `PUBLISH=1` + Backup-Check (30 Min, **NACH** N-5/N-7-Schutz oder explizit Pattern-A akzeptieren)
 >
-> **Mac-Studio-machbar:**
-> - **Patt** — 3 Pattern-Dateien + 1 Tutorial aus S25 in Nexus einpflegen (½ Session, sauberer Start)
-> - **N-1** — WP-Template-Adapter (Pattern B reverse) für `/team/` (1–2 Sessions)
-> - **N-6** — `cw-transfer diff` (Build-then-fetch-then-JSON-diff, 1 Session)
-> - **Live-Verify N-5/N-7** — realer `ueber-uns`-Re-Push mit `PUBLISH=1` + Backup-Check (30 Min)
-> - **C** — Cluster `legacy/de` Content-Sichtung (mittel)
->
-> **Cluster-Mini-02-only (nur wenn Dr. Stracke zurück am Home-Mac):**
+> **Mittlere Fronten (1 Session):**
+> - **N-6.2** — `cw-transfer diff shopify:template` (Pattern B Diff, gleiche Architektur wie N-6)
+> - **C** — Cluster `legacy/de` Content-Sichtung
 > - **S2.3-A** — `/impressum/` + `/datenschutz/` Content (Blocker: Rechtsquellen)
-> - **B2** — weiterer Design-Polish (falls Browser-Check Defizite zeigt)
 >
-> **Ad-hoc:** „Heute möchte ich X von A nach B übertragen." / „Review meiner S25-Ergebnisse im Browser."
+> **Größer (1–2+ Sessions):**
+> - **N-1** — WP-Template-Adapter (Pattern B reverse) für `/team/`
+> - **N-6.3** — `cw-transfer diff wp:page` (setzt N-1 voraus)
+> - **N-3** — Design-Token-Adapter (Blocker: Master-Frage)
 >
-> **Empfehlung von Claude (autonom):** **Patt** als ersten Schritt auf Mac Studio — saubere Übergabe der S25-Erkenntnisse, danach **N-6** oder **N-1** für echte Cortex-Web-Vollendung. Live-Verify kann parallel laufen.
+> **Ad-hoc:** „Heute möchte ich X" / Review der S26-Ergebnisse / „weiter nach Effizienz/Effektivität entscheiden"
+>
+> **Empfehlung von Claude (wenn autonom-Modus):** **N-5/N-7-Schutz** als ersten Schritt — schließt das durch N-6 sichtbare Push-Loch in 30 Min. Danach **Live-Verify** unbedenklich möglich. Anschließend ggf. **N-6.2** für Diff-Symmetrie (Page+Template).
 
 ---
 
-## §6 Verbote / harte Regeln (in Session 25 NIE passieren darf)
+## §6 Verbote / harte Regeln (in Session 27 NIE passieren darf)
 
 - **HWG/Berufsordnung:** Keine Werbung, keine Heilversprechen, keine Preise auf Praxis-Site (CW-005)
 - **Trunk ist Master (CW-001):** Bei Bridge-Pages keine Inhalte direkt im WP-Admin oder Shopify-Admin ändern
@@ -411,6 +403,8 @@ Alle historischen Session-Logs sind git-tracked unter `_archive/sessions/YYYY-MM
 
 | Session | Datum | Thema | Archiv-Pfad |
 |:---:|---|---|---|
+| 26 | 2026-04-23 | N-6 `cw-transfer diff shopify:page` + Build-then-Fetch-then-Diff Pattern | §3 (aktuelle Session) in dieser Datei |
+| 25 | 2026-04-23 | S24-Close + S2.4b Footer-Umbau + S2.4d Design-Polish (PXZ 2.7.21) | §3-legacy-25 in dieser Datei |
 | 24 | 2026-04-22 | Shopify-Page-Adapter N-5 PUBLISH=1 + N-7 CW-008 Backup + S2.4c Praxis-Cross-Links | §3-legacy-24 in dieser Datei |
 | 23 | 2026-04-22 | Cortex-Sanitizer V4 + V5 (selbstlernend + Auto-Apply) | §3-legacy-23 in dieser Datei, siehe auch `Nexus/tools/cortex-sanitizer/` |
 | 22 | 2026-04-22 | Cortex-Web content-bridge-v1 + cross-site-transfer | `_archive/sessions/2026-04/session-22-content-bridge-v1.md` |

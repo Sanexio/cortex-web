@@ -42,10 +42,10 @@ function printHelp() {
   process.stdout.write(`cw-transfer — Cortex-Web cross-site transfer orchestrator
 
 Usage:
-  cw-transfer push <target>:<type> <trunk-yaml>
-  cw-transfer pull <source>:<type> <identifier>
-  cw-transfer diff <target>:<type> <trunk-yaml>
-  cw-transfer list
+  cw-transfer push <target>:<type> <trunk-yaml>     write trunk -> site
+  cw-transfer pull <source>:<type> <identifier>     read site -> proto-trunk
+  cw-transfer diff <target>:<type> <trunk-yaml>     read-only compare (exit 0=equal, 1=diff, 2=error)
+  cw-transfer list                                  show registered renderers / extractors
   cw-transfer help
 
 Target/Source:
@@ -58,7 +58,15 @@ Type:
   product    Shopify product / WP partner product
   theme-file Theme file via filesystem (planned)
 
+Diff currently supported for:
+  shopify:page                                      (N-6, MVP)
+
+Diff env (shopify:page):
+  PUBLISH=1                                         compare published flag
+  FORMAT=json                                       structured output
+
 See specs/cross-site-transfer/PATTERNS.md for the 6 transfer patterns.
+See specs/cross-site-transfer/N-6_cw-transfer-diff.md for diff design.
 `);
 }
 
@@ -77,6 +85,12 @@ const PULL_TOOLS = {
   "shopify:page":     "adapters/shopify/extract-page.mjs",
   "shopify:template": "adapters/shopify/extract-template.mjs",
   "wp:page":          "adapters/wordpress/extract-page.mjs"
+};
+
+// Diff dispatch: maps <target>:<type> -> read-only diff tool
+// (build-then-fetch-then-compare; no writes to the target site)
+const DIFF_TOOLS = {
+  "shopify:page":     "adapters/shopify/diff-page.mjs"
 };
 
 function runShell(cmd, args) {
@@ -106,11 +120,13 @@ function cmdPull(spec, identifier) {
 }
 
 function cmdDiff(spec, target) {
-  // Read-only diff: build the payload locally, then fetch the current site state,
-  // and show a minimal summary. Not yet implemented as a full diff tool —
-  // placeholder so the verb is registered.
-  process.stderr.write(`cw-transfer diff: not yet implemented. Planned: build ${spec} locally, fetch site state, emit diff.\n`);
-  process.exit(1);
+  // Read-only diff: build the payload locally, fetch the current site state,
+  // emit a field-by-field comparison. Exits 0 if equal, 1 if diff present,
+  // 2 on error. See specs/cross-site-transfer/N-6_cw-transfer-diff.md.
+  if (!target) die(1, `diff: missing trunk-yaml argument`);
+  const tool = DIFF_TOOLS[spec];
+  if (!tool) die(1, `diff: no diff-tool registered for "${spec}" (try: cw-transfer list)`);
+  runShell("bun", [tool, target]);
 }
 
 function cmdList() {
