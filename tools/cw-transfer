@@ -65,6 +65,7 @@ Push currently supported for:
 Diff currently supported for:
   shopify:page                                      (N-6)
   shopify:template                                  (N-6.2)
+  wp:template                                       (N-6.3, arg = renderer handle, e.g. "team")
 
 Diff env (shopify:page):
   PUBLISH=1                                         compare published flag
@@ -74,9 +75,14 @@ Diff env (shopify:template):
   SHOPIFY_THEME_ID                                  pin theme (default=live role=main)
   FORMAT=json                                       structured output
 
+Diff env (wp:template):
+  THEME_PATH                                        override theme root (default: Local-WP Praxis)
+  FORMAT=json                                       structured output
+
 See specs/cross-site-transfer/PATTERNS.md for the 6 transfer patterns.
 See specs/cross-site-transfer/N-6_cw-transfer-diff.md for page-diff design.
 See specs/cross-site-transfer/N-6.2_cw-transfer-diff-template.md for template-diff design.
+See specs/cross-site-transfer/N-6.3_cw-transfer-diff-wp-template.md for wp:template-diff design.
 `);
 }
 
@@ -102,7 +108,8 @@ const PULL_TOOLS = {
 // (build-then-fetch-then-compare; no writes to the target site)
 const DIFF_TOOLS = {
   "shopify:page":     "adapters/shopify/diff-page.mjs",
-  "shopify:template": "adapters/shopify/diff-template.mjs"
+  "shopify:template": "adapters/shopify/diff-template.mjs",
+  "wp:template":      "adapters/wordpress/diff-team.mjs"  // N-6.3: renderer-handle arg (team)
 };
 
 function runShell(cmd, args) {
