@@ -8,9 +8,12 @@
 # Default: trunk/content/pages/_shared/ueber-uns.yaml
 #
 # Env:
-#   ALLOW_OVERWRITE=1   to overwrite an already-published page
-#   PUBLISH=1           flip published=true at write time (Trunk stays draft per CW-001;
-#                       adapter-runtime flag only)
+#   ALLOW_OVERWRITE=1         to overwrite an already-published page
+#   ALLOW_PATTERN_OVERRIDE=1  to overwrite a Pattern-B page (template_suffix set)
+#                             with a Pattern-A trunk payload. Default refuses
+#                             because it silently strips the theme binding (N-8).
+#   PUBLISH=1                 flip published=true at write time (Trunk stays
+#                             draft per CW-001; adapter-runtime flag only)
 #
 # Exit codes:
 #   0 success
