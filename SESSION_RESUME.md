@@ -11,7 +11,45 @@
 
 ---
 
-## §0 EINSTIEG „Projekt fortsetzen Cortex-Web" — Pflicht-Lesung
+## §0 ROADMAP — Holistische Prio-Leiter (CW-PRIO-001, seit Session 31)
+
+> **Regel:** Vor jeder Front-Wahl prüfen, welcher Prio-Block adressiert wird.
+> P1–P5 dominieren. Popt/Pios nur bei konkret benanntem Pain-Point.
+> Details: `_config/RULES.md` → CW-PRIO-001.
+> Pattern: `Nexus/_memory/patterns/holistic-system-priority.md`.
+> Tutorial: `Second Brain/30 Tutorials/Arbeitsweise & Prozess/06-projekt-prio-leiter-holistic.md`.
+
+### Aktueller Prio-Stand (2026-04-23, Ende Session 31)
+
+| Prio | Block | Status | Next Session |
+|:---:|---|:---:|:---:|
+| **P1** | Medien-Registry + `_media-source/`-Flow + N-1b Media-ID-Resolver | 🟡 offen, **dran** | S32 |
+| **P2** | Prod-Deployment-Pipelines (Praxis via DF/SFTP + Juvantis-Shopify-Sync dokumentiert) | 🟡 offen, DF-Support extern blockiert | S33–34 |
+| **P3** | Praxis Content-Rest (Cluster C, Impressum/Datenschutz, 7 Arzt-Profile, Aktuelles, WPForms, Google My Map) | 🟡 offen, 3 externe Blocker | S35–38 |
+| **P4** | **M1**: Erster Prod-Push westend-hausarzt.com + Verify | 🔴 Meilenstein | S39–40 |
+| **P5** | Juvantis Content-Alltag (2–3 weitere Bridge-Seiten, Content-Pflege als Gewohnheit) | 🔴 offen | S41–44 |
+| **P6** | Mehrsprachigkeit Praxis (i18n-Mechanik + externe Übersetzungen + Integration) | 🔴 offen | S45+ |
+| **Ppol** | Design-Polish, A11y-Audit, Mobile-Finish | 🔴 offen | nach P4 |
+| **Popt** | N-6.4, N-6.5, Pattern C (Metafield), Live-Verify-Override-Lauf | ⏸ gefrierend | **nur bei Pain-Point** |
+| **Pios** | N-3 Design-Token + iOS-Adapter | ⏸ gefrierend | **wenn iOS-App-Scope aktiv wird** |
+
+### Zeit-Schätzung bis „holistisches System trägt"
+
+| Scope | Sessions | Realistisch bei 2–3/Tag |
+|---|:---:|---|
+| Kern-System (P1–P5) | 12–17 | 5–8 Wochen |
+| + P6 Mehrsprachigkeit | 18–27 | 7–12 Wochen |
+| + Ppol Polish | 19–29 | 8–13 Wochen |
+
+Externe Blocker sind eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz), Arzt-Fotos, externe Übersetzungen.
+
+### Infrastruktur-Drift-Audit (Session 31 Selbstkorrektur)
+
+Von 10 vorangegangenen Sessions (S22–S31) waren **7 Infrastruktur-Sessions** (S22, S23, S26, S27, S28, S30, S31) und **3 Praxis-Sessions** (S24 teilweise, S25, S29 teilweise). Die Adapter-Suite ist jetzt 90 % symmetrisch — aber Medien-Registry leer, Prod-Deploy nicht etabliert, Site nicht deployed. **CW-PRIO-001 ist die Kurskorrektur.**
+
+---
+
+## §0a EINSTIEG „Projekt fortsetzen Cortex-Web" — Pflicht-Lesung
 
 ### Basis (immer)
 1. `~/Cortex/Nexus/CLAUDE.md`
@@ -39,13 +77,14 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.7.8` — Session 30: N-6.3 `cw-transfer diff wp:template` (FS-Variante des Build-then-Fetch-then-Diff-Patterns) ✅ (2026-04-23, autonom Cluster-Mini-02)
-- **Stand:** 2026-04-23, Cortex-Web-Aufbau (Phase 0–5) ✅ + Content-Bridge + Cross-Site-Transfer **push/pull/diff vollständig symmetrisch über Pattern A (Shopify) + Pattern B (Shopify + WP)** ✅ + Praxis-Sprint 2 → 6/7 Cluster ✅
-- **Jüngste Commits (Session 30):**
-  - Cortex-Web: folgt am Session-Ende — N-6.3 Spec + Adapter + Evidence + cw-transfer-Erweiterung
-  - Theme: unverändert bei `29dcaf8` (PXZ 2.7.22, N-6.3 ist read-only)
-  - Nexus: folgt am Session-Ende — Pattern `build-then-fetch-then-diff` FS-Variante + Tutorial 03 Lehren + MEMORY-Update
-- **Working Tree:** Cortex-Web pending (N-6.3-Feat + Docs). Theme sauber bei `29dcaf8` (nur Drift-Test-Mutationen, vollständig restauriert MD5 match). Nexus pending.
+- **Version:** `0.7.9` — Session 31: Live-Verify N-8 Pattern-B-Guard in Produktion ✅ + **CW-PRIO-001 Prio-Shift** (holistische System-Priorität) ✅ (2026-04-23, Cluster-Mini-02)
+- **Stand:** 2026-04-23, Cortex-Web-Aufbau (Phase 0–5) ✅ + Content-Bridge + Cross-Site-Transfer **push/pull/diff vollständig symmetrisch über Pattern A (Shopify) + Pattern B (Shopify + WP)** ✅ + Praxis-Sprint 2 → 6/7 Cluster ✅ + N-8 Guard in Prod empirisch verifiziert ✅
+- **Strategie-Shift S31:** Nach Audit („7/10 letzte Sessions Infra") → neue Prio-Leiter CW-PRIO-001 (siehe §0). Default-Pfad ab S32 ist **P1 Medien-Registry**, nicht weitere Adapter-Symmetrie.
+- **Jüngste Commits (Session 30, durch):**
+  - Cortex-Web: `06b1747` (feat N-6.3) + `48ec8bf` (docs session-30)
+  - Theme: `29dcaf8` (PXZ 2.7.22, unverändert)
+  - Nexus: Auto-sync (Pattern + Tutorial + MEMORY)
+- **Working Tree Session 31:** Cortex-Web pending (Live-Verify Evidence + CW-PRIO-001 + §0 Roadmap-Shift). Theme unverändert bei `29dcaf8`. Nexus pending (Pattern holistic-system-priority + Tutorial 06).
 
 ### §1.1 Phasen-Status
 
@@ -111,7 +150,65 @@ Erwartet: Alle gepflegten Dateien unter Token-Budget (LL-044). Siehe `Nexus/tool
 
 ---
 
-## §3 Letzte Session — Session 30, 2026-04-23 (N-6.3 `cw-transfer diff wp:template`, autonom)
+## §3 Letzte Session — Session 31, 2026-04-23 (Live-Verify N-8 Guard + CW-PRIO-001 Prio-Shift)
+
+### Gerät
+**Cluster-Mini-02** (home-Mac M2).
+
+### Ziel
+1. Live-Verify N-8 Pattern-B-Guard in Produktiv-Shopify (ist der Guard wirklich dicht?)
+2. Nach Dr.-Stracke-Feedback („wir kommen nicht vom Fleck") holistische Strategie-Neuausrichtung
+
+### Umsetzung Teil 1 — Live-Verify (30 Min, erwartete Low-Effort-Front)
+
+**Ziel:** Empirischer Beweis, dass N-8-Guard in `pages-to-shopify.mjs:129-131` einen Pattern-A-Push auf Pattern-B-Page `pages/uber-uns` (Shopify Page ID 157742137611, template_suffix="uber-uns") blockiert.
+
+**Freigabe Dr. Stracke:** „Lauf 1 freigegeben". Lauf 2 (Bypass via `ALLOW_PATTERN_OVERRIDE=1`) bewusst ausgelassen — Override-Mechanik codeseitig in S27 bewiesen.
+
+**Ablauf:** Pre-Snapshot GET → `bash tools/sync-page-shopify.sh trunk/content/pages/_shared/ueber-uns.yaml` → Post-Snapshot GET → `ls .backups/`
+
+**Ergebnis (7/7 AKs):**
+- Exit-Code 2 ✅
+- Error-Message wortgleich zu Code Z.130 ✅
+- Pre-/Post-GET byte-identisch: `updated_at` 2026-04-22T20:46:28+02:00 unverändert, `published_at`, `template_suffix`, `body_html_length=0` alle unverändert ✅
+- `.backups/` nicht erzeugt → Guard feuerte VOR Backup-Block (`pages-to-shopify.mjs:140`) ✅
+
+**Evidence:** `specs/cross-site-transfer/evidence/2026-04-23_live-verify-n8-guard.md`
+
+**Bedeutung:** Pattern B auf Shopify ist jetzt empirisch vollständig geschützt. S26/S27/S28/S30 + S31 bilden zusammen den Pattern-B-Schutzwall (Read via Diff, Write via Guard, Live-verifiziert).
+
+### Umsetzung Teil 2 — Strategie-Neuausrichtung (CW-PRIO-001)
+
+**Auslöser:** Dr.-Stracke-Feedback: „Wir machen Session für Session ohne spürbaren Fortschritt."
+
+**Audit (im Chat):** Von 10 Sessions S22–S31 waren **7 Infrastruktur** (S22, S23, S26, S27, S28, S30, S31), nur **3 Praxis-direkt** (S24 teilweise, S25, S29 teilweise). Adapter-Suite 90 % symmetrisch — aber Medien-Registry leer, Prod-Deploy nicht etabliert, Praxis-Site nicht deployed.
+
+**Neuausrichtung nach Dr.-Stracke-Framing („holistisches System, tragfähig für Alltag"):**
+- Neue **Prio-Leiter P1–P6 + Popt + Pios** in `_config/RULES.md` als CW-PRIO-001
+- **§0 Roadmap** in SESSION_RESUME (dieser Datei) als erster Block neu strukturiert
+- **Pattern** `Nexus/_memory/patterns/holistic-system-priority.md`
+- **Tutorial** `Second Brain/30 Tutorials/Arbeitsweise & Prozess/06-projekt-prio-leiter-holistic.md`
+- Default-Pfad ab S32: **P1 Medien-Registry**, nicht weitere Adapter-Fronten
+
+### Pre-Flight-Metriken am Session-Ende
+- `tools/validate.sh` — OK (1 file)
+- Sanitizer-Probe: alle Dateien im Budget (MEMORY 3850 Tok, Nexus/CLAUDE 6410 Tok, SESSION_RESUME 10155 Tok vor §0-Erweiterung)
+- Sanitizer-Learn: 0 Duplikate, 104 stale-refs (+10 vs. S30, unverändert „meist Platzhalter")
+- Theme: PXZ 2.7.22 (`29dcaf8`) unverändert
+- Shopify Page `/uber-uns` unverändert (Live-Verify war rein lesend + Guard-Block)
+
+### Commits
+- Cortex-Web: folgt am Session-Ende — Live-Verify Evidence + CW-PRIO-001 + §0 Roadmap + §3 Update
+- Nexus: folgt am Session-Ende — Pattern holistic-system-priority + Tutorial 06 + MEMORY-Update
+
+### Nicht erledigt (bewusst, Scope-Cut durch Prio-Shift)
+- Kein N-6.5 `wp:page-diff` — auf Popt gefrierend (kein aktueller Pain-Point)
+- Kein N-1b Media-ID-Resolver — wandert in P1 (nächste Session, zusammen mit Medien-Registry)
+- Kein Lauf 2 Live-Verify mit Override (nicht nötig, S27 hat Override-Mechanik bewiesen)
+
+---
+
+## §3-legacy-30 Session 30, 2026-04-23 (N-6.3 `cw-transfer diff wp:template`, autonom)
 
 ### Gerät
 **Cluster-Mini-02** (home-Mac M2), autonom-Modus (Freigabe Dr. Stracke: „Entscheide du vor dem Hintergrund einer stabilen, flexiblen und dauerhaften aber auch skalierbaren Webseite in der Zukunft. Arbeite jetzt alles ohne Rückfragen ab.").
@@ -554,64 +651,91 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ---
 
-## §4 Offene Tasks (Priorität absteigend)
+## §4 Offene Tasks — nach CW-PRIO-001-Leiter
 
-### Wählbare Fronten für Session 31
+> Verbindlich ab Session 31. Popt/Pios-Fronten sind gefrierend, bis ein konkreter Pain-Point sie in P1–P5 zieht.
 
-| Prio | Front | Aufwand | Kommentar |
-|:---:|---|---|---|
-| **N-6.4** | **`cw-transfer diff shopify:product`** | 1 Session | Product-Diff inkl. Variants/Images/Metafields. Reuse `build-then-fetch-then-diff` (HTTP-Variante). |
-| **N-6.5** | **`cw-transfer diff wp:page` (neu, Pattern A WP)** | 1 Session | Diff-Adapter für WP-REST-basierte Pages. Braucht WP-REST-Auth-Setup. Komplettiert letzten offenen Diff-Quadranten. |
-| **Live-Verify Shopify-Push** | **Realer Push-Versuch gegen `/uber-uns` (Pattern-A-Adapter)** | 15–30 Min | Soll am N-8-Guard mit Exit 2 scheitern. Beweist N-6/N-8 end-to-end. Optional 2. Lauf mit `ALLOW_PATTERN_OVERRIDE=1`. |
-| **N-1b Erweiterung** | **WP-Media-ID-Resolver** | ½–1 Session | Folge-Phase von N-1: `media://...`-URIs aus Trunk auf WP-Attachment-IDs mappen (image_id != 0). Braucht Media-Registry. |
-| **N-1c Erweiterung** | **Andere Entitäten per wp:template-Pattern** | 1 Session | z.B. Services-Hub (`pxz_leistungen_categories`), Diagnostik-Data (`pxz_diagnostik_categories`). Reuse Pattern `wp-theme-data-json` + N-6.3 erbt kostenlos die Diff-Registry-Erweiterung. |
-| **N-3** | **Design-Token-Adapter (Phase D)** | 2 Sessions | **Blocker:** Master-Frage (Praxis/Sanexio/Neutral). |
-| **C** | **Cluster `legacy/de` Content-Sichtung** | mittel | Content aus `_content-archive/legacy/de/` sichten, archivierbar-Entscheidung. 7/7-Vervollständigung. |
-| **S2.3-A** | **`/impressum/` + `/datenschutz/` Content-Füllen** | 1 Session | Theme-Edit. **Blocker:** Rechtsquellen/Textvorlagen Dr. Stracke. |
+### P1 — Medien-Registry + N-1b (aktiv, dran in S32)
 
-**Unverändert offen / blockiert:**
+| Task | Aufwand | Inhalt |
+|---|:---:|---|
+| **P1-a** Medien-Registry-Tool | 1 Session | `tools/media/register.mjs` (CW-003): kopiert Datei in `_media-source/`, lädt zu Shopify Files, trägt Eintrag in `trunk/media/registry.yaml`. Schema + erste 3 Test-Assets (Team-Fotos Dr. Stracke als Pilot). |
+| **P1-b** N-1b Media-ID-Resolver | ½–1 Session | `media://...`-URIs aus Trunk → WP-Attachment-IDs (`image_id != 0`). Baut auf Registry aus P1-a auf. Roundtrip-Beweis: Dr.-Stracke-Bild im Trunk → erscheint mit korrekter ID auf `/team/` und `/dr-stracke/`. |
 
-| Prio | Front | Aufwand | Blocker |
-|:---:|---|---|---|
-| **D** | Echt-Content + Fotos für 7 Stub-Arzt-Profile | groß | Bio-Text + Foto-Shooting extern |
-| **G** | Beginn Sprint 3 i18n | 6+ Sessions | Erst nach C sinnvoll |
-| **R-7** | sono-atlas DSGVO | — | DSGVO-Entscheidung Dr. Stracke |
+### P2 — Prod-Deployment-Pipelines
 
-### P1-Punkte aus Vorgänger-Sessions (offen)
+| Task | Aufwand | Blocker |
+|---|:---:|---|
+| **P2-a** DF-Support reaktivieren (Staging + SFTP-Zugang klären) | — | Dr. Stracke muss extern anschieben |
+| **P2-b** Praxis SFTP-Deploy-Script + Staging-Flow dokumentieren | 1–2 Sessions | P2-a |
+| **P2-c** Juvantis `shopify-sync.sh` als Pipeline-Pattern dokumentieren | ½ Session | — |
+
+### P3 — Praxis Content-Rest
+
+| Task | Aufwand | Blocker |
+|---|:---:|---|
+| **P3-a** Cluster C `legacy/de` sichten (23 P2-Pages) | 1 Session | — |
+| **P3-b** 7 Arzt-Profile mit verfügbarem Echt-Content | 1–2 Sessions | Fotos Dr. Stracke (kann parallel laufen) |
+| **P3-c** Aktuelles-Section Content + WPForms + Google My Map | 1 Session | — |
+| **P3-d** `/impressum/` + `/datenschutz/` Content | 1 Session | Rechtsquellen Dr. Stracke |
+
+### P4 — M1 Prod-Launch
+
+| Task | Aufwand | Blocker |
+|---|:---:|---|
+| **P4-a** Erster Prod-Push westend-hausarzt.com | 1 Session | P2 komplett, P3 genug vorhanden |
+| **P4-b** Verify auf Prod (SEO, Forms, Maps, alle Cluster) | 1 Session | P4-a |
+
+### P5 — Juvantis Content-Alltag
+
+| Task | Aufwand |
+|---|:---:|
+| **P5-a** 2–3 weitere Bridge-Seiten (z. B. weitere Bluttests, Team auf beiden Sites) | 3–4 Sessions |
+
+### P6 — Mehrsprachigkeit Praxis
+
+| Task | Aufwand | Blocker |
+|---|:---:|---|
+| **P6-a** i18n-Mechanik-Entscheidung (Plugin Polylang/WPML vs. Trunk-basiert via Adapter) | ½ Session | — |
+| **P6-b** Übersetzungen extern beauftragen (DE → EN + optional FR/ES) | — | Dr. Stracke extern |
+| **P6-c** Integration + hreflang + Language-Switcher | 4–8 Sessions | P6-b |
+
+### Gefrierend offen (Popt / Pios) — nur bei Pain-Point
+
+| Block | Warum gefrierend |
+|---|---|
+| **N-6.4** `shopify:product`-Diff | Kein Produkt-Kuration-Schmerz bisher; Pattern C wirkt erst bei Skalierung |
+| **N-6.5** `wp:page`-Diff (Pattern A WP) | Braucht WP-REST-Auth; letzter Diff-Quadrant, aber kein heutiger Blocker |
+| **Live-Verify Lauf 2** (ALLOW_PATTERN_OVERRIDE=1) | Override-Mechanik codeseitig in S27 bewiesen; produktiver Overwrite nicht nötig |
+| **N-3** Design-Token-Adapter | Wartet auf iOS-Adapter-Scope; aktuell kein Pain (Praxis `--pxz-*` + Juvantis Shopify-Settings funktionieren getrennt wie beabsichtigt) |
+| **Pattern C** Metafield-Sections | Evolution von Pattern B; erst bei konkretem Metafield-Use-Case |
+
+### Ewige externe Blocker (unverändert)
 
 - Santapress-Archive-Entscheidung fällig ab 2026-05-19
-- WPForms-Marker (S2.3-kern)
-- Google My Map mit POIs (S2.3-kern)
-- „Aktuelles aus der Praxis"-Inhalt (S2.3-kern Setting leer)
-- Footer-Legal-Links (Impressum/Datenschutz) führen aktuell auf leere Pages — wird mit S2.3-A gelöst
+- Sono-atlas DSGVO-Gate (R-7)
 
 ---
 
-## §5 Sofort-Status-Frage an Dr. Stracke
+## §5 Sofort-Status-Frage an Dr. Stracke — Session 32
 
-> **Session 30 abgeschlossen (autonom auf Cluster-Mini-02):** N-6.3 `cw-transfer diff wp:template` ✅ (16/16 AKs = 100 %). **Diff-Quadrant für Pattern B vollständig geschlossen** — auf Shopify (N-6.2, S28) und auf WP (N-6.3, S30). Extended Evidence mit Parity + zwei Drift-Mutationen + ABSENT + Restore + Re-Diff-Verifikation bewiesen. Theme-Integrität post-Test durch MD5-match restauriert (PXZ 2.7.22 unverändert).
+> **Session 31 abgeschlossen:** Live-Verify N-8-Guard in Produktiv-Shopify ✅ (7/7 AKs = 100 %) + **CW-PRIO-001 Prio-Shift** verankert (Projekt-Regel + Pattern + Tutorial + §0 Roadmap).
 >
-> **Welche Front für Session 31?**
+> **Default für Session 32 (nach Prio-Leiter):** **P1-a Medien-Registry bauen**
+> — `tools/media/register.mjs` implementieren, Schema festlegen, erste 3 Test-Assets (z. B. Team-Fotos) als Pilot-Round-Trip. Danach fließt P1-b (Media-ID-Resolver) in dieselbe oder Folge-Session.
 >
-> **Quick-Win (≤ ½ Session):**
-> - **Live-Verify Shopify-Push** — echter Push-Versuch gegen `/uber-uns` (Pattern-A-Adapter). Soll am N-8-Guard mit Exit 2 scheitern.
-> - **N-1b Media-ID-Resolver** — `media://...` → WP-Attachment-ID-Mapping (Folge-Phase N-1).
+> **Warum P1-a als Default:** Ohne Medien-Registry sind alle Content-Flows Torsos; `image_id = 0` im N-1-Output ist das sichtbarste Symptom. Erst mit P1 kann P3 (Arzt-Profile, Cluster C) sinnvoll gemacht werden.
 >
-> **Mittlere Fronten (1 Session):**
-> - **N-6.4** — `cw-transfer diff shopify:product` (Product-Diff inkl. Variants/Images/Metafields)
-> - **N-6.5** — `cw-transfer diff wp:page` (Pattern A WP, braucht WP-REST-Auth) — **komplettiert letzten offenen Diff-Quadranten**
-> - **N-1c** — Pattern `wp-theme-data-json` auf Services-Hub / Diagnostik-Data anwenden (erbt automatisch den N-6.3-Diff-Pfad über die `DIFF_RENDERERS`-Registry)
-> - **C** — Cluster `legacy/de` Content-Sichtung
-> - **S2.3-A** — `/impressum/` + `/datenschutz/` Content (Blocker: Rechtsquellen)
+> **Optionen zur Abweichung (nur wenn konkreter Grund):**
+> - **P2-a anstoßen** (DF-Support-Ticket) — kann als Hintergrund-Aktion laufen, während P1 parallel startet
+> - **P3-d Impressum/Datenschutz** — nur wenn Sie die Rechtsquellen heute bereitstellen können
+> - **Ad-hoc-Front** („Heute möchte ich X")
 >
-> **Größer (1–2+ Sessions):**
-> - **N-3** — Design-Token-Adapter (Blocker: Master-Frage)
->
-> **Ad-hoc:** „Heute möchte ich X" / Review der S30-Ergebnisse / „weiter nach Effizienz/Effektivität entscheiden"
+> **Popt/Pios nicht in der Default-Liste** — siehe §4 „Gefrierend offen".
 
 ---
 
-## §6 Verbote / harte Regeln (in Session 30 NIE passieren darf)
+## §6 Verbote / harte Regeln (in Session 32 NIE passieren darf)
 
 - **HWG/Berufsordnung:** Keine Werbung, keine Heilversprechen, keine Preise auf Praxis-Site (CW-005)
 - **Trunk ist Master (CW-001):** Bei Bridge-Pages keine Inhalte direkt im WP-Admin oder Shopify-Admin ändern
@@ -624,6 +748,7 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 - **WP-Filter-Hooks-Lade-Reihenfolge:** Helper vor Filter-Registrierung laden
 - **Keine eigenmächtigen Strukturänderungen** in Nexus oder Cortex-Web ohne Dr.-Stracke-Freigabe (LL-023, KON-001)
 - **Token-Budgets einhalten (LL-044):** SESSION_RESUME ≤ 15 k · MEMORY ≤ 10 k · Nexus/CLAUDE ≤ 12 k. Sanitizer-Probe bei Session-Ende pflichtig.
+- **Holistische Prio (CW-PRIO-001, S31):** P1–P5 dominieren. Popt/Pios nur bei benanntem Pain-Point. Kein Rückfall in Adapter-Symmetrie-Drift.
 
 ---
 
@@ -633,7 +758,8 @@ Alle historischen Session-Logs sind git-tracked unter `_archive/sessions/YYYY-MM
 
 | Session | Datum | Thema | Archiv-Pfad |
 |:---:|---|---|---|
-| 30 | 2026-04-23 | N-6.3 `cw-transfer diff wp:template` (FS-Variante Build-then-Fetch-then-Diff) + Extended Evidence (Drift-Test) | §3 (aktuelle Session) in dieser Datei |
+| 31 | 2026-04-23 | Live-Verify N-8 Guard (Produktiv-Shopify, 7/7 AKs) + CW-PRIO-001 Prio-Shift (§0 Roadmap, Pattern, Tutorial) | §3 (aktuelle Session) in dieser Datei |
+| 30 | 2026-04-23 | N-6.3 `cw-transfer diff wp:template` (FS-Variante Build-then-Fetch-then-Diff) + Extended Evidence (Drift-Test) | §3-legacy-30 in dieser Datei |
 | 29 | 2026-04-23 | N-1 WP-Template-Adapter (Pattern B reverse für /team/) + Parität + Live-Test | §3-legacy-29 in dieser Datei |
 | 28 | 2026-04-23 | N-6.2 `cw-transfer diff shopify:template` + Live-Diff EQUAL (content-bridge-v1 Roundtrip-Beweis) | §3-legacy-28 in dieser Datei |
 | 27 | 2026-04-23 | N-8 Pattern-A-vs-B-Guard in `pages-to-shopify.mjs` + Pre-Write-Classification-Pattern | §3-legacy-27 in dieser Datei |
