@@ -9,11 +9,16 @@
 #
 # Env:
 #   ALLOW_OVERWRITE=1   to overwrite an already-published page
+#   PUBLISH=1           flip published=true at write time (Trunk stays draft per CW-001;
+#                       adapter-runtime flag only)
 #
 # Exit codes:
 #   0 success
 #   1 setup / config error
 #   2 validation / REST error (propagated from adapters)
+#
+# Backup (CW-008): on update, the existing Shopify page is saved under
+#   adapters/shopify/.backups/<ts>_page<id>_<handle>.json before PUT.
 
 set -euo pipefail
 
