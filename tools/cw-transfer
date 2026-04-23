@@ -58,6 +58,10 @@ Type:
   product    Shopify product / WP partner product
   theme-file Theme file via filesystem (planned)
 
+Push currently supported for:
+  shopify:page / shopify:template / shopify:product
+  wp:product / wp:template (N-1, team data)
+
 Diff currently supported for:
   shopify:page                                      (N-6)
   shopify:template                                  (N-6.2)
@@ -83,7 +87,8 @@ const PUSH_TOOLS = {
   "shopify:page":     "tools/sync-page-shopify.sh",
   "shopify:template": "tools/sync-template-shopify.sh",
   "shopify:product":  "tools/sync-shopify.sh",
-  "wp:product":       "tools/sync-wp.sh"
+  "wp:product":       "tools/sync-wp.sh",
+  "wp:template":      "tools/sync-team-wp.sh"  // N-1: team data (Pattern B reverse)
 };
 
 // Pull dispatch: maps <source>:<type> -> extractor tool

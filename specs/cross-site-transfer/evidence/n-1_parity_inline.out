@@ -1,0 +1,108 @@
+[
+    {
+        "accent": "red",
+        "image_id": 0,
+        "intro": "Schwerpunkt Innere Medizin, Diabetologie und Ernährungsmedizin. Als Praxisinhaber verbindet er klinische Erfahrung mit modernen digitalen Prozessen – für Medizin, die nicht nur Symptome behandelt, sondern am Patienten denkt.",
+        "languages": [
+            "de",
+            "en"
+        ],
+        "name": "Dr. med. Siegbert Stracke, MBA",
+        "profile_url": "/dr-stracke/",
+        "slug": "dr-stracke",
+        "title": "Facharzt für Innere Medizin · Praxisinhaber"
+    },
+    {
+        "accent": "amber",
+        "image_id": 0,
+        "intro": "Ausbildung in Deutschland, Frankreich und Belgien. Anamnese und Befundbesprechung in Deutsch, Englisch, Französisch und Spanisch – zuletzt leitende Oberärztin in Spanien.",
+        "languages": [
+            "de",
+            "en",
+            "fr",
+            "es"
+        ],
+        "name": "Docteur en méd. Sonja Saul",
+        "profile_url": "/docteur-saul/",
+        "slug": "docteur-saul",
+        "title": "Fachärztin für Innere Medizin"
+    },
+    {
+        "accent": "ink",
+        "image_id": 0,
+        "intro": "Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.",
+        "languages": [
+            "de",
+            "en"
+        ],
+        "name": "Dr. Fabian Barcsay",
+        "profile_url": "/dr-barcsay/",
+        "slug": "dr-barcsay",
+        "title": "Facharzt für Innere Medizin"
+    },
+    {
+        "accent": "ink",
+        "image_id": 0,
+        "intro": "Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.",
+        "languages": [
+            "de",
+            "en"
+        ],
+        "name": "Dr. Stefanie Seelig",
+        "profile_url": "/dr-seelig/",
+        "slug": "dr-seelig",
+        "title": "Fachärztin für Innere Medizin"
+    },
+    {
+        "accent": "ink",
+        "image_id": 0,
+        "intro": "Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.",
+        "languages": [
+            "de",
+            "en"
+        ],
+        "name": "Dr. Issa Jawich",
+        "profile_url": "/dr-jawich/",
+        "slug": "dr-jawich",
+        "title": "Facharzt für Innere Medizin"
+    },
+    {
+        "accent": "ink",
+        "image_id": 0,
+        "intro": "Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.",
+        "languages": [
+            "de",
+            "en"
+        ],
+        "name": "Dr. George Shahin",
+        "profile_url": "/dr-shahin/",
+        "slug": "dr-shahin",
+        "title": "Facharzt für Innere Medizin"
+    },
+    {
+        "accent": "ink",
+        "image_id": 0,
+        "intro": "Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.",
+        "languages": [
+            "de",
+            "en"
+        ],
+        "name": "Linne Landeberg",
+        "profile_url": "/dr-landeberg/",
+        "slug": "dr-landeberg",
+        "title": "Ärztin"
+    },
+    {
+        "accent": "ink",
+        "image_id": 0,
+        "intro": "Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.",
+        "languages": [
+            "de",
+            "en"
+        ],
+        "name": "Anna Arbitmann",
+        "profile_url": "/dr-arbitmann/",
+        "slug": "dr-arbitmann",
+        "title": "Ärztin"
+    }
+]
