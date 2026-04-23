@@ -39,13 +39,13 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.7.4` — Session 26: N-6 `cw-transfer diff shopify:page` ✅ (2026-04-23, autonom Cluster-Mini-02)
-- **Stand:** 2026-04-23, Cortex-Web-Aufbau (Phase 0–5) ✅ + Content-Bridge + Cross-Site-Transfer ✅ (jetzt push/pull/**diff** symmetrisch für `shopify:page`) + Praxis-Sprint 2 → 6/7 Cluster ✅ + Footer-Umbau S2.4b ✅ + Design-Polish S2.4d ✅
-- **Jüngste Commits (Session 26):**
-  - Cortex-Web: `<noch zu erstellen>` (N-6 spec+adapter+evidence + SESSION_RESUME-Closure)
-  - Nexus: `1011494` (S25-Patterns + Tutorial 24, am Ende S25 erstellt) · `<S26-Pattern + Tutorial 03 + MEMORY-Update — Auto-Sync>`
+- **Version:** `0.7.5` — Session 27: N-8 Pattern-A-vs-B-Guard in `pages-to-shopify.mjs` ✅ (2026-04-23, autonom Cluster-Mini-02)
+- **Stand:** 2026-04-23, Cortex-Web-Aufbau (Phase 0–5) ✅ + Content-Bridge + Cross-Site-Transfer (push/pull/diff symmetrisch für `shopify:page`) ✅ + **Pattern-Konversions-Schutz am Shopify-Page-Push** ✅ + Praxis-Sprint 2 → 6/7 Cluster ✅ + Footer-Umbau S2.4b ✅ + Design-Polish S2.4d ✅
+- **Jüngste Commits (Session 27):**
+  - Cortex-Web: `74c6470` (N-8 guard + spec + evidence) · folgt: S27-Close-Commit (SESSION_RESUME + MEMORY + Dashboard)
+  - Nexus: folgt: S27-Pattern + Tutorial 04 + MEMORY-Update
   - Theme: unverändert seit S25 (`42001ec` PXZ 2.7.21)
-- **Working Tree:** Cortex-Web wird in dieser Session committed (cw-transfer + diff-page.mjs + N-6-Spec + evidence + diese Datei). Theme sauber. Nexus committed lokal, Auto-Sync läuft in Folge.
+- **Working Tree:** Cortex-Web — `74c6470` gelandet; SESSION_RESUME wird in dieser Session zusätzlich committed. Nexus committed lokal am Session-Ende, Auto-Sync läuft in Folge.
 
 ### §1.1 Phasen-Status
 
@@ -65,8 +65,9 @@
 | **S2.4b Footer-Umbau** | **Blocksy-Default raus, eigener PXZ-Footer mit Brand + 4-Spalten-Grid + Bottom-Bar (footer-data.php SSoT, 4-sprachig)** | **✅ Session 25** |
 | **S2.4d Design-Polish** | **Card-Hover-Normalisierung (4 Files, shadow-card-hi + 180ms cubic-bezier + translateY(-3px)) + iOS-Drawer-Easing + Diagnostik-Typo clamp()** | **✅ Session 25** |
 | **N-6 `cw-transfer diff`** | **Read-only Build-then-Fetch-then-Diff für `shopify:page`. 240-Zeilen-Adapter, 12/12 AKs, Live-Test gegen `/uber-uns` zeigt Pattern-A-vs-B-Drift.** | **✅ Session 26** |
+| **N-8 Pattern-A-vs-B-Guard** | **`pages-to-shopify.mjs` verweigert Push auf Pattern-B-Page ohne `ALLOW_PATTERN_OVERRIDE=1`. +25 Z. Adapter, 11/11 AKs, Bundle 6.88 KB.** | **✅ Session 27** |
 
-**Status:** Cortex-Web-Aufbau abgeschlossen. Adapter-Suite hat jetzt symmetrisch push/pull/diff für `shopify:page`. Praxis-Footer vollständig gebrandet, global konsistent. Design-Polish über 5 CSS-Dateien harmonisiert. 6/7 Content-Cluster migriert. Verbleibend: `legacy/de` (23 P2) · Footer-Legal-Ziele (Impressum, Datenschutz brauchen Content aus S2.3-A) · Pattern-A-vs-B-Push-Schutz für `pages-to-shopify.mjs` (durch N-6 sichtbar geworden).
+**Status:** Cortex-Web-Aufbau abgeschlossen. Adapter-Suite hat jetzt symmetrisch push/pull/diff für `shopify:page` **und** einen Pattern-Konversions-Guard (verhindert unbeabsichtigte B→A-Konversion beim Push). Praxis-Footer vollständig gebrandet, global konsistent. Design-Polish über 5 CSS-Dateien harmonisiert. 6/7 Content-Cluster migriert. Verbleibend: `legacy/de` (23 P2) · Footer-Legal-Ziele (Impressum, Datenschutz brauchen Content aus S2.3-A) · N-6.2 `cw-transfer diff shopify:template` (Symmetrie auf Pattern-B-Ebene).
 
 ---
 
@@ -107,87 +108,115 @@ Erwartet: Alle gepflegten Dateien unter Token-Budget (LL-044). Siehe `Nexus/tool
 
 ---
 
-## §3 Letzte Session — Session 26, 2026-04-23 (N-6 `cw-transfer diff`, autonom)
+## §3 Letzte Session — Session 27, 2026-04-23 (N-8 Pattern-A-vs-B-Guard, autonom)
 
 ### Gerät
-**Cluster-Mini-02** (home-Mac M2). Erwarteter Mac-Studio-Einsatz aus
-Session-25-§5 trat nicht ein — Dr. Stracke kam an Cluster-Mini-02 zurück.
-Damit waren alle Fronten verfügbar (auch Theme-Edits), aber er entschied
-sich für die Trunk/Adapter-Front.
+**Cluster-Mini-02** (home-Mac M2), autonom-Modus.
 
 ### Ziel
-Zwei Blöcke nach Effizienz-/Effektivitäts-Bewertung (durch Claude):
-1. **Block 1** — Patt: 3 Pattern + Tutorial 24 aus S25 in Nexus einpflegen
-2. **Block 2** — N-6 `cw-transfer diff` (read-only Build-then-Fetch-then-Diff)
+Umsetzung N-5/N-7-Schutz aus SESSION_RESUME-S26-§4. Dr. Stracke gab
+Front-Wahl frei („du darfst entscheiden"). Claude wählte nach
+Effizienz-/Effektivitäts-Bewertung:
+- **Quick-Win mit höchstem Sicherheits-Hebel** — schließt das durch N-6
+  Live-Test sichtbar gewordene Push-Loch (Pattern-B-Page würde von
+  Pattern-A-Trunk überschrieben, Theme-Binding ginge verloren).
+- **Nicht gewählt:** Live-Verify (CW-006: explizite Operator-Aktion),
+  N-6.2 (eigene Session), N-1 (größere Front).
 
-### Block 1 — Patt: bereits erledigt (Befund)
+### Umsetzung
 
-Bei der Vorbereitung stellte sich heraus, dass alle vier Dateien bereits
-Ende S25 committed waren (Nexus-Commit `1011494`):
-- `Nexus/_memory/patterns/blocksy-child-footer-override.md` (95 Z.)
-- `Nexus/_memory/patterns/footer-data-ssot-multilang.md` (100 Z.)
-- `Nexus/_memory/patterns/card-hover-normalisation.md` (113 Z.)
-- `Nexus/Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/24-blocksy-footer-override.md` (134 Z.)
+**Spec:** `specs/cross-site-transfer/N-8_pattern-a-vs-b-guard.md` (125 Z., §1–§4, 11 AKs)
 
-**Konsequenz:** SESSION_RESUME-§4-Eintrag „Patt offen" war eine veraltete
-Angabe. Wurde in dieser Session korrigiert (entfernt aus §4). **0 Min Aufwand.**
+**Code-Änderungen `adapters/shopify/pages-to-shopify.mjs` (+25 Z.):**
+1. Lookup-Fields erweitert: `...,template_suffix` (kein Extra-Request, nur
+   zusätzliches Feld im bestehenden GET)
+2. Neuer Env-Flag `ALLOW_PATTERN_OVERRIDE` (default: verweigern, kein
+   Silent-Konversion)
+3. Guard-Block **VOR** dem Publish-Check im `pages.length === 1`-Zweig —
+   „gröbere" Aktion (Pattern-Konversion) greift vor „feinerer" (Publish-Overwrite)
+4. Error-Message nennt Flag wörtlich: `...is Pattern B (template_suffix="uber-uns")
+   — a Pattern-A push would discard the theme binding. Set ALLOW_PATTERN_OVERRIDE=1
+   to proceed.`
+5. Summary-Felder `live_template_suffix` + `pattern_override` immer
+   ausgegeben (auditierbar, auch bei Create → null/false)
 
-### Block 2 — N-6 `cw-transfer diff`
+**Doku-Änderungen:**
+- Adapter-Header-Comment: neuer Env-Block + N-8-Vermerk in Revisionsliste
+- `tools/sync-page-shopify.sh`: Env-Liste um ALLOW_PATTERN_OVERRIDE erweitert
 
-**Architektur (Pattern „Build-then-Fetch-then-Diff"):**
-- Diff-Adapter spawnt vorhandenen Build-Adapter als Sub-Prozess (Black-Box)
-- Liest dessen JSON-Stdout als Local-Payload
-- GET-only Live-State über Shopify Admin REST
-- Field-by-field Compare mit Normalisierung (template_suffix `null` ↔ `""`)
-  und konditionalen Feldern (published nur bei `PUBLISH=1`)
-- Output text (default) oder JSON (`FORMAT=json`)
-- Exit 0=EQUAL · 1=DIFF · 2=ERROR
+**Evidence:** `specs/cross-site-transfer/evidence/2026-04-23_n-8_self-check.md`
 
-**Dateien:**
-- Spec NEU `specs/cross-site-transfer/N-6_cw-transfer-diff.md` (6 §-Sections, 12 AKs)
-- Code NEU `adapters/shopify/diff-page.mjs` (240 Z., read-only verifiziert)
-- Code MOD `tools/cw-transfer` (`DIFF_TOOLS` Dispatch + `cmdDiff` aktiviert + Help-Text)
-- Evidence NEU `specs/cross-site-transfer/evidence/2026-04-23_n-6_self-check.md`
+### Selbstprüfung 11/11 AK = 100 %
+- AK-1 Spec (125 Z., §1–§4) ✅
+- AK-2 template_suffix im Lookup (Zeile 95) ✅
+- AK-3 ALLOW_PATTERN_OVERRIDE gelesen (Zeile 77) ✅
+- AK-4 Guard vor published-Check (Z. 121–131 vor Z. 133–136) ✅
+- AK-5 Error-Message enthält template_suffix-Wert + Flag-Text ✅
+- AK-6 allow=1 → Durchlauf (Code-Review) ✅
+- AK-7 !isPatternB → unverändert (Code-Review) ✅
+- AK-8 Create-Pfad → live_template_suffix=null ✅
+- AK-9 Summary enthält beide Felder immer (Z. 187–188) ✅
+- AK-10 Adapter + Shell-Wrapper dokumentiert ✅
+- AK-11 `validate.sh` grün + Bundle `6.88 KB · Bundled 2 modules in 30ms` ✅
 
-**Selbstprüfung 12/12 AK = 100 %:**
-- AK-1…4 — Spec, Code-LoC, Help-Text, Dispatch-Tabelle ✅
-- AK-5 — Read-only verifiziert (0 Aufruf-Pattern für `client.X(`) ✅
-- AK-6 — Build-Tool reused (6 Erwähnungen, keine Render-Duplikation) ✅
-- AK-7 — Help-Text listet `diff` als produktiv ✅
-- AK-8/9 — Config-/Usage-Fehler liefern Exit 1 mit klarer Message ✅
-- AK-10 — End-to-end Live-Test gegen `juvantis.myshopify.com/pages/uber-uns`
-  - title EQUAL, template_suffix DIFFER, body_html DIFFER, published SKIPPED
-  - Exit 1 (Diff vorhanden) ← korrekt
-- AK-11 — `tools/validate.sh` grün ✅
-- AK-12 — Bundle-Build grün (`Bundled 2 modules in 6ms · 7.53 KB`) ✅
+### Bonus: 4 Szenarien durchgespielt (Evidence-Datei §Bonus-Betrachtung)
+- S-1 Create (new page) — Guard inaktiv, Summary `live_template_suffix=null`
+- S-2 Update Pattern-A-Page — Guard durchfällt, Publish-Check übernimmt
+- S-3 Update Pattern-B-Page ohne Flag — Exit 2 mit klarer Message ← Haupt-Use-Case
+- S-4 Update Pattern-B-Page mit `ALLOW_PATTERN_OVERRIDE=1` — Guard durchfällt,
+  Backup + PUT, Summary zeigt Override-Tatsache auditierbar
 
-**Bonus-Erkenntnis (Drift-Detection in Aktion):**
-Live-Test enthüllte sofort eine Pattern-A-vs-Pattern-B-Drift bei `/uber-uns`.
-Die Live-Page ist Pattern B (`template_suffix="uber-uns"`, body_html=""),
-aber `cw-transfer push shopify:page` mit der Trunk-YAML würde Pattern-A-Content
-(8505 chars body_html) schreiben → CW-008 würde Backup machen, aber
-Pattern-B-Setup ginge verloren. Das ist genau die Klasse Drift, die N-6
-sichtbar macht. Folge-Schutzregel-Idee (separater Sub-Task, nicht N-6-Scope):
-`pages-to-shopify.mjs` müsste „abort if live has template_suffix unless
-explicitly requested"-Guard bekommen.
+### Bezug zu S26-Live-Test
+
+N-6 `cw-transfer diff` (S26) hatte gegen `sanexio.eu/pages/uber-uns` den Drift
+aufgedeckt:
+```
+template_suffix DIFFER (live="uber-uns" ≠ trunk=null)
+body_html DIFFER (live=0 chars, trunk=8505 chars)
+```
+Nach N-8 scheitert der Push-Versuch gegen diese Page jetzt am Guard (Exit 2),
+bevor das Backup auch nur angelegt würde. Die beiden Systeme sind komplementär:
+- **N-6** = read-only Drift-Report (Operator sieht den Unterschied)
+- **N-8** = write-time Drift-Blocker (Adapter verweigert Konversion)
 
 ### Pre-Flight-Metriken am Session-Ende
 - `tools/validate.sh` — OK (1 file)
-- Cortex-Sanitizer Probe — alle 5 Dateien im Budget (MEMORY 3642, Nexus/CLAUDE 6410, GLOBAL_RULES 6171, cortex-agent 1721, Cortex-Web 6198 Tokens)
-- Sanitizer Learn — 0 Duplikate, 88 stale-refs (+7 ggü. S24, durch neue N-6-Spec-Pfade)
-- Theme-Stand: PXZ 2.7.21 (unverändert seit S25)
+- Sanitizer Probe — alle 5 Dateien im Budget (MEMORY 3666, Nexus/CLAUDE 6410, GLOBAL_RULES 6171, cortex-agent 1721, Cortex-Web 6413 Tokens)
+- Sanitizer Learn — 0 Duplikate, 89 stale-refs (+1 ggü. S26 durch N-8-Spec-Pfade, stabil)
+- Theme: PXZ 2.7.21 unverändert
 
 ### Pattern + Tutorial (geschrieben in dieser Session)
-- Pattern: `Nexus/_memory/patterns/build-then-fetch-then-diff.md` (NEU)
-- Tutorial: `Nexus/Second Brain/30 Tutorials/Arbeitsweise & Prozess/03-cross-site-adapter-diffs.md` (NEU)
+- Pattern: `Nexus/_memory/patterns/adapter-pattern-classification-guard.md` (NEU)
+- Tutorial: `Second Brain/30 Tutorials/Arbeitsweise & Prozess/04-cross-site-adapter-guards.md` (NEU)
+
+### Commits
+- Cortex-Web: `74c6470` (N-8 guard + spec + evidence) · SESSION_RESUME + MEMORY folgt am Session-Ende
+- Nexus: folgt am Session-Ende (Pattern + Tutorial + MEMORY)
 
 ### Nicht erledigt (bewusst verschoben)
-- **Live-Verify N-5/N-7 mit `PUBLISH=1`** — bewusst nicht autonom (CW-006:
-  Live-Push-Verify ist eigene Operator-Aktion, nicht implizit Adapter-Task)
-- **N-1 WP-Template-Adapter** — eigene Front, 1–2 Sessions
-- **Pattern-A-vs-B-Schutz für `pages-to-shopify.mjs`** — neuer Sub-Task, durch N-6-Live-Test sichtbar geworden
-- **Cluster `legacy/de` Content-Sichtung** — eigene Front, mittlerer Aufwand
+- **Live-Verify N-5/N-7/N-8** — Push-Versuch gegen `/uber-uns` würde jetzt
+  den Guard auslösen (Exit 2, read-only-äquivalent). Kann in S28 als
+  Integration-Test gefahren werden. CW-006: Operator-Entscheidung.
+- **N-6.2** `cw-transfer diff shopify:template` — eigene Session
+- **N-1** WP-Template-Adapter — eigene Front
+- **Cluster `legacy/de` Content-Sichtung** — eigene Front
 - **`/impressum/` + `/datenschutz/` Content** — Blocker: Rechtsquellen Dr. Stracke
+
+---
+
+## §3-legacy-26 Session 26, 2026-04-23 (N-6 `cw-transfer diff shopify:page`, autonom)
+
+### Kerninhalt (Vollversion: Commit `02c57cb` + Evidence `2026-04-23_n-6_self-check.md`)
+- **Adapter NEU** `adapters/shopify/diff-page.mjs` (240 Z.): Build-then-Fetch-then-Diff,
+  spawnt `build-page.mjs` als Sub-Prozess, GET-only Live-Fetch, field-by-field
+  Compare mit Normalisierung (`null` ↔ `""`), konditionale Felder (`published`
+  nur bei `PUBLISH=1`). Exit 0/1/2.
+- **CLI** `tools/cw-transfer`: `DIFF_TOOLS` Dispatch + `cmdDiff` aktiviert + Help-Text
+- **Spec** `specs/cross-site-transfer/N-6_cw-transfer-diff.md` (12 AKs, 100 %)
+- **Live-Test** `juvantis.myshopify.com/pages/uber-uns`: title EQUAL, template_suffix
+  DIFFER, body_html DIFFER (8505↔0) → Pattern-A-vs-B-Drift sichtbar → war direkter
+  Auslöser für S27/N-8.
+- **Pattern** `build-then-fetch-then-diff.md` + **Tutorial 03** `cross-site-adapter-diffs.md`
 
 ---
 
@@ -323,13 +352,12 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ## §4 Offene Tasks (Priorität absteigend)
 
-### Wählbare Fronten für Session 27
+### Wählbare Fronten für Session 28
 
 | Prio | Front | Aufwand | Kommentar |
 |:---:|---|---|---|
-| **N-5/N-7-Schutz** | **Pattern-A-vs-B-Guard in `pages-to-shopify.mjs`** | 30 Min | Neu durch N-6 sichtbar geworden: Push würde Pattern-B-Page mit Pattern-A-Content überschreiben. „Abort if live has template_suffix unless ALLOW_PATTERN_OVERRIDE=1" |
-| **Live-Verify** | **N-5/N-7 realer Shopify-Push (`ueber-uns`)** | 30 Min | `PUBLISH=1` + CW-008-Backup. **Vorbedingung:** entweder N-5/N-7-Schutz erst (Pattern-Schutz), oder bewusste Pattern-A-Variante akzeptieren |
-| **N-6.2** | **`cw-transfer diff shopify:template`** | 1 Session | Diff für Template-Asset-JSON (Pattern B). Dasselbe Build-then-Fetch-Pattern wie N-6, aber gegen Theme-Asset statt Page. |
+| **Live-Verify** | **Realer Shopify-Push-Versuch gegen `/uber-uns`** | 15–30 Min | Soll am N-8-Guard mit Exit 2 scheitern (Integration-Test, read-only-äquivalent, KEIN PUT). Beweist N-6 + N-8 end-to-end. Optional: zweiter Lauf mit `ALLOW_PATTERN_OVERRIDE=1` als bewusste Pattern-A-Konversion (dann echter PUT + Backup in `.backups/`). |
+| **N-6.2** | **`cw-transfer diff shopify:template`** | 1 Session | Diff für Template-Asset-JSON (Pattern B). Dasselbe Build-then-Fetch-Pattern wie N-6, aber gegen Theme-Asset statt Page. Macht Diff-Quadrant symmetrisch auf beiden Render-Pattern. |
 | **N-1** | **WP-Template-Adapter (Pattern B reverse)** | 1–2 Sessions | Dasselbe YAML für WP `/team/`. Rein Cortex-Web-Arbeit. |
 | **N-6.3** | **`cw-transfer diff wp:page`** | 1 Session | Symmetrische WP-Page-Diff. Setzt N-1 voraus (oder zumindest WP-extract-page-Reuse). |
 | **N-3** | **Design-Token-Adapter (Phase D)** | 2 Sessions | **Blocker:** Master-Frage (Praxis/Sanexio/Neutral). |
@@ -357,17 +385,16 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ## §5 Sofort-Status-Frage an Dr. Stracke
 
-> **Session 26 abgeschlossen (autonom auf Cluster-Mini-02):** N-6 `cw-transfer diff shopify:page` ✅ (12/12 AK). Adapter-Suite jetzt symmetrisch push/pull/diff. Live-Test enthüllte als Bonus eine Pattern-A-vs-B-Drift bei `/uber-uns` — neuer Sub-Task „N-5/N-7-Schutz" in §4 Top.
+> **Session 27 abgeschlossen (autonom auf Cluster-Mini-02):** N-8 Pattern-A-vs-B-Guard in `pages-to-shopify.mjs` ✅ (11/11 AK). Das in S26-Live-Test sichtbar gewordene Push-Loch ist geschlossen. Adapter-Suite hat jetzt read-only Drift-Detektor (N-6) und write-time Drift-Blocker (N-8) — komplementäre Sicherheitsebenen.
 >
-> **Welche Front für Session 27?**
+> **Welche Front für Session 28?**
 >
-> **Quick-Wins (≤ ½ Session):**
-> - **N-5/N-7-Schutz** — `pages-to-shopify.mjs` „abort if live has template_suffix"-Guard (30 Min, schließt durch N-6 entdecktes Loch)
-> - **Live-Verify N-5/N-7** — realer `ueber-uns`-Re-Push mit `PUBLISH=1` + Backup-Check (30 Min, **NACH** N-5/N-7-Schutz oder explizit Pattern-A akzeptieren)
+> **Quick-Win (≤ ½ Session):**
+> - **Live-Verify** — Push-Versuch gegen `/uber-uns` muss am N-8-Guard mit Exit 2 scheitern (Integration-Test, KEIN PUT). Beweist N-6/N-8 end-to-end. Optional: 2. Lauf mit `ALLOW_PATTERN_OVERRIDE=1` als bewusste Konversion.
 >
 > **Mittlere Fronten (1 Session):**
-> - **N-6.2** — `cw-transfer diff shopify:template` (Pattern B Diff, gleiche Architektur wie N-6)
-> - **C** — Cluster `legacy/de` Content-Sichtung
+> - **N-6.2** — `cw-transfer diff shopify:template` (Pattern-B-Diff, gleiche Architektur wie N-6)
+> - **C** — Cluster `legacy/de` Content-Sichtung (7/7-Vervollständigung)
 > - **S2.3-A** — `/impressum/` + `/datenschutz/` Content (Blocker: Rechtsquellen)
 >
 > **Größer (1–2+ Sessions):**
@@ -375,13 +402,11 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 > - **N-6.3** — `cw-transfer diff wp:page` (setzt N-1 voraus)
 > - **N-3** — Design-Token-Adapter (Blocker: Master-Frage)
 >
-> **Ad-hoc:** „Heute möchte ich X" / Review der S26-Ergebnisse / „weiter nach Effizienz/Effektivität entscheiden"
->
-> **Empfehlung von Claude (wenn autonom-Modus):** **N-5/N-7-Schutz** als ersten Schritt — schließt das durch N-6 sichtbare Push-Loch in 30 Min. Danach **Live-Verify** unbedenklich möglich. Anschließend ggf. **N-6.2** für Diff-Symmetrie (Page+Template).
+> **Ad-hoc:** „Heute möchte ich X" / Review der S27-Ergebnisse / „weiter nach Effizienz/Effektivität entscheiden"
 
 ---
 
-## §6 Verbote / harte Regeln (in Session 27 NIE passieren darf)
+## §6 Verbote / harte Regeln (in Session 28 NIE passieren darf)
 
 - **HWG/Berufsordnung:** Keine Werbung, keine Heilversprechen, keine Preise auf Praxis-Site (CW-005)
 - **Trunk ist Master (CW-001):** Bei Bridge-Pages keine Inhalte direkt im WP-Admin oder Shopify-Admin ändern
@@ -403,7 +428,8 @@ Alle historischen Session-Logs sind git-tracked unter `_archive/sessions/YYYY-MM
 
 | Session | Datum | Thema | Archiv-Pfad |
 |:---:|---|---|---|
-| 26 | 2026-04-23 | N-6 `cw-transfer diff shopify:page` + Build-then-Fetch-then-Diff Pattern | §3 (aktuelle Session) in dieser Datei |
+| 27 | 2026-04-23 | N-8 Pattern-A-vs-B-Guard in `pages-to-shopify.mjs` + Pre-Write-Classification-Pattern | §3 (aktuelle Session) in dieser Datei |
+| 26 | 2026-04-23 | N-6 `cw-transfer diff shopify:page` + Build-then-Fetch-then-Diff Pattern | §3-legacy-26 in dieser Datei |
 | 25 | 2026-04-23 | S24-Close + S2.4b Footer-Umbau + S2.4d Design-Polish (PXZ 2.7.21) | §3-legacy-25 in dieser Datei |
 | 24 | 2026-04-22 | Shopify-Page-Adapter N-5 PUBLISH=1 + N-7 CW-008 Backup + S2.4c Praxis-Cross-Links | §3-legacy-24 in dieser Datei |
 | 23 | 2026-04-22 | Cortex-Sanitizer V4 + V5 (selbstlernend + Auto-Apply) | §3-legacy-23 in dieser Datei, siehe auch `Nexus/tools/cortex-sanitizer/` |
