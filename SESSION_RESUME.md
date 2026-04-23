@@ -39,13 +39,13 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.7.7` — Session 29: N-1 WP-Template-Adapter (Pattern B reverse für `/team/`) ✅ (2026-04-23, autonom Cluster-Mini-02)
-- **Stand:** 2026-04-23, Cortex-Web-Aufbau (Phase 0–5) ✅ + Content-Bridge + Cross-Site-Transfer (shopify:page + shopify:template vollständig symmetrisch) ✅ + **WP-Adapter-Seite jetzt mit erster Pattern-B-reverse-Implementierung** ✅ + Praxis-Sprint 2 → 6/7 Cluster ✅
-- **Jüngste Commits (Session 29):**
-  - Cortex-Web: `963c93d` — N-1 Adapter + Spec + Evidence + cw-transfer-Erweiterung
-  - Theme: `29dcaf8` — PXZ 2.7.21 → **2.7.22** (inc/data/team.json + inc/team-data.php JSON-first mit Inline-Fallback)
-  - Nexus: folgt am Session-Ende — Pattern `wp-theme-data-json` + Tutorial 05 + MEMORY-Update
-- **Working Tree:** Cortex-Web sauber bei `963c93d` (N-1-Feat). Theme sauber bei `29dcaf8`. Nexus pending am Session-Ende-Commit.
+- **Version:** `0.7.8` — Session 30: N-6.3 `cw-transfer diff wp:template` (FS-Variante des Build-then-Fetch-then-Diff-Patterns) ✅ (2026-04-23, autonom Cluster-Mini-02)
+- **Stand:** 2026-04-23, Cortex-Web-Aufbau (Phase 0–5) ✅ + Content-Bridge + Cross-Site-Transfer **push/pull/diff vollständig symmetrisch über Pattern A (Shopify) + Pattern B (Shopify + WP)** ✅ + Praxis-Sprint 2 → 6/7 Cluster ✅
+- **Jüngste Commits (Session 30):**
+  - Cortex-Web: folgt am Session-Ende — N-6.3 Spec + Adapter + Evidence + cw-transfer-Erweiterung
+  - Theme: unverändert bei `29dcaf8` (PXZ 2.7.22, N-6.3 ist read-only)
+  - Nexus: folgt am Session-Ende — Pattern `build-then-fetch-then-diff` FS-Variante + Tutorial 03 Lehren + MEMORY-Update
+- **Working Tree:** Cortex-Web pending (N-6.3-Feat + Docs). Theme sauber bei `29dcaf8` (nur Drift-Test-Mutationen, vollständig restauriert MD5 match). Nexus pending.
 
 ### §1.1 Phasen-Status
 
@@ -68,8 +68,9 @@
 | **N-8 Pattern-A-vs-B-Guard** | **`pages-to-shopify.mjs` verweigert Push auf Pattern-B-Page ohne `ALLOW_PATTERN_OVERRIDE=1`. +25 Z. Adapter, 11/11 AKs, Bundle 6.88 KB.** | **✅ Session 27** |
 | **N-6.2 `cw-transfer diff shopify:template`** | **`diff-template.mjs` (306 Z.) — Pattern-B-Diff mit symmetrischem Header-Strip + canonical-JSON. Live-Verify gegen `sanexio.eu` Template `page.uber-uns.json`: **EQUAL** (4836 chars canonical beidseitig). 14/14 AKs, Bundle 9.46 KB.** | **✅ Session 28** |
 | **N-1 WP-Template-Adapter (Pattern B reverse für `/team/`)** | **`adapters/wordpress/{build-team,team-to-wp}.mjs` + `lib/renderers/team-praxis.mjs` (Summe ~320 Z.) + `tools/sync-team-wp.sh` Orchestrator. Theme-Patch `inc/team-data.php` JSON-first + Inline-Fallback. PHP-side Parität: diff Exit 0 (json-path == inline-fallback). Live-Test `/team/` HTTP 200, 8× `pxz-team-card-link`, alle 8 Doctors; `/dr-stracke/` + `/docteur-saul/` 200. 12/13 AK grün + 1 dokumentierte Abweichung (AK-2 Line-Count 124 statt ≥150, funktional komplett). PXZ 2.7.22.** | **✅ Session 29** |
+| **N-6.3 `cw-transfer diff wp:template` (FS-Variante)** | **`adapters/wordpress/diff-team.mjs` (290 Z.) — Build-then-Fetch-then-Diff mit Filesystem-Read statt API-GET, Renderer-Handle-Arg (`team`) statt YAML-Pfad, Canonical-JSON + `member_count`/`member_slugs_sorted`/`team_json` Compare, Read-Only-Guard (0 Schreib-Calls im Body), Path-Escape-Guard, ABSENT-Pfad. Parity-Test gegen PXZ 2.7.22: Exit 0 EQUAL (2171 chars canonical beidseitig). **Extended-Evidence-Drift-Test** (Field-Mutation Exit 1 1-Feld, Member-Removal Exit 1 3-Felder, ABSENT Exit 1, Restore MD5-match, Re-Diff Exit 0). Bundle 7.0 KB. 16/16 AKs.** | **✅ Session 30** |
 
-**Status:** Cortex-Web-Aufbau abgeschlossen. Adapter-Suite hat jetzt **vollständige push/pull/diff-Symmetrie** über Pattern A (Page) und Pattern B (Template). N-6.2-Live-Diff bewies, dass der Trunk-YAML `ueber-uns.yaml` byte-genau identisch zum Shopify-Live-Template-Asset rendert → stärkster bisheriger Roundtrip-Beweis für content-bridge-v1 (S22). Praxis-Footer vollständig gebrandet. Design-Polish über 5 CSS-Dateien harmonisiert. 6/7 Content-Cluster migriert. Verbleibend: `legacy/de` (23 P2) · Footer-Legal-Ziele (Impressum, Datenschutz brauchen Content aus S2.3-A) · `shopify:product`-Diff (N-6.4) · `wp:page`-Diff (N-6.3, setzt N-1 voraus).
+**Status:** Cortex-Web-Aufbau abgeschlossen. Adapter-Suite hat jetzt **vollständige push/pull/diff-Symmetrie über Pattern A und Pattern B auf beiden Plattformen** (nur `wp:page` = Pattern A WP bleibt offen, braucht WP-REST-Auth). N-6.2 bewies Pattern-B-Shopify-Roundtrip, **N-6.3 beweist Pattern-B-WP-Roundtrip** (Trunk ↔ PXZ 2.7.22 `inc/data/team.json` byte-identisch, 2171 chars canonical). Die S22-content-bridge-v1-Brücke trägt damit empirisch in beiden Richtungen. Praxis-Footer vollständig gebrandet. Design-Polish über 5 CSS-Dateien harmonisiert. 6/7 Content-Cluster migriert. Verbleibend: `legacy/de` (23 P2) · Footer-Legal-Ziele (Impressum, Datenschutz brauchen Content aus S2.3-A) · `shopify:product`-Diff (N-6.4) · `wp:page`-Diff (neues N-6.5 ohne S30-Reuse, weil Pattern A + WP-REST).
 
 ---
 
@@ -110,7 +111,78 @@ Erwartet: Alle gepflegten Dateien unter Token-Budget (LL-044). Siehe `Nexus/tool
 
 ---
 
-## §3 Letzte Session — Session 29, 2026-04-23 (N-1 WP-Template-Adapter, autonom)
+## §3 Letzte Session — Session 30, 2026-04-23 (N-6.3 `cw-transfer diff wp:template`, autonom)
+
+### Gerät
+**Cluster-Mini-02** (home-Mac M2), autonom-Modus (Freigabe Dr. Stracke: „Entscheide du vor dem Hintergrund einer stabilen, flexiblen und dauerhaften aber auch skalierbaren Webseite in der Zukunft. Arbeite jetzt alles ohne Rückfragen ab.").
+
+### Ziel
+N-6.3 — `cw-transfer diff wp:template`. Komplettiert den Diff-Quadrant
+auf WP-Seite (Gegenstück zu N-1-Push). Beweist durch Drift-Test, dass
+der Adapter nicht nur Parität verifizieren, sondern auch Drift in drei
+Granularitäten (Count / Slugs / Canonical-JSON) korrekt signalisieren
+kann — essenziell für langfristige Regressions-Barriere.
+
+### Architektur-Wahl (autonom entschieden, dokumentiert in §5 der Evidence)
+
+4 Weichen standen zur Wahl:
+- **D1 (CLI-Arg):** Option **B** (Renderer-Handle `team` als Arg) — skalierbar für N-1c Services/Diagnostik ohne Breaking Change
+- **D2 (Build-Reuse):** Option **A** (Sub-Prozess-Spawn) — Pattern-Konsistenz zu N-6.2, Byte-Garantie, ~50ms Overhead irrelevant
+- **Evidence:** **Extended** (Parity + Drift-Mutation-1 + Drift-Mutation-2 + ABSENT + Restore + Re-Diff) — für dauerhafte Webseite ist Drift-Beweis der Kern
+- **Ablauf:** **Bündel** (Spec + Code + Evidence + Pattern + Tutorial + Commits in einer Session, weil alle Folge-Entscheidungen durch D1/D2 determiniert)
+
+### Umsetzung
+
+**Spec:** `specs/cross-site-transfer/N-6.3_cw-transfer-diff-wp-template.md` (244 Z., 7 §-Abschnitte, 16 AKs inkl. Live-Parity + Live-Drift als AK statt Bonus)
+
+**NEU Adapter:** `adapters/wordpress/diff-team.mjs` (290 Z., 7.0 KB Bundle)
+- `DIFF_RENDERERS` Registry (initial: `team`, extensible)
+- Sub-Prozess-Spawn `build-team.mjs` (Reuse statt Duplikation)
+- `existsSync` / `readFileSync` / `statSync` — 0 Schreib-Calls (AK-3 verifiziert)
+- Path-Escape-Guard analog `team-to-wp.mjs`
+- Canonical-JSON (sorted keys rekursiv) identisch zu N-6.2
+- 3 Compare-Felder: `member_count`, `member_slugs_sorted`, `team_json`
+- Text + `FORMAT=json` Output-Modi
+- Exit 0/1/2 Trinität
+
+**Modifiziert:** `tools/cw-transfer` — `DIFF_TOOLS["wp:template"]` registriert + Help-Text-Block für `wp:template` + Env-Vars (`THEME_PATH`, `FORMAT`) + Spec-Referenz
+
+### Selbstprüfung 16/16 AK = 100 %
+
+**Statische Prüfungen (AK-1…AK-14):**
+- Spec 7 §, Adapter 290 Z., 0 Schreib-Calls (Body), 1× `build-team.mjs`, `DIFF_TOOLS` registriert, Theme-Path-Resolution, `existsSync`-ABSENT-Pfad, canonical funcs, 3 Summary-Felder, JSON-Modus, Exit-Codes, Help-Text, `validate.sh` grün, Bundle grün ✅
+
+**Live-Tests (AK-15 + AK-16):**
+- T-1 Parity text: Exit 0, alle 3 Felder EQUAL (2171 chars canonical beidseitig)
+- T-2 Parity JSON: `diff_count: 0`, alle Feld-Payloads strukturiert
+- T-3 Drift Field-Mutation (`dr-stracke.title = "DRIFT-TEST-TITLE"`): Exit 1, nur `team_json` DIFFER, first_diff_offset 387, `member_count`/`member_slugs` EQUAL ✅ korrekte Granularität
+- T-4 Drift Member-Removal (`dr-shahin` gelöscht): Exit 1, alle 3 Felder DIFFER, `diff_count: 3` — drei unabhängige Signale ✅
+- T-5 ABSENT (Datei weggebewegt): Exit 1, `live_file: ABSENT`
+- T-6 Restore (`cp /tmp/n6-3-drift-test-team-original.json`): MD5 `58ababc14fdb9b1817264e0c8db2223f` matched Original
+- T-6b Re-Diff nach Restore: Exit 0 EQUAL
+
+### Pre-Flight-Metriken am Session-Ende
+- `tools/validate.sh` — OK (1 file)
+- Sanitizer-Probe: vor Session-Ende folgt Apply/Learn
+- Theme: PXZ 2.7.22 (`29dcaf8`) UNVERÄNDERT (Drift-Test vollständig restauriert)
+
+### Pattern + Tutorial (diese Session)
+- Pattern `Nexus/_memory/patterns/build-then-fetch-then-diff.md` **erweitert** um Abschnitt „Filesystem-Variante" (5 Dimensionen HTTP vs. FS) + Collection-Renderer Arg-Grammatik + Extended-Evidence-Rezept + neue Verifikation mit 3 Anwendungen (S26/S28/S30)
+- Tutorial `Second Brain/30 Tutorials/Arbeitsweise & Prozess/03-cross-site-adapter-diffs.md` **erweitert** um Abschnitt „Drei Lehren aus N-6.3" (Renderer-Handle als Arg, FS-Sonderfälle inkl. Path-Escape-Guard, Extended-Evidence-Rezept) + Dritte Anwendung in §Anwendung-in-Cortex-Web
+
+### Commits
+- Cortex-Web: folgt am Session-Ende — feat(N-6.3) + docs(SESSION_RESUME)
+- Nexus: folgt am Session-Ende — pattern + tutorial + MEMORY-Update
+
+### Nicht erledigt (bewusst, Scope-Verbote §8 der Spec)
+- Kein `wp:page`-Diff (Pattern A WP, braucht WP-REST-Auth, nicht N-6.3-Scope)
+- Kein `shopify:product`-Diff (N-6.4, eigene Front)
+- Kein Media-ID-Resolver (N-1b, eigene Front)
+- Kein Refactor der Theme-Path-Resolution in Shared-Helper (aufgeschoben, analog N-6.2-Theme-ID-Resolve)
+
+---
+
+## §3-legacy-29 Session 29, 2026-04-23 (N-1 WP-Template-Adapter, autonom)
 
 ### Gerät
 **Cluster-Mini-02** (home-Mac M2), autonom-Modus (Freigabe Dr. Stracke: „nimm den nächsten größeren großen Block, damit wir heute ein paar meter machen").
@@ -484,15 +556,15 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ## §4 Offene Tasks (Priorität absteigend)
 
-### Wählbare Fronten für Session 30
+### Wählbare Fronten für Session 31
 
 | Prio | Front | Aufwand | Kommentar |
 |:---:|---|---|---|
-| **N-6.3** | **`cw-transfer diff wp:template`** | 1 Session | Symmetrische WP-Diff für N-1 (Filesystem-Read statt API-GET, sonst analog N-6.2 canonical-JSON). Komplettiert Diff-Quadrant auch WP-seitig. Ideale Folge-Front zu N-1. |
-| **Live-Verify** | **Realer Shopify-Push-Versuch gegen `/uber-uns` (Pattern-A-Adapter)** | 15–30 Min | Soll am N-8-Guard mit Exit 2 scheitern. Beweist N-6/N-8 end-to-end. Optional 2. Lauf mit `ALLOW_PATTERN_OVERRIDE=1`. |
-| **N-6.4** | **`cw-transfer diff shopify:product`** | 1 Session | Product-Diff inkl. Variants/Images/Metafields. Reuse `build-then-fetch-then-diff`. |
+| **N-6.4** | **`cw-transfer diff shopify:product`** | 1 Session | Product-Diff inkl. Variants/Images/Metafields. Reuse `build-then-fetch-then-diff` (HTTP-Variante). |
+| **N-6.5** | **`cw-transfer diff wp:page` (neu, Pattern A WP)** | 1 Session | Diff-Adapter für WP-REST-basierte Pages. Braucht WP-REST-Auth-Setup. Komplettiert letzten offenen Diff-Quadranten. |
+| **Live-Verify Shopify-Push** | **Realer Push-Versuch gegen `/uber-uns` (Pattern-A-Adapter)** | 15–30 Min | Soll am N-8-Guard mit Exit 2 scheitern. Beweist N-6/N-8 end-to-end. Optional 2. Lauf mit `ALLOW_PATTERN_OVERRIDE=1`. |
 | **N-1b Erweiterung** | **WP-Media-ID-Resolver** | ½–1 Session | Folge-Phase von N-1: `media://...`-URIs aus Trunk auf WP-Attachment-IDs mappen (image_id != 0). Braucht Media-Registry. |
-| **N-1c Erweiterung** | **Andere Entitäten per wp:template-Pattern** | 1 Session | z.B. Services-Hub (`pxz_leistungen_categories`), Diagnostik-Data (`pxz_diagnostik_categories`). Reuse Pattern `wp-theme-data-json`. |
+| **N-1c Erweiterung** | **Andere Entitäten per wp:template-Pattern** | 1 Session | z.B. Services-Hub (`pxz_leistungen_categories`), Diagnostik-Data (`pxz_diagnostik_categories`). Reuse Pattern `wp-theme-data-json` + N-6.3 erbt kostenlos die Diff-Registry-Erweiterung. |
 | **N-3** | **Design-Token-Adapter (Phase D)** | 2 Sessions | **Blocker:** Master-Frage (Praxis/Sanexio/Neutral). |
 | **C** | **Cluster `legacy/de` Content-Sichtung** | mittel | Content aus `_content-archive/legacy/de/` sichten, archivierbar-Entscheidung. 7/7-Vervollständigung. |
 | **S2.3-A** | **`/impressum/` + `/datenschutz/` Content-Füllen** | 1 Session | Theme-Edit. **Blocker:** Rechtsquellen/Textvorlagen Dr. Stracke. |
@@ -517,25 +589,25 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ## §5 Sofort-Status-Frage an Dr. Stracke
 
-> **Session 29 abgeschlossen (autonom auf Cluster-Mini-02):** N-1 WP-Template-Adapter (Pattern B reverse für `/team/`) ✅ (12/13 AK + 1 dokumentierte Abweichung). WP-Adapter-Seite hat jetzt erste Pattern-B-reverse-Implementierung. Team-Roster wird vollständig aus Trunk gerendert, Live-Test grün, Parität Inline ↔ JSON bewiesen.
+> **Session 30 abgeschlossen (autonom auf Cluster-Mini-02):** N-6.3 `cw-transfer diff wp:template` ✅ (16/16 AKs = 100 %). **Diff-Quadrant für Pattern B vollständig geschlossen** — auf Shopify (N-6.2, S28) und auf WP (N-6.3, S30). Extended Evidence mit Parity + zwei Drift-Mutationen + ABSENT + Restore + Re-Diff-Verifikation bewiesen. Theme-Integrität post-Test durch MD5-match restauriert (PXZ 2.7.22 unverändert).
 >
-> **Welche Front für Session 30?**
+> **Welche Front für Session 31?**
 >
 > **Quick-Win (≤ ½ Session):**
-> - **Live-Verify** — echter Push-Versuch gegen `/uber-uns` (Pattern-A-Adapter). Soll am N-8-Guard mit Exit 2 scheitern.
+> - **Live-Verify Shopify-Push** — echter Push-Versuch gegen `/uber-uns` (Pattern-A-Adapter). Soll am N-8-Guard mit Exit 2 scheitern.
 > - **N-1b Media-ID-Resolver** — `media://...` → WP-Attachment-ID-Mapping (Folge-Phase N-1).
 >
 > **Mittlere Fronten (1 Session):**
-> - **N-6.3** — `cw-transfer diff wp:template` (symmetrisch zu N-6.2, Filesystem-Read statt API-GET) — **ideale Folge-Front zu N-1**
-> - **N-6.4** — `cw-transfer diff shopify:product`
-> - **N-1c** — Pattern `wp-theme-data-json` auf Services-Hub / Diagnostik-Data anwenden
+> - **N-6.4** — `cw-transfer diff shopify:product` (Product-Diff inkl. Variants/Images/Metafields)
+> - **N-6.5** — `cw-transfer diff wp:page` (Pattern A WP, braucht WP-REST-Auth) — **komplettiert letzten offenen Diff-Quadranten**
+> - **N-1c** — Pattern `wp-theme-data-json` auf Services-Hub / Diagnostik-Data anwenden (erbt automatisch den N-6.3-Diff-Pfad über die `DIFF_RENDERERS`-Registry)
 > - **C** — Cluster `legacy/de` Content-Sichtung
 > - **S2.3-A** — `/impressum/` + `/datenschutz/` Content (Blocker: Rechtsquellen)
 >
 > **Größer (1–2+ Sessions):**
 > - **N-3** — Design-Token-Adapter (Blocker: Master-Frage)
 >
-> **Ad-hoc:** „Heute möchte ich X" / Review der S29-Ergebnisse im Browser / „weiter nach Effizienz/Effektivität entscheiden"
+> **Ad-hoc:** „Heute möchte ich X" / Review der S30-Ergebnisse / „weiter nach Effizienz/Effektivität entscheiden"
 
 ---
 
@@ -561,7 +633,8 @@ Alle historischen Session-Logs sind git-tracked unter `_archive/sessions/YYYY-MM
 
 | Session | Datum | Thema | Archiv-Pfad |
 |:---:|---|---|---|
-| 29 | 2026-04-23 | N-1 WP-Template-Adapter (Pattern B reverse für /team/) + Parität + Live-Test | §3 (aktuelle Session) in dieser Datei |
+| 30 | 2026-04-23 | N-6.3 `cw-transfer diff wp:template` (FS-Variante Build-then-Fetch-then-Diff) + Extended Evidence (Drift-Test) | §3 (aktuelle Session) in dieser Datei |
+| 29 | 2026-04-23 | N-1 WP-Template-Adapter (Pattern B reverse für /team/) + Parität + Live-Test | §3-legacy-29 in dieser Datei |
 | 28 | 2026-04-23 | N-6.2 `cw-transfer diff shopify:template` + Live-Diff EQUAL (content-bridge-v1 Roundtrip-Beweis) | §3-legacy-28 in dieser Datei |
 | 27 | 2026-04-23 | N-8 Pattern-A-vs-B-Guard in `pages-to-shopify.mjs` + Pre-Write-Classification-Pattern | §3-legacy-27 in dieser Datei |
 | 26 | 2026-04-23 | N-6 `cw-transfer diff shopify:page` + Build-then-Fetch-then-Diff Pattern | §3-legacy-26 in dieser Datei |
