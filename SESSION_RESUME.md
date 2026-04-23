@@ -39,13 +39,13 @@
 
 ## §1 Stand & Version
 
-- **Version:** `0.7.1` — Sanitizer V4 Retroaktiv-Kur ✅ (Session 23, 2026-04-22)
-- **Stand:** 2026-04-22, Cortex-Web-Aufbau (Phase 0–5) ✅ + Content-Bridge + Cross-Site-Transfer-Architektur ✅ + Praxis-Sprint 2 → 6/7 Cluster migriert
-- **Jüngste Commits:**
-  - Cortex-Web: `987e3e4` (content-bridge-v1 Block 1) + `98e063b` (cross-site-transfer Block 2) + Sanitizer-Commit folgt
-  - Theme (praxis-webseite): `25662ad` (PXZ_VERSION **2.7.18**)
-  - Nexus: Sanitizer-Commit folgt (MEMORY + CLAUDE verdichtet, Tool, LL-044, SESSION_LIFECYCLE §2 Schritt 3b)
-- **Working Tree:** Cortex-Web nach Sanitizer-Apply clean, Nexus nach Sanitizer-Apply clean
+- **Version:** `0.7.3` — Session 25: S24-Commits + S2.4b Footer + S2.4d Design-Polish ✅ (2026-04-23, autonom Cluster-Mini-02)
+- **Stand:** 2026-04-23, Cortex-Web-Aufbau (Phase 0–5) ✅ + Content-Bridge + Cross-Site-Transfer ✅ + Praxis-Sprint 2 → 6/7 Cluster ✅ + **Footer-Umbau S2.4b ✅** + **Design-Polish S2.4d ✅**
+- **Jüngste Commits (Session 25, alle sauber):**
+  - Cortex-Web: `d3aea84` (S24 page-adapter) · `b1101ad` (phase-3 evidence refresh) · `247af3f` (S2.4b spec+evidence) · `c94d840` (S2.4d spec)
+  - Theme (praxis-webseite): `f5a9bec` (S2.4c Cross-Links **2.7.19**) · `f85611a` (S2.4b Footer **2.7.20**) · `42001ec` (S2.4d Design-Polish **2.7.21**)
+  - Nexus: `532dd2f` Auto-Sync (MEMORY S24) · weitere Auto-Syncs für S25-Updates folgen
+- **Working Tree:** Cortex-Web sauber (nur diese SESSION_RESUME dirty bis zum finalen commit), Theme sauber, Nexus wird via Auto-Sync gepflegt
 
 ### §1.1 Phasen-Status
 
@@ -61,8 +61,11 @@
 | **Cortex-Web content-bridge-v1** | **Shopify-Page/Template-Adapter + Trunk `ueber-uns`** | **✅ Session 22** |
 | **Cortex-Web cross-site-transfer** | **Architektur + 6 Patterns + 4 Registries + cw-transfer CLI + CW-006/007/008** | **✅ Session 22** |
 | **Sanitizer V4 Retroaktiv-Kur** | **SESSION_RESUME + MEMORY + Nexus/CLAUDE verdichtet, 12 Sessions archiviert, Tool + LL-044 + SESSION_LIFECYCLE §2 Schritt 3b** | **✅ Session 23** |
+| **Page-Adapter N-5+N-7 + Cross-Links E (S2.4c)** | **`PUBLISH=1` Runtime-Flag + CW-008-Backup vor PUT + `/praxis/` Teaser zu `/leistungen/`+`/diagnostik/`** | **✅ Session 24** |
+| **S2.4b Footer-Umbau** | **Blocksy-Default raus, eigener PXZ-Footer mit Brand + 4-Spalten-Grid + Bottom-Bar (footer-data.php SSoT, 4-sprachig)** | **✅ Session 25** |
+| **S2.4d Design-Polish** | **Card-Hover-Normalisierung (4 Files, shadow-card-hi + 180ms cubic-bezier + translateY(-3px)) + iOS-Drawer-Easing + Diagnostik-Typo clamp()** | **✅ Session 25** |
 
-**Status:** Cortex-Web-Aufbau abgeschlossen. Common-Trunk-Bridge funktional bewiesen. Menü-Infrastruktur steht. 6 von 7 Haupt-Clustern migriert (kern, checkups, aerzte, services, diagnostik ✅). Verbleibend: `legacy/de` (23 P2, größtenteils archivierbar). Design-Feintuning noch offen.
+**Status:** Cortex-Web-Aufbau abgeschlossen. Praxis-Footer vollständig gebrandet, global konsistent. Design-Polish über 5 CSS-Dateien harmonisiert. 6/7 Content-Cluster migriert. Verbleibend: `legacy/de` (23 P2, größtenteils archivierbar) · Footer-Legal-Ziele (Impressum, Datenschutz brauchen Content aus S2.3-A).
 
 ---
 
@@ -103,7 +106,159 @@ Erwartet: Alle gepflegten Dateien unter Token-Budget (LL-044). Siehe `Nexus/tool
 
 ---
 
-## §3 Letzte Praxis-Session — Session 21, 2026-04-22 (Praxis-Sprint 2 / S2.3-diagnostik)
+## §3 Letzte Session — Session 25, 2026-04-23 (S24-Close + S2.4b Footer + S2.4d Design-Polish, autonom)
+
+### Gerät
+**Cluster-Mini-02** (home-Mac M2). Dr. Stracke gab Freigabe „ohne eine einzige
+Zwischenfrage fortsetzen, autonom Entscheidungen treffen". Session wurde
+unterbrochen als Dr. Stracke in die Praxis musste — sie wird auf dem
+**Mac Studio (praxis-studio)** mit „Projekt fortsetzen Cortex-Web" wieder
+aufgenommen.
+
+### ⚠️ Mac-Studio-Einschränkung (WICHTIG für Session 26)
+
+**Das Praxis-Theme-Repo liegt NUR auf Cluster-Mini-02** unter
+`/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-…/themes/praxiszentrum/`.
+Local-by-Flywheel ist gerätelokal. Auf dem Mac Studio (Praxis) sind
+daher **keine Theme-PHP-/CSS-Edits möglich**. Fronten die auf Mac Studio
+sinnvoll sind:
+- Cortex-Web Adapter / Trunk / Specs (Git-getrackt, plattformunabhängig)
+- N-1 (WP-Template-Adapter), N-6 (`cw-transfer diff`), N-3 (Design-Token-Adapter)
+- Dokumentation, Pattern-Konsolidierung
+- Legacy-DE-Content-Sichtung in `_content-archive/` (kein Theme-Edit nötig)
+
+Fronten die Cluster-Mini-02 brauchen (Theme-Repo-Zugriff):
+- Alle Theme-CSS-/PHP-Änderungen (Impressum-Content, weitere UI-Polish)
+- `/impressum/` + `/datenschutz/` Content-Füllen für Footer-Legal-Links
+
+### Ziel
+Drei Blöcke sauber abschließen:
+1. **Block 1** — offene Session-24-Commits (Cortex-Web + Theme + Nexus via Auto-Sync)
+2. **Block 2** — S2.4b Footer-Umbau (neue Front, Dr.-Stracke-Liste Prio A)
+3. **Block 3** — S2.4d Design-Polish (neue Front, Dr.-Stracke-Wunsch seit S19)
+
+### Kernergebnisse
+
+**Block 1: S24-Closure**
+- Cortex-Web: `d3aea84` feat(shopify-page-adapter) N-5 PUBLISH=1 + N-7 CW-008 backup
+- Cortex-Web: `b1101ad` chore(phase-3) refresh evidence artefacts
+- Theme: `f5a9bec` feat(s2.4c) praxis cross-links + PXZ 2.7.19
+- Nexus-Teil lief bereits via Auto-Sync (`532dd2f`)
+
+**Block 2: S2.4b Footer-Umbau (neu)**
+- Spec: `sites/praxis-webseite/specs/sprint-2/S2.4b_footer-umbau.md` (12 AK)
+- Theme-Commit `f85611a` (PXZ 2.7.20)
+- NEU `footer.php` (Child-Override für Blocksy, Hooks bleiben wirksam)
+- NEU `template-parts/site-footer.php` (142 Zeilen, Brand + 4-Col + Bottom-Bar)
+- NEU `inc/footer-data.php` (tagline/claim/col_labels/legal_nav/copyright 4-sprachig)
+- NEU `assets/css/footer.css` (241 Zeilen, dark-ink + red-accent, tokens-only,
+  Grid 1fr mobile → 2 tablet → 4 desktop)
+- MOD `functions.php` (require footer-data + enqueue pxz-footer global)
+- Blocksy-Residuen unterdrückt via `#footer.ct-footer { display:none !important }`
+- Selbstprüfung 12/12 AK = 100 %
+  - `pxz-footer` 1× im HTML, `ct-footer` 0× (Override aktiv)
+  - 4 `pxz-footer-col`, 2 `tel:`-Links, 1 `mailto:`, Doctolib-CTA
+  - 8 Nav-Items, 2 Legal-Links, `© 2026` dynamisch
+  - smoke-http 5/5, smoke-seo 21/21
+- Evidence: `sites/praxis-webseite/specs/sprint-2/evidence/2026-04-23_s2.4b_self-check.md`
+- Cortex-Web-Commit: `247af3f` (Spec + Evidence)
+
+**Block 3: S2.4d Design-Polish (neu)**
+- Spec: `sites/praxis-webseite/specs/sprint-2/S2.4d_design-polish.md` (9 AK)
+- Theme-Commit `42001ec` (PXZ 2.7.21)
+- Card-Hover-Normalisierung über 4 CSS-Dateien:
+  `arzt.css`, `leistungen.css`, `diagnostik-hub.css`, `checkup-hub.css`
+  - Vorher: uneinheitlich (120/150ms ease, hardvalue shadows, -2px)
+  - Nachher: alle 180ms `cubic-bezier(0.2, 0, 0, 1)`, `var(--pxz-shadow-card-hi)`, `translateY(-3px)`
+  - Hub-Cards bekommen zusätzlich `border-color: transparent` für sanfteren Lift
+- Mobile-Drawer (nav.css): Slide + Backdrop jetzt 0.32s `cubic-bezier(0.32, 0.72, 0, 1)` (iOS-feel, vorher default ease)
+- Diagnostik + Checkup Card-Titel: `clamp(1.25rem, 2vw, 1.5rem)` (vorher fix 22px)
+- Cortex-Web-Commit: `c94d840` (Spec)
+- Selbstprüfung 9/9 AK = 100 %
+
+### Pre-Flight-Metriken am Session-Ende
+- `tools/validate.sh` — OK (1 file)
+- `smoke-http.sh` — 5/5 ✅
+- `smoke-seo.sh` — 21/21 ✅
+- Cortex-Sanitizer Probe — alle Dateien im Budget (MEMORY 3641 tok, Nexus/CLAUDE 6410 tok, SESSION_RESUME 4679 tok)
+- Theme-Stand: **PXZ 2.7.21** (`42001ec`)
+
+### Pattern-Kandidaten → Nexus (für Session 26 / auf Mac Studio machbar)
+1. `blocksy-child-footer-override.md` — Child-`footer.php` + Hook-Pass-Through
+2. `footer-data-ssot-multilang.md` — 4-sprachiges Footer-SSoT-PHP-Array
+3. `card-hover-normalisation.md` — shadow-hi + 180ms cubic-bezier + -3px Rezept
+
+### Tutorial-Kandidat (Mac Studio machbar)
+`Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/24-blocksy-footer-override.md`
+- Child-Theme-Override der Parent-footer.php
+- Hook-Pass-Through (blocksy:content:bottom/after, blocksy:footer:before/after)
+- Warum `blocksy_output_footer()` übersprungen werden darf
+
+### Nicht erledigt (bewusst verschoben)
+- **N-1 WP-Template-Adapter** — Mac-Studio-Kandidat
+- **N-6 `cw-transfer diff`** — Mac-Studio-Kandidat
+- **Live-Verify N-5/N-7** — nur bei echtem Shopify-Transfer sinnvoll, Mac Studio kann es triggern
+- **Cluster `legacy/de`** — Content-Sichtung machbar auf Mac Studio
+- **`/impressum/` + `/datenschutz/` Content** — Theme-Edit nötig → Cluster-Mini-02
+- **Pattern + Tutorial committen** — Session-Ende-Schritt, hier noch offen
+
+---
+
+## §3-legacy-24 Session 24, 2026-04-22 (N-5 + N-7 + E, autonom)
+
+### Ziel
+Drei Infrastruktur-/Content-Fronten in einer Session selbständig erledigen
+(Freigabe Dr. Stracke: „nach eigenem Ermessen, ohne Rückfragen fortsetzen"):
+**N-5** (Shopify-Page-Publish-Helper), **N-7** (CW-008-Backup am
+Page-Adapter), **E** (Cross-Links von `/praxis/` nach `/leistungen/` +
+`/diagnostik/`).
+
+### Kernergebnisse
+
+**N-5 + N-7 (`adapters/shopify/pages-to-shopify.mjs`):**
+- `PUBLISH=1` Env-Flag → `effectivePage.published = true` am Write. Trunk
+  bleibt Draft-pflichtig (CW-001).
+- Vor jedem Update: voller GET `/pages/<id>.json` → JSON-Dump in
+  `adapters/shopify/.backups/<ts>_page<id>_<handle>.json`. Backup-Fail =
+  Exit 2 (kein Write ohne Backup, CW-008).
+- Summary +2 Felder: `publish_flag`, `backup_path`.
+- `tools/sync-page-shopify.sh` Header um beide Flags + CW-008 ergänzt.
+- Bundle-Build grün (`Bundled 2 modules in 5ms`).
+- Code-Marker-Selbsttest 6/6 ✓. Selbstprüfung 10/10 AK = 100 %.
+- Live-Verify: verschoben auf nächsten regulären Transfer (CW-006: kein
+  autonomer Live-Push).
+
+**E (S2.4c) — Praxis-Cross-Links:**
+- Neues Template-Part `template-parts/praxis-crosslinks.php` mit 2 Cards
+  (Leistungen · Diagnostik).
+- Guard `is_page('praxis')` in `template-standard.php` — andere
+  Standard-Seiten (Impressum, Datenschutz, Team-narrativ) unberührt.
+- CSS-Block (+94 Zeilen) in `assets/css/standard.css` (2-col grid, mobile
+  stack, Hover-Lift).
+- `PXZ_VERSION 2.7.18 → 2.7.19` (Cache-Buster).
+- Live-Verify: 2 Cards im `/praxis/`-HTML, 1 Link `/leistungen/`, 1 Link
+  `/diagnostik/`, 0 Cross-Link-Marker auf `/impressum/`, beide Targets
+  HTTP 200. `smoke-http.sh` 5/5, `smoke-seo.sh` 21/21.
+- Selbstprüfung 12/12 AK = 100 %.
+
+### Pattern + Tutorial (Nexus)
+- Pattern: `Nexus/_memory/patterns/adapter-runtime-flag-vs-content-state.md`
+  — Lehre aus N-5 (Laufzeit-Flag vs. Content-State).
+- Tutorial: `Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/23-template-parts-mit-is-page-guard.md`.
+
+### Sanitizer-Status (Schritt 3b, LL-044)
+- Probe: Alle Dateien im Budget (MEMORY 3604 Tok, Nexus/CLAUDE 6410 Tok,
+  SESSION_RESUME 3820 Tok). Kein Apply nötig.
+- Learn: 0 Duplikate, 81 stale-refs (+1 gg. Session 23, minimal).
+
+### Commits (steht aus, Session-Ende-Abschluss)
+Cortex-Web: pages-to-shopify + sync-page-shopify + specs/session-24 + S2.4c-Spec.
+Theme: PXZ_VERSION, template-standard, template-parts/praxis-crosslinks, standard.css.
+Nexus: MEMORY, Pattern, Tutorial.
+
+---
+
+## §3-legacy-21 Vorherige Praxis-Session — Session 21, 2026-04-22 (Praxis-Sprint 2 / S2.3-diagnostik)
 
 ### Ziel
 Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub `/diagnostik/` + Sub-Hub `/sonographie/` mit 3 Nested-Kindern + 3 flache Detail-Pages. Labor-Konsolidierung. 301-Redirects. atlas DSGVO-gated.
@@ -135,7 +290,7 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ---
 
-## §3b Parallele Cortex-Web-Session — Session 22, 2026-04-22 (content-bridge-v1 + cross-site-transfer)
+## §3-legacy-22 Parallele Cortex-Web-Session — Session 22, 2026-04-22 (content-bridge-v1 + cross-site-transfer)
 
 - **Commits:** `987e3e4` (Block 1) + `98e063b` (Block 2)
 - **Live:** `sanexio.eu/pages/uber-uns` (Shopify Page ID 157742137611) aus Trunk gerendert via Template-Bridge (Pattern B, Goldstandard)
@@ -146,7 +301,7 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ---
 
-## §3c Aktuelle Session — Session 23, 2026-04-22 (Cortex-Sanitizer V4 + V5)
+## §3-legacy-23 Session — Session 23, 2026-04-22 (Cortex-Sanitizer V4 + V5)
 
 **V4 Retroaktiv-Kur** (Spec `specs/cortex-sanitizer/SPEC.md`):
 - 12 Legacy-Session-Blöcke (7, 9-16, 19, 20, 22) → `_archive/sessions/2026-04/`
@@ -171,38 +326,33 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ## §4 Offene Tasks (Priorität absteigend)
 
-### Wählbare Fronten für Session 24
+### Wählbare Fronten für Session 26 (auf Mac Studio)
 
-**Praxis-Sprint (nahe am nächsten DE-Meilenstein):**
-
-| Prio | Front | Aufwand | Kommentar |
-|:---:|---|---|---|
-| **A** | **S2.4b Footer-Umbau** | 1 Session | Blocksy-Default ersetzen. Kann Notfall-Block + `/leistungen/` + `/diagnostik/` integrieren. |
-| **B** | **Design-Feintuning S2.4 + S2.3-aerzte-services + S2.3-diagnostik** | 1 Session, Spec-lastig | Dr.-Stracke-Wunsch seit S19. Hover-Polish, Mobile-Drawer-Animation, Card-Spacing, Diagnostik-Hub-Typo. |
-| **C** | **Cluster `legacy/de`** (23 P2) | mittel–groß | Letzter DE-Content-Block vor Sprint 3. Großteil wahrscheinlich archivierbar. |
-| **D** | **Echt-Content + Fotos für 7 Stub-Arzt-Profile** | groß | Braucht Bio-Text-Input + Foto-Shooting. Extern-abhängig. |
-| **E** | **Cross-Links `/leistungen/` + `/diagnostik/` aus `/praxis/` integrieren** | ½ Session | Folge aus S20 + S21. |
-| **F** | **Strukturhygiene + Patterns konsolidieren** | klein | Pattern-Index, Tutorial-Querverweise. |
-| **G** | **Beginn Sprint 3 i18n** | 6+ Sessions | Erst nach C sinnvoll. |
-
-**Cortex-Web-Fronten (aus Session 22):**
+**Mac-Studio-machbar (kein Theme-Repo-Zugriff nötig):**
 
 | Prio | Front | Aufwand | Kommentar |
 |:---:|---|---|---|
-| **N-1** | **WP-Template-Adapter (Pattern B reverse)** | 1–2 Sessions | Dasselbe YAML für WP `/team/`. |
-| **N-2** | **Extraktoren produktivieren** | 1–2 Sessions | Site→Trunk halbautomatisch. |
-| **N-3** | **Design-Token-Adapter (Phase D)** | 2 Sessions | Farben/Typo/Spacing aus Trunk. **Blocker:** Master-Frage (Praxis/Sanexio/Neutral). |
-| **N-4** | **Component-Specs (Phase F)** | 3+ Sessions | `team-grid` reusable. |
-| **N-5** | **Shopify-Publish-Helper** | 30 Min | `--publish`-Flag. |
-| **N-6** | **`cw-transfer diff`** | 1 Session | Build-then-fetch-then-JSON-diff. |
-| **N-7** | **Backup-Automatik auf Page-Adapter** | 30 Min | CW-008 vollständig. |
+| **N-1** | **WP-Template-Adapter (Pattern B reverse)** | 1–2 Sessions | Dasselbe YAML für WP `/team/`. Rein Cortex-Web-Arbeit. |
+| **N-6** | **`cw-transfer diff`** | 1 Session | Build-then-fetch-then-JSON-diff. Rein Cortex-Web. |
+| **N-3** | **Design-Token-Adapter (Phase D)** | 2 Sessions | **Blocker:** Master-Frage (Praxis/Sanexio/Neutral). |
+| **Patt** | **3 Pattern-Dateien + 1 Tutorial aus S25** | ½ Session | `blocksy-child-footer-override`, `footer-data-ssot-multilang`, `card-hover-normalisation` + Tutorial 24. Rein Nexus-Arbeit. |
+| **C** | **Cluster `legacy/de` Content-Sichtung** | mittel | Content aus `_content-archive/legacy/de/` sichten, archivierbar-Entscheidung. Theme-Edit erst später. |
+| **Live-Verify** | **N-5/N-7 realer Shopify-Push** | 30 Min | `PUBLISH=1` + Backup-Check. Triggerbar von jedem Gerät mit `.env.local`. |
 
-### Blockiert (nicht wählbar)
+**Cluster-Mini-02-only (Theme-Repo-Zugriff nötig):**
 
-| Front | Blocker |
-|---|---|
-| S2.3-A (Datenschutz/Impressum) | Fehlende Rechtsquelle |
-| R-7 sono-atlas Klärung | DSGVO-Entscheidung Dr. Stracke |
+| Prio | Front | Aufwand | Kommentar |
+|:---:|---|---|---|
+| **S2.3-A** | **`/impressum/` + `/datenschutz/` Content-Füllen** | 1 Session | Theme-Edit (Templates oder `practice-data.php`-Erweiterung). **Blocker:** Rechtsquellen/Textvorlagen Dr. Stracke. |
+| **B2** | **Weiterer Design-Polish** | klein | Falls S2.4d-Ergebnis im Browser zeigt dass mehr Tuning nötig ist. |
+
+**Unverändert offen / blockiert:**
+
+| Prio | Front | Aufwand | Blocker |
+|:---:|---|---|---|
+| **D** | Echt-Content + Fotos für 7 Stub-Arzt-Profile | groß | Bio-Text + Foto-Shooting extern |
+| **G** | Beginn Sprint 3 i18n | 6+ Sessions | Erst nach C sinnvoll |
+| **R-7** | sono-atlas DSGVO | — | DSGVO-Entscheidung Dr. Stracke |
 
 ### P1-Punkte aus Vorgänger-Sessions (offen)
 
@@ -210,29 +360,36 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 - WPForms-Marker (S2.3-kern)
 - Google My Map mit POIs (S2.3-kern)
 - „Aktuelles aus der Praxis"-Inhalt (S2.3-kern Setting leer)
+- Footer-Legal-Links (Impressum/Datenschutz) führen aktuell auf leere Pages — wird mit S2.3-A gelöst
 
 ---
 
 ## §5 Sofort-Status-Frage an Dr. Stracke
 
-> **Session 23 abgeschlossen:** Cortex-Sanitizer V4 Retroaktiv-Kur. SESSION_RESUME 123 KB → ~15 KB, MEMORY 53 KB → ~15 KB, Nexus/CLAUDE 41 KB → ~20 KB. 12 Sessions archiviert, Tool `rotate.sh` live, LL-044 Token-Budgets in Kraft, Sanitizer-Probe in Session-Ende-Ritual verankert.
+> **Session 25 abgeschlossen (autonom auf Cluster-Mini-02):** Block 1 S24-Closure ✅ + Block 2 Footer-Umbau S2.4b ✅ + Block 3 Design-Polish S2.4d ✅. Alle drei 100 % AK. Theme jetzt **PXZ 2.7.21**. Praxis-Site hat jetzt einen vollständig gebrandeten Footer (Brand · 4-Spalten · Copyright + Legal-Nav) und harmonisierte Card-Hovers mit iOS-Drawer-Easing.
 >
-> **R-7 sono-atlas** bleibt offen (DSGVO-Entscheidung).
+> **Gerätewechsel:** Session 26 auf **Mac Studio (praxis-studio)** startet mit „Projekt fortsetzen Cortex-Web". Beachte die **Einschränkung oben in §3**: Theme-Edits brauchen Cluster-Mini-02, Mac Studio macht Cortex-Web-/Trunk-/Adapter-/Nexus-Arbeit.
 >
-> **Welche Front für Session 24?**
+> **Welche Front für Session 26?**
 >
-> - **A** — S2.4b Footer-Umbau
-> - **B** — Design-Feintuning (dein Wunsch seit S19)
-> - **C** — Cluster `legacy/de` (letzter DE-Content-Block)
-> - **E** — `/leistungen/` + `/diagnostik/` Cross-Links aus `/praxis/`
-> - **G** — Beginn Sprint 3 i18n (DE→EN/FR/ES)
-> - **N-1** — WP-Template-Adapter (Pattern B reverse)
-> - **N-5/N-7** — Shopify-Publish-Helper / Backup-Automatik (je 30 Min, gut als Warmup)
-> - **Ad-hoc:** „Heute möchte ich X von A nach B übertragen."
+> **Mac-Studio-machbar:**
+> - **Patt** — 3 Pattern-Dateien + 1 Tutorial aus S25 in Nexus einpflegen (½ Session, sauberer Start)
+> - **N-1** — WP-Template-Adapter (Pattern B reverse) für `/team/` (1–2 Sessions)
+> - **N-6** — `cw-transfer diff` (Build-then-fetch-then-JSON-diff, 1 Session)
+> - **Live-Verify N-5/N-7** — realer `ueber-uns`-Re-Push mit `PUBLISH=1` + Backup-Check (30 Min)
+> - **C** — Cluster `legacy/de` Content-Sichtung (mittel)
+>
+> **Cluster-Mini-02-only (nur wenn Dr. Stracke zurück am Home-Mac):**
+> - **S2.3-A** — `/impressum/` + `/datenschutz/` Content (Blocker: Rechtsquellen)
+> - **B2** — weiterer Design-Polish (falls Browser-Check Defizite zeigt)
+>
+> **Ad-hoc:** „Heute möchte ich X von A nach B übertragen." / „Review meiner S25-Ergebnisse im Browser."
+>
+> **Empfehlung von Claude (autonom):** **Patt** als ersten Schritt auf Mac Studio — saubere Übergabe der S25-Erkenntnisse, danach **N-6** oder **N-1** für echte Cortex-Web-Vollendung. Live-Verify kann parallel laufen.
 
 ---
 
-## §6 Verbote / harte Regeln (in Session 24 NIE passieren darf)
+## §6 Verbote / harte Regeln (in Session 25 NIE passieren darf)
 
 - **HWG/Berufsordnung:** Keine Werbung, keine Heilversprechen, keine Preise auf Praxis-Site (CW-005)
 - **Trunk ist Master (CW-001):** Bei Bridge-Pages keine Inhalte direkt im WP-Admin oder Shopify-Admin ändern
@@ -254,6 +411,8 @@ Alle historischen Session-Logs sind git-tracked unter `_archive/sessions/YYYY-MM
 
 | Session | Datum | Thema | Archiv-Pfad |
 |:---:|---|---|---|
+| 24 | 2026-04-22 | Shopify-Page-Adapter N-5 PUBLISH=1 + N-7 CW-008 Backup + S2.4c Praxis-Cross-Links | §3-legacy-24 in dieser Datei |
+| 23 | 2026-04-22 | Cortex-Sanitizer V4 + V5 (selbstlernend + Auto-Apply) | §3-legacy-23 in dieser Datei, siehe auch `Nexus/tools/cortex-sanitizer/` |
 | 22 | 2026-04-22 | Cortex-Web content-bridge-v1 + cross-site-transfer | `_archive/sessions/2026-04/session-22-content-bridge-v1.md` |
 | 20 | 2026-04-22 | Praxis S2.3-aerzte-services (8 Arzt-Pages + Services-Hub) | `_archive/sessions/2026-04/session-20-s2.3-aerzte-services.md` |
 | 19 | 2026-04-22 | Praxis S2.4 Menü-Restrukturierung | `_archive/sessions/2026-04/session-19-s2.4-menue.md` |
