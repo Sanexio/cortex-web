@@ -34,9 +34,9 @@ Pro Page eine von 4 Empfehlungen:
 
 | # | slug (id) | chars | Inhalt | Empfehlung | Ziel |
 |---:|---|---:|---|---|---|
-| 1 | `terminanfrage` (4011) | 327 | Einleitungstext + `[wpforms id="4010"]` | **PFLEGEN** | neue `/kontakt/` oder `/service/terminanfrage/` — Form-ID 4010 behalten |
-| 2 | `rezeptbestellung` (4014) | 863 | Patient-Info-Text + Form-Felder erklärt + `[wpforms id="…"]` | **PFLEGEN** | neue `/service/rezeptbestellung/` |
-| 3 | `ueberweisung` (4017) | 371 | Kurztext + `[wpforms id="4016"]` | **PFLEGEN** | neue `/service/ueberweisung/` |
+| 1 | `terminanfrage` (4011) | 327 | Einleitungstext + `[wpforms id="4010"]` | **PFLEGEN** | `/service/terminanfrage/` — Form-ID 4010 behalten |
+| 2 | `rezeptbestellung` (4014) | 863 | Patient-Info-Text + Form-Felder erklärt + `[wpforms id="…"]` | **PFLEGEN** | `/service/rezeptbestellung/` |
+| 3 | `ueberweisung` (4017) | 371 | Kurztext + `[wpforms id="4016"]` | **PFLEGEN** | `/service/ueberweisung/` |
 | 4 | `fragebogen-bauchschmerzen` (4024) | 71 | nur `[wpforms id="4007"]` | **MERGEN** | Form 4007 behält Funktion, aber in Service-Index verlinken — separate Page unnötig |
 | 5 | `beschwerden-beim-wasserlassen` (4026) | 144 | nur `[wpforms id="4006"]` | **MERGEN** | wie oben, Form 4006 |
 | 6 | `covid-19-risikofragebogen` (4028) | 1288 | Corona-Fragebogen + `[wpforms]` | **ARCHIV-ONLY** | Corona-Pandemie vorbei, aus Patient-Flow entfernen (Evergreen-Pflicht HWG) |
@@ -46,17 +46,17 @@ Pro Page eine von 4 Empfehlungen:
 
 | # | slug (id) | chars | Inhalt | Empfehlung | Ziel |
 |---:|---|---:|---|---|---|
-| 8 | `arbeitsunfaehigkeit` (466) | 3062 | Erklärung AU-Regeln (Persönl. Kontakt, Rückwirkung, planbar) — HWG-neutral, Patient-Info | **PFLEGEN** | neue `/service/arbeitsunfaehigkeit/` oder Unter-Abschnitt in `/sprechstunden/` |
-| 9 | `ein-und-ueberweisungen` (469) | 3904 | Krankenhaus-Einweisung + Voruntersuchung + Fach-Überweisungen (ausführlich) | **PFLEGEN** | neue `/service/einweisungen-ueberweisungen/` |
-| 10 | `neupatienten-new-patient-enrollment` (9498) | 2029 | Neupatienten-Aufnahme-Regel + bilingual (DE/EN) + Warteliste | **PFLEGEN** | neue `/neupatienten/` (Top-Level, eigene Page) — **WICHTIG für Scheine-Steuerung** |
-| 11 | `frequently-asked-questions` (398) | 878 | FAQ-Einleitung (sehr knapp, keine echten Q&As) | **MERGEN** | als FAQ-Accordion in `/praxis/` oder `/sprechstunden/` — separate Stub-Page überflüssig |
+| 8 | `arbeitsunfaehigkeit` (466) | 3062 | Erklärung AU-Regeln (Persönl. Kontakt, Rückwirkung, planbar) — HWG-neutral, Patient-Info | **PFLEGEN** | `/service/arbeitsunfaehigkeit/` |
+| 9 | `ein-und-ueberweisungen` (469) | 3904 | Krankenhaus-Einweisung + Voruntersuchung + Fach-Überweisungen (ausführlich) | **PFLEGEN** | `/service/einweisungen-ueberweisungen/` |
+| 10 | `neupatienten-new-patient-enrollment` (9498) | 2029 | Neupatienten-Aufnahme-Regel + bilingual (DE/EN) + Warteliste | **PFLEGEN** | `/service/neupatienten/` — **WICHTIG für Scheine-Steuerung** |
+| 11 | `frequently-asked-questions` (398) | 878 | FAQ-Einleitung (sehr knapp, keine echten Q&As) | **MERGEN** | FAQ-Accordion-Block in `/praxis/` (Dr.-Stracke-Wahl S33) — separate Stub-Page überflüssig |
 
 ### 2.3 Sprechzeiten & Standorte — **MERGEN** in Kern-Cluster
 
 | # | slug (id) | chars | Inhalt | Empfehlung | Ziel |
 |---:|---|---:|---|---|---|
 | 12 | `unsere-sprechzeiten` (405) | 7048 | Vollständige Sprechzeiten-Tabelle (Termin / Akut / Sa / Abend) + Regeln | **MERGEN** | `/sprechstunden/` Page #4 (S2.1-Inventar) — dieser Content **ist** die neue Page-Basis |
-| 13 | `standort-alte-oper` (9430) | 2054 | Zweitstandort Bockenheimer Landstraße (Eterno Windows Gebäude) | **⚠ DR.-STRACKE-FRAGE** | Trunk hat 3 Standorte (`bockenheimer`, `grueneburgweg`, `leerbachstrasse`) — ist Bockenheimer = Alte Oper? Ist Standort noch aktiv? → **offene Entscheidung vor Kuration** |
+| 13 | `standort-alte-oper` (9430) | 2054 | Zweigpraxis Bockenheimer Landstraße (Eterno Windows Gebäude) | **PFLEGEN** | `/standorte/zweigpraxis-bockenheimer/` · Trunk: `trunk/content/pages/standorte/bockenheimer.yaml` · Legacy-Bezeichnung „Alte Oper" wird ersetzt durch neue Terminologie **„Zweigpraxis Bockenheimer Landstraße"** (Dr.-Stracke-Entscheidung S33) |
 
 ### 2.4 Diagnostik/Leistungen (einzel-Page-Fragmente) — **MERGEN**
 
@@ -68,7 +68,7 @@ Pro Page eine von 4 Empfehlungen:
 
 | # | slug (id) | chars | Inhalt | Empfehlung | Begründung |
 |---:|---|---:|---|---|---|
-| 15 | `projekt-docvocat` (302) | 6113 | „Digitale Patientenakte" (DocVocat-Projekt) | **ARCHIV-ONLY** | Projekt-Beschreibung, nicht Patient-Service. Falls Projekt noch aktiv: separate Projekt-Page-Klasse (nicht Teil des M1-Launch-Scope) |
+| 15 | `projekt-docvocat` (302) | 6113 | „Digitale Patientenakte" (DocVocat-Projekt) | **ARCHIV-ONLY** | DocVocat-Projekt nicht mehr aktiv (Dr.-Stracke-Entscheidung S33) — bleibt im `_content-archive/`, keine Trunk-Anlage |
 | 16 | `docteur-en-med-s-saul` (375) | 6586 | Docteur-Saul-Biographie (ausführlich, DE-Text trotz FR-Slug) | **MERGEN → B-1** | **Goldstück**: enthält Bio-Rohmaterial für B-1 Arzt-Bios. In S34 B-1 als Bio-Quelle für `docteur-saul.yaml` nutzen statt neu formulieren |
 | 17 | `weihnachtskalender` (8199) | 317 | Adventskalender-Gimmick + `[santapress]`-Shortcode | **ARCHIV-ONLY** | saisonal, nicht M1-relevant. Santapress-Entscheidung bleibt eigener Track (ewige externer Blocker, SESSION_RESUME §4) |
 | 18 | `under-construction` (5703) | 300 | Platzhalter-Page (leer im Body) | **LÖSCHEN** | reiner Stub, kein Content |
@@ -92,42 +92,31 @@ Pro Page eine von 4 Empfehlungen:
 
 ---
 
-## 3. Zusammenfassung der Empfehlungen
+## 3. Zusammenfassung der Empfehlungen (nach Dr.-Stracke-Freigabe S33)
 
 | Kategorie | Anzahl | Pages |
 |---|:-:|---|
-| **PFLEGEN** (in Trunk übernehmen) | 6 | Terminanfrage · Rezeptbestellung · Überweisung · Arbeitsunfähigkeit · Ein-/Überweisungen · Neupatienten |
-| **MERGEN** (Bestandteile in Target-Page) | 6 | Bauchschmerz-Form · Wasserlass-Form · DHT-Fragebogen → Juvantis · FAQ-Stub · Sprechzeiten → `/sprechstunden/` · Carotis-Duplex · Docteur-Saul-Bio → B-1 |
-| **ARCHIV-ONLY** | 5 | Corona-Fragebogen · DocVocat · Weihnachtskalender · Fragebogen-Brustschmerzen (private) · Jobs (private) |
-| **⚠ DR.-STRACKE-FRAGE** | 1 | `standort-alte-oper` — noch aktiv? Mapping zu `bockenheimer`? |
+| **PFLEGEN** (in Trunk übernehmen) | 7 | Terminanfrage · Rezeptbestellung · Überweisung · Arbeitsunfähigkeit · Ein-/Überweisungen · Neupatienten · **Zweigpraxis Bockenheimer Landstraße** |
+| **MERGEN** (Bestandteile in Target-Page) | 6 | Bauchschmerz-Form · Wasserlass-Form · DHT-Fragebogen → Juvantis · FAQ-Stub → Accordion in `/praxis/` · Sprechzeiten → `/sprechstunden/` · Carotis-Duplex · Docteur-Saul-Bio → B-1 |
+| **ARCHIV-ONLY** | 5 | Corona-Fragebogen · DocVocat (inaktiv) · Weihnachtskalender · Fragebogen-Brustschmerzen (private) · Jobs (private) |
 | **LÖSCHEN** (Stub-Keine-Neuanlage) | 6 | Under-Construction · Cookie-Richtlinie · 3× leere ES/FR/EN-Dubletten · ES-Wasserlass-Dublette |
 
-**Launch-Impact:** 6 neue Service-Pages aus dem Legacy-Cluster (`arbeitsunfaehigkeit`, `ein-und-ueberweisungen`, `neupatienten`, `terminanfrage`, `rezeptbestellung`, `ueberweisung`) — alle bestehender, HWG-neutraler Praxis-Content, **kein Schreibaufwand von Null**, nur Umzug + Template-Integration.
+**Launch-Impact:** 7 neue Launch-fähige Pages aus dem Legacy-Cluster:
+- **6 Service-Pages** unter `/service/<slug>/` (`arbeitsunfaehigkeit`, `einweisungen-ueberweisungen`, `neupatienten`, `terminanfrage`, `rezeptbestellung`, `ueberweisung`) — alle bestehender, HWG-neutraler Praxis-Content, **kein Schreibaufwand von Null**, nur Umzug + Template-Integration
+- **1 Standort-Page** `/standorte/zweigpraxis-bockenheimer/` mit neuer Terminologie
 
 **B-1-Boost:** `docteur-en-med-s-saul` liefert 6586 chars Bio-Rohmaterial für `trunk/content/team/docteur-saul.yaml` → einer der 7 fehlenden Bios ist **nicht** auf Dr.-Stracke-Input angewiesen.
 
 ---
 
-## 4. Offene Entscheidungen für Dr. Stracke
+## 4. Entscheidungen (alle beantwortet 2026-04-24, Session 33)
 
-Vor Kuration in Folge-Sessions beantworten:
-
-1. **Standort Alte Oper (Bockenheimer Landstraße 33, Eterno Windows Gebäude) — noch aktiv?**
-   - Trunk-Registry: `_media-source/praxis/standorte/bockenheimer/`
-   - Falls aktiv: Content (2054 chars) nach `trunk/content/pages/standorte/bockenheimer.yaml`
-   - Falls inaktiv: ARCHIV-ONLY + Media-Slot aus Trunk entfernen
-
-2. **DocVocat-Projekt — noch aktiv?** (6113 chars Content vorhanden)
-   - Falls aktiv: eigene Projekt-Page außerhalb des P0/P1-Launch-Scope, später entscheiden
-   - Falls inaktiv: ARCHIV-ONLY final
-
-3. **Service-Pages-Slugs:** Flache Struktur (`/rezeptbestellung/`, `/terminanfrage/`, …) oder Unter-Bereich (`/service/rezeptbestellung/`)?
-   - Flat = kürzere URLs, besser für SEO + Patient-Merk-Fähigkeit
-   - Unter-Bereich = sauberere IA, Service-Index als eigene Landing-Page
-   - **Default-Empfehlung Claude:** flat, weil Bestandspatienten die Legacy-URLs kennen und SEO-Equity nicht verloren gehen soll (falls Redirects gesetzt werden)
-
-4. **FAQ:** Accordion in `/praxis/` oder eigene Page `/faq/`?
-   - Content-Substanz aktuell sehr dünn (878 chars Einleitung, keine Q&As) → Akkordeon in `/praxis/` reicht, separate Page erst wenn Content wächst
+| # | Frage | Antwort Dr. Stracke |
+|:-:|---|---|
+| 1 | Standort Alte Oper — noch aktiv? | ✅ aktiv; **Terminologie ab jetzt: „Zweigpraxis Bockenheimer Landstraße"** (Alte Oper = Bockenheimer Landstraße 33) |
+| 2 | DocVocat-Projekt — noch aktiv? | ❌ nicht mehr aktiv → ARCHIV-ONLY final |
+| 3 | Service-Pages-Struktur — flach vs. Unter-Bereich? | **Unter-Bereich** `/service/<slug>/` |
+| 4 | FAQ — Accordion in `/praxis/` oder eigene `/faq/`? | **Accordion in `/praxis/`** (Claude-Default-Interpretation, Antwort war „accordion") |
 
 ---
 
@@ -141,13 +130,22 @@ Vor Kuration in Folge-Sessions beantworten:
 
 ## 6. Folge-Arbeit (Kurations-Backlog für B-2-Unterblöcke)
 
-Nach Dr.-Stracke-Freigabe der Triage:
+**Triage ist freigegeben (Dr. Stracke, 2026-04-24, Session 33).** Nächste Schritte:
 
 | Unterblock | Inhalt | Aufwand |
 |---|---|:-:|
-| **B-2a** | 6 PFLEGEN-Pages nach Trunk + Templates (Service-Cluster) | 1 Session |
-| **B-2b** | 6 MERGE-Operationen (Sprechzeiten/Carotis/FAQ-Accordion/DocteurSaul-Bio) | ½–1 Session |
-| **B-2c** | Standort-Alte-Oper-Entscheidung umsetzen (je nach Dr.-Stracke-Answer) | ½ Session |
-| **B-2d** | Redirect-Map für Legacy-URLs (SEO-Equity-Schutz) | ½ Session |
+| **B-2a** | 6 Service-Pages nach Trunk `trunk/content/pages/service/` + `template-service.php` anlegen | 1 Session |
+| **B-2b** | 6 MERGE-Operationen (Sprechzeiten→`/sprechstunden/` · Carotis→Diagnostik · FAQ-Accordion in `/praxis/` · DocteurSaul-Bio→B-1 · DHT-Form→Juvantis-Site · Wasserlass-ES-Dublette-Redirect) | ½–1 Session |
+| **B-2c** | **Zweigpraxis Bockenheimer Landstraße** — `trunk/content/pages/standorte/bockenheimer.yaml` anlegen + `/standorte/zweigpraxis-bockenheimer/` Route + Eterno-Kontakt-Info pflegen | ½ Session |
+| **B-2d** | Redirect-Map für Legacy-URLs (SEO-Equity-Schutz: `/standort-alte-oper/` → `/standorte/zweigpraxis-bockenheimer/` usw.) | ½ Session |
 
 **Total B-2 nach Triage:** ca. 2–3 Sessions Kurations-Arbeit bis `/service/`-Cluster launch-fähig.
+
+## 7. Terminologie-Glossar (neu eingeführt S33)
+
+| Alt (Legacy) | Neu (ab jetzt durchgängig) |
+|---|---|
+| „Alte Oper" (Standort) | **„Zweigpraxis Bockenheimer Landstraße"** |
+| „Standort Bockenheimer Landstraße 33" | **„Zweigpraxis Bockenheimer Landstraße"** |
+
+**Konsequenz:** In allen Folge-Sessions (B-2c, Trunk-YAMLs, Templates, Alt-Texte für Media-Assets) wird die neue Terminologie verwendet. Legacy-URL `/standort-alte-oper/` bekommt 301-Redirect nach `/standorte/zweigpraxis-bockenheimer/` (B-2d).
