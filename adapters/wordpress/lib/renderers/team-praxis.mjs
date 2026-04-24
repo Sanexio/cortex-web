@@ -1,6 +1,8 @@
 // Renderer: Trunk TeamMembers -> Praxis-Theme JSON data file
 // Target file: inc/data/team.json (consumed by pxz_team_doctors() after patch)
 // N-1 WP-Template-Adapter (Pattern B reverse), Session 29, 2026-04-23.
+// S35 B-1-template (2026-04-24): bio.de + qualifications now flow into the
+// praxis view so template-arzt.php can render long-form doctor bios.
 //
 // Schema mapping Trunk -> Praxis-View (CW-004 DE canonical):
 //   slug                -> slug
@@ -9,12 +11,13 @@
 //   languages           -> languages (array, 1:1)
 //   intro.de (trimmed)  -> intro
 //   accent              -> accent
-//   image (media://...) -> image_id (phase 0: always 0, matches IST behavior)
+//   image (numeric)     -> image_id (0 = initials-placeholder)
 //   profile_urls.praxis -> profile_url (fallback: "/<slug>/")
+//   bio.de (trimmed)    -> bio (empty string if trunk has none)
+//   qualifications      -> qualifications (array, 1:1; empty array if none)
 //
 // Fields intentionally dropped from praxis view: id, order (implicit via sort),
-// qualifications, bio, image_asset_juvantis. They remain in the trunk for the
-// shopify/juvantis view.
+// image_asset_juvantis. They remain in the trunk for the shopify/juvantis view.
 
 function pick(member, path, fallback = null) {
   const segs = path.split(".");
@@ -37,6 +40,9 @@ function mapSingle(member) {
   const introDe = (pick(member, "intro.de", "") || "").trim();
   const profileUrl = pick(member, "profile_urls.praxis", `/${member.slug}/`);
 
+  const bioDe = (pick(member, "bio.de", "") || "").trim();
+  const qualifications = Array.isArray(member.qualifications) ? [...member.qualifications] : [];
+
   return {
     slug: member.slug,
     name: member.name,
@@ -47,7 +53,9 @@ function mapSingle(member) {
     // Numeric image -> image_id (Block A shortcut, Session 32). Non-numeric (null /
     // future media:// URIs) still renders as 0 until N-1b media-ID-Resolver lands.
     image_id: typeof member.image === "number" ? member.image : 0,
-    profile_url: profileUrl
+    profile_url: profileUrl,
+    bio: bioDe,
+    qualifications: qualifications
   };
 }
 
