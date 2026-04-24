@@ -19,17 +19,18 @@
 > Pattern: `Nexus/_memory/patterns/holistic-system-priority.md`.
 > Tutorial: `Second Brain/30 Tutorials/Arbeitsweise & Prozess/06-projekt-prio-leiter-holistic.md`.
 
-### Aktueller Prio-Stand (2026-04-24, Ende Session 33)
+### Aktueller Prio-Stand (2026-04-24, Ende Session 36)
 
 | Prio | Block | Status | Next Session |
 |:---:|---|:---:|:---:|
 | **P1** | Medien-Pipeline (ohne Framework): 2/8 Fotos live, Asset-Bestand im Trunk konsolidiert | 🟢 **durch (Block A)** | 6 weitere Fotos = externer Foto-Shoot |
-| **P2** | Prod-Deployment-Pipelines (Praxis via DF/SFTP + Juvantis-Shopify-Sync dokumentiert) | 🟡 offen, DF-Support extern blockiert | S36+ (nach Block B/C) |
-| **P3** | Praxis Content-Rest — **B-2 Triage durch (S33)**, B-2a/b/c/d als Kurations-Backlog definiert | 🟡 **aktiv als Block B** | S34 Default: B-2a Service-Pages |
-| **P4** | **M1**: Erster Prod-Push westend-hausarzt.com + Verify | 🔴 Meilenstein | S37–39 |
+| **P2** | Prod-Deployment-Pipelines (Praxis via DF/SFTP + Juvantis-Shopify-Sync dokumentiert) | 🟡 offen, DF-Support extern blockiert | nach Header-Redesign |
+| **P3** | Praxis Content-Rest (Block B) | 🟢 **durch (S34–S36 MVP-Sprint)** | — |
+| **Ppol (hochgestuft)** | **Header-Menü-Redesign (Dr.-Stracke-Wunsch S36-Ende)** — 4 Varianten Spec `specs/sprint-2/S38_header-menu-redesign.md` | 🔴 **Default S38** | S38 zuerst: Design-Wahl + Umsetzung |
+| **P4** | **M1**: Erster Prod-Push westend-hausarzt.com + Verify | 🔴 Meilenstein | nach Ppol + L-1/L-2/C-1 |
 | **P5** | Juvantis Content-Alltag (2–3 weitere Bridge-Seiten, Content-Pflege als Gewohnheit) | 🔴 offen | nach M1 |
 | **P6** | Mehrsprachigkeit Praxis (i18n-Mechanik + externe Übersetzungen + Integration) | 🔴 offen | nach P5 |
-| **Ppol** | Design-Polish, A11y-Audit, Mobile-Finish | 🔴 offen | nach P4 |
+| **Ppol-rest** | A11y-Audit, Mobile-Finish, Design-Token-Feinschliff | 🔴 offen | nach P4 |
 | **Popt** | N-6.4, N-6.5, Pattern C (Metafield), Media-Registry-Framework | ⏸ gefrierend | **nur bei Pain-Point** |
 | **Pios** | N-3 Design-Token + iOS-Adapter | ⏸ gefrierend | **wenn iOS-App-Scope aktiv wird** |
 
@@ -77,12 +78,15 @@ Von 10 vorangegangenen Sessions (S22–S31) waren **7 Infrastruktur-Sessions** (
 
 ## §1 Stand & Version
 
-- **Version:** `0.8.1` — Session 33: **Block-A-Closure + B-2 Legacy-Triage + Docteur-Saul-Bio-Extraktion** (2026-04-24, Cluster-Mini-02)
-- **Stand:** 2026-04-24, Praxis-Content-Arbeit läuft geordnet:
-  - Block A (2/8 Fotos) live seit S32, commit-abgeschlossen in S33
-  - **B-2 Triage** komplett: 25 `legacy/de`-Pages klassifiziert (7 PFLEGEN, 6 MERGEN, 5 ARCHIV-ONLY, 6 LÖSCHEN) und von Dr. Stracke freigegeben (4 Entscheidungen beantwortet)
-  - **Neue Terminologie:** „Zweigpraxis Bockenheimer Landstraße" (ersetzt „Alte Oper")
-  - **Goldstück:** Docteur-Saul-Bio aus Legacy-Archiv extrahiert + mojibake-bereinigt + HWG-gefiltert → `trunk/content/team/docteur-saul.yaml:bio.de` (1 von 7 B-1-Bios erledigt **ohne** Dr.-Stracke-Input)
+- **Version:** `0.9.0` — Session 34–36 **MVP-Rohling in 24h-Sprint** (2026-04-24, Cluster-Mini-02)
+- **Stand:** 2026-04-24, **Block B (Content-Rest) komplett durch**, MVP-Rohling lokal launch-ready:
+  - **29/29 Kern-URLs HTTP 200** · `tools/verify.sh` grün · `MVP_HANDOFF.md` geschrieben
+  - **3 neue URLs:** `/standorte/`, `/standorte/zweigpraxis-bockenheimer/`, `/aktuelles/`
+  - **6 Bio-Stubs** (Barcsay/Seelig/Jawich/Shahin/Landeberg/Arbitmann) mit qualifications + bio.de (Platzhalter-Marker)
+  - **Bio-Renderer erweitert:** `team-praxis.mjs` + `template-arzt.php` rendern jetzt bio.de + Qualifikations-Pills (vorher nur Juvantis-Scope)
+  - **15 Legacy-Redirects** (`inc/redirects.php`) + **14 Orphan-Pages** in Trash/Private
+  - **Nav-Struktur umgebaut (Dr.-Stracke-Wunsch S36-Ende):** Fachrichtungen unter Ärzte einsortiert · Max. 4 Items pro Reihe (7→4+3 zwei Zeilen)
+  - **S38-Spec geschrieben:** Header-Menü-Redesign als Default-Start-Task in nächster Session (4 Design-Varianten zur Wahl, LL-034)
 - **Jüngste Commits (Session 33, Reihenfolge):**
   - `bea5330` Cortex-Web S32-Closure (Block A Arzt-Fotos, nachgeholt)
   - `a859d51` Cortex-Web B-2 Triage Erstfassung
@@ -159,7 +163,67 @@ Erwartet: Alle gepflegten Dateien unter Token-Budget (LL-044). Siehe `Nexus/tool
 
 ---
 
-## §3 Letzte Session — Session 33, 2026-04-24 (Block-A-Closure + B-2 Triage + Docteur-Saul-Bio)
+## §3 Letzte Session — Session 34–36 kompakt, 2026-04-24 (24h-MVP-Sprint)
+
+### Gerät
+**Cluster-Mini-02** (home-Mac M2).
+
+### Auftrag
+Dr. Stracke (Session-Start): „Ich möchte, dass du das Redesign-Projekt mit einem MVP innerhalb der nächsten 24–48 h abschließt." → Klarifikation: „MVP = Site lokal als Staging-Preview, B-Sektionen abgeschlossen, Platzhalter wo Content fehlt." Architekten-Modus-Kompromiss: Kurz-Spec pro Block, Umsetzung autonom.
+
+### Drei-Fronten-Verlauf
+
+**Front 1 — S34 B-2c + B-2d** (Zweigpraxis Bockenheimer + Redirect-Map):
+- Entdeckt: B-2a (6 Service-Pages) war bereits als `0ee4e96` committed, Smoke 7/7 OK → Task übersprungen
+- `trunk/content/pages/praxis/standorte.yaml` + `standorte/bockenheimer.yaml` → Hub + Detail live
+- **Slug-Fix:** Erster Push erzeugte `/standorte/standorte-zweigpraxis-bockenheimer/` (Parent-Prefix-Doublung), Fix: Child-Slug ohne Prefix → zweiter Push `/standorte/zweigpraxis-bockenheimer/` korrekt
+- `inc/redirects.php` (NEU): 15 Legacy-URLs 301-weitergeleitet, URI-basiertes Matching auf `parse_request`-Hook (feuert vor WP-404-Logik), cross-site-aware (sanexio.eu ohne home_url-prefix)
+- 14 Orphan-Pages bereinigt (9 Trash MERGEN+LÖSCHEN, 3 Private ARCHIV-ONLY, 2 waren schon private)
+
+**Front 2 — S35 B-1-template + B-1-6rest + B-2b** (Bio-Renderer + 6 Stubs + Merge-Ops):
+- `team-praxis.mjs` erweitert: `bio.de` + `qualifications` fließen jetzt in Praxis-View (bisher nur Juvantis)
+- `template-arzt.php` 3-stufige Vita-Kaskade: WP-Content → Trunk-Bio → Intro-Stub
+- `assets/css/arzt.css` +24 Zeilen: `.pxz-arzt-chips` + `.pxz-arzt-chip` Pills
+- 6 Bio-Stubs für dr-barcsay/seelig/jawich/shahin/landeberg/arbitmann mit Platzhalter-Marker + 3 Basis-Qualifikationen pro Arzt
+- B-2b 6 Merge-Ops via Redirect-Map + Trash (Sprechzeiten, FAQ, Bauchschmerz, Wasserlass, DHT→Juvantis, Saul=via-B-1-template erledigt)
+
+**Front 3 — S36 B-3 + B-4-Review + Nav-Anpassung** (Aktuelles + Maps + Menü-Struktur):
+- `/aktuelles/` neu angelegt (Landing mit 3 Platzhalter-Sektionen)
+- Google-Maps-Embed auf `/standorte/` (iframe mit "wird vor Live durch konkreten Ausschnitt ersetzt"-Marker)
+- B-4: Impressum (3847 chars) + Datenschutzerklärung (5658 chars) haben bereits Content → kein Ersatz, Legal-Review als Pre-Live-Blocker L-1/L-2 dokumentiert
+- **Dr.-Stracke-Feedback auf Screenshot (Ende S36):** „Menü Fachrichtungen unter Ärzte und maximal 4 Menüpunkte in einer Reihe" → `inc/nav-data.php` + `nav.css` Grid-Umstellung `repeat(4, auto)`, 7 Items brechen zu 4+3 um
+- **Dr.-Stracke-Zusatz-Feedback:** „Header-Menü ist zu klein, UX und Design muss überarbeitet werden" → **S38-Spec geschrieben** (`specs/sprint-2/S38_header-menu-redesign.md`) mit 4 Design-Varianten, 10 Pain-Points, 6 Design-Prinzipien
+
+### Pre-Flight-Metriken Session-Ende
+
+- `tools/validate.sh` — OK (1 file)
+- `sites/praxis-webseite/tools/verify.sh` — VERIFY OK (alle Showpiece-Elemente zentriert)
+- Sanitizer-Probe: SESSION_RESUME **15375 Tokens (Soft-Warn 15k)** → Rotation als erste Hygiene-Aufgabe in S38 vormerken
+- 29/29 MVP-URLs HTTP 200
+
+### Commits (3 Stück)
+
+- Cortex-Web: `3481884` feat(mvp): S34-S36 24h-Sprint
+- Theme: `cb4cfc4` feat(mvp): Bio-Renderer + Redirects + Chips (PXZ 2.7.25)
+- Theme: `e8f7cf3` feat(nav): Fachrichtungen unter Ärzte + 4/Reihe (PXZ 2.7.26)
+
+### Artefakte NEU
+
+- `sites/praxis-webseite/MVP_HANDOFF.md` — komplette Abnahme-Doku (29 URLs · Platzhalter-Liste · Pre-Live-Blocker L-1…D-2)
+- `sites/praxis-webseite/specs/sprint-2/S38_header-menu-redesign.md` — Spec für Folge-Session
+
+### Nicht erledigt (bewusst)
+
+- Impressum/Datenschutz-**Legal-Review** (extern Dr. Stracke/Anwalt)
+- Arzt-Fotos-Shoot (extern)
+- Arzt-Bio-Volltexte (warten auf CV-Stichworte von Dr. Stracke)
+- FAQ-Content (warten auf Q&A-Paare von Dr. Stracke)
+- Aktuelles-Echtmeldungen (warten auf Redaktion)
+- Header-Menü-Design-Umsetzung → S38
+
+---
+
+## §3-legacy-33 Session 33, 2026-04-24 (Block-A-Closure + B-2 Triage + Docteur-Saul-Bio)
 
 ### Gerät
 **Cluster-Mini-02** (home-Mac M2).
@@ -912,7 +976,30 @@ SESSION_RESUME hat am Ende S33 den **Soft-Warn überschritten (15.3 k / 15 k Sof
 
 ---
 
-## §5 Sofort-Status-Frage an Dr. Stracke — Session 34
+## §5 Sofort-Status-Frage an Dr. Stracke — Session 38
+
+> **Ende 24h-MVP-Sprint:** Block B durch, MVP-Rohling lokal begehbar (29/29 URLs 200). Zwei harte externe Blocker zu Live-Launch (Legal-Review L-1/L-2, DF-Support C-1). Dazwischen: **Header-Menü-Redesign** als Dr.-Stracke-Wunsch.
+>
+> **Default für Session 38 — Header-Menü-Redesign:**
+> 1. Hygiene: SESSION_RESUME-Rotation (Soft-Warn 15.375 Tokens) — §3-legacy-29/30 nach `_archive/sessions/2026-04/` (15 Min)
+> 2. Spec-Review: `specs/sprint-2/S38_header-menu-redesign.md` mit Dr. Stracke durchgehen
+> 3. **Wahl einer Design-Variante** (A: Apple klar · B: Mega-Menu · C: Off-Canvas · D: Hybrid+CTA) oder Kombination
+> 4. 5 offene Entscheidungen klären (Doctolib-URL · Notfall-Hinweis · Icons · Avatare · …)
+> 5. Phase-3-Umsetzung nach Freigabe
+>
+> **Warum Header-Menü zuerst:** Dr. Stracke hat explizit gesagt „in der nächsten Session zuerst". Ppol wurde aus der Prio-Leiter hochgestuft, weil UX-Pain am sichtbaren Header direkt wirkt.
+>
+> **Alternativen:**
+> - **B-1 für 1–2 Ärzte** — wenn CV-Stichworte bereit sind, können wir echte Bios statt Platzhalter bauen (½ Session pro Arzt)
+> - **L-1/L-2 Legal-Review** — wenn Dr. Stracke Impressum/DSE durchgegangen ist, können wir Korrekturen einpflegen
+> - **C-1 DF-Support** — wenn SFTP-Zugang freigegeben ist, Prod-Deploy-Pfad beginnen
+> - **B-3 Follow-up** — echte Aktuelles-Inhalte, FAQ-Content aus Dr.-Stracke-Input
+>
+> **Nicht in der Default-Liste:** Media-Registry-Framework · N-6.4/6.5 · iOS · `_inbox/`-Sortierung · Home-Hero-Redesign (später).
+
+---
+
+## §5-legacy Sofort-Status-Frage an Dr. Stracke — Session 34 (archiviert)
 
 > **Session 33 abgeschlossen:** S32-Commit-Hygiene + B-2 Legacy-Triage (25 Pages klassifiziert, Dr.-Stracke-Freigabe eingearbeitet) + Goldstück Docteur-Saul-Bio (1/7 B-1 erledigt).
 >
