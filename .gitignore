@@ -31,13 +31,11 @@ logs/
 # Archivierte Binär-Blobs (z. B. entfernte WP-Plugins in _archive/)
 # Metadaten zu Archiven gehören in specs/*/evidence/ bzw. in Self-Check-Dokumente,
 # nicht als vollständiger Ordner ins Git. README bleibt lokal im Archive-Ordner.
-# Root-_archive/: partial tracking (sessions + sanitizer-Text-Backups)
-# — klein, projekt-spezifisch, wiederherstellbar. LL-044 / Session 23 / Sanitizer V4.
+# Root-_archive/: partial tracking (sessions only — klein, projekt-spezifisch).
+# Sanitizer-Artefakte sind seit 2026-04-24 im Nexus (LL-047 Verortungsregel).
 /_archive/*
 !/_archive/sessions/
 !/_archive/sessions/**
-!/_archive/sanitizer/
-!/_archive/sanitizer/**
 # Sub-Projekt-Archive (z. B. sites/praxis-webseite/_archive/santapress-*) bleiben ignoriert
 sites/*/_archive/
 
