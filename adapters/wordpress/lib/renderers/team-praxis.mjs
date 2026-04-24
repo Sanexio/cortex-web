@@ -44,9 +44,9 @@ function mapSingle(member) {
     languages: Array.isArray(member.languages) ? [...member.languages] : [],
     intro: introDe,
     accent: member.accent || "ink",
-    // Phase 0: image_id always 0 (matches IST pxz_team_doctors()). Future
-    // phases add a media-registry resolver that maps `media://...` -> WP attachment id.
-    image_id: 0,
+    // Numeric image -> image_id (Block A shortcut, Session 32). Non-numeric (null /
+    // future media:// URIs) still renders as 0 until N-1b media-ID-Resolver lands.
+    image_id: typeof member.image === "number" ? member.image : 0,
     profile_url: profileUrl
   };
 }
