@@ -1,0 +1,182 @@
+[
+  {
+    "page": "home",
+    "vp": "1920",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 17,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 44,
+      "padT": 11,
+      "padX": 21
+    },
+    "heroSize": 80,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/home-1920.png"
+  },
+  {
+    "page": "home",
+    "vp": "1440",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 17,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 44,
+      "padT": 11,
+      "padX": 21
+    },
+    "heroSize": 80,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/home-1440.png"
+  },
+  {
+    "page": "home",
+    "vp": "430",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 14,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 36,
+      "padT": 7,
+      "padX": 15
+    },
+    "heroSize": 40,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/home-430.png"
+  },
+  {
+    "page": "karriere",
+    "vp": "1920",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 17,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 44,
+      "padT": 11,
+      "padX": 21
+    },
+    "heroSize": 80,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/karriere-1920.png"
+  },
+  {
+    "page": "karriere",
+    "vp": "1440",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 17,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 44,
+      "padT": 11,
+      "padX": 21
+    },
+    "heroSize": 80,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/karriere-1440.png"
+  },
+  {
+    "page": "karriere",
+    "vp": "430",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 14,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 36,
+      "padT": 7,
+      "padX": 15
+    },
+    "heroSize": 40,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/karriere-430.png"
+  },
+  {
+    "page": "leistungen",
+    "vp": "1920",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 17,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 44,
+      "padT": 11,
+      "padX": 21
+    },
+    "heroSize": 42,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/leistungen-1920.png"
+  },
+  {
+    "page": "leistungen",
+    "vp": "1440",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 17,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 44,
+      "padT": 11,
+      "padX": 21
+    },
+    "heroSize": 42,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/leistungen-1440.png"
+  },
+  {
+    "page": "leistungen",
+    "vp": "430",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 14,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 36,
+      "padT": 7,
+      "padX": 15
+    },
+    "heroSize": 33,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/leistungen-430.png"
+  },
+  {
+    "page": "arzt",
+    "vp": "1920",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 17,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 44,
+      "padT": 11,
+      "padX": 21
+    },
+    "heroSize": 42,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/arzt-1920.png"
+  },
+  {
+    "page": "arzt",
+    "vp": "1440",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 17,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 44,
+      "padT": 11,
+      "padX": 21
+    },
+    "heroSize": 42,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/arzt-1440.png"
+  },
+  {
+    "page": "arzt",
+    "vp": "430",
+    "bodyFont": 26,
+    "btnInfo": {
+      "fontSize": 14,
+      "fontWeight": 400,
+      "radius": 9999,
+      "height": 36,
+      "padT": 7,
+      "padX": 15
+    },
+    "heroSize": 35,
+    "shot": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/sites/praxis-webseite/specs/sprint-2/S40_evidence/pxz-shots/arzt-430.png"
+  }
+]

@@ -161,14 +161,14 @@ component_probe() {
     # Folgezeilen der Inhalts-Regex gesucht. Funktioniert fuer single-line- UND
     # multi-line-CSS-Regeln.
     local assertions=(
-      "pxz-container max-width:1280px|^\.pxz-container[[:space:]]*\{|max-width:[[:space:]]*1280px|1"
-      "pxz-btn border-radius:9999px|^\.pxz-btn[[:space:]]*\{|border-radius:[[:space:]]*9999px|12"
+      "pxz-container max-width:1600px (S39-it1)|^\.pxz-container[[:space:]]*\{|max-width:[[:space:]]*1600px|1"
+      "pxz-btn border-radius via token (S40)|^\.pxz-btn[[:space:]]*\{|border-radius:[[:space:]]*var\(--pxz-radius-btn\)|12"
       "pxz-eyebrow text-transform:uppercase|^\.pxz-eyebrow[[:space:]]|text-transform:[[:space:]]*uppercase|1"
       "pxz-hero background:#fff|^\.pxz-hero[[:space:]]*\{|background:[[:space:]]*#fff|1"
-      "pxz-display font-weight:600|^\.pxz-display[[:space:]]|font-weight:[[:space:]]*600|1"
-      "pxz-title-1 font-weight:600|^\.pxz-title-1[[:space:]]|font-weight:[[:space:]]*600|1"
-      "pxz-headline font-weight:600|^\.pxz-headline[[:space:]]|font-weight:[[:space:]]*600|1"
-      "pxz-body font-size:17px|^\.pxz-body[[:space:]]|font-size:[[:space:]]*17px|1"
+      "pxz-display uses T1 token (S40)|^\.pxz-display[[:space:]]|font-size:[[:space:]]*var\(--pxz-t1-size\)|1"
+      "pxz-title-1 uses T2 token (S40)|^\.pxz-title-1[[:space:]]|font-size:[[:space:]]*var\(--pxz-t2-size\)|1"
+      "pxz-headline uses T5 token (S40)|^\.pxz-headline[[:space:]]|font-size:[[:space:]]*var\(--pxz-t5-size\)|1"
+      "pxz-body uses T6 token (S40)|^\.pxz-body[[:space:]]|font-size:[[:space:]]*var\(--pxz-t6-size\)|1"
     )
     local a
     for a in "${assertions[@]}"; do
