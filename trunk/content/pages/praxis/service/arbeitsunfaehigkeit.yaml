@@ -1,0 +1,51 @@
+# Praxis Page — /service/arbeitsunfaehigkeit/
+# Quelle: _content-archive/legacy/de/arbeitsunfaehigkeit-466.md (WP page ID 466)
+# Kurations-Entscheidung B-2 Triage S33 — PFLEGEN.
+
+id: service-arbeitsunfaehigkeit
+site: praxis
+slugs:
+  praxis: arbeitsunfaehigkeit
+title:
+  de: "Arbeitsunfähigkeit"
+
+sections:
+  - type: service-body
+    body_html:
+      de: |
+        <!-- wp:paragraph -->
+        <p>Der Arzt haftet mit seiner Zulassung für die Richtigkeit der ausgestellten Arbeitsunfähigkeitsbescheinigungen (AU). Für den Erhalt einer AU muss zwingend eine Erkrankung vorliegen. AU&rsquo;s dürfen nur nach persönlichem Kontakt ausgestellt werden. Eine rückwirkende Ausstellung ist in der Regel nicht möglich. Sollten Sie freitags oder am Wochenende erkranken und Ihr Arbeitgeber für diesen Tag eine AU wünschen, dann bleibt Ihnen leider der Gang zum Ärztlichen Bereitschaftsdienst nicht erspart. Sollten Sie sich montags dann bei uns vorstellen, so können wir Ihnen für vergangene Tage nur bei Vorlage einer entsprechenden ärztlichen Bescheinigung eine AU ausstellen.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>Eine AU für planbare medizinische Untersuchungen werden im Allgemeinen nicht ausgestellt. Hier gilt, dass Ihr Arbeitgeber Sie für notwendige Untersuchungen frei zu stellen hat. Eine ärztliche Bescheinigung zum Nachweis erhalten Sie vom behandelnden Arzt. Sollte es aus organisatorischen Gründen nicht möglich sein, dass Sie vor oder nach der Untersuchung zur Arbeit gehen, dann muss der Arbeitgeber Sie entweder für den ganzen Tag frei stellen, oder Sie müssen sich hierfür einen Urlaubstag nehmen.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>Der Gesetzgeber erlaubt bis zu drei Krankheitstage bevor ein ärztliches Attest vorgelegt werden muss. Arbeitgeber haben allerdings das Recht schon ab dem ersten Tag einen Nachweis zu verlangen. Klären Sie mit Ihrem Arbeitgeber, ab wann Sie den Nachweis erbringen müssen.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:heading -->
+        <h2>Bescheinigung vom Krankenhaus</h2>
+        <!-- /wp:heading -->
+
+        <!-- wp:paragraph -->
+        <p>Krankenhäuser sind ermächtigt auch AU&rsquo;s für die Dauer des Aufenthaltes in der Klinik und bis zu einer Woche danach auszustellen. Bei Vorlage des Entlassungsbriefes und Vorstellung spätestens am folgenden Werktag nach Entlassung in unserer Sprechstunde können wir auch rückwirkend die AU ab dem Tag der Aufnahme laut Entlassungsbrief bescheinigen. Bei Abteilungswechsel innerhalb des Krankenhauses achten Sie bitte darauf, dass entweder die Briefe aller Abteilungen vorliegen oder in einer separaten Bescheinigung der komplette Aufenthalt bestätigt wird.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:heading -->
+        <h2>Längere AU über mehr als 6 Wochen</h2>
+        <!-- /wp:heading -->
+
+        <!-- wp:paragraph -->
+        <p>Muss eine AU verlängert werden, dann sollte die Vorstellung in der Praxis spätestens einen Werktag nach Ende der letzten AU erfolgen, andernfalls riskieren Sie den Verlust der Krankengeldzahlung. Kommen Sie lieber vor Ablauf der AU zur Verlängerung vorbei. Sollte die erste Bescheinigung von einem anderen Arzt ausgestellt worden sein, bringen Sie bitte unbedingt eine entsprechende Kopie mit.</p>
+        <!-- /wp:paragraph -->
+
+wp:
+  page_template: "template-standard.php"
+  parent_slug: "service"
+  eyebrow:
+    de: "Service"
+  sub:
+    de: "Wann eine Arbeitsunfähigkeitsbescheinigung ausgestellt werden kann — rechtliche Rahmenbedingungen."
+  legacy_ids: [466]

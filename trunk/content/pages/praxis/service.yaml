@@ -1,0 +1,40 @@
+# Praxis Page — Service-Hub (Parent für /service/<slug>/)
+# Quelle: neu angelegt in S34 (B-2a) als Navigations-Hub für die 6 Service-Seiten.
+# Ziel: Local-WP / Prod westend-hausarzt.com, URL /service/
+
+id: service
+site: praxis
+slugs:
+  praxis: service
+title:
+  de: "Services für Patienten"
+
+sections:
+  - type: service-body
+    body_html:
+      de: |
+        <!-- wp:paragraph -->
+        <p>Auf diesen Seiten finden Sie organisatorische Informationen und Formulare für häufige Anliegen rund um Ihre Behandlung in unserer Praxis.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:list -->
+        <ul>
+          <li><a href="/service/terminanfrage/">Terminanfrage</a> — Termin für Akut- oder Sprechstundentermin anfragen</li>
+          <li><a href="/service/rezeptbestellung/">Rezeptbestellung</a> — Medikamente als Bestandspatient nachbestellen</li>
+          <li><a href="/service/ueberweisung/">Überweisung anfordern</a> — Überweisung vorab vorbereiten lassen</li>
+          <li><a href="/service/arbeitsunfaehigkeit/">Arbeitsunfähigkeitsbescheinigung (AU)</a> — rechtliche Rahmenbedingungen</li>
+          <li><a href="/service/einweisungen/">Einweisungen &amp; Überweisungen</a> — Krankenhaus, Voruntersuchung, Facharzt</li>
+          <li><a href="/service/neupatienten/">Neupatienten-Anmeldung</a> — Warteliste für Neuaufnahmen</li>
+        </ul>
+        <!-- /wp:list -->
+
+        <!-- wp:paragraph -->
+        <p>Für akute Anliegen erreichen Sie uns telefonisch. Die Kontaktdaten finden Sie unter <a href="/kontakt/">Kontakt</a>.</p>
+        <!-- /wp:paragraph -->
+
+wp:
+  page_template: "template-standard.php"
+  eyebrow:
+    de: "Service"
+  sub:
+    de: "Organisatorische Informationen und Formulare für Ihre Behandlung."

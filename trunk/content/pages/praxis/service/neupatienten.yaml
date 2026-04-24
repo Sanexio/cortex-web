@@ -1,0 +1,46 @@
+# Praxis Page — /service/neupatienten/
+# Quelle: _content-archive/legacy/de/neupatienten-new-patient-enrollment-9498.md (WP page ID 9498)
+# Kurations-Entscheidung B-2 Triage S33 — PFLEGEN.
+# Slug-Rewrite: neupatienten-new-patient-enrollment -> neupatienten (kürzer, 301 in B-2d).
+# Bilingual DE/EN, wichtig für Scheine-Steuerung (Slot-Begrenzung Neuaufnahmen).
+
+id: service-neupatienten
+site: praxis
+slugs:
+  praxis: neupatienten
+title:
+  de: "Neupatienten"
+  en: "New Patients"
+
+sections:
+  - type: service-body
+    body_html:
+      de: |
+        <!-- wp:paragraph -->
+        <p>Uns erreichen täglich viele Anfragen von Neupatienten, die um eine Aufnahme bitten. Da wir weiterhin unserem Anspruch auf eine qualitativ hochwertige Patientenversorgung gerecht werden wollen, müssen wir die Slots für Neuaufnahmen begrenzen, damit wir weiterhin Zeit für unsere Stammpatienten haben.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>Sie können sich weiter unten für eine Neuaufnahme auf eine Warteliste setzen lassen ohne Gewähr, dass wir Sie in unserer Praxis als Neupatient:in aufnehmen können. Wir bitten um Verständnis für diese Maßnahme.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p><em>We receive numerous inquiries daily from new patients requesting admission. In order to maintain our commitment to providing high-quality patient care, we must limit the slots available for new admissions to ensure we continue to have time for our existing patients.</em></p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p><em>You can sign up below to be placed on a waiting list for admission as a new patient, with no guarantee of acceptance into our practice. We appreciate your understanding of this measure.</em></p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>[wpforms id="9486"]</p>
+        <!-- /wp:paragraph -->
+
+wp:
+  page_template: "template-standard.php"
+  parent_slug: "service"
+  eyebrow:
+    de: "Service"
+  sub:
+    de: "Anmeldung auf unsere Neupatienten-Warteliste."
+  legacy_ids: [9498]

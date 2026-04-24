@@ -1,0 +1,35 @@
+# Praxis Page — /service/rezeptbestellung/
+# Quelle: _content-archive/legacy/de/rezeptbestellung-4014.md (WP page ID 4014)
+# Kurations-Entscheidung B-2 Triage S33 — PFLEGEN.
+
+id: service-rezeptbestellung
+site: praxis
+slugs:
+  praxis: rezeptbestellung
+title:
+  de: "Rezeptbestellung"
+
+sections:
+  - type: service-body
+    body_html:
+      de: |
+        <!-- wp:paragraph -->
+        <p>Als Patient unserer Praxis können Sie hier einfach Ihre Medikamente bestellen. Wir melden uns, sobald wir mit der Bearbeitung des Rezeptes fertig sind. Bitte beachten Sie hierzu auch unsere <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>Für die Bestellung geben Sie bitte <strong>den exakten Wirkstoffnamen und Hersteller des Medikamentes</strong> (wie er auf der Verpackung steht), die <strong>Stärke</strong> (d.h. in der Regel die Zahl hinter dem Medikament, meist in mg), die <strong>Packungsgröße</strong> (im Format N1, N2 oder N3) und die <strong>Einnahmehäufigkeit</strong> (z.&nbsp;B. 1-1-1) an.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>[wpforms id="4013"]</p>
+        <!-- /wp:paragraph -->
+
+wp:
+  page_template: "template-standard.php"
+  parent_slug: "service"
+  eyebrow:
+    de: "Service"
+  sub:
+    de: "Rezepte als Bestandspatient bequem online nachbestellen."
+  legacy_ids: [4014]

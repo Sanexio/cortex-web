@@ -95,8 +95,64 @@
                 ]
               }
             }
+          },
+          {
+            "type": "object",
+            "required": ["type", "body_html"],
+            "additionalProperties": false,
+            "properties": {
+              "type": { "const": "service-body" },
+              "body_html": {
+                "type": "object",
+                "required": ["de"],
+                "additionalProperties": false,
+                "properties": {
+                  "de": { "type": "string", "minLength": 1 },
+                  "en": { "type": "string" }
+                }
+              }
+            }
           }
         ]
+      }
+    },
+    "wp": {
+      "type": "object",
+      "description": "WP-spezifische Render-Hints: page-template, parent, eyebrow, sub. Nur wp-Adapter konsumiert.",
+      "additionalProperties": false,
+      "properties": {
+        "page_template": {
+          "type": "string",
+          "pattern": "^template-[a-z0-9-]+\\.php$"
+        },
+        "parent_slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Slug der WP-Parent-Page. Adapter resolved das zur ID zur Push-Zeit."
+        },
+        "eyebrow": {
+          "type": "object",
+          "required": ["de"],
+          "additionalProperties": false,
+          "properties": {
+            "de": { "type": "string" },
+            "en": { "type": "string" }
+          }
+        },
+        "sub": {
+          "type": "object",
+          "required": ["de"],
+          "additionalProperties": false,
+          "properties": {
+            "de": { "type": "string" },
+            "en": { "type": "string" }
+          }
+        },
+        "legacy_ids": {
+          "type": "array",
+          "description": "Bestehende WP-Page-IDs, die diesen Inhalt tragen. Adapter nutzt slug-Lookup, aber IDs dokumentieren Legacy-Zuordnung.",
+          "items": { "type": "integer", "minimum": 1 }
+        }
       }
     }
   }

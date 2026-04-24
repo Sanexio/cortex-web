@@ -1,0 +1,31 @@
+# Praxis Page — /service/ueberweisung/
+# Quelle: _content-archive/legacy/de/ueberweisung-4017.md (WP page ID 4017)
+# Kurations-Entscheidung B-2 Triage S33 — PFLEGEN.
+
+id: service-ueberweisung
+site: praxis
+slugs:
+  praxis: ueberweisung
+title:
+  de: "Überweisung anfordern"
+
+sections:
+  - type: service-body
+    body_html:
+      de: |
+        <!-- wp:paragraph -->
+        <p>Als Bestandspatient können Sie hier einfach Ihre Überweisung anfordern. Bitte beachten Sie hierzu noch unsere <a href="/datenschutz/">Datenschutzerklärung</a>. Wir melden uns bei Ihnen sobald wie möglich.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>[wpforms id="4016"]</p>
+        <!-- /wp:paragraph -->
+
+wp:
+  page_template: "template-standard.php"
+  parent_slug: "service"
+  eyebrow:
+    de: "Service"
+  sub:
+    de: "Überweisung an Fachärzte vorab vorbereiten lassen."
+  legacy_ids: [4017]

@@ -1,0 +1,35 @@
+# Praxis Page — /service/terminanfrage/
+# Quelle: _content-archive/legacy/de/terminanfrage-4011.md (WP page ID 4011)
+# Kurations-Entscheidung B-2 Triage S33 — PFLEGEN, S34 B-2a Übernahme nach Trunk.
+
+id: service-terminanfrage
+site: praxis
+slugs:
+  praxis: terminanfrage
+title:
+  de: "Terminanfrage"
+
+sections:
+  - type: service-body
+    body_html:
+      de: |
+        <!-- wp:paragraph -->
+        <p>Hier können Sie Anfragen für Akut- und normale Sprechstundentermine stellen.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>Wir werden uns per Email oder Telefon schnellstmöglich bei Ihnen melden.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>[wpforms id="4010"]</p>
+        <!-- /wp:paragraph -->
+
+wp:
+  page_template: "template-standard.php"
+  parent_slug: "service"
+  eyebrow:
+    de: "Service"
+  sub:
+    de: "Online-Anfrage für Akut- oder Sprechstundentermine."
+  legacy_ids: [4011]

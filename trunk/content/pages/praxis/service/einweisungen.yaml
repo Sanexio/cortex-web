@@ -1,0 +1,72 @@
+# Praxis Page — /service/einweisungen/
+# Quelle: _content-archive/legacy/de/ein-und-ueberweisungen-469.md (WP page ID 469)
+# Kurations-Entscheidung B-2 Triage S33 — PFLEGEN.
+# Slug-Rewrite: ein-und-ueberweisungen -> einweisungen (kürzer, 301 in B-2d).
+
+id: service-einweisungen
+site: praxis
+slugs:
+  praxis: einweisungen
+title:
+  de: "Einweisungen & Überweisungen"
+
+sections:
+  - type: service-body
+    body_html:
+      de: |
+        <!-- wp:heading -->
+        <h2>Krankenhauseinweisung</h2>
+        <!-- /wp:heading -->
+
+        <!-- wp:paragraph -->
+        <p>Als niedergelassene Ärzte sind wir verpflichtet alle ambulanten Möglichkeiten auszuschöpfen, bevor eine Einweisung in ein Krankenhaus ausgestellt wird.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>Weiterhin gilt, dass Krankenhauseinweisungen vom jeweils behandelnden Arzt ausgestellt werden. Hat z.&nbsp;B. der Orthopäde die Empfehlung zur Operation ausgesprochen, dann muss er auch die Einweisung ausstellen. Wird hingegen in unserer Praxis die Indikation zur stationären Behandlung gestellt, dann erhalten Sie die Einweisung von uns.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:heading -->
+        <h2>Voruntersuchung vor Aufnahme in ein Krankenhaus</h2>
+        <!-- /wp:heading -->
+
+        <!-- wp:paragraph -->
+        <p>Viele Krankenhäuser machen ihre Voruntersuchungen selbst. Manchmal wünscht die Klinik aber auch eine Voruntersuchung (meist Labor und EKG) durch uns. Das ist dann allerdings nur möglich, wenn die eigentliche Operation auch ambulant erbracht wird. In diesem Fall bringen Sie uns bitte das Schreiben der Klinik mit, welche Untersuchungen gewünscht sind. Ohne diesen Nachweis können wir leider keine Voruntersuchungen durchführen. Zwingend für diese Voruntersuchung ist auch eine Konsultation in der Arztsprechstunde. Vereinbaren Sie hierzu bitte einen Termin. Alle anderen Untersuchungen müssen von der Klinik im Rahmen eines sogenannten prästationären Aufenthaltes erbracht werden.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:heading -->
+        <h2>Nachbehandlung nach Operationen</h2>
+        <!-- /wp:heading -->
+
+        <!-- wp:paragraph -->
+        <p>Grundsätzlich sind alle Operateure verpflichtet, die Nachbehandlungen (Verbandswechsel, Fäden ziehen, etc.) selbst vorzunehmen. Sollte der Operateur diese Aufgaben an uns abgeben wollen (auch hier gilt, dass dies nur bei ambulant durchgeführten Operationen möglich ist, andernfalls sollte die Klinik einen poststationären Termin mit Ihnen vereinbaren), muss er eine Überweisung ausstellen, die das OP-Datum und den OP-Schlüssel enthält. Ohne diese Überweisung bekommen wir die Nachbehandlung von den Krankenkassen nicht bezahlt und werden Sie in diesem Fall wieder an die Klinik verweisen müssen.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>Bei stationären Operationen ist das Krankenhaus verpflichtet bis zu drei Wochen nach Entlassung die Nachsorge (einschließlich Fäden ziehen und Klammern entfernen) zu übernehmen.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:heading -->
+        <h2>Überweisung an andere Fachärzte</h2>
+        <!-- /wp:heading -->
+
+        <!-- wp:paragraph -->
+        <p>Als niedergelassene Ärzte müssen wir die Indikation für eine Überweisung an andere Fachgruppen genau prüfen. Haben Sie eine chronische Erkrankung, die regelmäßige Facharztuntersuchungen erfordert, kann diese Überweisung unter Angabe der Erkrankung (z.&nbsp;B. Diabetes mellitus, dialysepflichtige Niereninsuffizienz, …) vorbestellt werden. In allen anderen Fällen ist vorab ein Arztkontakt in unserer Praxis notwendig.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>Zu Vorsorgeuntersuchungen (Frauenarzt, Darmspiegelung, etc.) dürfen Sie diese Ärzte auch ohne Überweisung aufsuchen. Zu Ärzten, die keine gesetzlichen Vorsorgeuntersuchungen durchführen, muss für eine Überweisung eine abklärungsbedürftige Diagnose vorliegen.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p>An Anästhesisten (Narkoseärzte) stellen wir grundsätzlich keine Überweisungen aus, da dies der Arzt machen muss, der den Narkosearzt beauftragt.</p>
+        <!-- /wp:paragraph -->
+
+wp:
+  page_template: "template-standard.php"
+  parent_slug: "service"
+  eyebrow:
+    de: "Service"
+  sub:
+    de: "Regelungen für Krankenhauseinweisung, Voruntersuchung, Nachbehandlung und Facharzt-Überweisung."
+  legacy_ids: [469]
