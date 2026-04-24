@@ -19,14 +19,14 @@
 > Pattern: `Nexus/_memory/patterns/holistic-system-priority.md`.
 > Tutorial: `Second Brain/30 Tutorials/Arbeitsweise & Prozess/06-projekt-prio-leiter-holistic.md`.
 
-### Aktueller Prio-Stand (2026-04-24, Ende Session 32)
+### Aktueller Prio-Stand (2026-04-24, Ende Session 33)
 
 | Prio | Block | Status | Next Session |
 |:---:|---|:---:|:---:|
-| **P1** | Medien-Pipeline (ohne Framework): 2/8 Fotos live, Asset-Bestand im Trunk konsolidiert | 🟢 **schlank durch (Block A)** | weitere 6 Fotos = extern (Foto-Shoot) |
-| **P2** | Prod-Deployment-Pipelines (Praxis via DF/SFTP + Juvantis-Shopify-Sync dokumentiert) | 🟡 offen, DF-Support extern blockiert | S35+ (nach B) |
-| **P3** | Praxis Content-Rest (Cluster C, Impressum/Datenschutz, 7 Arzt-Bios, Aktuelles, WPForms, Google My Map) | 🟡 offen, **dran als Block B** | S33–34 |
-| **P4** | **M1**: Erster Prod-Push westend-hausarzt.com + Verify | 🔴 Meilenstein | S36–38 |
+| **P1** | Medien-Pipeline (ohne Framework): 2/8 Fotos live, Asset-Bestand im Trunk konsolidiert | 🟢 **durch (Block A)** | 6 weitere Fotos = externer Foto-Shoot |
+| **P2** | Prod-Deployment-Pipelines (Praxis via DF/SFTP + Juvantis-Shopify-Sync dokumentiert) | 🟡 offen, DF-Support extern blockiert | S36+ (nach Block B/C) |
+| **P3** | Praxis Content-Rest — **B-2 Triage durch (S33)**, B-2a/b/c/d als Kurations-Backlog definiert | 🟡 **aktiv als Block B** | S34 Default: B-2a Service-Pages |
+| **P4** | **M1**: Erster Prod-Push westend-hausarzt.com + Verify | 🔴 Meilenstein | S37–39 |
 | **P5** | Juvantis Content-Alltag (2–3 weitere Bridge-Seiten, Content-Pflege als Gewohnheit) | 🔴 offen | nach M1 |
 | **P6** | Mehrsprachigkeit Praxis (i18n-Mechanik + externe Übersetzungen + Integration) | 🔴 offen | nach P5 |
 | **Ppol** | Design-Polish, A11y-Audit, Mobile-Finish | 🔴 offen | nach P4 |
@@ -77,14 +77,21 @@ Von 10 vorangegangenen Sessions (S22–S31) waren **7 Infrastruktur-Sessions** (
 
 ## §1 Stand & Version
 
-- **Version:** `0.8.0` — Session 32: **Praxis-Fokus-Schwenk + Block A schlank (2 Arzt-Fotos live)** + **Juvantis/_assets-Migration** in Cortex-Web/_media-source (2026-04-24, Cluster-Mini-02)
-- **Stand:** 2026-04-24, Cortex-Web-Aufbau (Phase 0–5) ✅ + Adapter-Suite ✅ (S26–S31) + **gesamter Juvantis-Asset-Bestand ins Trunk konsolidiert** (38 Team-Fotos, 117 Standorte, 129 Icons, 52 Logos, 19 Slider, 4 Illustrationen, 96 unsortiert in `_inbox/`) + **2 von 8 Ärzten haben Profilfoto in Local-WP** (Stracke=9683, Saul=9684) + **Roadmap Praxis-Launch** (Block A–D) als M1-Zielkonkretisierung
-- **Strategie-Refokus S32:** Dr. Stracke hat nach S31-Prio-Shift die Konsequenz gezogen — „Hauptfokus Praxis live". Block A (Arzt-Fotos) ist in dieser Session durch. Folge-Blocks B (Content-Rest), C (Deploy-Pipeline), D (M1-Launch) sind in §4 eingeplant. Alles andere (Medien-Registry-Framework, N-6.4/6.5, iOS) bleibt gefrierend.
-- **Jüngste Commits (Session 31):**
-  - Cortex-Web: ausstehend (S31 Live-Verify Evidence + CW-PRIO-001 + S32 Block A)
-  - Theme: `29dcaf8` (PXZ 2.7.22, `inc/data/team.json` mit image_id=9683/9684 regeneriert)
-  - Nexus: ausstehend (Pattern `wp-cli-media-upload-wpml-memory` + Tutorial `07-lazy-path-shortcuts`)
-- **Working Tree Session 32:** Cortex-Web 4 Files (2 trunk-YAMLs + Renderer + Schema) · Theme 1 File (team.json regeneriert) · Nexus 3 Files (Pattern + Tutorial + MEMORY). Inkl. Pre-Flight validate.sh grün, Praxis-verify.sh grün.
+- **Version:** `0.8.1` — Session 33: **Block-A-Closure + B-2 Legacy-Triage + Docteur-Saul-Bio-Extraktion** (2026-04-24, Cluster-Mini-02)
+- **Stand:** 2026-04-24, Praxis-Content-Arbeit läuft geordnet:
+  - Block A (2/8 Fotos) live seit S32, commit-abgeschlossen in S33
+  - **B-2 Triage** komplett: 25 `legacy/de`-Pages klassifiziert (7 PFLEGEN, 6 MERGEN, 5 ARCHIV-ONLY, 6 LÖSCHEN) und von Dr. Stracke freigegeben (4 Entscheidungen beantwortet)
+  - **Neue Terminologie:** „Zweigpraxis Bockenheimer Landstraße" (ersetzt „Alte Oper")
+  - **Goldstück:** Docteur-Saul-Bio aus Legacy-Archiv extrahiert + mojibake-bereinigt + HWG-gefiltert → `trunk/content/team/docteur-saul.yaml:bio.de` (1 von 7 B-1-Bios erledigt **ohne** Dr.-Stracke-Input)
+- **Jüngste Commits (Session 33, Reihenfolge):**
+  - `bea5330` Cortex-Web S32-Closure (Block A Arzt-Fotos, nachgeholt)
+  - `a859d51` Cortex-Web B-2 Triage Erstfassung
+  - `ce50c6d` Cortex-Web B-2 Triage Freigabe (4 Dr.-Stracke-Entscheidungen)
+  - `ace49ed` Cortex-Web Docteur-Saul-Bio (B-1-Vorarbeit)
+  - `cbbe158` Theme PXZ 2.7.22 `inc/data/team.json` mit image_id=9683/9684
+  - Nexus: neues Pattern `content-archive-triage.md` + Tutorial 08 + MEMORY-Update (folgen im Auto-Sync)
+- **Working Tree Session-Ende:** Cortex-Web clean · Theme clean · Nexus nur Auto-Log.
+- **Pre-Flight:** `validate.sh` 🟢 · `sites/praxis-webseite/tools/verify.sh` 🟢 · Sanitizer im Budget.
 
 ### §1.1 Phasen-Status
 
@@ -152,7 +159,73 @@ Erwartet: Alle gepflegten Dateien unter Token-Budget (LL-044). Siehe `Nexus/tool
 
 ---
 
-## §3 Letzte Session — Session 32, 2026-04-24 (Praxis-Fokus-Schwenk + Block A schlank)
+## §3 Letzte Session — Session 33, 2026-04-24 (Block-A-Closure + B-2 Triage + Docteur-Saul-Bio)
+
+### Gerät
+**Cluster-Mini-02** (home-Mac M2).
+
+### Drei-Akte-Verlauf
+
+**Akt 1 — S32-Commit-Hygiene (Aufräum-Front, 15 Min):**
+Dr. Stracke hat mit „entscheide selbst unter den bisher festgelegten Kriterien" autonome Freigabe gegeben. Befund: S32 war nicht commit-abgeschlossen (Working-Tree 5 Cortex-Web-Files + Theme-team.json). Priorität Hygiene vor neuer Arbeit (FK-5-Vermeidung, LL-021). Commits:
+- `cbbe158` Theme: `inc/data/team.json` mit image_id=9683/9684
+- `bea5330` Cortex-Web: Block-A-Trunk (2 YAMLs + Schema-Int + Renderer-Patch) + SESSION_RESUME-Update
+
+**Akt 2 — B-2 Legacy/DE Triage (Haupt-Front, P3):**
+Strukturierte Sichtung aller 25 Pages im `legacy/de`-Cluster (23 published + 2 private). Jede Page bewertet in 4 Dimensionen (Content-Substanz, Redundanz, Cluster-Fehler, Launch-Relevanz), genau 1 von 5 Empfehlungen vergeben:
+
+| Kategorie | # | Launch-Impact |
+|---|:-:|---|
+| **PFLEGEN** | 7 | 6 Service-Pages unter `/service/<slug>/` + Zweigpraxis Bockenheimer — alle bestehender HWG-neutraler Content, 0 Schreibaufwand |
+| **MERGEN** | 6 | Sprechzeiten → `/sprechstunden/` · Docteur-Saul-Bio → B-1 · Carotis → Diagnostik · FAQ → Accordion in `/praxis/` · 2× Forms-Stub |
+| **ARCHIV-ONLY** | 5 | DocVocat (inaktiv) · Corona · Weihnachtskalender · 2× private |
+| **LÖSCHEN** | 6 | 3× leere ES/FR/EN-Dubletten · under-construction · cookie-Fragment · ES-Form-Dublette |
+| **DR.-STRACKE-FRAGE** | 1 → 0 | „Alte Oper" geklärt → Terminologie-Neuschnitt |
+
+Dr.-Stracke-Antworten eingearbeitet:
+1. **Zweigpraxis Bockenheimer Landstraße** = neue Terminologie (ersetzt „Alte Oper")
+2. **DocVocat nicht mehr aktiv** → ARCHIV-ONLY final
+3. **Service-Pages-Struktur:** `/service/<slug>/` (Unter-Bereich)
+4. **FAQ:** Accordion-Block in `/praxis/` (Default-Interpretation, Antwort „accordion")
+
+Commits: `a859d51` (Erstfassung) + `ce50c6d` (Freigabe mit 4 Antworten).
+
+**Akt 3 — Goldstück-Anwendung (B-1-Vorarbeit, 15 Min):**
+`docteur-en-med-s-saul-375.md` aus Legacy-Archiv (6586 chars, DE-Content trotz FR-Slug) als Bio-Rohmaterial nach Trunk extrahiert:
+- Mojibake-Fix (`Fach?rztin` → `Fachärztin`, `Br?ssel` → `Brüssel`, `Universit?` → `Université` etc.)
+- HWG-Filter (werbende Formulierungen raus)
+- Sprachverdichtung 6586 → ~900 chars, 4 Absätze
+- Ziel: `trunk/content/team/docteur-saul.yaml:bio.de`
+- `qualifications`: „Arbeitsunfallmedizin" ergänzt (Juvantis-View)
+
+Render-Status: bio.de wird vom Praxis-Renderer noch NICHT konsumiert (team-praxis.mjs mapped nur `intro`). Theme `inc/data/team.json` byte-identisch, kein Theme-Commit. Ausführlicher Profil-Bio-Block erscheint auf `/docteur-saul/` erst nach Renderer- + Template-Erweiterung (B-1-Template-Arbeit, eigene Folge-Session).
+
+Commit: `ace49ed`.
+
+### Pre-Flight-Metriken am Session-Ende
+- `tools/validate.sh` — OK (1 file)
+- `sites/praxis-webseite/tools/verify.sh` — VERIFY OK (alle Showpiece-Elemente zentriert)
+- Sanitizer-Probe: alle im Budget (MEMORY 4030 Tok, Nexus/CLAUDE 6410 Tok, SESSION_RESUME vor Update 13.7k Tok, GLOBAL_RULES 7.5k Tok)
+- Sanitizer-Learn: 0 Duplikate, 110 stale-refs (+2 vs. S32, durch neue B-2-Triage-Spec)
+
+### Pattern + Tutorial (diese Session)
+- **NEU** Pattern `Nexus/_memory/patterns/content-archive-triage.md` — 4-Dimensionen-Bewertung, 5-Kategorien-Empfehlung, Goldstück-Erkennungs-Workflow, Mojibake-Fix-Muster
+- **NEU** Tutorial `Second Brain/30 Tutorials/Arbeitsweise & Prozess/08-content-archive-triage.md` — Workflow in 4 Schritten, Mojibake-Tabelle, Anti-Patterns, Goldstück-Beispiel
+
+### Nicht erledigt (bewusst, scope-cut)
+- **Keine Template-Erweiterung** für Bio-Render auf `/docteur-saul/` — eigene Front B-1-Template
+- **6 weitere B-1-Arzt-Bios** — warten auf Dr.-Stracke-Input (CV-Stichworte / Mail-Antworten)
+- **B-2a/b/c/d Kuration** — Folge-Sessions nach Triage-Freigabe
+- **Externe Blocker unverändert:** DF-Support (P2), Foto-Shoot (A-2), Rechtsquellen (B-4), Santapress (2026-05-19)
+
+### Commits (5 Stück)
+- Cortex-Web: `bea5330` · `a859d51` · `ce50c6d` · `ace49ed` · (SESSION_RESUME folgt)
+- Theme: `cbbe158`
+- Nexus: folgt im Auto-Sync (Pattern + Tutorial + MEMORY)
+
+---
+
+## §3-legacy-32 Session 32, 2026-04-24 (Praxis-Fokus-Schwenk + Block A schlank)
 
 ### Gerät
 **Cluster-Mini-02** (home-Mac M2).
@@ -703,25 +776,42 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ---
 
-## §4 Offene Tasks — Praxis-Launch-Fokus (Session 32 Refocus)
+## §4 Offene Tasks — Praxis-Launch-Fokus (Stand Ende Session 33)
 
-> **Strategie-Rahmen:** Dr. Stracke hat in S32 explizit Fokus „Praxis live" gesetzt. Die Block-A-bis-D-Struktur setzt CW-PRIO-001 fort, aber als konkreten Pfad zu M1 (westend-hausarzt.com live). Popt/Pios-Fronten sind gefrierend, bis Praxis live ist.
+> **Strategie-Rahmen:** Praxis-Launch-Fokus aus S32 + CW-PRIO-001. Block A fertig (commit-abgeschlossen). Block B mit Triage vorstrukturiert — B-2a als Default für S34.
 
-### Block A — Arzt-Fotos (aktiv gewesen, durch)
+### Block A — Arzt-Fotos (durch)
 
 | Task | Status |
 |---|:---:|
-| **A-1** 2 Fotos Dr. Stracke + Docteur Saul in Local-WP + Trunk-Referenz | ✅ S32 |
+| **A-1** 2 Fotos Dr. Stracke + Docteur Saul in Local-WP + Trunk-Referenz | ✅ S32 · commit-abgeschlossen S33 (`bea5330` + `cbbe158`) |
 | **A-2** 6 weitere Foto-Shootings (dr-barcsay, dr-seelig, dr-jawich, dr-shahin, dr-landeberg, dr-arbitmann) | ⏸ wartet auf Dr.-Stracke-Termin + Fotograf (extern) |
 | **A-3** Prod-Re-Upload der IDs nach P4-a | 🔴 wartet auf P4-a |
 
-### Block B — Praxis Content-Rest (Default für S33)
+### Block B — Praxis Content-Rest (aktiv)
+
+#### B-1 — Arzt-Profil-Bios (7 Ärzte, 1 teil-erledigt)
+
+| Task | Status | Blocker |
+|---|:---:|---|
+| **B-1-saul** Docteur Saul Bio aus Legacy extrahiert → `bio.de` | ✅ S33 (`ace49ed`) | Template-Renderer-Erweiterung offen (siehe B-1-template) |
+| **B-1-6rest** Bios für dr-barcsay, dr-seelig, dr-jawich, dr-shahin, dr-landeberg, dr-arbitmann | 🟡 offen | Dr.-Stracke-Input (CV-Stichworte / Mail-Antworten) |
+| **B-1-template** Praxis-Renderer + PHP-Template erweitern, damit `bio.de` auf `/<slug>/` gerendert wird | 🟡 offen, 1 Session | — |
+
+#### B-2 — Legacy/DE Kuration (Triage freigegeben S33, Ausführung offen)
+
+| Task | Aufwand | Blocker | Inhalt |
+|---|:---:|---|---|
+| **B-2a** ⭐ Default S34 | 1 Session | — | 6 Service-Pages nach `trunk/content/pages/service/` + `template-service.php` (terminanfrage, rezeptbestellung, ueberweisung, arbeitsunfaehigkeit, einweisungen-ueberweisungen, neupatienten) |
+| **B-2b** | ½–1 Session | — | 6 Merge-Ops (Sprechzeiten → `/sprechstunden/` · Carotis → Diagnostik · FAQ-Accordion in `/praxis/` · DHT-Form → Juvantis · Docteur-Saul-Bio-Template-Render = B-1-template) |
+| **B-2c** | ½ Session | — | Zweigpraxis Bockenheimer Landstraße: `trunk/content/pages/standorte/bockenheimer.yaml` + `/standorte/zweigpraxis-bockenheimer/` |
+| **B-2d** | ½ Session | — | 301-Redirect-Map für Legacy-URLs (`/standort-alte-oper/` → `/standorte/zweigpraxis-bockenheimer/` etc., SEO-Equity-Schutz) |
+
+#### B-3 / B-4 — Weitere Content-Blöcke
 
 | Task | Aufwand | Blocker |
 |---|:---:|---|
-| **B-1** 7 Arzt-Profil-Bios + Schwerpunkte schreiben/einpflegen (ohne Fotos arbeitet parallel zu A-2) | 1–2 Sessions | — |
-| **B-2** Cluster C `legacy/de` sichten (23 P2-Pages) | 1 Session | — |
-| **B-3** Aktuelles-Section Content + WPForms Kontaktformular + Google My Map | 1 Session | — |
+| **B-3** Aktuelles-Section + WPForms Kontaktformular + Google My Map | 1 Session | teilweise Dr.-Stracke-Input |
 | **B-4** `/impressum/` + `/datenschutz/` Content | 1 Session | Rechtsquellen Dr. Stracke |
 
 ### Block C — Prod-Deploy-Pipeline
@@ -762,6 +852,10 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 - Santapress-Archive-Entscheidung fällig ab 2026-05-19
 - Sono-atlas DSGVO-Gate (R-7)
+
+### Sanitizer-Aufräum-Kandidat (S34)
+
+SESSION_RESUME hat am Ende S33 den **Soft-Warn überschritten (15.3 k / 15 k Soft)**. Kein Hard-Warn, kein Zwang, aber als erste Hygiene-Aufgabe in S34 vorsehen: §3-legacy-29 oder ältere nach `_archive/sessions/2026-04/` rotieren.
 
 ### P2 — Prod-Deployment-Pipelines
 
@@ -818,22 +912,33 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ---
 
-## §5 Sofort-Status-Frage an Dr. Stracke — Session 33
+## §5 Sofort-Status-Frage an Dr. Stracke — Session 34
 
-> **Session 32 abgeschlossen:** Block A schlank durch (2 Fotos live) + vollständige Asset-Konsolidierung ins Trunk + Refokus auf Praxis-Launch (Block A–D Roadmap).
+> **Session 33 abgeschlossen:** S32-Commit-Hygiene + B-2 Legacy-Triage (25 Pages klassifiziert, Dr.-Stracke-Freigabe eingearbeitet) + Goldstück Docteur-Saul-Bio (1/7 B-1 erledigt).
 >
-> **Default für Session 33 (Block B — Content-Rest):** **B-1 Arzt-Profil-Bios für die 7 Ärzte ohne ausführlichen Bio-Text** — aktuell haben 7 von 8 Ärzten nur einen Platzhalter `„Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin."`. Ich kann mit Ihrem Input (Stichworte, CVs, E-Mail-Antworten) die Bios ausformulieren und in `trunk/content/team/*.yaml` pflegen.
+> **Default für Session 34 — B-2a:** 6 Service-Pages aus dem Legacy-Archiv nach Trunk übernehmen unter `/service/<slug>/`. Im Einzelnen:
+> 1. `/service/terminanfrage/` (mit `[wpforms id="4010"]`)
+> 2. `/service/rezeptbestellung/` (mit `[wpforms id="…"]`)
+> 3. `/service/ueberweisung/` (mit `[wpforms id="4016"]`)
+> 4. `/service/arbeitsunfaehigkeit/` (3062 chars Patient-Info)
+> 5. `/service/einweisungen-ueberweisungen/` (3904 chars)
+> 6. `/service/neupatienten/` (2029 chars, bilingual DE/EN, **wichtig für Scheine-Steuerung**)
 >
-> **Warum B-1 als Default:** Höchster sichtbarer Alltags-Wert pro Session-Stunde. Läuft parallel zu A-2 (Foto-Shoot, extern) und blockiert nichts. Nach B-1 sind die Arzt-Pages endgültig launch-fähig — nur noch die Fotos fehlen dann.
+> Plus `template-service.php` als gemeinsames Template für die 6 Pages (HWG-neutrale Patient-Info-Darstellung, optionales WPForms-Embed).
+>
+> **Warum B-2a als Default:** Triage ist freigegeben, Content existiert bereits (nur Umzug + Template-Integration, **kein Schreibaufwand von Null**). Direkter Launch-Fortschritt zu M1. Parallel zu A-2 (extern, Foto-Shoot) und B-1-6rest (blockiert durch Dr.-Stracke-Input).
 >
 > **Alternativen:**
-> - **B-2 Cluster C `legacy/de` (23 P2-Pages sichten)** — Arbeit an Content-Inventar, ob pflegen/archivieren/löschen
-> - **B-3 Aktuelles-Section + WPForms Kontaktformular + Google My Map** — Funktionale Blöcke für Launch-Reife
-> - **B-4 Impressum + Datenschutz** — nur wenn Sie Rechtsquellen heute haben
-> - **C-1 DF-Support-Ticket anstoßen** — externe Aktion, parallel zu B möglich
-> - **Ad-hoc-Front** („Heute möchte ich X")
+> - **B-2c Zweigpraxis Bockenheimer Landstraße** — Trunk-YAML + Route anlegen (½ Session)
+> - **B-2b Merge-Ops** — Sprechzeiten-Content in `/sprechstunden/`, FAQ-Accordion in `/praxis/` (½–1 Session)
+> - **B-1-template** — Praxis-Renderer erweitern, damit Docteur-Saul-Bio auf `/docteur-saul/` rendert (1 Session, dann ist 1 Arzt 100 % launch-fertig)
+> - **B-3 Aktuelles / WPForms / Google My Map** — wenn Sie heute Aktuelles-Texte oder Maps-Koordinaten parat haben
+> - **B-4 Impressum/Datenschutz** — nur mit Rechtsquellen heute
+> - **C-1 DF-Support-Ticket** — parallel extern anschieben
+> - **B-1 für weitere Ärzte** — wenn Sie CV-Stichworte für 1–2 Ärzte parat haben
+> - **Ad-hoc-Front**
 >
-> **Nicht in der Default-Liste:** Framework-Bauen (siehe Gefrier-Liste). Wenn Sie trotzdem P1-a / Media-Registry-Framework möchten, bitte explizit sagen — ich flag es als FK-3-Risiko gemäß Tutorial 07.
+> **Nicht in der Default-Liste:** Media-Registry-Framework · N-6.4/6.5 · iOS · `_inbox/`-Sortierung.
 
 ---
 
@@ -860,7 +965,8 @@ Alle historischen Session-Logs sind git-tracked unter `_archive/sessions/YYYY-MM
 
 | Session | Datum | Thema | Archiv-Pfad |
 |:---:|---|---|---|
-| 32 | 2026-04-24 | Praxis-Fokus-Schwenk + Block A schlank (2 Arzt-Fotos live) + Juvantis/_assets → _media-source Migration + Pattern `wp-cli-media-upload-wpml-memory` + Tutorial 07 `lazy-path-shortcuts` | §3 (aktuelle Session) in dieser Datei |
+| 33 | 2026-04-24 | S32-Commit-Hygiene + B-2 Legacy/DE Triage (25 Pages, 4 Dr.-Stracke-Entscheidungen) + Docteur-Saul-Bio-Extraktion + Pattern `content-archive-triage` + Tutorial 08 | §3 (aktuelle Session) in dieser Datei |
+| 32 | 2026-04-24 | Praxis-Fokus-Schwenk + Block A schlank (2 Arzt-Fotos live) + Juvantis/_assets → _media-source Migration + Pattern `wp-cli-media-upload-wpml-memory` + Tutorial 07 `lazy-path-shortcuts` | §3-legacy-32 in dieser Datei |
 | 31 | 2026-04-23 | Live-Verify N-8 Guard (Produktiv-Shopify, 7/7 AKs) + CW-PRIO-001 Prio-Shift (§0 Roadmap, Pattern, Tutorial) | §3-legacy-31 in dieser Datei |
 | 30 | 2026-04-23 | N-6.3 `cw-transfer diff wp:template` (FS-Variante Build-then-Fetch-then-Diff) + Extended Evidence (Drift-Test) | §3-legacy-30 in dieser Datei |
 | 29 | 2026-04-23 | N-1 WP-Template-Adapter (Pattern B reverse für /team/) + Parität + Live-Test | §3-legacy-29 in dieser Datei |
