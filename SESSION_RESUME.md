@@ -19,18 +19,18 @@
 > Pattern: `Nexus/_memory/patterns/holistic-system-priority.md`.
 > Tutorial: `Second Brain/30 Tutorials/Arbeitsweise & Prozess/06-projekt-prio-leiter-holistic.md`.
 
-### Aktueller Prio-Stand (2026-04-23, Ende Session 31)
+### Aktueller Prio-Stand (2026-04-24, Ende Session 32)
 
 | Prio | Block | Status | Next Session |
 |:---:|---|:---:|:---:|
-| **P1** | Medien-Registry + `_media-source/`-Flow + N-1b Media-ID-Resolver | 🟡 offen, **dran** | S32 |
-| **P2** | Prod-Deployment-Pipelines (Praxis via DF/SFTP + Juvantis-Shopify-Sync dokumentiert) | 🟡 offen, DF-Support extern blockiert | S33–34 |
-| **P3** | Praxis Content-Rest (Cluster C, Impressum/Datenschutz, 7 Arzt-Profile, Aktuelles, WPForms, Google My Map) | 🟡 offen, 3 externe Blocker | S35–38 |
-| **P4** | **M1**: Erster Prod-Push westend-hausarzt.com + Verify | 🔴 Meilenstein | S39–40 |
-| **P5** | Juvantis Content-Alltag (2–3 weitere Bridge-Seiten, Content-Pflege als Gewohnheit) | 🔴 offen | S41–44 |
-| **P6** | Mehrsprachigkeit Praxis (i18n-Mechanik + externe Übersetzungen + Integration) | 🔴 offen | S45+ |
+| **P1** | Medien-Pipeline (ohne Framework): 2/8 Fotos live, Asset-Bestand im Trunk konsolidiert | 🟢 **schlank durch (Block A)** | weitere 6 Fotos = extern (Foto-Shoot) |
+| **P2** | Prod-Deployment-Pipelines (Praxis via DF/SFTP + Juvantis-Shopify-Sync dokumentiert) | 🟡 offen, DF-Support extern blockiert | S35+ (nach B) |
+| **P3** | Praxis Content-Rest (Cluster C, Impressum/Datenschutz, 7 Arzt-Bios, Aktuelles, WPForms, Google My Map) | 🟡 offen, **dran als Block B** | S33–34 |
+| **P4** | **M1**: Erster Prod-Push westend-hausarzt.com + Verify | 🔴 Meilenstein | S36–38 |
+| **P5** | Juvantis Content-Alltag (2–3 weitere Bridge-Seiten, Content-Pflege als Gewohnheit) | 🔴 offen | nach M1 |
+| **P6** | Mehrsprachigkeit Praxis (i18n-Mechanik + externe Übersetzungen + Integration) | 🔴 offen | nach P5 |
 | **Ppol** | Design-Polish, A11y-Audit, Mobile-Finish | 🔴 offen | nach P4 |
-| **Popt** | N-6.4, N-6.5, Pattern C (Metafield), Live-Verify-Override-Lauf | ⏸ gefrierend | **nur bei Pain-Point** |
+| **Popt** | N-6.4, N-6.5, Pattern C (Metafield), Media-Registry-Framework | ⏸ gefrierend | **nur bei Pain-Point** |
 | **Pios** | N-3 Design-Token + iOS-Adapter | ⏸ gefrierend | **wenn iOS-App-Scope aktiv wird** |
 
 ### Zeit-Schätzung bis „holistisches System trägt"
@@ -77,14 +77,14 @@ Von 10 vorangegangenen Sessions (S22–S31) waren **7 Infrastruktur-Sessions** (
 
 ## §1 Stand & Version
 
-- **Version:** `0.7.9` — Session 31: Live-Verify N-8 Pattern-B-Guard in Produktion ✅ + **CW-PRIO-001 Prio-Shift** (holistische System-Priorität) ✅ (2026-04-23, Cluster-Mini-02)
-- **Stand:** 2026-04-23, Cortex-Web-Aufbau (Phase 0–5) ✅ + Content-Bridge + Cross-Site-Transfer **push/pull/diff vollständig symmetrisch über Pattern A (Shopify) + Pattern B (Shopify + WP)** ✅ + Praxis-Sprint 2 → 6/7 Cluster ✅ + N-8 Guard in Prod empirisch verifiziert ✅
-- **Strategie-Shift S31:** Nach Audit („7/10 letzte Sessions Infra") → neue Prio-Leiter CW-PRIO-001 (siehe §0). Default-Pfad ab S32 ist **P1 Medien-Registry**, nicht weitere Adapter-Symmetrie.
-- **Jüngste Commits (Session 30, durch):**
-  - Cortex-Web: `06b1747` (feat N-6.3) + `48ec8bf` (docs session-30)
-  - Theme: `29dcaf8` (PXZ 2.7.22, unverändert)
-  - Nexus: Auto-sync (Pattern + Tutorial + MEMORY)
-- **Working Tree Session 31:** Cortex-Web pending (Live-Verify Evidence + CW-PRIO-001 + §0 Roadmap-Shift). Theme unverändert bei `29dcaf8`. Nexus pending (Pattern holistic-system-priority + Tutorial 06).
+- **Version:** `0.8.0` — Session 32: **Praxis-Fokus-Schwenk + Block A schlank (2 Arzt-Fotos live)** + **Juvantis/_assets-Migration** in Cortex-Web/_media-source (2026-04-24, Cluster-Mini-02)
+- **Stand:** 2026-04-24, Cortex-Web-Aufbau (Phase 0–5) ✅ + Adapter-Suite ✅ (S26–S31) + **gesamter Juvantis-Asset-Bestand ins Trunk konsolidiert** (38 Team-Fotos, 117 Standorte, 129 Icons, 52 Logos, 19 Slider, 4 Illustrationen, 96 unsortiert in `_inbox/`) + **2 von 8 Ärzten haben Profilfoto in Local-WP** (Stracke=9683, Saul=9684) + **Roadmap Praxis-Launch** (Block A–D) als M1-Zielkonkretisierung
+- **Strategie-Refokus S32:** Dr. Stracke hat nach S31-Prio-Shift die Konsequenz gezogen — „Hauptfokus Praxis live". Block A (Arzt-Fotos) ist in dieser Session durch. Folge-Blocks B (Content-Rest), C (Deploy-Pipeline), D (M1-Launch) sind in §4 eingeplant. Alles andere (Medien-Registry-Framework, N-6.4/6.5, iOS) bleibt gefrierend.
+- **Jüngste Commits (Session 31):**
+  - Cortex-Web: ausstehend (S31 Live-Verify Evidence + CW-PRIO-001 + S32 Block A)
+  - Theme: `29dcaf8` (PXZ 2.7.22, `inc/data/team.json` mit image_id=9683/9684 regeneriert)
+  - Nexus: ausstehend (Pattern `wp-cli-media-upload-wpml-memory` + Tutorial `07-lazy-path-shortcuts`)
+- **Working Tree Session 32:** Cortex-Web 4 Files (2 trunk-YAMLs + Renderer + Schema) · Theme 1 File (team.json regeneriert) · Nexus 3 Files (Pattern + Tutorial + MEMORY). Inkl. Pre-Flight validate.sh grün, Praxis-verify.sh grün.
 
 ### §1.1 Phasen-Status
 
@@ -107,7 +107,9 @@ Von 10 vorangegangenen Sessions (S22–S31) waren **7 Infrastruktur-Sessions** (
 | **N-8 Pattern-A-vs-B-Guard** | **`pages-to-shopify.mjs` verweigert Push auf Pattern-B-Page ohne `ALLOW_PATTERN_OVERRIDE=1`. +25 Z. Adapter, 11/11 AKs, Bundle 6.88 KB.** | **✅ Session 27** |
 | **N-6.2 `cw-transfer diff shopify:template`** | **`diff-template.mjs` (306 Z.) — Pattern-B-Diff mit symmetrischem Header-Strip + canonical-JSON. Live-Verify gegen `sanexio.eu` Template `page.uber-uns.json`: **EQUAL** (4836 chars canonical beidseitig). 14/14 AKs, Bundle 9.46 KB.** | **✅ Session 28** |
 | **N-1 WP-Template-Adapter (Pattern B reverse für `/team/`)** | **`adapters/wordpress/{build-team,team-to-wp}.mjs` + `lib/renderers/team-praxis.mjs` (Summe ~320 Z.) + `tools/sync-team-wp.sh` Orchestrator. Theme-Patch `inc/team-data.php` JSON-first + Inline-Fallback. PHP-side Parität: diff Exit 0 (json-path == inline-fallback). Live-Test `/team/` HTTP 200, 8× `pxz-team-card-link`, alle 8 Doctors; `/dr-stracke/` + `/docteur-saul/` 200. 12/13 AK grün + 1 dokumentierte Abweichung (AK-2 Line-Count 124 statt ≥150, funktional komplett). PXZ 2.7.22.** | **✅ Session 29** |
-| **N-6.3 `cw-transfer diff wp:template` (FS-Variante)** | **`adapters/wordpress/diff-team.mjs` (290 Z.) — Build-then-Fetch-then-Diff mit Filesystem-Read statt API-GET, Renderer-Handle-Arg (`team`) statt YAML-Pfad, Canonical-JSON + `member_count`/`member_slugs_sorted`/`team_json` Compare, Read-Only-Guard (0 Schreib-Calls im Body), Path-Escape-Guard, ABSENT-Pfad. Parity-Test gegen PXZ 2.7.22: Exit 0 EQUAL (2171 chars canonical beidseitig). **Extended-Evidence-Drift-Test** (Field-Mutation Exit 1 1-Feld, Member-Removal Exit 1 3-Felder, ABSENT Exit 1, Restore MD5-match, Re-Diff Exit 0). Bundle 7.0 KB. 16/16 AKs.** | **✅ Session 30** |
+| **N-6.3 `cw-transfer diff wp:template` (FS-Variante)** | **Build-then-Fetch-then-Diff Filesystem-Variante mit Extended-Evidence-Drift-Test. 16/16 AKs.** | **✅ Session 30** |
+| **Live-Verify N-8 + CW-PRIO-001** | **Pattern-B-Guard in Produktiv-Shopify live verifiziert (7/7 AKs) + holistische Prio-Leiter P1–P6/Ppol/Popt/Pios als §0-Roadmap + Projekt-Regel.** | **✅ Session 31** |
+| **Block A schlank: 2 Arzt-Fotos in WP + Asset-Migration** | **`Juvantis/_assets/` vollständig nach `Cortex-Web/_media-source/` konsolidiert (359 Assets in 6 Kategorien + _inbox/96). `wp media import` via Local-Socket-Trick → IDs 9683/9684 → Trunk-YAML (`image: <int>`) → Renderer-Patch + Schema-Extension → `inc/data/team.json` live mit `image_id`. `/team/`, `/dr-stracke/`, `/docteur-saul/` zeigen Fotos mit Srcset; andere 6 Ärzte Initialen-Fallback.** | **✅ Session 32** |
 
 **Status:** Cortex-Web-Aufbau abgeschlossen. Adapter-Suite hat jetzt **vollständige push/pull/diff-Symmetrie über Pattern A und Pattern B auf beiden Plattformen** (nur `wp:page` = Pattern A WP bleibt offen, braucht WP-REST-Auth). N-6.2 bewies Pattern-B-Shopify-Roundtrip, **N-6.3 beweist Pattern-B-WP-Roundtrip** (Trunk ↔ PXZ 2.7.22 `inc/data/team.json` byte-identisch, 2171 chars canonical). Die S22-content-bridge-v1-Brücke trägt damit empirisch in beiden Richtungen. Praxis-Footer vollständig gebrandet. Design-Polish über 5 CSS-Dateien harmonisiert. 6/7 Content-Cluster migriert. Verbleibend: `legacy/de` (23 P2) · Footer-Legal-Ziele (Impressum, Datenschutz brauchen Content aus S2.3-A) · `shopify:product`-Diff (N-6.4) · `wp:page`-Diff (neues N-6.5 ohne S30-Reuse, weil Pattern A + WP-REST).
 
@@ -150,7 +152,57 @@ Erwartet: Alle gepflegten Dateien unter Token-Budget (LL-044). Siehe `Nexus/tool
 
 ---
 
-## §3 Letzte Session — Session 31, 2026-04-23 (Live-Verify N-8 Guard + CW-PRIO-001 Prio-Shift)
+## §3 Letzte Session — Session 32, 2026-04-24 (Praxis-Fokus-Schwenk + Block A schlank)
+
+### Gerät
+**Cluster-Mini-02** (home-Mac M2).
+
+### Session-Verlauf in drei Akten
+
+**Akt 1 — Prio-Default P1-a angegangen, Scope-Check:**
+Dr. Stracke hat den S31-Default „P1 Medien-Registry" gewählt. Ich bin in Phase-1-Verständnis-Modus gegangen (Schema B + Upload-α + URI I), dabei mehrfach Rückfragen gestellt (Fotos-Ort, Platform-Target, WP-Credentials).
+
+**Akt 2 — Strukturelles Refactor: Juvantis/_assets → Cortex-Web/_media-source:**
+Dr. Strackes Hinweis „Warum ist der Ordner nicht im Common Trunk" offenbarte, dass der gesamte Juvantis-Asset-Bestand architektur-widrig lag (CW-001/003 verletzt). Migration:
+- `Juvantis/_assets/Media/_Praxis/` → `_media-source/{team/, praxis/standorte/{bockenheimer,grueneburgweg,leerbachstrasse}/}` (Umlaut-Normalisierung)
+- `Juvantis/_assets/Logos/{Praxiszentrum,Sanexio}/` → `_media-source/logos/{praxiszentrum,sanexio}/`
+- `Juvantis/_assets/Icons/` → `_media-source/icons/` (129 Files)
+- `Juvantis/_assets/Media/_Slider/` → `_media-source/slider/` (19 Files)
+- `Juvantis/_assets/Media/MFA Team/` → `_media-source/team/mfa/` (4 Files)
+- `Juvantis/_assets/Media/online-medical-assistance-illustration/` → `_media-source/illustrations/online-medical-assistance/` (4 Files)
+- `Juvantis/_assets/Media/`-Root (96 Files, gemischt) → `_media-source/_inbox/media-root/` + README mit Sortier-Anleitung
+- `Juvantis/_assets/` komplett entfernt ✅
+
+**Akt 3 — Refocus Dr. Stracke: „Wir verzetteln uns. Fokus Praxis live.":**
+Ich habe eine Projekt-Übersicht geliefert (ASCII-System-Anatomie, Projekt-Matrix, Fokus-Roadmap Block A–D bis M1), dann den **Framework-Plan verworfen** und stattdessen einen schlanken Direktpfad gewählt:
+
+- **Befund:** Nur 2 von 8 Ärzten haben Fotos im Bestand (Siegbert Stracke 1900x1900, Sonja Saul 1900x1900 — beides web-optimiert, quadratisch, ~38 KB)
+- **Upload:** `wp media import` via Local-by-Flywheel mit MySQL-Socket-Override in wp-config.php + `WP_CLI_PHP_ARGS=-d memory_limit=512M` + `--skip-plugins=sitepress-multilingual-cms` (WPML-Memory-Bombe) → Attachment-IDs 9683 (Stracke) + 9684 (Saul)
+- **Trunk-Patch:** 2 YAMLs `image: <int>`, Schema um `integer` erweitert, Renderer `typeof member.image === "number" ? member.image : 0`
+- **Build + Push:** `sync-team-wp.sh build && push` → `inc/data/team.json` mit image_id=9683/9684 für 2 von 8 Ärzten, 0 für übrige
+- **Smoke-Test (alle grün):** `/team/` mit beiden Hero-Karten-Fotos inkl. srcset, `/dr-stracke/` + `/docteur-saul/` mit 1024×1024 Profil-Bild + korrektem Alt-Text, `/dr-shahin/` (stellvertretend) zeigt Initialen-Fallback
+
+### Pre-Flight-Metriken am Session-Ende
+- `tools/validate.sh` — OK (1 file)
+- `sites/praxis-webseite/tools/verify.sh` — VERIFY OK (alle Showpiece-Elemente zentriert)
+- Sanitizer-Probe: alle Dateien im Budget (MEMORY 3856 Tok, Nexus/CLAUDE 6410 Tok, SESSION_RESUME ~12k Tok vor Update, nach Update geprüft)
+- Sanitizer-Learn: 0 Duplikate, 108 stale-refs (+4 vs. S31, durch neue _media-source/_inbox/README.md)
+
+### Commits (folgen am Session-Ende)
+- Cortex-Web: Block A (trunk-YAMLs + Schema + Renderer) + S31-Nachtrag (CW-PRIO-001 + §0) + SESSION_RESUME-Update
+- Theme: team.json regeneriert (PXZ 2.7.22 unverändert, nur data-file)
+- Nexus: Pattern `wp-cli-media-upload-wpml-memory` + Tutorial `07-lazy-path-shortcuts-statt-framework` + MEMORY-Update
+
+### Nicht erledigt (bewusst, Fokus-Cut)
+- **Kein Media-Registry-Framework** (`tools/media/register.mjs` NICHT gebaut) — Re-Use-Schwelle noch nicht erreicht, Framework auf Popt gefrierend
+- **Kein Shopify-Upload-Pfad** — Praxis-Launch braucht WP, nicht Shopify
+- **Kein Prod-Upload** — wartet auf P2 (DF-Support + SFTP-Zugang)
+- **6 der 8 Arzt-Fotos** — Foto-Shoot ist Dr.-Stracke-Aktion (Fotograf, Termine), nicht Code-Task
+- **`_inbox/media-root/` (96 Files) kategorisieren** — nicht Praxis-Launch-relevant, auf Gefrierstufe
+
+---
+
+## §3-legacy-31 Session 31, 2026-04-23 (Live-Verify N-8 Guard + CW-PRIO-001 Prio-Shift)
 
 ### Gerät
 **Cluster-Mini-02** (home-Mac M2).
@@ -651,16 +703,65 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ---
 
-## §4 Offene Tasks — nach CW-PRIO-001-Leiter
+## §4 Offene Tasks — Praxis-Launch-Fokus (Session 32 Refocus)
 
-> Verbindlich ab Session 31. Popt/Pios-Fronten sind gefrierend, bis ein konkreter Pain-Point sie in P1–P5 zieht.
+> **Strategie-Rahmen:** Dr. Stracke hat in S32 explizit Fokus „Praxis live" gesetzt. Die Block-A-bis-D-Struktur setzt CW-PRIO-001 fort, aber als konkreten Pfad zu M1 (westend-hausarzt.com live). Popt/Pios-Fronten sind gefrierend, bis Praxis live ist.
 
-### P1 — Medien-Registry + N-1b (aktiv, dran in S32)
+### Block A — Arzt-Fotos (aktiv gewesen, durch)
 
-| Task | Aufwand | Inhalt |
+| Task | Status |
+|---|:---:|
+| **A-1** 2 Fotos Dr. Stracke + Docteur Saul in Local-WP + Trunk-Referenz | ✅ S32 |
+| **A-2** 6 weitere Foto-Shootings (dr-barcsay, dr-seelig, dr-jawich, dr-shahin, dr-landeberg, dr-arbitmann) | ⏸ wartet auf Dr.-Stracke-Termin + Fotograf (extern) |
+| **A-3** Prod-Re-Upload der IDs nach P4-a | 🔴 wartet auf P4-a |
+
+### Block B — Praxis Content-Rest (Default für S33)
+
+| Task | Aufwand | Blocker |
 |---|:---:|---|
-| **P1-a** Medien-Registry-Tool | 1 Session | `tools/media/register.mjs` (CW-003): kopiert Datei in `_media-source/`, lädt zu Shopify Files, trägt Eintrag in `trunk/media/registry.yaml`. Schema + erste 3 Test-Assets (Team-Fotos Dr. Stracke als Pilot). |
-| **P1-b** N-1b Media-ID-Resolver | ½–1 Session | `media://...`-URIs aus Trunk → WP-Attachment-IDs (`image_id != 0`). Baut auf Registry aus P1-a auf. Roundtrip-Beweis: Dr.-Stracke-Bild im Trunk → erscheint mit korrekter ID auf `/team/` und `/dr-stracke/`. |
+| **B-1** 7 Arzt-Profil-Bios + Schwerpunkte schreiben/einpflegen (ohne Fotos arbeitet parallel zu A-2) | 1–2 Sessions | — |
+| **B-2** Cluster C `legacy/de` sichten (23 P2-Pages) | 1 Session | — |
+| **B-3** Aktuelles-Section Content + WPForms Kontaktformular + Google My Map | 1 Session | — |
+| **B-4** `/impressum/` + `/datenschutz/` Content | 1 Session | Rechtsquellen Dr. Stracke |
+
+### Block C — Prod-Deploy-Pipeline
+
+| Task | Aufwand | Blocker |
+|---|:---:|---|
+| **C-1** DF-Support reaktivieren (Staging + SFTP-Zugang klären) | — | Dr. Stracke extern |
+| **C-2** SFTP-Deploy-Script + Staging-Flow dokumentieren | 1–2 Sessions | C-1 |
+
+### Block D — M1 Prod-Launch
+
+| Task | Aufwand | Blocker |
+|---|:---:|---|
+| **D-1** Erster Prod-Push westend-hausarzt.com | 1 Session | C-2 durch, B genug vorhanden |
+| **D-2** Verify auf Prod (SEO, Forms, Maps, alle Cluster) + DNS | 1 Session | D-1 |
+| **D-3** Arzt-Foto-Re-Upload Prod (Block A-3) | ½ Session | D-1 |
+
+### Folge-Blöcke (nach M1)
+
+| Block | Inhalt |
+|---|---|
+| **E** Juvantis Content-Alltag (2–3 weitere Bridge-Seiten, Content-Pflege als Routine) |
+| **F** Mehrsprachigkeit Praxis (i18n-Mechanik + Übersetzungen extern) |
+| **G** Design-Polish / A11y / Mobile-Feinschliff |
+
+### Gefrierend offen (nicht anfassen bis Praxis live)
+
+| Block | Warum gefrierend |
+|---|---|
+| Medien-Registry-Framework (`tools/media/register.mjs`) | 2 Uploads reichen; Framework-Amortisation nicht erreicht (siehe Tutorial 07) |
+| Shopify-Media-Upload-Pfad | Juvantis-Bilder sind schon in Shopify — null Praxis-Launch-Relevanz |
+| N-6.4 `shopify:product`-Diff, N-6.5 `wp:page`-Diff | Adapter-Symmetrie, nicht Launch-Blocker |
+| N-3 Design-Token-Adapter / iOS-Adapter | kein iOS-Scope aktiv |
+| `_inbox/media-root/` (96 Files) kategorisieren | kosmetisch, nicht Launch-relevant |
+| `_inbox/`-Sichtung Juvantis-DHT-Bilder | erst bei P5 (Juvantis Content-Alltag) |
+
+### Ewige externe Blocker (unverändert)
+
+- Santapress-Archive-Entscheidung fällig ab 2026-05-19
+- Sono-atlas DSGVO-Gate (R-7)
 
 ### P2 — Prod-Deployment-Pipelines
 
@@ -717,25 +818,26 @@ Cluster `diagnostik` live bringen. Eigener Top-Nav-Bereich `Diagnostik ▼`. Hub
 
 ---
 
-## §5 Sofort-Status-Frage an Dr. Stracke — Session 32
+## §5 Sofort-Status-Frage an Dr. Stracke — Session 33
 
-> **Session 31 abgeschlossen:** Live-Verify N-8-Guard in Produktiv-Shopify ✅ (7/7 AKs = 100 %) + **CW-PRIO-001 Prio-Shift** verankert (Projekt-Regel + Pattern + Tutorial + §0 Roadmap).
+> **Session 32 abgeschlossen:** Block A schlank durch (2 Fotos live) + vollständige Asset-Konsolidierung ins Trunk + Refokus auf Praxis-Launch (Block A–D Roadmap).
 >
-> **Default für Session 32 (nach Prio-Leiter):** **P1-a Medien-Registry bauen**
-> — `tools/media/register.mjs` implementieren, Schema festlegen, erste 3 Test-Assets (z. B. Team-Fotos) als Pilot-Round-Trip. Danach fließt P1-b (Media-ID-Resolver) in dieselbe oder Folge-Session.
+> **Default für Session 33 (Block B — Content-Rest):** **B-1 Arzt-Profil-Bios für die 7 Ärzte ohne ausführlichen Bio-Text** — aktuell haben 7 von 8 Ärzten nur einen Platzhalter `„Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin."`. Ich kann mit Ihrem Input (Stichworte, CVs, E-Mail-Antworten) die Bios ausformulieren und in `trunk/content/team/*.yaml` pflegen.
 >
-> **Warum P1-a als Default:** Ohne Medien-Registry sind alle Content-Flows Torsos; `image_id = 0` im N-1-Output ist das sichtbarste Symptom. Erst mit P1 kann P3 (Arzt-Profile, Cluster C) sinnvoll gemacht werden.
+> **Warum B-1 als Default:** Höchster sichtbarer Alltags-Wert pro Session-Stunde. Läuft parallel zu A-2 (Foto-Shoot, extern) und blockiert nichts. Nach B-1 sind die Arzt-Pages endgültig launch-fähig — nur noch die Fotos fehlen dann.
 >
-> **Optionen zur Abweichung (nur wenn konkreter Grund):**
-> - **P2-a anstoßen** (DF-Support-Ticket) — kann als Hintergrund-Aktion laufen, während P1 parallel startet
-> - **P3-d Impressum/Datenschutz** — nur wenn Sie die Rechtsquellen heute bereitstellen können
+> **Alternativen:**
+> - **B-2 Cluster C `legacy/de` (23 P2-Pages sichten)** — Arbeit an Content-Inventar, ob pflegen/archivieren/löschen
+> - **B-3 Aktuelles-Section + WPForms Kontaktformular + Google My Map** — Funktionale Blöcke für Launch-Reife
+> - **B-4 Impressum + Datenschutz** — nur wenn Sie Rechtsquellen heute haben
+> - **C-1 DF-Support-Ticket anstoßen** — externe Aktion, parallel zu B möglich
 > - **Ad-hoc-Front** („Heute möchte ich X")
 >
-> **Popt/Pios nicht in der Default-Liste** — siehe §4 „Gefrierend offen".
+> **Nicht in der Default-Liste:** Framework-Bauen (siehe Gefrier-Liste). Wenn Sie trotzdem P1-a / Media-Registry-Framework möchten, bitte explizit sagen — ich flag es als FK-3-Risiko gemäß Tutorial 07.
 
 ---
 
-## §6 Verbote / harte Regeln (in Session 32 NIE passieren darf)
+## §6 Verbote / harte Regeln (in Session 33 NIE passieren darf)
 
 - **HWG/Berufsordnung:** Keine Werbung, keine Heilversprechen, keine Preise auf Praxis-Site (CW-005)
 - **Trunk ist Master (CW-001):** Bei Bridge-Pages keine Inhalte direkt im WP-Admin oder Shopify-Admin ändern
@@ -758,7 +860,8 @@ Alle historischen Session-Logs sind git-tracked unter `_archive/sessions/YYYY-MM
 
 | Session | Datum | Thema | Archiv-Pfad |
 |:---:|---|---|---|
-| 31 | 2026-04-23 | Live-Verify N-8 Guard (Produktiv-Shopify, 7/7 AKs) + CW-PRIO-001 Prio-Shift (§0 Roadmap, Pattern, Tutorial) | §3 (aktuelle Session) in dieser Datei |
+| 32 | 2026-04-24 | Praxis-Fokus-Schwenk + Block A schlank (2 Arzt-Fotos live) + Juvantis/_assets → _media-source Migration + Pattern `wp-cli-media-upload-wpml-memory` + Tutorial 07 `lazy-path-shortcuts` | §3 (aktuelle Session) in dieser Datei |
+| 31 | 2026-04-23 | Live-Verify N-8 Guard (Produktiv-Shopify, 7/7 AKs) + CW-PRIO-001 Prio-Shift (§0 Roadmap, Pattern, Tutorial) | §3-legacy-31 in dieser Datei |
 | 30 | 2026-04-23 | N-6.3 `cw-transfer diff wp:template` (FS-Variante Build-then-Fetch-then-Diff) + Extended Evidence (Drift-Test) | §3-legacy-30 in dieser Datei |
 | 29 | 2026-04-23 | N-1 WP-Template-Adapter (Pattern B reverse für /team/) + Parität + Live-Test | §3-legacy-29 in dieser Datei |
 | 28 | 2026-04-23 | N-6.2 `cw-transfer diff shopify:template` + Live-Diff EQUAL (content-bridge-v1 Roundtrip-Beweis) | §3-legacy-28 in dieser Datei |

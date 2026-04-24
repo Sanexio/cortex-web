@@ -62,8 +62,8 @@
       "enum": ["red", "amber", "ink"]
     },
     "image": {
-      "type": ["string", "null"],
-      "pattern": "^(media://|null$)"
+      "type": ["string", "integer", "null"],
+      "description": "Either a media:// URI (future N-1b resolver), a numeric WP attachment id (Block A shortcut, Session 32), or null."
     },
     "image_asset_juvantis": {
       "type": ["string", "null"],
