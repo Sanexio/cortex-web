@@ -1,0 +1,55 @@
+# Praxis Page — /aktuelles/
+# Quelle: neu angelegt in S36 (B-3) als Landing für Praxis-News.
+# Ziel: Local-WP / Prod westend-hausarzt.com, URL /aktuelles/
+# MVP-Platzhalter: Struktur fertig, echte News (Sprechstundenpause, Neuzugänge, Impftermine)
+# werden vom Redaktionsteam eingepflegt.
+
+id: aktuelles
+site: praxis
+slugs:
+  praxis: aktuelles
+title:
+  de: "Aktuelles"
+
+sections:
+  - type: service-body
+    body_html:
+      de: |
+        <!-- wp:paragraph -->
+        <p>An dieser Stelle informieren wir unsere Patientinnen und Patienten regelmäßig über Neuigkeiten rund um die Praxis — geänderte Sprechzeiten, neue Leistungen, Impfaktionen oder organisatorische Hinweise.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:heading {"level":2} -->
+        <h2>Neupatienten-Aufnahme</h2>
+        <!-- /wp:heading -->
+
+        <!-- wp:paragraph -->
+        <p>Aufgrund der hohen Nachfrage führen wir eine Warteliste für Neupatienten. Die aktuellen Regeln zur Aufnahme finden Sie unter <a href="/service/neupatienten/">Neupatienten-Anmeldung</a>.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:heading {"level":2} -->
+        <h2>Zweigpraxis Bockenheimer Landstraße</h2>
+        <!-- /wp:heading -->
+
+        <!-- wp:paragraph -->
+        <p>Unser zweiter Standort in der Bockenheimer Landstraße 33 bei Eterno ergänzt unser Leistungsspektrum mit zusätzlichen Sprechstunden-Terminen. Details unter <a href="/standorte/zweigpraxis-bockenheimer/">Zweigpraxis Bockenheimer Landstraße</a>.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:heading {"level":2} -->
+        <h2>Kontakt &amp; Terminvereinbarung</h2>
+        <!-- /wp:heading -->
+
+        <!-- wp:paragraph -->
+        <p>Für Terminanfragen, Rezeptbestellungen und organisatorische Anliegen nutzen Sie bitte unsere <a href="/service/">Services</a> oder erreichen uns telefonisch — alle Kontaktdaten finden Sie unter <a href="/contact-us/">Kontakt</a>.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p><em>[Platzhalter — dieser Bereich wird künftig vom Redaktionsteam mit konkreten Meldungen (Sprechstundenpausen, Impftermine, Personal-Neuzugänge) befüllt. Dr. Stracke ergänzt die ersten echten Inhalte nach Abnahme des Rohlings.]</em></p>
+        <!-- /wp:paragraph -->
+
+wp:
+  page_template: "template-standard.php"
+  eyebrow:
+    de: "Praxis"
+  sub:
+    de: "Neuigkeiten und organisatorische Hinweise aus der Praxisgemeinschaft Sanexio."

@@ -1,0 +1,58 @@
+# Praxis Page — /standorte/zweigpraxis-bockenheimer/
+# Quelle: _content-archive/legacy/de/standort-alte-oper-9430.md (WP page ID 9430)
+# Kurations-Entscheidung B-2 Triage S33 — PFLEGEN + Terminologie-Neuschnitt.
+# Slug-Rewrite: standort-alte-oper -> standorte/zweigpraxis-bockenheimer (klarer, 301 in B-2d).
+# Fotos: image-IDs 9431 + 9435 (wp_posts) existieren noch — wiederverwendet.
+
+id: standorte-zweigpraxis-bockenheimer
+site: praxis
+slugs:
+  praxis: zweigpraxis-bockenheimer
+title:
+  de: "Zweigpraxis Bockenheimer Landstraße"
+
+sections:
+  - type: service-body
+    body_html:
+      de: |
+        <!-- wp:media-text {"mediaId":9431,"mediaType":"image"} -->
+        <div class="wp-block-media-text is-stacked-on-mobile"><figure class="wp-block-media-text__media"><img src="/wp-content/uploads/2023/08/Raum-10-2000x1500-1-1024x768.jpeg" alt="Behandlungsraum der Zweigpraxis Bockenheimer Landstraße" class="wp-image-9431 size-full"/></figure><div class="wp-block-media-text__content"><!-- wp:paragraph -->
+        <p>An unserem zweiten Standort erhalten Sie das gleiche medizinische Leistungsspektrum wie in der Leerbachstraße in einer modernen, ansprechenden Atmosphäre. Sie finden uns in der Bockenheimer Landstraße 33 im Windows-Gebäude im 5. Stock bei Eterno. Eterno stellt uns die Räumlichkeiten zur Verfügung — Sie bleiben weiterhin Patienten bei uns.</p>
+        <!-- /wp:paragraph --></div></div>
+        <!-- /wp:media-text -->
+
+        <!-- wp:spacer -->
+        <div style="height:60px" aria-hidden="true" class="wp-block-spacer"></div>
+        <!-- /wp:spacer -->
+
+        <!-- wp:media-text {"mediaPosition":"right","mediaId":9435,"mediaType":"image"} -->
+        <div class="wp-block-media-text has-media-on-the-right is-stacked-on-mobile"><div class="wp-block-media-text__content"><!-- wp:paragraph -->
+        <p><strong>Termine können Sie wie gewohnt</strong> über Doctolib oder über unsere Rezeption vereinbaren. Darüber hinaus können Sie auch Termine über die Rezeption von Eterno vornehmen.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p><strong>Telefon Eterno-Rezeption:</strong> <a href="tel:+4969363937600">069 363937600</a></p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:paragraph -->
+        <p><strong>E-Mail:</strong> <a href="mailto:windows@eternohealth.de">windows@eternohealth.de</a></p>
+        <!-- /wp:paragraph --></div><figure class="wp-block-media-text__media"><img src="/wp-content/uploads/2023/08/Raum-5-1500x1125-1-1024x768.jpeg" alt="Empfangsbereich der Zweigpraxis" class="wp-image-9435 size-full"/></figure></div>
+        <!-- /wp:media-text -->
+
+        <!-- wp:spacer -->
+        <div style="height:40px" aria-hidden="true" class="wp-block-spacer"></div>
+        <!-- /wp:spacer -->
+
+        <!-- wp:paragraph -->
+        <p>Alle weiteren Standort-Informationen und die Hauptpraxis finden Sie unter <a href="/standorte/">Standorte</a>.</p>
+        <!-- /wp:paragraph -->
+
+wp:
+  page_template: "template-standard.php"
+  parent_slug: "standorte"
+  eyebrow:
+    de: "Standorte"
+  sub:
+    de: "Bockenheimer Landstraße 33 — unser zweiter Standort im Frankfurter Westend."
+  legacy_ids:
+    - 9430
