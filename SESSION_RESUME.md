@@ -84,17 +84,17 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 
 ## §1 Stand & Version
 
-- **Version:** `0.9.5` — Session 41 **Re-Priorisierung „DE-Content vor i18n" + S37-Header-Rollback + 9 DE-Slug-Stubs + 8 Slug-Mismatch-Redirects + Reading-Width 1,5× + Doctolib/Footer/Homepage-Polish** (2026-04-25, Cluster-Mini-02). Theme-HEAD `5e9bb22` PXZ 2.7.35. Cortex-Web/Nexus-Commits siehe §3.
+- **Version:** `0.9.6` — Session 42 **P3a DE-Content-Vervollständigung Phase 1+2: 9 Stub-Pages mit Volltext (aus _content-archive/) + Header-Nav 7-Top-Level-Hierarchie in `inc/nav-data.php` + Footer-Legal um Cookie-Richtlinie ergänzt + Architektur-Entscheidung „Status quo PHP-Code für Nav/Footer/Stammdaten"** (2026-04-25, Cluster-Mini-02). Theme-HEAD `b2d805f` PXZ 2.7.36 (Hauptcommit `1760546`).
 
-- **Stand:** 2026-04-25 Ende S41:
-  - **Theme-Stand:** PXZ **2.7.34 → 2.7.35** committed `5e9bb22` (11 Files, +81/-58 LoC).
-  - **DB-Migration (separat zu dokumentieren für Prod-Push):** 9 publish stub-Pages (IDs 9701-9709) + WPML-DE-Zuweisung in trid 14701-14709 (FAQ ID 9705 in trid=602 verschmolzen mit EN/ES/FR-Übersetzungen). 4 alte Konflikt-Pages auf `<slug>-legacy-<id>` (IDs 472, 475, 5709, 4028).
-  - **inc/redirects.php:** 5 Einträge entfernt (sind jetzt eigene Stub-Pages), 8 Slug-Mismatch-Redirects ergänzt (`arzt-team`, `dr-siegbert-stracke-mba`, `labordiagnostik`, `schilddruesen-sonographie`, `ultraschall-der-beingefaesse`, `internistische-…`, `ultraschalldiagnostik`, `projekt-docvocat`).
-  - **HTTP-Sweep S41:** 21/21 = 200 (9 Stubs direkt + 12 alte URLs via 301).
-  - **CSS-Grossreparaturen:** Header zurück 1-Zeile (Flex statt Grid 4+3), Footer-Override-Block aus `homepage.css` entfernt → Single-Source `footer.css` greift überall (Footer-Variante des `single-source-ui-region`-Patterns), Reading-Width 1,5× in `standard.css`+`page.css`, Doctolib-Floating-Button mittig rechts statt unter Header.
-  - **Homepage-Texte:** mfa_subtitle 3 Zeilen, spec_intro 2 Zeilen, spec/team/loc-Title 1 Zeile (Hard-`<br>` + Container-Caps gelockert).
-  - **Sanitizer (S41-Ende):** alle 5 Dateien im Budget. 0 Duplikate, 0 Cross-Project-Leaks. 95 stale-refs (Bestand).
-- **Pre-Flight Session-Ende 41:** `validate.sh` 🟢 · `verify.sh` 🟢 (10 Showpieces delta=0) · pending-Queues leer
+- **Stand:** 2026-04-25 Ende S42:
+  - **Theme-Stand:** PXZ **2.7.35 → 2.7.36** committed `1760546` (Hauptcommit, 2 Files +76/-23 LoC) + `b2d805f` (Versionsbump).
+  - **Header-Nav (`inc/nav-data.php` DE-Block):** 7 Top-Level (Praxis · Ärzte · Diagnostik · Leistungen · Service · Standorte · Kontakt) + 49 Sub-Items mit `match_prefix` für Active-States. EN/FR/ES bleiben unverändert (i18n-Sprint P6).
+  - **Footer-Legal (`inc/footer-data.php` alle 4 Sprachen):** Cookie-Richtlinie als 3. Legal-Item ergänzt. Datenschutz-Href umgestellt auf `/datenschutzerklaerung-2/` (neue Page ID 4223 mit Volltext-Inhalt; alte ID 3 entkoppelt).
+  - **Page-Content (DB):** 9 Stub-Pages (IDs 9701-9709) mit Volltext befüllt. Quellen: 7× `_content-archive/legacy/de/`, 1× `services/de/`, 1× selbst geschrieben (Cookie-Richtlinie). 2 Mojibake-Pages (rund-ums-impfen, rund-ums-labor) frisch von Prod via curl gezogen. WPForms-Shortcodes durch Mailto/Tel-Fallback ersetzt. FAQ-Slug-Konflikt mit ES/FR/EN via direktem `post_name`-Update gelöst.
+  - **WP-DB-Cleanup:** 53 alte Menü-Items aus term_id=5 (Main Menu) gelöscht. Theme nutzt PHP-Array, NICHT `wp_nav_menu()` — DB-Items waren Datenmüll.
+  - **HTTP-Sweep S42:** 54/54 = 200 OK (49 Header-Nav-Targets + 3 Footer-Legal + Doctolib + 9 Stubs als Direkt-Test).
+  - **Architektur-Entscheidung Dr. Stracke 2026-04-25:** Header-Nav, Footer-Legal, Standorte, Team, Homepage-Texte bleiben **bewusst PHP-Code in `inc/*-data.php`**, NICHT WP-Admin-bearbeitbar. Pages selbst bleiben WP-Admin-bearbeitbar. Memory: `feedback_praxis_nav_via_code.md`. Pattern: `Nexus/_memory/patterns/theme-rendering-source-check.md`.
+- **Pre-Flight Session-Ende 42:** `validate.sh` 🟢 · `verify.sh` 🟢 (10 Showpieces delta=0) · Sanitizer-Probe alle 5 Dateien im Budget · pending-Queues leer
 
 ### §1.1 Phasen-Status
 
@@ -110,12 +110,15 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 | **S40 DS-Block Apple Type-Scale** | T1–T8 + Pill + Body ×1.5 | ✅ `cc2a0e2`+`a4898ba` |
 | **S40-Folge-Iteration** | Footer/Loc/Footer-Logo ×4 | ✅ `7265c70` |
 | **S41 Dr.-Stracke-Polish + Re-Prio** | Header 1-Zeile, 9 Stubs, Reading-Width, Doctolib, Footer-Single-Source, Homepage-Texte | ✅ **`5e9bb22`** PXZ 2.7.35 |
-| **Praxis DE-Content P3a (NEU)** | 9 Stub-Texte schreiben + Menü-Restrukturierung + DE-SEO-Pass | 🔴 startet S42 |
+| **S42 P3a Phase 1+2** | 9 Stub-Volltexte (Archiv-Übernahme) + Header-Nav 7-Top-Level-Hierarchie + Footer-Cookie-Legal + WP-DB-Cleanup + Architektur-Entscheidung „Status quo PHP-Code" | ✅ **`1760546`+`b2d805f`** PXZ 2.7.36 |
+| **Praxis DE-Content P3a Phase 3** | Page-by-Page-Content-Review mit Dr. Stracke (Änderungswünsche umsetzen) | 🔴 startet S43 |
+| **Praxis i18n P6** | Übersetzung aller Pages in EN/FR/ES (WPML) | 🔴 nach S43 |
+| **Praxis Funktionalität** | Forms (WPForms ersetzen), Doctolib-Integration, Cookie-Banner-Plugin, Kontaktformular, E-Mail-Versand | 🔴 nach i18n |
 
-**Status:** S41 abgeschlossen. Pre-Live-Blocker unverändert: L-1/L-2 (extern), C-1 (extern). Neuer Block P3a (DE-Content-Vervollständigung) wird vor M1 abgearbeitet.
+**Status:** S42 abgeschlossen. Pre-Live-Blocker unverändert: L-1/L-2 (extern), C-1 (extern). Block P3a Phase 1+2 ✅, Phase 3 (Content-Review) startet S43. Danach i18n, dann Funktionalität.
 
-### §1.2 Vorherige Session — Stand-Auszug Session 40 (verkürzt, voll im Archiv)
-S40 DS-Block Apple Type-Scale (T1–T8 Tokens, Pill-Buttons, Body ×1.5 Option B) committed `cc2a0e2`+`a4898ba`. S40-Folge-Iteration (Footer ×2/full-width, Homepage-Polish, Badges ×3, Footer-Logo ×4, Loc-Hours) committed `7265c70`. Patterns: `reference-driven-type-scale`, `button-text-disambiguation`. Tutorial 10 (`type-scale-referenz-basiert`). Voll-Log siehe `_archive/sessions/2026-04/session-40-apple-type-scale.md` (TODO Auslagerung).
+### §1.2 Vorherige Session — Stand-Auszug Session 41 (verkürzt)
+S41 Re-Priorisierung „DE-Content vor i18n" + S37-Header-Rollback (Flex statt 4+3-Grid) + 9 DE-Slug-Stubs (DB-Migration + WPML-DE in trid 14701-14709) + 8 Slug-Mismatch-Redirects + Reading-Width 1,5× + Doctolib-Floating-Button mittig rechts + Footer-Single-Source-Fix Homepage + Homepage-Texte mit `<br>`-Struktur. Theme-Commit `5e9bb22` PXZ 2.7.35. Pattern `single-source-ui-region` Footer-Variante.
 
 ---
 
@@ -156,71 +159,68 @@ git -C ~/Cortex/projects/Juvantis/juvantis-web/theme rev-parse HEAD
 
 ---
 
-## §3 Letzte Session — Session 41, 2026-04-25 (Re-Priorisierung „DE-Content vor i18n" + S37-Header-Rollback + 9 DE-Slug-Stubs + Reading-Width 1,5× + Doctolib/Footer/Homepage-Polish)
+## §3 Letzte Session — Session 42, 2026-04-25 (P3a Phase 1+2: 9 Stub-Volltexte + Header-Nav-Hierarchie + Footer-Cookie + Architektur-Entscheidung „Status quo")
 
 ### Gerät
 **Cluster-Mini-02** (home-Mac M2).
 
 ### Auftrag
-„Projekt fortsetzen Cortex-Web". Dr. Stracke korrigiert die Prio-Leiter im Verlauf: „erst DE-Content komplett abschließen, komplette Menüführung etablieren, DE-Funktionalität testen, DE-SEO-Pass, DANN auf andere Sprachen transferieren". Parallel mehrere Polish-Iterationen.
+„Setze Projekt Redesign Webpage um — heute müssen der komplette deutsche Content und die Menüs mit funktionierender Weiterleitung stehen!" — klare Tagesdirektive von Dr. Stracke nach S41 Re-Prio. Klärungsfragen: Stub-Quelle = Variante A (`_content-archive/`), Datenschutz-Page = neue ID 4223, Bio-Stubs trotz leerem Inhalt ins Menü, „funktionierende Weiterleitung" = alle gezogenen Pages über Menü erreichbar.
 
-### Verlauf in vier Blöcken
+### Verlauf in drei Phasen
 
-**Block 1 — Header-Rollback (Sofort-Mini-Step):**
-- `nav.css`: S37 4+3-Grid (`grid-template-columns: repeat(4, auto)`) → Single-Row-Flex (`display: flex; flex-wrap: nowrap`). PXZ 2.7.34 → 2.7.35.
+**Phase 1 — 9 Stub-Pages mit Volltext (DB):**
+- Inventar: 62 DE-Pages, 39 unverlinkt; alle 9 Quell-Dateien im `_content-archive/` lokalisiert.
+- Python-Build-Skript (`/tmp/build_stubs.py`): Frontmatter parsen, Body extrahieren, WPForms-Shortcodes durch Mailto/Tel-Fallback ersetzen, Local-Embed-URL relativieren.
+- Mojibake-Quellen (rund-ums-impfen 472, rund-ums-labor 475 — `?` statt Umlaute) frisch von Prod (`westend-hausarzt.com`) via curl gezogen, `entry-content`-Block extrahiert, Class-Attribute weggekürzt.
+- Cookie-Richtlinie 9709: Original-Quelle war nur `wp:complianz/document`-Plugin-Block → eigenen Standard-DSGVO-Cookie-Hinweistext geschrieben (5 H3-Sektionen, 2010 Zeichen).
+- Import via WP-CLI `post update` mit `--post_content` aus File. Verification: alle 9 Pages clen 800–7100 Bytes.
+- FAQ-Slug-Konflikt: 3 anderssprachige Pages (4553/4567/4571) hatten gleichen Slug; meine Page 9705 wurde auf `frequently-asked-questions-2` ge-suffixt → direktem `UPDATE wp_posts SET post_name='frequently-asked-questions'` korrigiert.
+- HTTP-Sweep aller 9 Stub-Slugs nach `wp rewrite flush`: **9/9 = 200**.
 
-**Block 2 — DE-Content-Bestandsaufnahme + Slug-Lücken-Schluss:**
-- Original-Site `westend-hausarzt.com/page-sitemap.xml` (47 DE-Pages) ↔ lokale REST-API (48 Pages) verglichen. 12 Slug-Mismatches und 9 inhaltliche Lücken identifiziert.
-- Standort-Konflikt geklärt: Dr. Stracke bestätigt „Alte Oper" = Bockenheimer (Bezeichnungs-Wechsel, kein neuer Standort).
-- 9 Slug-Stub-Pages angelegt via WP-CLI (IDs 9701–9709): `beschwerden-beim-wasserlassen`, `covid-19-risikofragebogen`, `fragebogen-bauchschmerzen`, `fragebogen-personalisierte-medizin`, `frequently-asked-questions`, `rund-ums-impfen`, `rund-ums-labor`, `corona-impfung`, `cookie-richtlinie-eu`.
-- 4 Konflikt-Pages (3 Drafts + 1 Private mit gleichem Slug) auf `<slug>-legacy-<id>` umbenannt (IDs 472, 475, 5709, 4028) → meine Stubs bekamen finalen Slug ohne `-2`-Suffix.
-- WPML-DE-Zuweisungen via direktem SQL in `wp_icl_translations` (trid 14701–14709). FAQ-Sonderfall: trid=602 hatte schon EN/ES/FR, mein Stub 9705 wurde als DE-Master in diese Übersetzungs-Gruppe verschmolzen (alte trashed DE-Variante ID 398 ist im Trash, der DE-Slot war frei).
-- `inc/redirects.php`: 5 Einträge entfernt (FAQ, cookies, fragebogen-bauch, beschwerden, fragebogen-pers — sind jetzt eigene Pages); 8 Slug-Mismatch-Redirects ergänzt.
-- HTTP-Sweep nach `wp rewrite flush`: 21/21 = 200 (9 Stubs + 12 alte URLs via 301).
-- **Sono-Atlas**: auf Dr.-Stracke-Wunsch komplett übersprungen (kein Stub, kein Redirect — wird neu angelegt wenn Bedarf).
+**Phase 2 — Header-Nav 7-Top-Level-Hierarchie + Architektur-Pivot:**
+- **Erster Versuch (falsch):** WP-DB-Menü via WP-CLI aufgebaut. 53 Items unter `term_id=5` (Main Menu) angelegt mit Parent-Hierarchie via direktem SQL-UPDATE. HTTP-Sweep aller 49 Menü-Targets nach Redirect: 49/49 = 200.
+- **Live-Probe Dr. Stracke:** „ich sehe weder Phase 1 noch Phase 2 umgesetzt". Diagnose: Theme rendert das Header-Nav **nicht** über `wp_nav_menu()`, sondern über `template-parts/header-nav.php` aus `inc/nav-data.php` (PHP-Array, S2.4 Decision F1b). Das ganze WP-Menü-System ist tote Infrastruktur im Praxis-Theme.
+- **Architektur-Entscheidung Dr. Stracke:** „Status quo — das ist für mich ok." Trade-off-Diskussion (Optionen A/B/C: WP-Menü-Umstellung / Custom-Admin-Page / Hybrid) → Entscheidung pro PHP-Code, NICHT auf WP-Admin umstellen. Memory: `feedback_praxis_nav_via_code.md`. Pattern: `Nexus/_memory/patterns/theme-rendering-source-check.md`.
+- **Zweite Umsetzung (richtig):** `inc/nav-data.php` DE-Block überschrieben mit 7 Top-Level + 49 Sub-Items + `match_prefix` für Active-States.
+- **WP-DB-Cleanup:** Alle 53 angelegten Menü-Items aus term_id=5 via SQL gelöscht (Datenmüll, Theme nutzt sie nicht).
+- HTTP-Sweep der gerenderten Menü-Hrefs (mit Redirect-Follow `-L`): **54/54 = 200** (49 Header + 3 Footer-Legal + Doctolib + Sono-Sub-URLs).
 
-**Block 3 — Footer + Doctolib-Polish (1) + Reading-Width (2) + Doctolib-Position (3):**
-1. **Footer-Adresse linksbündig + Nav-Links weiß:**
-   - `template-parts/site-footer.php`: Doctolib-CTA aus Col 2 (Kontakt) → Col 1 (Adresse, unter Adress-Stack).
-   - `footer.css`: `.pxz-footer-nav a` `var(--pxz-line)` → `var(--pxz-white)`, Hover wechselt jetzt zu rot. `.pxz-footer-appointment-cta margin-top` 14 → 32 (Luft im Address-Stack).
-   - **Wichtigster Fund S41 (Single-Source-Verstoß diesmal Footer):** Dr. Stracke meldet „auf Startseite ist Nav nicht weiß". Ursache: `homepage.css` Z. 485–503 enthielt einen kompletten chalk-Footer-Override mit grauen Links, der den S40-Footer auf der Homepage überschrieb. Override-Block entfernt → Single-Source `footer.css` greift auch auf Home. Pattern `single-source-ui-region.md` erweitert.
-2. **Reading-Width 1,5× (Architekten-Wahl C-α):** `standard.css` 6 max-widths × 1,5 (760→1140, 840→1260, 680→1020, 1120→1680, 1040→1560), `page.css` 2 max-widths × 1,5. Hub-/Doctor-/Team-/Karriere-/Kontakt-Layouts bewusst NICHT angefasst (eigene Card-/Grid-Strukturen, würden bei 1,5× Viewport-Overflow geben).
-3. **Doctolib-Floating-Button (D-B mittig rechts):** `components.css` neuer §7 mit `a[href*="doctolib.de"][style*="position:fixed"] { top: 50% !important; transform: translateY(-50%) !important; }` — überschreibt Inline-Style des Doctolib-Widgets, kein Header-Konflikt mehr, responsive ohne JS.
+**Phase 3 — Footer-Legal-Block (Cookie-Richtlinie ergänzt):**
+- `inc/footer-data.php` `legal_nav` für alle 4 Sprachen (de/en/fr/es): Cookie-Richtlinie als 3. Legal-Item ergänzt.
+- Datenschutz-Href umgestellt: `/datenschutz/` (zeigte auf alte ID 3) → `/datenschutzerklaerung-2/` (neue ID 4223 mit Volltext-Inhalt).
+- Live-Probe Footer: 3/3 Legal-Links 200 OK.
 
-**Block 4 — Homepage-Texte (Hard-Break-Struktur + Container-Caps):**
-- `inc/homepage-data.php` DE: `mfa_subtitle` 2× `<br>` (3 Zeilen), `spec_intro` 1× `<br>` (2 Zeilen).
-- `template-homepage.php`: Z. 87/121/191 `spec/team/loc_title` `<br>` → ` ` (1 Zeile); Z. 88 `spec_intro` `esc_html` → `wp_kses ['br'=>[]]`. Service- und CTA-Title hatten bereits ` `.
-- **Container-Caps gelockert (Iteration 1):** `.pxz-home .pxz-sect-head { max-width: none; }` + `.pxz-home .pxz-sect-intro { max-width: 75ch; }`. components.css `52rem`-Cap zwang die Title-Pairs auf 2 Zeilen trotz fehlendem `<br>`.
-- **Container-Caps gelockert (Iteration 2):** MFA-Subtitle blieb in 5+ Zeilen statt 3. Ursache: nicht `.pxz-mfa-sub max-width: 40rem` (das hatte ich schon entfernt), sondern Parent `.pxz-mfa-hero { max-width: 56rem }` cappte den Container — `none` setzen behoben.
-- **Cache-Diagnose (Bonus-Lerneffekt):** WP Object-Cache, WP Transients, Browser, privates Fenster — Server liefert immer korrekt aus, Symptom auf Browser-Side war reine CSS-Cap-Wirkung, nicht Cache.
-
-### Pre-Flight-Metriken am Session-Ende 41
+### Pre-Flight-Metriken am Session-Ende 42
 - `validate.sh` — OK · `verify.sh` — VERIFY OK (10 Showpieces delta=0 auf 1440 + 430)
-- Sanitizer `--learn`: 0 Duplikate · 0 Cross-Project-Leaks · 95 stale-refs (Bestand) · alle Dateien im Budget
-- HTTP-Sweep S41: 21/21 = 200 (9 Stubs + 12 Redirects)
+- Sanitizer `--probe`: alle 5 Dateien im Budget (MEMORY 19.5 k / Nexus-CLAUDE 27 k / GLOBAL_RULES 42 k / cortex-agent-RESUME 6.9 k / Cortex-Web-RESUME 31.9 k)
+- HTTP-Sweep S42: 54/54 = 200
 - Pending-Queues leer
 
-### Working-Tree (Commit-Stand am Session-Ende 41)
-- **Theme** ✅ committed `5e9bb22` — `feat(s41): header 1-row rollback + 9 DE slug stubs + reading-width 1.5x + footer/doctolib polish + homepage line-breaks (PXZ 2.7.35)` — 11 Files, +81/-58 LoC
-- **DB** ✅ Live in Local-WP — wird beim Prod-Push als separates Migrations-Skript gebraucht (siehe „Nicht erledigt" unten)
+### Working-Tree (Commit-Stand am Session-Ende 42)
+- **Theme** ✅ committed `1760546` (Hauptcommit, 2 Files +76/-23 LoC) + `b2d805f` (PXZ_VERSION-Bump → 2.7.36)
+- **DB** ✅ Live in Local-WP (9 Stub-Inhalte via WP-CLI + 53 alte Menü-Items via SQL gelöscht)
 - **Cortex-Web** 🟡 uncommitted: SESSION_RESUME.md (dieses Update) — wird gleich committed
-- **Nexus** 🟡 uncommitted: `single-source-ui-region.md` Pattern-Erweiterung + MEMORY.md Praxis-Zelle-Update — wird gleich committed
+- **Nexus** 🟡 uncommitted: `MEMORY.md` (S42-Zelle-Update + neuer Memory-Eintrag) + `_memory/patterns/theme-rendering-source-check.md` (neu) + `~/.claude/projects/.../memory/feedback_praxis_nav_via_code.md` (neu) — werden gleich committed
 
-### Patterns + Tutorial (neu/erweitert in Session 41)
-- **Pattern erweitert:** `Nexus/_memory/patterns/single-source-ui-region.md` — neuer Abschnitt „Wiederholtes Vorkommen — Footer-CSS-Variante (S41)". Footer-Tabelle aktualisiert, drei neue Lessons (Architekturregel beim Komponenten-Refactor, Render-Cache-Tarnung-Pitfall, Komponenten-Inventar-Pflicht).
-- **Tutorial offen (TODO S42):** „WP-CLI mit Local-by-Flywheel auf Mac (Sock-Pfad-Workaround)" — wäre nützlich für künftige DB-Operationen, aber nicht zeitkritisch.
+### Patterns + Memory (neu in Session 42)
+- **Pattern neu:** `Nexus/_memory/patterns/theme-rendering-source-check.md` — Vor jeder DB-Schreibaktion auf einem Custom-Theme prüfen, ob das Theme tatsächlich `wp_nav_menu()`/Standard-WP-System nutzt oder eine eigene Render-Quelle (PHP-Array, ACF, Block-Pattern) hat. Anti-Pattern aus S42 dokumentiert (53 unnötige Menü-DB-Items).
+- **Memory neu:** `feedback_praxis_nav_via_code.md` (in `~/.claude/projects/.../memory/`) — Status-quo-Entscheidung: Nav/Footer/Stammdaten bleiben PHP-Code, NICHT WP-Admin-bearbeitbar.
 
-### Nicht erledigt (bewusst, S42 oder später)
-- **DB-Migrations-Skript für Prod-Push:** 9 Slug-Stubs müssen auch auf Prod-DB existieren. Aktuell nur lokal. Pflicht-Punkt vor M1.
-- **Volltext-Content für die 9 Stubs** — Dr. Stracke schreibt selbst. P3a-Block.
-- **Menü-Restrukturierung** (31 lokale Pages aktuell unverlinkt) — P3a-Block.
-- **DE-SEO-Pass** — P3a-Block.
-- **MFA-Subtitle Schrift-Cap:** ~135 Zeichen passen auch bei Card-Voll-Breite nicht in echte 1 Zeile. Optional Schrift T6 statt T5 ODER Text kürzen — Dr. Stracke entscheidet bei Content-Edit „die Texte müssen wir eh umschreiben".
-- **Andere Sprachen** für mfa_subtitle/spec_intro `<br>`-Struktur — i18n-Sprint (P6).
-- Externe Blocker unverändert (L-1/L-2, C-1, A-2).
+### Nicht erledigt (bewusst, kommt in Folge-Sessions)
+- **DB-Migrations-Skript für Prod-Push** (9 Stub-Inhalte + WP-DB-Cleanup-Statements) — Pflicht-Punkt vor M1, aber kann erst sinnvoll erstellt werden, wenn S43 Content-Review abgeschlossen ist.
+- **Page-by-Page-Content-Review mit Dr. Stracke** — Auftrag für Session 43.
+- **i18n** (Übersetzungen aller Pages in EN/FR/ES) — nach Content-Review.
+- **Funktionalität** (Forms, Doctolib, Cookie-Banner-Plugin, Kontaktformular) — nach i18n.
+- Externe Blocker unverändert (L-1/L-2 Legal-Review, C-1 DF-Support, A-2 Foto-Shooting).
 
 ### Konsistenz-Auffälligkeiten (KON-001)
-- `sites/praxis-webseite/SESSION_RESUME.md` ist mit ~35 k Tokens (Stand Session 19, 22.04.) **stark veraltet** und überholt durch dieses Cortex-Web RESUME. Wird vom Sanitizer NICHT überwacht (nicht in `--probe`-Liste). LL-044-Kandidat für Rotation in S42.
+- `sites/praxis-webseite/SESSION_RESUME.md` ist mit ~35 k Tokens (Stand Session 19) **weiterhin stark veraltet** und überholt. Sanitizer überwacht es nicht. LL-044-Kandidat für Rotation in S43 (TODO).
+- Tutorial „WP-CLI mit Local-by-Flywheel auf Mac (Sock-Pfad-Workaround)" weiterhin offen (heute mehrfach genutzt, würde künftige Sessions beschleunigen).
+
+## §3-legacy-41 Session 41 (verkürzt)
+
+S41 Re-Priorisierung „DE-Content vor i18n" + S37-Header-Rollback (Flex statt 4+3-Grid, PXZ 2.7.34 → 2.7.35) + 9 DE-Slug-Stubs (DB-Migration IDs 9701-9709 + WPML-DE-Zuweisung in trid 14701-14709, FAQ in trid=602 verschmolzen) + 8 Slug-Mismatch-Redirects in `inc/redirects.php` + Reading-Width 1,5× (`standard.css`+`page.css`) + Doctolib-Floating-Button mittig rechts (`components.css` §7) + Footer-Single-Source-Fix Homepage (chalk-Override aus `homepage.css` entfernt, Pattern `single-source-ui-region` Footer-Variante) + Doctolib-CTA → Col 1 Adresse + Footer-Nav-Links weiß + Homepage-Texte mit `<br>`-Struktur (mfa_subtitle 3 Zeilen, spec_intro 2 Zeilen, spec/team/loc-Title 1 Zeile) + Container-Cap-Fixes (`.pxz-mfa-hero max-width: none`). HTTP-Sweep 21/21 = 200. Theme-Commit `5e9bb22` PXZ 2.7.35.
 
 ## §3-legacy-40 Session 40 (verkürzt)
 
@@ -253,7 +253,49 @@ S38 Header-Variante-A + 2 Iterationen (Schrift 21 px bold, Homepage 4+3-Bug-Fix)
 
 ## §4 Offene Tasks — Praxis-Launch-Fokus
 
-> **Strategie-Rahmen S41 (Re-Prio Dr. Stracke 2026-04-25):** „DE-Content komplett → Menüführung → DE-Funktionalität testen → DE-SEO → dann i18n-Transfer". Block P3a (DE-Content-Vervollständigung) ist neu vor M1 eingezogen. Externe Blocker L-1/L-2 + C-1 unverändert.
+> **Strategie-Rahmen S42 (Dr. Stracke 2026-04-25):** S43 Content-Review Page-by-Page → S44+ i18n (EN/FR/ES) → S45+ Funktionalität (Forms, Doctolib, Cookie-Banner). Externe Blocker L-1/L-2 + C-1 unverändert.
+
+### Block P3a-Phase-3 — Content-Review (Session 43, NEU TOP-PRIO)
+
+**Auftrag Dr. Stracke 2026-04-25:** „In der nächsten Session werden wir alle Seiten durchgehen und es wird entsprechende Änderungsvorschläge geben. Das wird eine Menge Arbeit."
+
+| Task | Was passiert | Status |
+|---|---|:---:|
+| **CR-1** Page-Inventory mit Status-Spalte | Liste aller 49 verlinkten DE-Pages mit Content-Längen, letzten Änderungen, Hub-vs-Detail | 🔴 vorbereiten Session 43 Start |
+| **CR-2** Reihenfolge-Vorschlag Dr. Stracke | Strukturierte Walk-Through-Reihenfolge: Top-Level-Hubs zuerst (Praxis, Diagnostik, Leistungen, Service, Standorte), dann Detail-Pages | 🔴 |
+| **CR-3** Pro Page: Live-Probe → Änderungswunsch → Umsetzung → Verify | Iterativ. Per Page Block-Edit (Gutenberg) ODER direkter DB-Update via WP-CLI | 🔴 |
+| **CR-4** HWG-Check pro Page | Keine Heilversprechen, keine Werbeaussagen, keine Preise | 🔴 |
+| **CR-5** Bilder/Medien pro Page bewerten | Welche brauchen neue/zusätzliche Bilder? (Block A Foto-Shooting nutzbar?) | 🔴 |
+
+### Block i18n-P6 — Übersetzungen (Sessions 44+)
+
+**Trigger:** Sobald S43 Content-Review komplett.
+
+| Task | Was passiert | Status |
+|---|---|:---:|
+| **I-1** WPML-Strategie-Pin | Slug-Strategie pro Sprache (EN/FR/ES): identisch DE oder lokalisiert? | 🔴 |
+| **I-2** Übersetzungs-Quelle | Eigene Übersetzungen, MT (DeepL Pro), oder externer Übersetzer? | 🔴 |
+| **I-3** 9 neue Stubs in EN/FR/ES erstellen | Inkl. WPML-trid-Verknüpfung mit DE-Master | 🔴 |
+| **I-4** EN/FR/ES-Hub-Pages | praxis, team, diagnostik, leistungen, service, standorte, aktuelles, karriere | 🔴 |
+| **I-5** EN/FR/ES Header-Nav in `inc/nav-data.php` | Übersetzte Labels, Slugs entsprechend I-1 | 🔴 |
+| **I-6** EN/FR/ES Footer-Tagline/Claim | `inc/footer-data.php` bereits vorbereitet, evtl. Texte aktualisieren | 🔴 |
+| **I-7** EN/FR/ES Homepage-Texte | `inc/homepage-data.php` bereits gepflegt — Konsistenzcheck | 🔴 |
+
+### Block Funktionalität (Sessions 45+)
+
+**Trigger:** Sobald i18n komplett.
+
+| Task | Was passiert | Status |
+|---|---|:---:|
+| **F-1** Patienten-Fragebogen-Forms | Aktuell Mailto-Fallback. WPForms-Plugin installieren (mit DSGVO-Versand) ODER Alternative (Gravity Forms, Forminator, Bloomerang Form) | 🔴 |
+| **F-2** Kontaktformular `/contact-us/` | Funktioniert es? E-Mail-Versand testen | 🔴 |
+| **F-3** Doctolib-Integration | CTA-Button-Zielprüfung, Buchungsfluss live durchspielen | 🔴 |
+| **F-4** Cookie-Banner | Plugin-Wahl (Complianz alt, Cookiebot, Borlabs, Real Cookie Banner) — DSGVO-Pflicht für Prod | 🔴 |
+| **F-5** SEO-Pflege | AIOSEO oder Yoast: Title-Tags, Meta-Descriptions, OG-Tags pro Page | 🔴 |
+| **F-6** Sitemap.xml | Wird automatisch generiert; Verify nach Content-Review | 🔴 |
+| **F-7** E-Mail-Versand | SMTP-Plugin oder server-seitig (DF-Hosting), Test-Mail von Kontaktformular | 🔴 |
+| **F-8** Performance-Audit | Lighthouse, evtl. Caching-Plugin (W3 Total Cache, WP Rocket) | 🔴 |
+| **F-9** A11y-Audit | WCAG-Check, Tastatur-Navigation, Screen-Reader, Kontraste | 🔴 |
 
 ### Block A — Arzt-Fotos
 | Task | Status |
@@ -295,16 +337,16 @@ S38 Header-Variante-A + 2 Iterationen (Schrift 21 px bold, Homepage 4+3-Bug-Fix)
 | **DS-5** Phase-4-Probe (Screenshots 1920/1440/430) + Abnahme | 🔲 |
 | **DS-6** Gebündelter Commit `feat(s39+s40): home-polish + type-scale` | 🔲 |
 
-### Hygiene Session 41 (Eintritts-Status)
-1. 🟡 **Theme uncommitted** — 7 Files modified (footer.css · homepage.css · functions.php PXZ 2.7.34 · homepage-data.php · practice-data.php · template-homepage.php · site-footer.php)
-2. 🟡 **Cortex-Web uncommitted** — SESSION_RESUME.md + Evidence-Ordner (footer-shots/, homepage-polish/, probe-footer.mjs)
-3. 🟡 **Nexus uncommitted** — MEMORY.md, 2 neue Patterns (reference-driven-type-scale, button-text-disambiguation), 1 neues Tutorial (10-type-scale-referenz-basiert)
-4. 🔲 **Commit-Strategie Session 41:** Sammel-Commit direkt zum Sessionstart vor neuen Edits
+### Hygiene Session 43 (Eintritts-Status)
+1. ✅ **Theme committed** — `b2d805f` PXZ 2.7.36 (Hauptcommit `1760546`)
+2. 🟡 **Cortex-Web uncommitted** — SESSION_RESUME.md (dieses Update) → wird bei Session-End committed
+3. 🟡 **Nexus uncommitted** — MEMORY.md (S42-Zelle-Update + Memory-Eintrag) + neuer Pattern `theme-rendering-source-check.md` → wird bei Session-End committed
+4. 🟡 **DB-Migrations-Skript für Prod** offen — wartet sinnvollerweise bis nach S43 Content-Review
 
-### Folge-Blöcke (nach M1)
+### Folge-Blöcke (nach Praxis-Launch M1)
 - **E** Juvantis Content-Alltag (P5)
-- **F** Mehrsprachigkeit Praxis (P6)
 - **G** Design-Polish / A11y / Mobile-Feinschliff (Ppol-Rest, post DS-*)
+  → Hinweis: A11y wird bereits in Block Funktionalität F-9 mit erfasst
 
 ### Gefrierend offen (nicht anfassen bis Praxis live)
 - Medien-Registry-Framework · Shopify-Media-Upload-Pfad · N-6.4 / N-6.5 · N-3 Design-Token · `_inbox/media-root/` Sortierung
@@ -315,31 +357,33 @@ S38 Header-Variante-A + 2 Iterationen (Schrift 21 px bold, Homepage 4+3-Bug-Fix)
 
 ---
 
-## §5 Sofort-Status-Frage an Dr. Stracke — Session 42
+## §5 Sofort-Status-Frage an Dr. Stracke — Session 43
 
-> **S41 abgeschlossen** (Theme `5e9bb22` PXZ 2.7.35). **Re-Priorisierung verankert:** „DE-Content komplett → Menü → DE-Test → DE-SEO → dann i18n". Block P3a (DE-Content-Vervollständigung) ist neu vor M1.
+> **S42 abgeschlossen** (Theme `b2d805f` PXZ 2.7.36, +76/-23 LoC). 9 Stubs mit Volltext live, Header-Nav 7-Top-Level + 49 Sub-Items, Footer-Cookie ergänzt, 54/54 HTTP 200. Architektur-Entscheidung „Status quo PHP-Code" verankert.
 >
-> **Default für Session 42 — DE-Content-Vervollständigung starten (P3a):**
+> **Auftrag Session 43 (Dr. Stracke 2026-04-25):**
+> „In der nächsten Session werden wir alle Seiten durchgehen und es wird entsprechende Änderungsvorschläge geben. Das wird eine Menge Arbeit. Wenn das erledigt ist, müssen alle Seiten auf die anderen Sprachen übersetzt werden. Im Anschluss kommt die Funktionalität."
+>
+> **Sequenzplan steht: S43 Content-Review → S44+ i18n (EN/FR/ES) → S45+ Funktionalität (Forms/Doctolib/Cookie-Banner)**
+>
+> **Vorbereitung für Session 43-Start (Default):**
 >
 > | | Front | Was passiert | Trade-off |
 > |---|---|---|---|
-> | **α** | **Volltext für die 9 Slug-Stubs** | Inhaltliche Texte für FAQ, Cookie-Richtlinie, 4× Patientenfragebögen, Corona-Impfung, „Rund ums Impfen/Labor" — Sie liefern Rohinhalt, ich rendere mit Standard-Template-Struktur | Stubs verschwinden als „Lücke", Page-Anzahl mit echtem Content wächst von 39 → 48 |
-> | **β** | **Menü-Restrukturierung** (31 unverlinkte Pages) | Service-Hub als Top-Level-Submenu (Rezept/Termin/Einweisung/Überweisung/Neupatient/Impfungen/AU/Fragebögen), Standorte-Hub, Aktuelles, Footer-Block für Legal | Sichtbarste Verbesserung Patient-Side, klärt aber nichts inhaltlich |
-> | **γ** | **DE-SEO-Pass** (vor Migration zu i18n) | Title-Tags, Meta-Descriptions, Heading-Hierarchie pro Page durchgehen, AIOSEO oder eigene Helpers nutzen | Wartet sinnvollerweise auf α + β, sonst Doppel-Arbeit |
+> | **α** | **Page-Inventory mit Status-Spalte erstellen** | CSV/Tabelle aller 49 verlinkten DE-Pages: ID · Slug · Title · Content-Länge · Last-Modified · Hub vs. Detail · Block A Foto vorhanden? Dr. Stracke kann am Inventory entlang priorisieren | 5–10 Min Vorbereitung; Sie sehen direkt was wo steht |
+> | **β** | **Empfohlene Walk-Through-Reihenfolge** | Top-Level-Hubs (Praxis, Diagnostik, Leistungen, Service, Standorte, Kontakt, Aktuelles, Karriere) zuerst, dann Detail-Pages absteigend nach Patient-Importance | Strukturierter, vermeidet Lücken |
+> | **γ** | **Per-Page-Iterationsformat festlegen** | Vorschlag: pro Page Live-URL → Sie sagen Änderungswünsche → ich setze um → kurze Verify (Live-Probe) → nächste Page. Alternativ: Sie schicken Änderungswünsche im Block (z.B. per Sprachnachricht), ich setze um, dann Sammel-Verify | Iterativ ist flüssiger; Block ist effizienter wenn viele kleine Änderungen |
 >
-> **Empfohlen β VOR α** (Architekten-Tendenz): Menü-Struktur klären, was wo hingehört, dann gezielt Content schreiben pro Bereich. Sonst Risiko, dass Texte später anders verortet werden müssen.
->
-> Nicht-P3a Alternativen, falls Sie was anderes wollen:
-> - **L-1/L-2 Legal-Review-Iteration** (P4 Pre-M1, extern abhängig)
-> - **C-1 DF-Support reaktivieren** (P4 Pre-M1, extern)
-> - **DB-Migrations-Skript für Prod-Push** (Pflicht-Punkt VOR M1, kleine Aufgabe)
+> **Optionale Vorab-Aufgaben (falls Sie vor S43 was klären wollen):**
+> - **DB-Migrations-Skript für Prod-Push** (kann erst sinnvoll nach Content-Review erstellt werden)
 > - **`sites/praxis-webseite/SESSION_RESUME.md` rotieren** (LL-044-Hygiene, ~35 k Tokens veraltet)
+> - **Tutorial „WP-CLI mit Local-by-Flywheel"** schreiben (Sock-Pfad-Workaround, heute mehrfach genutzt)
 >
 > **Nicht in der Default-Liste (Popt/Pios, gefrierend):** Media-Registry-Framework · N-6.4/6.5 · iOS · `_inbox/`-Sortierung.
 
 ---
 
-## §6 Verbote / harte Regeln (Session 42 NIE passieren darf)
+## §6 Verbote / harte Regeln (Session 43 NIE passieren darf)
 
 - **HWG/Berufsordnung:** Keine Werbung, keine Heilversprechen, keine Preise auf Praxis-Site (CW-005)
 - **Trunk ist Master (CW-001):** Keine Inhalte direkt im WP-Admin oder Shopify-Admin ändern
@@ -354,6 +398,8 @@ S38 Header-Variante-A + 2 Iterationen (Schrift 21 px bold, Homepage 4+3-Bug-Fix)
 - **Keine eigenmächtigen Strukturänderungen** ohne Dr.-Stracke-Freigabe (LL-023, KON-001)
 - **Token-Budgets einhalten (LL-044):** SESSION_RESUME ≤ 15 k · MEMORY ≤ 10 k · Nexus/CLAUDE ≤ 12 k
 - **Holistische Prio (CW-PRIO-001, S31):** P1–P5 dominieren; Popt/Pios nur bei Pain-Point
+- **Theme-Render-Source vor DB-Schreiben prüfen (NEU S42):** Custom-Themes können WP-Standard-System (wp_nav_menu, Customizer, Widgets) komplett umgehen. Vor jeder DB-Schreibaktion verifizieren, dass das Theme die Daten dort liest. Pattern: `Nexus/_memory/patterns/theme-rendering-source-check.md`. Praxis-Theme: nav/footer/practice/team/homepage in `inc/*-data.php`, NICHT in DB.
+- **Praxis-Theme: Status quo PHP-Code (NEU S42):** Nav-Daten, Footer-Daten, Stammdaten bleiben hart kodiert. NICHT auf WP-Admin-Menü-System umstellen ohne explizite Freigabe. Memory: `feedback_praxis_nav_via_code.md`.
 
 ---
 
@@ -363,7 +409,8 @@ Alle historischen Session-Logs unter `_archive/sessions/YYYY-MM/`.
 
 | Session | Datum | Thema | Archiv-Pfad |
 |:---:|---|---|---|
-| **41** | 2026-04-25 | **Re-Priorisierung „DE-Content vor i18n" + S37-Header-Rollback (Flex statt 4+3-Grid) + 9 DE-Slug-Stubs (DB-Migration + WPML-DE) + 8 Slug-Mismatch-Redirects + Reading-Width 1,5× (standard.css/page.css) + Doctolib-Floating-Button mittig rechts + Footer-Single-Source-Fix für Homepage (analog Pattern S38) + Doctolib-Button → Col 1 Adresse + Footer-Nav-Links weiß + Homepage-Texte (mfa_subtitle 3 Zeilen, spec_intro 2 Zeilen, spec/team/loc-Title 1 Zeile) + Container-Cap-Fixes für Title-Pairs.** Theme-Commit `5e9bb22` PXZ 2.7.35. Pattern `single-source-ui-region` erweitert (Footer-Variante). | §3 (aktuelle Session) in dieser Datei |
+| **42** | 2026-04-25 | **P3a Phase 1+2: 9 Stub-Pages mit Volltext aus `_content-archive/` (FAQ · Cookie · 4× Fragebögen · Impfen · Labor · Corona) + Header-Nav 7-Top-Level-Hierarchie in `inc/nav-data.php` (Praxis · Ärzte · Diagnostik · Leistungen · Service · Standorte · Kontakt + 49 Sub-Items) + Footer-Legal um Cookie-Richtlinie ergänzt (`inc/footer-data.php` 4 Sprachen) + WP-DB-Cleanup (53 unnötige Menü-Items aus term_id=5 gelöscht) + Architektur-Entscheidung „Status quo PHP-Code" verankert. HTTP-Sweep 54/54 = 200.** Theme-Commits `1760546` + `b2d805f` PXZ 2.7.36. Pattern neu: `theme-rendering-source-check.md`. Memory neu: `feedback_praxis_nav_via_code.md`. | §3 (aktuelle Session) in dieser Datei |
+| 41 | 2026-04-25 | Re-Prio „DE vor i18n" + Header-Rollback Flex + 9 DE-Slug-Stubs + 8 Mismatch-Redirects + Reading-Width 1,5× + Doctolib-Floating mittig + Footer-Single-Source-Fix + Homepage-Texte + Container-Cap-Fixes. Theme `5e9bb22` PXZ 2.7.35. | §3-legacy-41 (verkürzt) in dieser Datei |
 | 40 | 2026-04-24/25 | Apple Type-Scale (DS-1..DS-6): T1-T8 Tokens + Pill-Buttons + Body ×1.5 Option B + 11 Polish-Iterationen (Footer ×2/full-width, Homepage-Polish, Badges ×3, Footer-Logo ×4, Loc-Hours). Bundle-Commits `cc2a0e2` (Theme S39+S40-A) + `a4898ba` (Cortex-Web) + `7265c70` (Theme S40-B-Sammel-Commit). | §3-legacy-40 (verkürzt) in dieser Datei |
 | 39 | 2026-04-24 | Home-Polish (Hero-Bild Empfang · Sprachen-Stack · Content +25 %) + Type-Scale-Erkenntnis → Session-40-Trigger. S39-Edits in S40-Bundle-Commit integriert. | §3-legacy-39 (verkürzt) in dieser Datei |
 | 38 | 2026-04-24 | Header-Variante-A live + 2 Iterationen (Schrift 21 px bold, Homepage 4+3-Bug) + Footer-Doppelung gefixt + Pattern `single-source-ui-region` + Tutorial 24 | §3-legacy-38 (verkürzt) · Commits `bca1521` · `61fd5db` |
