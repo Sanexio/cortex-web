@@ -30,9 +30,63 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-22 Ende Session 19 nach S2.4)
+## §1 Stand & Version (gültig: 2026-04-26 Ende Session 26 nach S45 Room-Slider auf beiden Standorten)
 
-- **PXZ_VERSION:** **2.7.16** live auf Local by Flywheel (Cluster-Mini-02). Theme-HEAD `e2336e2`. S2.4 Menü-Restrukturierung abgeschlossen:
+- **PXZ_VERSION:** **2.7.53** live auf Local by Flywheel (Cluster-Mini-02). Theme-Commits `901b602` (S45 Dynamic-Height) + `ff3720a` (S45 Room-Slider) + `6214b33` (S43-Pending) + `e3e0631` (S44 Submenu-Rename) + `9907b7f` (S44 SSoT+Nav).
+- **Room-Slider live auf BEIDEN Standort-Pages:**
+  - `/standorte/zweigpraxis-bockenheimer/` (ID 9693): 2 Slides aus den 2 vorhandenen `core/media-text`-Blöcken (Behandlungsraum + Empfangsbereich Eterno) — Testlauf, ohne Content-Restruktur.
+  - `/standorte/` (ID 9691, Hauptpraxis): 10 Slides aus 10 neu uploadeten Räume-Bildern (IDs 9798–9834): Empfang · Wartebereich · Flur Eingang · Sprechzimmer · Behandlungszimmer · Sonographie 1+2 · Spezial-Untersuchung · Untersuchungsraum · Flur Behandlungstrakt. Bildquelle `Cortex-Web/_media-source/praxis/standorte/grueneburgweg/` (14 Originale, 10 selektiert + sprechend benannt). 4 ungenutzte Originale (2/6/8/12) bleiben für später.
+- **Slider-Architektur:** Eigene Section `pxz-standard-rooms` mit `.pxz-container` (1600 px) → matches address container width. Container V1 (chalk-bg + 1px line + soft shadow) optisch differenziert vom Adress-Container ohne Bruch. Tail-Content (Anfahrt-H2 + Maps) max 1140 px Lesebreite.
+- **Slider-Mechanik:** Vanilla-JS, ~150 Zeilen. Pfeile ◀ ▶ + Dot-Indikator + Pointer-Swipe (Threshold 50 px, Mouse/Touch/Pen) + Keyboard ←/→/Home/End. ARIA `role=region`, `aria-current` auf Dots, `aria-hidden` auf nicht-aktiven Slides.
+- **Dynamic Height (PXZ 2.7.53):** Container atmet — Höhe folgt aktivem Slide mit weicher Transition (0.4s, gleiches Easing wie horizontale Bewegung). Hochformat (Flur) und Querformat (Räume) beanspruchen jeweils ihre natürliche Höhe, kein toter Leerraum mehr. Image-Load-Hook recomputed initial sobald Bild-Maße bekannt (WP gibt keine `width/height`-Attribute aus → ohne Hook wäre initial 0).
+- **Wiederverwendbarkeit:** Postmeta-Toggle `pxz_use_room_slider = 1` aktiviert auf jeder Standard-Template-Page. Fallback bei 0 media-text-Blöcken: unverändertes `the_content()`-Rendering.
+- **Editor-UX null Bruch:** Dr. Stracke editiert Räume weiter im Block-Editor → media-text-Block einfügen = neue Slide, Drag&Drop = Reihenfolge ändern, Block löschen = Slide raus.
+- **Spec + Self-Check:** `specs/sprint-2/S45_room-slider.md` (Verständnis, Lösung, Daten-Tabelle, 10/10 AKs, 3 Lessons).
+- **2 neue Patterns:** `wp-media-text-blocks-as-carousel.md` + `dynamic-height-flex-carousel.md` (beide in `Nexus/_memory/patterns/`).
+- **Pre-Flight:** verify.sh OK · smoke-http 5/5 HTTP 200 · curl-Probe beide Standort-Pages HTTP 200.
+- **Backup-Datei:** `/tmp/pxz-page-9691-backup-20260426-120010.html` (Original-Content der Hauptpraxis-Page vor Slider-Restruktur).
+
+**[Vorheriger Stand, historisch — Session 25 (S44 Standorte-SSoT + Leerbach-Cleanup)]:** PXZ_VERSION 2.7.51. Theme-Commits `9907b7f` (S44 SSoT+Nav) + `e3e0631` (Submenu-Rename) + `6214b33` (S43-Pending-Commit, war bisher uncommittet).
+- **Header neu (DE):** 5 Top-Items statt 7 — `Praxis · Diagnostik · Leistungen · Service · Kontakt`. „Ärzte" entfernt (Duplikat von Praxis>Unser Team), „Standorte" entfernt (jetzt Sub von Praxis).
+- **Praxis-Submenu neu:** `Über uns · Unser Team · Hauptpraxis Grüneburgweg · Zweigpraxis Bockenheimer · Aktuelles · Karriere`.
+- **Standort-Container = Single Source of Truth:** `inc/practice-data.php` (SSoT) + `template-parts/loc-{main,secondary}.php` (Markup) + `assets/css/loc-cards.css` (Style, geteilt). Konsumenten: Home-Section + `/standorte/` (loc-main) + `/standorte/zweigpraxis-bockenheimer/` (loc-secondary). Eine Adress-/Telefon-/Sprechzeiten-Änderung in `practice-data.php` propagiert auf alle 3 Pages.
+- **Page-Trim:** `/standorte/` (ID 9691) — Page-Titel + H1 jetzt „Hauptpraxis Grüneburgweg", H2-Adress-Block raus (kommt aus Container), Anfahrt + Maps bleiben. `/standorte/zweigpraxis-bockenheimer/` (ID 9693) — Adress-Hinweis im Fließtext gekürzt, Eterno-Erklärung + Bilder + Termin-Hinweise bleiben.
+- **Leerbach-Cleanup (alle Live-relevanten Stellen):**
+  - 2 Standort-Pages (DB) — Adresse Leerbachstraße 14 → Grüneburgweg 12, Telefon `069 920205960` → `069 247 574 523`.
+  - 4 Impressum-Pages (DE/EN/FR/ES) — Adresse Leerbachstraße 62 → Grüneburgweg 12, Telefon `069 727819` → `069 247 574 523`. **DE komplett neu** (Mojibake-`?` war destruktiv → Volltext-Rewrite mit Boilerplate + sauberen Umlauten + saubere `mailto:praxis@westend-hausarzt.de`-Verlinkung). EN/FR/ES Mojibake-Sequenzen `Áº/Á§/Á /Á¹` etc. via Mapped Replace bereinigt. Telefax `069 97206408` **bewusst belassen** (Dr. Stracke entscheidet später).
+  - 3 Kontakt-Pages (DE/EN/FR) — Maps-iframe-Place-ID auf Leerbach 62 → generische Embed-URL für Grüneburgweg 12. `mailto:`-Link auf `praxis@westend-hausarzt.de` korrigiert (vorher gmx.de-Inkonsistenz).
+  - Cookie-Banner-Plugin (Complianz `wp_options`) — `address_company`-String mit Leerbach via WP-Bootstrap + `update_option()` korrigiert (PHP-Serialisierung muss sauber re-serialisiert werden, sonst Plugin-Crash).
+  - **Verifikation:** 0 Leerbach-Treffer in `wp_posts.publish` + `wp_postmeta`-Inhaltsfeldern + `wp_options`. Reste in `wp_posts.revision` (Historie) + `wp_postmeta` E-Mail-Plugin-Logs (historische Mails) — risikolos, ignoriert.
+- **CSS-Refactor:** `.pxz-loc-*` Block (126 Zeilen) aus `homepage.css` extrahiert in eigenes `loc-cards.css`. Bedingt enqueued auf Home + beiden Detail-Pages. `homepage.css` als dependency davorgeschaltet (Cascade-Reihenfolge bleibt deterministisch).
+- **3 neue Patterns:** `wp-shared-component-via-template-part.md`, `wp-mojibake-double-encoding-fix.md`, `wp-option-via-bootstrap-not-sql.md` (alle in `Nexus/_memory/patterns/`).
+- **WordPress-Tutorial Glossar** um 3 Begriffe ergänzt: Template-Part, Mojibake, PHP-Serialisierung.
+- **Pre-Flight:** `tools/verify.sh` grün (alle 4 §-Checks). Smoke-Test: 5/5 URLs HTTP 200 (`/`, `/team/`, `/standorte/`, `/standorte/zweigpraxis-bockenheimer/`, `/impressum/`).
+- **Sanitizer-Probe:** Exit 0, alle Dateien im Budget. Sanitizer-Learn: 0 Duplikate · 0 Cross-Project-Leaks · **102 stale Refs** (zu beobachten, V5 warn-only). Reports unter `Nexus/tools/cortex-sanitizer/logs/reports/2026-04-26-*.md`.
+- **Offene Punkte (P-Backlog):**
+  - **P1**: Telefax 069 97206408 im Impressum entscheiden (behalten/korrigieren/entfernen).
+  - **P2**: Doppelte/inkonsistente Maps-iframe-Suche auf Kontakt-Pages — Page-Content wird vom `template-kontakt.php` überschrieben, daher rein kosmetisch in DB (Place-ID jetzt generisch).
+  - **P2**: 4 Impressum-Pages — generischer `laekh.de`-Link statt `läkh.de` gesetzt (Umlaut-Domain ist gültig, aber unzuverlässig in Browsern). Dr. Stracke prüfen.
+  - **P2**: Sanitizer-Learn 102 stale-refs — bei Gelegenheit Bereinigung des Memory-/Patterns-Pfade.
+  - **P3**: Sprint-1 SFTP-Push (Code-Live-Push) immer noch pausiert — Memory `feedback_praxis_local_first_workflow.md` aktiv, kein Live-Push gemacht.
+
+**[Vorheriger Stand, historisch — Session 24 (S43 Home-Refactor)]:** PXZ_VERSION 2.7.50 (war bisher uncommittet, jetzt als `6214b33` gebündelt im S44-Lauf committed). Stats-Block + MFA + Fachrichtungen+Team-Section komplett überarbeitet, **Fachrichtungs- und Team-Section auf Home zu einer kombinierten Section verschmolzen**, Eterno-Style Custom-Icons als rote 56×56-Tiles in jeder Card, alle 8 Mediziner:innen mit echten Fotos (800×800 quadratisch top-cropped, außer Jawich 400×400) und korrekten Titeln:
+  - **Stats-Block** (4 Kacheln): 2 Standorte · 8 Fachdisziplinen · 500 m² Praxisfläche · 23.000 Patienten in der Datenbank. Jetzt **vor** MFA-Block (statt danach), mit Gradient-Tint chalk → #E8E8EC zum dunklen MFA.
+  - **Hero-Subtitle**: „Acht Fachrichtungen. Zwei Standorte im Herzen Frankfurts." (zurück von „Acht Ärzte" — Landeberg/Arbitmann sind keine Ärztinnen).
+  - **MFA-Subtitle**: „MFA bei uns heißt nicht Orga machen — sondern Teil der Medizin sein. Du bist Teil der Behandlung — mit eigenen Patient:innen, klarer Verantwortung und echtem Einfluss." (4 Sprachen, fortlaufender Text mit 1× `<br>`).
+  - **Spec-Intro**: „Kurze Wege, enge Abstimmung, eine gemeinsame Patientenakte. Wenn der Befund Ihrer Gynäkologin für die internistische Abklärung relevant ist, erfolgt die Abstimmung bei uns noch am selben Tag — direkt im selben Haus." (DE; analog EN/FR/ES).
+  - **Fachrichtungen + Team kombiniert**: 8 Cards (2-Spalten mobile, 4-Spalten desktop) mit Foto · 56×56 rotes Icon-Tile + Spec-Eyebrow · Name · Bio (harmonisiert ~64–71 Zeichen) · „Mehr erfahren →". Jede Card linkt auf Profile-Page der zuständigen Person. min-heights für Symmetrie.
+  - **Eterno-Style Icons**: 8 SVGs (`internal/kardiology/ear/gynecology/urology/optometrist/osteopathy/psychotherapy.svg`) in `assets/icons/specialties/` (Brand-Assets, rechtlich freigegeben durch Dr. Stracke). Helper `pxz_specialty_icon_svg()` in `inc/specialty-icons.php` swap `fill="white"` → `fill="currentColor"`.
+  - **Service-Karten** (5 Cards) verlinkt auf Service-Pages: `/terminanfrage/`, `/rezeptbestellung/`, `/ueberweisung/`, `/neupatienten/`, `/arbeitsunfaehigkeit/`, `/fragebogen-vor-termin/` (neue Page von Dr. Stracke selbst angelegt).
+  - **Team-Page `/team/`**: Slug→Foto-Mapping in `template-team.php` — alle 8 Mitglieder zeigen Fotos statt Initialen.
+  - **Personen-Daten korrigiert**: Linne → **Linnea** (4 Theme-Files + DB-Page-Title). Landeberg = **Psychotherapeutin** statt „Ärztin"-Stub. Arbitmann = **Physiotherapeutin** statt „Ärztin"-Stub. Barcsay (Urologie F.E.B.U.), Seelig (Gyn), Jawich (HNO), Shahin (Neuro) statt „Innere Medizin"-Boilerplate. Bios harmonisiert in 4 Sprachen mit Schema „[Facharzt-Titel]. [3 Schwerpunkte]".
+  - **Fotos**: 6 neue Arzt-Fotos heruntergeladen (Eterno-CDN für Barcsay; praxis-seelig.de für Seelig; Doctolib für Shahin; Telegram-Foto vom User für Jawich; psychotherapeutikum.net für Landeberg; naturheilpraxis-arbitmann.com Bio-Subpage für Arbitmann). Alle 800×800 quadratisch top-cropped (Jawich 400×400 wegen 200×200-Original). Originale-Backup in `wp-content/uploads/2026/04/_originals/`.
+  - **DB-Cleanup**: 6 Pages gelöscht inkl. Revisions+Postmeta — `/beschwerden-beim-wasserlassen/`, `/covid-19-risikofragebogen/`, `/fragebogen-bauchschmerzen/`, `/fragebogen-personalisierte-medizin/`, `/frequently-asked-questions/` (4 Duplikat-IDs!), `/fachrichtungen/`. Nav-Items in DE/EN/FR/ES bereinigt. Rewrite-Rules geflusht.
+  - **Smoke-Test grün**: 5/5 HTTP 200 (`/`, `/karriere/`, `/wp-login.php`, `/feed/`, `/?s=test`). Sanitizer-Probe: alle Dateien im Budget.
+  - **Globale Regel LL-051** in `Nexus/_rules/GLOBAL_RULES.md`: Glossar-Pflicht in jedem Tutorial. WordPress-Tutorial Glossar mit 50+ Begriffen in 9 Themenfeldern erweitert.
+  - **Memory-Eintrag** `feedback_praxis_local_first_workflow.md`: Praxis-Webseiten-Änderungen immer Local-First, dann selektiver Push auf Live. Niemals direkt im Live-WP-Admin editieren.
+  - **WP-Workflow-Lessons**: WordPress-Page-Anlagen über WP-Admin (oder WP-CLI), nicht über DB-Direct-Insert — DB-Insert umgeht WP-internen Save-Workflow (Hooks, Postmeta-Setup), Plugin-Filter-Konflikte führen zu 404 trotz korrektem DB-Eintrag (Saul-Page-Anlage gescheitert, dann von Dr. Stracke selbst über WP-Admin als `/fragebogen-vor-termin/` erfolgreich angelegt).
+
+**[Vorheriger Stand, historisch — Session 19, 2026-04-22]:** PXZ_VERSION 2.7.16 nach S2.4 Menü-Restrukturierung abgeschlossen:
   - **Top-Nav kuratiert:** 7 Items (Praxis · Team · Fachrichtungen · Check-Ups ▼ · Sprechstunden · Kontakt · Karriere) + Submenu `Check-Ups ▼` mit 5 Kindern (Gesundheits/Cardio/Angio/Tumor/Basic).
   - **Mobile-Burger + Off-Canvas-Drawer** mit `<details>`-Accordion (Progressive Enhancement). Scroll-Lock, ESC-/Backdrop-Close, Focus-Management.
   - **Active-State** `.is-active` + `.is-active-parent` + `aria-current="page"` auf aktueller Seite und Submenu-Parent bei Kind-Page.
@@ -135,23 +189,17 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 ## §3 Sofort-Status-Frage an Dr. Stracke (Architekten-Stil)
 
-Praxis-Sub-Site-Einstieg läuft standardmäßig über Cortex-Web-Dach („Projekt fortsetzen Cortex-Web"). Die vollständige Status-Frage lebt in `projects/Cortex-Web/SESSION_RESUME.md §6`. Kurzfassung für Direkteinstieg:
-
-> „S2.3-checkups ist ✅ abgeschlossen — 6 Pages live (Cluster `checkups`), Bridge `/basic-check/` aus Trunk via WP-Adapter (CW-001 Roundtrip-Beweis erneuert), Cross-Brand-CTA-Helper, 12/12 AK = 100 %. Theme HEAD `c7acaf7`, PXZ_VERSION 2.7.15. Welche Front?
+> „Home-Refactor S43 ist ✅ abgeschlossen — Stats umgebaut, MFA neu getextet, Fachrichtungen+Team zu einer Section verschmolzen, alle 8 Mediziner:innen mit echten Fotos + korrekten Titeln + Eterno-Icons, 5 Service-Karten verlinkt, 6 Pages gelöscht, `/team/`-Page mit Fotos. PXZ_VERSION 2.7.50. Welche Front?
 >
-> **A (Architekten-Tendenz, Dr.-Stracke-Direktive 2026-04-22).** **S2.4 Menü-Restrukturierung** — neue Spec `specs/sprint-2/S2.4_menu-restructure.md`. Zielstruktur: Praxis · Team · Fachrichtungen ▼ · Ärzte ▼ · Check-Ups ▼ · Sprechstunden · Kontakt · Karriere. Tablet-/Mobile-Burger.
-> B. **Cluster `aerzte`** (2 P0) — schließt toten Link `/team/` → `/aerzte/`. Empfohlen NACH S2.4.
-> C. **Cluster `services`** (4 P1) — sekundärer Patienten-Kontext.
-> D. **Cluster `diagnostik`** (10 P1) — größerer Scope (~2 Sessions).
-> E. **Cluster `legacy/de`** (23) — Triage.
-> F. **Notfall-Footer-Block** — Theme-weiter Umbau („116 117 / 112 / Bereitschaftsdienst").
-> G. **S2.3-A Datenschutz + Impressum** — **blockiert** durch Rechtsquelle.
-> H. **Strukturhygiene** — SESSION_START.md-Legacy-Pfade, Phantom-Templates, AK-11 smoke-http erweitern.
-> I. **Andere konkrete Änderung** — Sie nennen."
+> **A.** **Andere Pages auf der Home-Story aufräumen** — Hero-Image-Caption, Final-CTA, Service-Tier-Struktur (siehe Redundanz-Audit aus S43): Punkt 2 (Final-CTA-Section streichen oder umfunktionieren) hat den größten Effekt mit kleinem Aufwand.
+> B.** **Sprint 1 SFTP-Push aktivieren** — Theme + DB nach Live (westend-hausarzt.com) deployen. Voraussetzung: SFTP-Credentials liegen in `.env.sprint1.local` vor (Stand Session 13 abends). Workflow: Local-First (Memory `feedback_praxis_local_first_workflow.md`) mit selektivem DB-Push.
+> C. **Andere Cluster** — `aerzte` (2 P0), `services`-Hub fülmen (4 P1), `diagnostik` (10 P1), `legacy/de` (23 Triage).
+> D. **Notfall-Footer-Block** — Theme-weiter Umbau („116 117 / 112 / Bereitschaftsdienst").
+> E. **i18n WPML S44+** — EN/FR/ES-Routing aktivieren.
+> F. **S2.3-A Datenschutz + Impressum** — weiterhin blockiert durch Rechtsquelle.
+> G. **Andere konkrete Änderung** — Sie nennen."
 
-Keine Code-Änderung vor expliziter Wahl.
-
-**Architekten-Tendenz:** A (S2.4 Menü) — exakt nach Dr.-Stracke-Direktive vom 2026-04-22 Session-18-Ende. Sichtbarer Patienten-Nutzen sofort: alle bisherigen Inhalte (kern + checkups) werden durch das kuratierte Menü entdeckbar. Aktuelles `wp_list_pages`-Fallback ist chaotisch.
+Keine Code-Änderung vor expliziter Wahl. Memory-Regeln aktiv: Local-First-Workflow, Glossar-Pflicht in Tutorials (LL-051).
 
 ---
 
@@ -169,6 +217,52 @@ Keine Code-Änderung vor expliziter Wahl.
 ---
 
 ## §5 Letzte Session — Was wurde erledigt
+
+### Session 24 — 2026-04-26 — S43 Home-Refactor + Team-Page-Fotos + DB-Cleanup
+
+**Auftrag Dr. Stracke (mehrere konsekutive Anweisungen über die Session verteilt):** Stats umbauen, MFA neu texten, Fachrichtungen-Cards mit Profile-Page-Verlinkung, Team-Cards verlinken, Fachrichtungs- und Team-Section zusammenführen (Redundanz!), Bios harmonisieren, Fotos symmetrisieren, Service-Karten mit Pages verlinken, 6 Pages löschen (Fragebögen + FAQ + Fachrichtungen-Stub), Team-Page Fotos einfügen, Glossar-Pflicht als globale Regel, Local-First-Workflow als Memory.
+
+**Theme-Edits (PXZ_VERSION 2.7.36 → 2.7.50, 15 Bumps):**
+- `inc/homepage-data.php` (4 Sprachen synchron): Stats neu (4 Kacheln), Hero-Subtitle, Spec-Intro, MFA-Subtitle, team_roles Bios harmonisiert, alle Service-Tiers
+- `template-homepage.php`: Stats vor MFA verschoben, Fachrichtung+Team-Sections zu einer kombinierten Section verschmolzen, Service-URL-Mapping inline, neue Combined-Card-Struktur mit Eterno-Icon-Tile
+- `template-team.php`: Slug→Foto-Mapping mit Upload-Pfad-Render
+- `inc/specialty-icons.php` (NEU): Helper `pxz_specialty_icon_svg()` mit File-Cache, swap `fill="white"` → `fill="currentColor"`, aria-hidden
+- `inc/team-data.php` + `inc/data/team.json`: Title/Intro/Bio/Qualifications korrekte Fachrichtungen statt „Innere Medizin"-Stub für Barcsay/Seelig/Jawich/Shahin/Landeberg/Arbitmann + Linne→Linnea
+- `inc/nav-data.php`: 4 Fragebogen-Items + FAQ-Item + Fachrichtungen-Items in DE/EN/FR/ES entfernt
+- `assets/css/homepage.css`: Stats-Gradient-Tint, neue `.pxz-team-spec/icon/more`-Klassen mit min-height für Symmetrie
+- `assets/icons/specialties/`: 9 Eterno-SVGs heruntergeladen (8 aktiv + orthopedy als Backup)
+
+**Foto-Pipeline:**
+- 6 Fotos heruntergeladen (Eterno-CDN, praxis-seelig.de, Doctolib, Telegram, psychotherapeutikum.net, naturheilpraxis-arbitmann Bio-Subpage)
+- Alle 800×800 quadratisch top-cropped via `sips` (Jawich 400×400 wegen Original-Auflösung)
+- Originale-Backup in `wp-content/uploads/2026/04/_originals/`
+
+**DB-Operationen:**
+- 6 Pages gelöscht (4 Fragebogen-Pages + 4× FAQ-Duplikate + Fachrichtungen-Stub + 5 Page-Revisions + Postmeta)
+- Linne→Linnea Page-Title-Update (ID 9680)
+- Saul-Page-Anlage gescheitert (`/dr-saul/` 404 trotz korrektem DB-Insert) — `/docteur-saul/` (ID 9675) nutzbar
+- `/fragebogen-vor-termin/` von Dr. Stracke selbst über WP-Admin angelegt nach gescheitertem DB-Insert-Versuch (Plugin-Filter blockiert direkt eingefügte Pages — Lesson Learned)
+
+**Nexus-Edits:**
+- `Nexus/_rules/GLOBAL_RULES.md` §28 LL-051: Glossar-Pflicht in Tutorials
+- `Nexus/Second Brain/30 Tutorials/WordPress/WordPress Grundlagen.md` §13: Glossar mit 50+ Begriffen in 9 Themenfeldern
+- `~/.claude/projects/.../memory/feedback_praxis_local_first_workflow.md` (NEU) + Index-Update
+
+**Verify:**
+- `tools/smoke-http.sh`: 5/5 HTTP 200 ✅
+- Sanitizer-Probe: alle Dateien im Budget (LL-044) ✅
+- 8 Profile-Page-URLs: HTTP 200 ✅
+- 6 gelöschte URLs: HTTP 404 ✅
+
+**Lessons Learned:**
+- WordPress-Page-Anlagen über WP-Admin oder WP-CLI, **nicht** über Direct-MySQL-INSERT (Plugin-Hooks-Konflikt → 404)
+- Bei Foto-Crops für Headshot-Look: `sips --cropOffset 0 X -c H W` mit X = horizontal-zentriert, Y=0 für Top-Crop (Hochformat-Portraits behalten Gesicht)
+- Fachrichtungen+Team auf einer Home redundant wenn 1:1-Mapping → kombinieren spart Section-Höhe und vereinheitlicht UX
+- Direct-DB-Inserts ohne `_wp_page_template`-Postmeta können von `pre_get_posts`-Filtern (Plugins) ignoriert werden trotz korrekter `wp_posts`-Zeile
+
+**Theme-Repo unberührt:** keine git commits am `praxiszentrum`-Theme heute (alle Änderungen ungestaged). Kommt mit Sprint 1 (SFTP-Push) oder beim nächsten manuellen Commit.
+
+---
 
 ### Session 13 — 2026-04-19 — Sprint 2 / S2.0f Santapress-Plugin-Entfernung
 
