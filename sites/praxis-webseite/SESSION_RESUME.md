@@ -30,9 +30,60 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-26 Ende Session 27 nach S46 Slider-Redesign + Mobile-Audit)
+## §1 Stand & Version (gültig: 2026-04-27 Ende Session 49 — Radikaler Sanexio-Spiegel-Umbau, PXZ 2.7.72)
 
-- **PXZ_VERSION:** **2.7.63** live auf Local by Flywheel (Cluster-Mini-02). Theme-Commits `2927f37` (S46 Mobile + EN/FR/ES Nav-Parity) + `7653efa` (S46 Fullbleed-Slider + Homepage-Carousel + Aktuelles-Banner) + alle Vorgänger.
+- **PXZ_VERSION:** **2.7.72** committed `90fc4db`. Cortex-Web-Repo: Trunk + Spec + Tools + Backups committed.
+
+- **Radikal-Umbau S49 (Dr.-Stracke-Direktive 2026-04-27 — strategische Wende):**
+  - **Top-Nav reduziert auf 5:** Praxis · Untersuchungen · Labor · Service · Kontakt. Leistungen + 7 Submenu-Pages komplett gelöscht (Papierkorb).
+  - **„Diagnostik" → „Untersuchungen":** Slug-Wechsel `/diagnostik/` → `/untersuchungen/` mit automatischem 301-Redirect (`_wp_old_slug`), Label-Wechsel im Menü, Template-Wechsel auf neues `template-untersuchungen-hub.php`.
+  - **19 NEUE Detail-Pages angelegt** (10 Untersuchungen + 9 Labor) als **interne** Sanexio-Spiegel. Sanexio-Texte 1:1 kuratiert: Sie-Form, keine Werbung, keine Preise.
+  - **Untersuchungen-Hub:** 16 Bento-Karten (Echo, Carotis, Schilddrüse, Bauchorgane, Pankreas, Nieren, Prostata, Leber, Belastungs-EKG, Lungenfunktion, Body Check, Sono Check, Komplett-Check, Kardio Check, Fit for Diving, Eye Check) — alle intern verlinkt.
+  - **Labor-Hub:** 9 Bento-Karten (Status Baseline/Advanced/Prevent · System Immune/Renal/Liver · Stoffwechsel · BioHack · Risikoprofil) — alle intern verlinkt.
+  - **Untersuchungen-Submenu** = die 16 Detail-Pages (kein „Übersicht"-Item, Top-Klick = Hub-Page).
+  - **Labor-Submenu** = die 9 Detail-Pages (analog).
+  - **10 Pages getrasht:** Leistungen-Hub + 7 Submenu-Pages (check-ups, gesundheits-/cardio-/angio-check-up, impfungen, rund-ums-impfen, corona-impfung) + sonographie/beingefaesse + tumorscreening.
+  - **4 Trunk-YAMLs ins `_archive/`** (diagnostik, leistungen, sonographie-beingefaesse, tumorscreening).
+
+- **Architektur-Erweiterungen:**
+  - **Schema:** neue Section-Type `body` (Markdown-Long-Text mit **fett**, *kursiv*, [Links](url)).
+  - **Builder:** `adapters/wordpress/build-page-hub.mjs` auto-discovery aller `_shared/*.yaml` (27 PHP-Datenfiles generiert).
+  - **Theme:** `template-untersuchungen-hub.php` neu, `template-detail-page.php` universell für alle Detail-Pages, `template-parts/page-hub-renderer.php` rendert 6 Section-Types.
+  - **Mirror-Tool:** `tools/mirror-shopify-images.{sh,map}` — 24 Sanexio-Bilder gespiegelt nach `wp-content/uploads/2026/04/sanexio-imports/` (CW-003 erfüllt, MD5-Verify).
+  - **HWG-Probe:** `verify.sh --hwg` neu (§5), 14 URLs gechecked, 0 Preise sichtbar.
+
+- **Verify Session-Ende S49:** verify.sh ✅ · 28/28 HTTP 200 · HWG 14/14 grün · Mid-Range 0 Overflow @ 1024–1920 · Sanitizer-Probe alle 5 Dateien im Budget · Sanitizer-Learn: 0 Duplikate · 0 Leaks · 103 stale refs (beobachten).
+
+- **Künftiger Workflow Sanexio→Praxis (S49-Pipeline produktiv):** Trunk-YAML in `~/Cortex/projects/Cortex-Web/trunk/content/pages/_shared/<slug>.yaml` editieren oder via `cw-transfer pull shopify:product` ziehen → `bun adapters/wordpress/build-page-hub.mjs` → Pages aktualisieren sich. Bei neuem Sanexio-Produkt: zusätzlich `nav-data.php` erweitern + WP-Page über `wp_insert_post` anlegen (PHP-Snippet im S49-Spec dokumentiert).
+
+- **Spec:** `sites/praxis-webseite/specs/sprint-2/S49_shopify-content-bridge.md` (V1.1, Phase 3 abgeschlossen).
+
+- **Backups vor Trash/Slug-Change:** `sites/praxis-webseite/_backup/S49-pre-pages/` (3 Hubs) + `_backup/S49-detail-pages/` (8 alte Detail-Pages). Jederzeit rückspielbar.
+
+- **Offene Punkte für nächste Session:**
+  - **Visuelle Sichtung der 22 Pages durch Dr. Stracke** (Iteration über YAML + Re-Build).
+  - Cleanup-Kandidaten: `template-leistungen.php` (Page weg), `_archive/leistungen.yaml` ggf. dauerhaft löschen.
+  - Submenu „Untersuchungen" mit 16 Items: bei Bedarf gruppieren mit Section-Headern.
+  - Ungestaged Theme-Files aus S43–S47 (`assets/css/arzt.css`, `inc/homepage-data.php`, `template-homepage.php`) — Dr.-Stracke-Entscheidung über Commit.
+  - 103 stale refs aus Sanitizer-Learn — bei Gelegenheit aufräumen.
+
+---
+
+**[Vorheriger Stand, historisch — Session 28 (S47 Stats-Hero-Move + Mitarbeiter-PDF)]:** PXZ_VERSION 2.7.68 live auf Local by Flywheel (Cluster-Mini-02). Theme-Edits S28 ungestaged: `assets/css/homepage.css`, `assets/css/arzt.css`, `inc/homepage-data.php`, `template-homepage.php`, `functions.php`. Local-First-Workflow (Memory `feedback_praxis_local_first_workflow.md`) — kein Theme-Commit gemacht.
+
+- **Content-Migration „wesentlich abgeschlossen":** Nach Inventur am 2026-04-26 (alle 25 Legacy/DE-Slugs in WP-DB direkt geprüft + HTTP-Probe) ist der wesentliche Content der alten Seite migriert. **22/25** sauber: 7/7 PFLEGEN ✅ (alle 6 Service-Pages + Bockenheimer-Standort), 4/7 MERGEN ✅ (Sprechzeiten, Bauchschmerz, Wasserlass, DHT-Form), 5/5 ARCHIV-ONLY ✅, 5/6 LÖSCHEN ✅. **Bonus-Befund:** Redirect-Map B-2d ist bereits aktiv (alle alten Legacy-Slugs liefern HTTP 301). **3 harte Restlücken** (kein Launch-Blocker, im P3-Backlog): L1 carotis-duplex (1896 chars, lebt noch als eigene Page — soll in Diagnostik-Cluster gemergt werden), L2 docteur-en-med-s-saul Dublette (alte Page lebt parallel zur neuen Profile-Page, sollte 301-redirect bekommen), L3 cookie-richtlinie-eu (publish, sollte gelöscht werden). **2 Verifikationen:** V1 FAQ-Accordion in /praxis/, V2 fragebogen-personalisierte-medizin → Juvantis. **i18n-Dubletten (134 EN/FR/ES) bewusst zurückgestellt** für Sprint 3 / WPML. **Bonus:** Slug-Drift dokumentiert (Triage sagte `/service/einweisungen-ueberweisungen/`, live ist `/service/einweisungen/`). Auto-Memory `project_praxis_full_content_migration.md` komplett überarbeitet.
+
+- **S47 Stats-Hero-Move (PXZ 2.7.63 → 2.7.67, 5 Iterationen):** Stats-Block (4 Kacheln) aus eigener Section in den Hero verschoben — sitzt jetzt zwischen `pxz-hero-top` und `pxz-hero-img-wrap`, vor dem Slider. Alte Section nach MFA hatte 56–112 px Padding + Gradient chalk → #E8E8EC; neu im Hero kompakt mit Trennlinien oben+unten. **Iterationen:** it1 Inline-Layout (Number+Label nebeneinander) → it2 mehr Padding asymmetrisch zugunsten unten + dezente Trennlinien (rgba 0.07) → it3 Linien prominenter (rgba 0.15) + Stack-Layout (Zahl oben, Label in 2. Zeile). Subtitle gekürzt (4 Sprachen): „Acht Fachrichtungen…" weg, nur noch „Eine Philosophie…". Stats-Label „Patienten in der Datenbank" → „Patienten" (DE). Container-max-width 1280 px (statt 1600), padding mobile 24/40, desktop 32/56.
+
+- **Mitarbeiter-Beurteilungs-PDF:** Neues Tool `tools/make-staff-presentation.mjs` (Bun + puppeteer-core). **Output:** `/Users/cluster-mini-02/Downloads/Praxis-Webseite-Homepage-Beurteilung-2026-04-26.pdf` (2,8 MB, 8 Seiten DIN A4: Cover + Desktop-Ansicht paginiert, Mobile entfernt auf Wunsch). Cover enthält 5 Beurteilungsfragen für Mitarbeiter. **2 Lessons Learned als Patterns:** `chrome-pdf-base64-image-shrink.md` (Chromes PDF-Renderer staucht große inline base64-Bilder auf 14×16 px → split+merge via pdfunite) + `puppeteer-pdf-lazy-load-fix.md` (lazy-loaded Images werden nicht gerendert → force-eager + scroll-through + image-await). Tutorial 26 in `Webentwicklung/Webdesign/`.
+
+- **S48 Ärzte-Container-Width (PXZ 2.7.67 → 2.7.68):** Auf Hinweis Dr. Stracke (Screenshot Saul-Profile) zwei schmalere Container an Hero-Container-Breite angeglichen — `.pxz-arzt-vita-inner` und `.pxz-arzt-cta-inner` von 760 → 1080 px. Gilt für alle 8 Ärzte-Pages (gleiches Template). Tradeoff dokumentiert: Lesbarkeit bei langen Bios (~90 statt ~65 Zeichen pro Zeile), bei Bedarf Mittelweg 900 px möglich.
+
+- **Pre-Flight S28-Ende:** verify.sh ✅ alle 4 §-Checks grün, smoke-http.sh ✅ 5/5 HTTP 200, Sanitizer-Probe ✅ alle Nexus-Dateien im Budget. **Achtung:** Diese SESSION_RESUME.md ist mit 81 KB / ~20.250 Tokens **an der Hard-Warn-Schwelle** (LL-044.21.2) — Rotation der historischen §1-Blöcke nach `_archive/sessions/2026-04/` ist **erste Aufgabe der Folgesession**.
+
+- **2 offene Vault-Anweisungen** in `Nexus/_memory/pending-instructions.md` — wurden in dieser Session nicht angesprochen, sollten zu Folge-Session-Start gesichtet werden (LL-045).
+
+**[Vorheriger Stand, historisch — Session 27 (S46 Slider-Redesign + Mobile-Audit)]:** PXZ_VERSION 2.7.63 live auf Local by Flywheel (Cluster-Mini-02). Theme-Commits `2927f37` (S46 Mobile + EN/FR/ES Nav-Parity) + `7653efa` (S46 Fullbleed-Slider + Homepage-Carousel + Aktuelles-Banner) + alle Vorgänger.
 - **Slider-Redesign (S46):** Bestehender Room-Slider erweitert um zweiten Layout-Modus `data-layout="fullbleed"` (Postmeta `pxz_slider_layout`). Bild oben (16:9) + Caption darunter (chalk-bg) als Geschwister im Slide-flex-column. Pfeile auf Bild-Mitte via aspect-ratio-Anchor-Trick (Controls-Block bekommt 16/9-Aspect → top:50% = Bild-Mitte ohne JS-Math). Auto-Play 5s mit Wrap-Around, Pause auf Hover/Focus/visibilitychange, prefers-reduced-motion-respektiert.
 - **Standort-Pages auf fullbleed:** 9691 (Hauptpraxis) + 9693 (Zweigpraxis) mit Postmeta `pxz_slider_layout=fullbleed`. Aus 9691 wurden 2 Hochkant-Slides entfernt (Flur-Eingangsbereich 9806 + Flur-Behandlungstrakt 9834) — bleibt bei 8 Querformat-Slides. Backup `_backup/S46-pre-cleanup-{9691,9693}.txt`.
 - **Homepage-Slider:** `inc/homepage-slider-data.php` aggregiert media-text-Blöcke aus 9691+9693 mit Datum-stabilem Fisher-Yates-Shuffle (Seed = `date('Ymd')`). `inc/slider-render.php` enthält `pxz_render_homepage_slider()`, `pxz_render_fullbleed_slide()` und `pxz_render_aktuelles_banner()`. Hero-Bild-Spalte in `template-homepage.php` zeigt jetzt Slider + Aktuelles-Banner darunter.
@@ -204,17 +255,19 @@ bun run tools/ab-diff.mjs --override='<vorher-css>' # mit Vorher-Vergleich
 
 ## §3 Sofort-Status-Frage an Dr. Stracke (Architekten-Stil)
 
-> „Home-Refactor S43 ist ✅ abgeschlossen — Stats umgebaut, MFA neu getextet, Fachrichtungen+Team zu einer Section verschmolzen, alle 8 Mediziner:innen mit echten Fotos + korrekten Titeln + Eterno-Icons, 5 Service-Karten verlinkt, 6 Pages gelöscht, `/team/`-Page mit Fotos. PXZ_VERSION 2.7.50. Welche Front?
+> **Stand Session-29-Einstieg (2026-04-27 oder später):** PXZ 2.7.68 läuft. Content-Migration **wesentlich abgeschlossen**. Heute (S28) drei Themen abgearbeitet: Stats-Hero-Move + Mitarbeiter-PDF + Ärzte-Container-Width.
 >
-> **A.** **Andere Pages auf der Home-Story aufräumen** — Hero-Image-Caption, Final-CTA, Service-Tier-Struktur (siehe Redundanz-Audit aus S43): Punkt 2 (Final-CTA-Section streichen oder umfunktionieren) hat den größten Effekt mit kleinem Aufwand.
-> B.** **Sprint 1 SFTP-Push aktivieren** — Theme + DB nach Live (westend-hausarzt.com) deployen. Voraussetzung: SFTP-Credentials liegen in `.env.sprint1.local` vor (Stand Session 13 abends). Workflow: Local-First (Memory `feedback_praxis_local_first_workflow.md`) mit selektivem DB-Push.
-> C. **Andere Cluster** — `aerzte` (2 P0), `services`-Hub fülmen (4 P1), `diagnostik` (10 P1), `legacy/de` (23 Triage).
-> D. **Notfall-Footer-Block** — Theme-weiter Umbau („116 117 / 112 / Bereitschaftsdienst").
-> E. **i18n WPML S44+** — EN/FR/ES-Routing aktivieren.
-> F. **S2.3-A Datenschutz + Impressum** — weiterhin blockiert durch Rechtsquelle.
-> G. **Andere konkrete Änderung** — Sie nennen."
+> **PFLICHT vor allem anderen — SESSION_RESUME-Rotation (LL-044.21.2):**
+> Diese Datei ist mit 81 KB an der Hard-Warn-Schwelle. Erste Aufgabe der Folgesession ist, die historischen §1-Blöcke (Session 26 + 25 + 24 + 19 + 18 + 17 + alles davor) nach `_archive/sessions/2026-04/SESSION_RESUME-snapshot-vor-rotation.md` zu schieben und §1 auf Session 27 + 28 zu reduzieren. Erst danach Content-Arbeit.
+>
+> Welche Front nach Rotation?
+>
+> **A.** **Page-by-Page Content-Review fortsetzen** — Dr. Stracke nennt eine Page (Praxis? Sprechstunden? eine Service-Page? Diagnostik-Hub?), gemeinsamer Durchgang. **Bei Beurteilungs-PDF-Feedback der Mitarbeiter:** entweder direkt einarbeiten oder Sammeln und in einem Block einarbeiten.
+> **B.** **Restlücken (L1-L3 + V1-V2) zuerst schließen** — Cleanup-Block aus Legacy-Inventur (~45 Min): carotis-duplex mergen, Saul-Dublette redirecten, cookie-richtlinie-eu löschen, FAQ-Accordion + Juvantis-Übernahme verifizieren.
+> **C.** **2 offene Vault-Anweisungen** in `Nexus/_memory/pending-instructions.md` abarbeiten — vor dem Sessionstart sichten.
+> **D.** **Andere Front** — z. B. Notfall-Footer, Responsive-Audit aus S46-Backlog, Sprint-1 SFTP-Push, Telefax-Entscheidung im Impressum.
 
-Keine Code-Änderung vor expliziter Wahl. Memory-Regeln aktiv: Local-First-Workflow, Glossar-Pflicht in Tutorials (LL-051).
+Keine Code-Änderung vor expliziter Wahl. Memory-Regeln aktiv: Local-First-Workflow, Glossar-Pflicht in Tutorials (LL-051), Praxis-Content-Migration **wesentlich abgeschlossen** (Memory `project_praxis_full_content_migration.md`).
 
 ---
 
