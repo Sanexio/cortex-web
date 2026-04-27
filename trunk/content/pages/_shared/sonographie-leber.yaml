@@ -1,0 +1,41 @@
+id: sonographie-leber
+site: shared
+slugs:
+  praxis: sonographie/leber
+title:
+  de: Sonographie der Leber und Gallenblase
+  en: Liver and Gallbladder Ultrasound
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Untersuchungen · Sonographie
+  heading:
+    de: Sonographie der Leber und Gallenblase
+  lead:
+    de: Ultraschall der Leber und Gallenwege — Funktion, Struktur und mögliche Schäden.
+- type: body
+  body_md:
+    de: 'Die Leber wiegt etwa 1,5 Kilogramm und übernimmt zentrale Aufgaben im Körper: Verdauung, Entgiftung, Speicherung von Nährstoffen sowie Fett-, Zucker- und Eiweißstoffwechsel. Sie filtert das gesamte
+      Blutvolumen mehrfach täglich und ist eng in die Immunabwehr eingebunden.
+
+
+      Trotz hoher Regenerationsfähigkeit kann die Leber durch ungesunde Ernährung, bestimmte Medikamente oder übermäßigen Alkoholkonsum chronisch geschädigt werden. Im Ultraschall lassen sich Veränderungen
+      wie Fettleber, Fibrose oder Tumore meist gut beurteilen.
+
+
+      Wie wir vorgehen: Sie liegen entspannt auf der Liege, wir untersuchen Leber und Gallenwege per Ultraschall. Bitte kommen Sie etwa vier Stunden nüchtern. Im Anschluss besprechen wir den Befund persönlich
+      mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Sonographie der Leber und Gallenblase?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

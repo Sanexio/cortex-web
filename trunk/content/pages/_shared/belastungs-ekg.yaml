@@ -1,0 +1,45 @@
+id: belastungs-ekg
+site: shared
+slugs:
+  praxis: belastungs-ekg
+  juvantis: belastungs-ekg
+
+title:
+  de: Belastungs-EKG
+  en: Exercise ECG
+
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+
+wp:
+  page_template: template-detail-page.php
+  legacy_ids: [289]
+
+sections:
+  - type: hero
+    eyebrow:
+      de: Diagnostik · Funktionell
+    heading:
+      de: Belastungs-EKG (Ergometrie)
+    lead:
+      de: Wie reagiert Ihr Herz unter Belastung — EKG, Blutdruck und Sauerstoffsättigung im Verlauf.
+
+  - type: body
+    body_md:
+      de: |
+        Beim Belastungs-EKG (Ergometrie) zeichnen wir EKG, Blutdruck und Sauerstoffsättigung auf, während Sie auf einem Standfahrrad in zwei-Minuten-Stufen die Wattzahl erhöhen. Veränderungen, die in Ruhe nicht sichtbar sind, lassen sich so oft erkennen — etwa Durchblutungsstörungen der Herzkranzgefäße oder belastungsabhängige Rhythmusstörungen.
+
+        Die Untersuchung dauert etwa 20–30 Minuten. Während der Belastung wird Ihr EKG durch eine ärztliche Kollegin oder einen Kollegen telemetrisch überwacht — bei Auffälligkeiten greifen wir sofort ein.
+
+        Bitte bringen Sie bequeme Kleidung und Sportschuhe mit. Eine Vorbereitung ist sonst nicht nötig.
+
+  - type: cta-banner
+    heading:
+      de: Termin für ein Belastungs-EKG?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

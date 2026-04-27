@@ -230,6 +230,39 @@ alignment() {
   fi
 }
 
+# === §5 HWG-Konformität (S49 — CW-005) ===
+# Praxis-Webseite darf keine Preise enthalten (HWG, Berufsordnung).
+# Strippt <style>/<script>/HTML-Tags, sucht dann auf reinem Text nach Preis-Patterns.
+hwg_check() {
+  echo ""
+  echo "=== §5 HWG-Probe (CW-005, keine Preise) ==="
+  local base="${PXZ_URL:-https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local}"
+  local pages=("/" "/diagnostik/" "/labor/" "/leistungen/" "/check-ups/" "/basic-check/" "/sonographie/" "/echokardiographie/" "/carotis-duplex/" "/sonographie/schilddruese/" "/sonographie/beingefaesse/" "/belastungs-ekg/" "/lungenfunktion/" "/tumorscreening/")
+  local total_hits=0
+  for url in "${pages[@]}"; do
+    local body
+    body=$(curl -sk "$base$url" 2>/dev/null | python3 -c "
+import sys, re
+h = sys.stdin.read()
+h = re.sub(r'<style[^>]*>.*?</style>', '', h, flags=re.S|re.I)
+h = re.sub(r'<script[^>]*>.*?</script>', '', h, flags=re.S|re.I)
+print(re.sub(r'<[^>]+>', ' ', h))
+" 2>/dev/null)
+    local hits
+    hits=$(echo "$body" | grep -ciE '(\b[0-9]+,[0-9]{2} ?€|\b[0-9]+ ?EUR\b|\bab [0-9]+,[0-9]{2}|\bPreis:|\bkostet [0-9])' || true)
+    if [ "$hits" -gt 0 ]; then
+      echo "  ✗ $url: $hits Treffer"
+      echo "$body" | grep -iE '(\b[0-9]+,[0-9]{2} ?€|\b[0-9]+ ?EUR\b|\bab [0-9]+,[0-9]{2}|\bPreis:|\bkostet [0-9])' | head -2 | sed 's/^/      /'
+      total_hits=$((total_hits + hits))
+    else
+      echo "  ✓ $url HWG-konform"
+    fi
+  done
+  if [ "$total_hits" -gt 0 ]; then
+    FAIL=$((FAIL + 1))
+  fi
+}
+
 case "$MODE" in
   --grep-split)      grep_split ;;
   --grep-split-css)  grep_split_css ;;
@@ -238,7 +271,8 @@ case "$MODE" in
   --probe)           probe ;;
   --component-probe) component_probe ;;
   --alignment)       alignment ;;
-  --all|"")          grep_split; grep_split_css; reset_scope; take_screenshots; probe; component_probe; alignment ;;
+  --hwg)             hwg_check ;;
+  --all|"")          grep_split; grep_split_css; reset_scope; take_screenshots; probe; component_probe; alignment; hwg_check ;;
   *) echo "Unknown mode: $MODE"; exit 2 ;;
 esac
 

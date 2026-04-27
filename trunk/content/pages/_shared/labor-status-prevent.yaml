@@ -1,0 +1,40 @@
+id: labor-status-prevent
+site: shared
+slugs:
+  praxis: labor/status-prevent
+title:
+  de: Status Prevent
+  en: Status Prevent
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Labor · Status
+  heading:
+    de: Status Prevent
+  lead:
+    de: Predictive Health Readout — präventives Screening, das Veränderungen frühzeitig sichtbar macht.
+- type: body
+  body_md:
+    de: 'Status Prevent ist das umfassendste Status-Profil. Es bildet Prozesse ab, die im Alltag nicht spürbar sind, aber viel über Ihre Gesundheit aussagen können — Veränderungen werden sichtbar, bevor
+      sie zum Symptom werden.
+
+
+      Analysierte Parameter: Fettwerte, Langzeitblutzucker und Harnsäure; Nierenwerte mit Natrium und Kalium; Leberwerte einschließlich Lipase und LDH; Gesamteiweiß mit Elektrophorese und Immunglobulinen;
+      Blutbild mit Differenzierung; Herzinsuffizienzmarker und Muskelenzyme; Schilddrüsenwert TSH; CRP als Entzündungsmarker.
+
+
+      Im Anschluss besprechen wir die Werte persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Status Prevent?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

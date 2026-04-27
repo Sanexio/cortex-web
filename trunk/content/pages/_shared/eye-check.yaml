@@ -1,0 +1,35 @@
+id: eye-check
+site: shared
+slugs:
+  praxis: eye-check
+title:
+  de: Eye Check
+  en: Eye Check
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Untersuchungen · Reaktion
+  heading:
+    de: Eye Check
+  lead:
+    de: Reaktionszeit-Test — wie schnell verarbeiten Ihre Augen visuelle Information?
+- type: body
+  body_md:
+    de: 'Das Auge ist die Hauptverbindung Ihres Gehirns zur Außenwelt. Mit dem Eye Check messen wir, wie schnell Ihr visuelles System Informationen aufnimmt und in Reaktion umsetzt.
+
+
+      Die Untersuchung ist kurz und schmerzfrei und gibt Ihnen ein orientierendes Maß für Ihre Reaktionsfähigkeit. Im Anschluss besprechen wir das Ergebnis persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Eye Check?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

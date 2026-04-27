@@ -1,0 +1,130 @@
+id: labor
+site: shared
+slugs:
+  praxis: labor
+  juvantis: bluttests
+title:
+  de: Labor
+  en: Laboratory
+  fr: Laboratoire
+  es: Laboratorio
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+  juvantis:
+    show_prices: true
+wp:
+  page_template: template-labor.php
+  legacy_ids:
+  - 296
+sections:
+- type: hero
+  eyebrow:
+    de: Labordiagnostik
+  heading:
+    de: Ihr Blut weiß mehr, als Sie denken.
+  lead:
+    de: Eine Blutuntersuchung in unserer Praxis liefert einen fundierten Einblick in Ihre aktuelle Gesundheitssituation. Wir bieten strukturierte Bluttest-Profile, abgestimmt auf unterschiedliche Fragestellungen
+      — von der orientierenden Standortbestimmung bis zur tiefen Risiko-Analyse.
+- type: bento-grid
+  heading:
+    de: Unsere Bluttest-Profile
+  items:
+  - id: status-baseline
+    title:
+      de: Status Baseline
+    teaser:
+      de: Der kompakte Einstieg — wichtigste Standardparameter auf einen Blick.
+    image: shopify-mirror://labor/labor-mini-check-up.png
+    href: /labor/status-baseline/
+  - id: status-advanced
+    title:
+      de: Status Advanced
+    teaser:
+      de: Erweiterter Check mit zusätzlichen Stoffwechsel- und Risikoparametern.
+    image: shopify-mirror://labor/labor-check-up-advanced.png
+    href: /labor/status-advanced/
+  - id: status-prevent
+    title:
+      de: Status Prevent
+    teaser:
+      de: Umfassendes Präventions-Profil für gezielte Früherkennung.
+    image: shopify-mirror://labor/labor-pravention.png
+    href: /labor/status-prevent/
+  - id: system-immune
+    title:
+      de: System Immune
+    teaser:
+      de: Gezielte Beurteilung des Immunsystems und der Abwehrlage.
+    image: shopify-mirror://labor/labor-immunsystem.jpg
+    href: /labor/system-immune/
+  - id: system-renal
+    title:
+      de: System Renal
+    teaser:
+      de: Nierenfunktion und Elektrolyte im Detail.
+    image: shopify-mirror://labor/labor-niere.jpg
+    href: /labor/system-renal/
+  - id: system-liver
+    title:
+      de: System Liver
+    teaser:
+      de: Leberwerte und Stoffwechselparameter strukturiert ausgewertet.
+    image: shopify-mirror://labor/labor-leber.jpg
+    href: /labor/system-liver/
+  - id: stoffwechsel
+    title:
+      de: Stoffwechsel
+    teaser:
+      de: Glukose, Lipide, Schilddrüse — die Stoffwechsel-Achse im Überblick.
+    image: shopify-mirror://labor/labor-stoffwechsel.jpg
+    href: /labor/stoffwechsel/
+  - id: biohack
+    title:
+      de: BioHack — Genetische Beratung
+    teaser:
+      de: Genetisch fundierte Beratung für eine personalisierte Vorsorge-Strategie.
+    image: shopify-mirror://labor/labor-biohack.jpg
+    href: /labor/biohack/
+  - id: risikoprofil
+    title:
+      de: Risikoprofil
+    teaser:
+      de: Strukturierte Risiko-Einschätzung für Herz-Kreislauf und Stoffwechsel.
+    image: shopify-mirror://labor/labor-risikoprofil.jpg
+    href: /labor/risikoprofil/
+- type: process-steps
+  heading:
+    de: So läuft Ihre Blutentnahme ab
+  steps:
+  - num: '1'
+    title:
+      de: Termin
+    text:
+      de: Termin online oder telefonisch vereinbaren — gerne nüchtern morgens.
+  - num: '2'
+    title:
+      de: Abnahme
+    text:
+      de: Blutabnahme in unserer Praxis durch geschultes MFA-Team — etwa fünf Minuten.
+  - num: '3'
+    title:
+      de: Analyse
+    text:
+      de: Auswertung im akkreditierten Labor — meist innerhalb 24 bis 48 Stunden.
+  - num: '4'
+    title:
+      de: Befundbesprechung
+    text:
+      de: Persönliches Gespräch mit ärztlicher Einordnung Ihrer Werte.
+- type: cta-banner
+  heading:
+    de: Fragen zu Ihren Werten?
+  sub:
+    de: Wir besprechen Ihre Laborbefunde persönlich — keine reinen Werte-PDFs.
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

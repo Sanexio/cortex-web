@@ -1,0 +1,40 @@
+id: sonographie-prostata
+site: shared
+slugs:
+  praxis: sonographie/prostata
+title:
+  de: Sonographie der Prostata und Harnblase
+  en: Prostate and Bladder Ultrasound
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Untersuchungen · Sonographie
+  heading:
+    de: Sonographie der Prostata und Harnblase
+  lead:
+    de: Ultraschall der Prostata und Harnblase — Größe, Restharn, Raumforderungen.
+- type: body
+  body_md:
+    de: 'Bei jüngeren Männern hat die Prostata etwa die Größe einer Walnuss und wiegt rund 20 Gramm. Mit zunehmendem Alter kann sie deutlich größer werden, was zu Beschwerden wie häufigem Harndrang, schwachem
+      Harnstrahl oder unvollständiger Blasenentleerung führen kann.
+
+
+      Prostatakrebs ist die häufigste Krebsart bei Männern. Eine strukturierte Vorsorge mit Ultraschall ergänzt die tastende Untersuchung und liefert ein Bild der inneren Verhältnisse.
+
+
+      Wie wir vorgehen: Sie liegen entspannt auf der Liege, wir messen die Größe der Prostata, bestimmen das Restharnvolumen und beurteilen Harnblase und Prostata auf Auffälligkeiten. Eine gefüllte Blase
+      ist hilfreich. Im Anschluss besprechen wir den Befund persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Sonographie der Prostata und Harnblase?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

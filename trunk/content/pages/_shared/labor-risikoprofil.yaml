@@ -1,0 +1,40 @@
+id: labor-risikoprofil
+site: shared
+slugs:
+  praxis: labor/risikoprofil
+title:
+  de: Risikoprofil
+  en: Risk Profile
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Labor · Risiko
+  heading:
+    de: Risikoprofil
+  lead:
+    de: Strukturierte Risiko-Einschätzung für Herz-Kreislauf und Stoffwechsel.
+- type: body
+  body_md:
+    de: 'Das Risikoprofil bündelt zentrale Marker, die für die Einschätzung von Herz-Kreislauf- und Stoffwechsel-Risiko relevant sind — ein orientierender Überblick über viele Körperfunktionen mit einer
+      einzigen Blutentnahme.
+
+
+      Analysierte Parameter: Fettwerte (Triglyzeride, Cholesterin Gesamt, LDL, HDL), HbA1c (Langzeitblutzucker), Kreatinin (Nierenfunktion), GOT, GPT und Gamma-GT (Leberfunktion), Harnsäure (Stoffwechsel)
+      sowie ein Blutbild mit Differenzierung der weißen Blutzellen.
+
+
+      Im Anschluss besprechen wir die Werte persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Risikoprofil?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

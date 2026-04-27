@@ -1,0 +1,39 @@
+id: komplett-check
+site: shared
+slugs:
+  praxis: komplett-check
+title:
+  de: Komplett-Check
+  en: Complete Check
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Untersuchungen · Vorsorge
+  heading:
+    de: Komplett-Check
+  lead:
+    de: Das umfassende Präventionsprogramm — alle apparativen Untersuchungen in einem Termin.
+- type: body
+  body_md:
+    de: 'Der Komplett-Check fasst unsere apparativen Vorsorge-Untersuchungen in einem Termin zusammen. Geeignet für eine strukturierte Standortbestimmung in etwa zwei Stunden.
+
+
+      Enthaltene Untersuchungen: Ultraschall der Schilddrüse, Ultraschall der Halsgefäße (Carotis-Duplex), Echokardiographie (Herzultraschall), Ultraschall aller Bauchorgane, Ergometrie (Belastungs-EKG)
+      sowie Spirometrie (Lungenfunktion).
+
+
+      Im Anschluss besprechen wir die Befunde persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Komplett-Check?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

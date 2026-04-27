@@ -1,0 +1,37 @@
+id: fit-for-diving
+site: shared
+slugs:
+  praxis: fit-for-diving
+title:
+  de: Fit for Diving
+  en: Fit for Diving
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Untersuchungen · Tauchtauglichkeit
+  heading:
+    de: Fit for Diving
+  lead:
+    de: Tauchtauglichkeitsuntersuchung — bevor Sie abtauchen.
+- type: body
+  body_md:
+    de: 'Die Tauchtauglichkeitsuntersuchung gibt Ihnen Sicherheit vor dem nächsten Tauchgang. Wir bieten zwei Stufen an: Open Water Diver für Wassertiefen bis 18 Meter, Advanced Open Water Diver (oder Taucher
+      über 40 Jahre) für Wassertiefen bis 30 Meter. Für Deep Diver oder technische Taucher bieten wir Untersuchungen auf Anfrage an.
+
+
+      Wie wir vorgehen: Für Open Water Diver führen wir eine Ganzkörperuntersuchung inklusive Otoskopie sowie eine Lungenfunktion durch. Für Advanced Open Water Diver wird die Untersuchung um ein Belastungs-EKG
+      erweitert. Im Anschluss besprechen wir den Befund persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Fit for Diving?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

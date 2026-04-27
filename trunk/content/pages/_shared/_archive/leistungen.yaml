@@ -1,0 +1,143 @@
+# Leistungen-Hub — Praxis-Webseite
+# Schema: trunk/schema/page.schema.json
+# Generiert: S49 2026-04-27 (Phase 3)
+# Mapping-Direktive: Praxis-eigene Leistungen + C1 (3 Sanexio-Bundles als Cross-Brand)
+
+id: leistungen
+site: shared
+slugs:
+  praxis: leistungen
+  juvantis: leistungen
+
+title:
+  de: Leistungen
+  en: Services
+  fr: Prestations
+  es: Servicios
+
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+
+wp:
+  page_template: template-leistungen.php
+  legacy_ids: [261]
+  eyebrow:
+    de: Leistungsspektrum
+    en: Service spectrum
+
+sections:
+  - type: hero
+    eyebrow:
+      de: Leistungsspektrum
+    heading:
+      de: Was wir für Sie tun.
+    lead:
+      de: |
+        Hausärztliche Versorgung mit acht Fachrichtungen unter einem Dach.
+        Vorsorge, Behandlung, Begleitung — abgestimmt auf Sie und Ihren Alltag.
+
+  - type: bento-grid
+    heading:
+      de: Unsere Praxis-Leistungen
+    items:
+      - id: check-ups
+        title:
+          de: Check-Up-Programme
+        teaser:
+          de: Strukturierte Vorsorge — Gesundheits-, Cardio- und Angio-Check.
+        image: shopify-mirror://leistungen/leistung-body-check.jpg
+        href: /check-ups/
+
+      - id: impfungen
+        title:
+          de: Impfungen
+        teaser:
+          de: Standard- und Reise-Impfungen, individuell beraten.
+        image: shopify-mirror://labor/labor-immunsystem.jpg
+        href: /impfungen/
+
+      - id: rund-ums-labor
+        title:
+          de: Rund ums Labor
+        teaser:
+          de: Hintergrundwissen zur Blutentnahme, Vorbereitung und Befund-Auswertung.
+        image: shopify-mirror://labor/labor-risikoprofil.jpg
+        href: /rund-ums-labor/
+
+      - id: basic-check
+        title:
+          de: Laborcheck Basis
+        teaser:
+          de: 15-Parameter-Selbstzahler-Check — schnell, kompakt, in der Praxis abgenommen.
+        image: shopify-mirror://labor/labor-mini-check-up.png
+        href: /basic-check/
+
+      - id: terminanfrage
+        title:
+          de: Online-Terminanfrage
+        teaser:
+          de: Anliegen kurz schildern — wir melden uns am selben Werktag.
+        image: shopify-mirror://leistungen/leistung-kardio-check.jpg
+        href: /service/terminanfrage/
+
+      - id: neupatienten
+        title:
+          de: Neupatienten
+        teaser:
+          de: Sie sind neu bei uns? Wir nehmen uns Zeit für Ihren Erstkontakt.
+        image: shopify-mirror://leistungen/leistung-komplett-check.jpg
+        href: /service/neupatienten/
+
+  - type: usp-box
+    variant: dark
+    heading:
+      de: Selbstzahler-Pakete bei Sanexio
+    text:
+      de: |
+        Über unseren Schwesterbetrieb Sanexio bieten wir strukturierte
+        Selbstzahler-Pakete an — Komplett-Checks, Body-Checks und Kardio-Checks.
+        Buchung läuft über sanexio.eu, die Untersuchung erfolgt bei uns.
+
+  - type: bento-grid
+    heading:
+      de: Sanexio Selbstzahler-Pakete
+    items:
+      - id: bundle-komplett
+        title:
+          de: Komplett-Check
+        teaser:
+          de: Das umfassende Präventionsprogramm — Labor, Bildgebung, Funktion.
+        image: shopify-mirror://leistungen/leistung-komplett-check.jpg
+        href: https://sanexio.eu/products/komplett-check
+        external: true
+
+      - id: bundle-body
+        title:
+          de: Body Check
+        teaser:
+          de: Bildgebende Standortbestimmung — Ultraschall, EKG, Lungenfunktion.
+        image: shopify-mirror://leistungen/leistung-body-check.jpg
+        href: https://sanexio.eu/products/body-check
+        external: true
+
+      - id: bundle-kardio
+        title:
+          de: Kardio Check
+        teaser:
+          de: Fokus Herz-Kreislauf — Echokardiographie, Belastungs-EKG, Carotis-Duplex.
+        image: shopify-mirror://leistungen/leistung-kardio-check.jpg
+        href: https://sanexio.eu/products/kardio-check
+        external: true
+
+  - type: cta-banner
+    heading:
+      de: Was passt zu Ihnen?
+    sub:
+      de: Wir beraten Sie persönlich — vor jeder Untersuchung steht das Gespräch.
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

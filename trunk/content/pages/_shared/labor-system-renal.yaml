@@ -1,0 +1,40 @@
+id: labor-system-renal
+site: shared
+slugs:
+  praxis: labor/system-renal
+title:
+  de: System Renal
+  en: System Renal
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Labor · System
+  heading:
+    de: System Renal
+  lead:
+    de: Filtration Performance Readout — die Filterleistung Ihrer Nieren im Blut messbar machen.
+- type: body
+  body_md:
+    de: 'Eine Niere besteht aus etwa einer Million Filtereinheiten. Beide Nieren filtern täglich rund 360 Liter Blut. Die Filtrationsleistung liegt bei einem gesunden Erwachsenen bei etwa 90–120 Millilitern
+      pro Minute. Im Labor lässt sich diese Leistung indirekt erfassen.
+
+
+      Mit System Renal prüfen wir, ob Hinweise auf eine Einschränkung der Nierenfunktion vorliegen. Analysierte Parameter: Kreatinin und Harnstoff (Nierenfunktion), Natrium und Kalium (indirekte Marker),
+      Gesamtprotein und Proteinelektrophorese.
+
+
+      Im Anschluss besprechen wir die Werte persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für System Renal?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

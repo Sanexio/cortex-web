@@ -1,0 +1,45 @@
+id: carotis-duplex
+site: shared
+slugs:
+  praxis: carotis-duplex
+  juvantis: carotis-duplex
+
+title:
+  de: Carotis Duplex
+  en: Carotid Duplex
+
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+
+wp:
+  page_template: template-detail-page.php
+  legacy_ids: [354]
+
+sections:
+  - type: hero
+    eyebrow:
+      de: Diagnostik · Gefäße
+    heading:
+      de: Carotis-Duplex-Sonographie
+    lead:
+      de: Ultraschall der Halsschlagadern — frühe Hinweise auf Gefäßveränderungen.
+
+  - type: body
+    body_md:
+      de: |
+        Die Halsschlagadern versorgen das Gehirn mit Blut. Werden sie durch Plaques eingeengt, steigt das Risiko für Schlaganfälle. Mit der Duplex-Sonographie messen wir Strömungsgeschwindigkeit, Durchmesser und Wandbeschaffenheit der Halsschlagadern und können Veränderungen oft früh erkennen — bevor Symptome auftreten.
+
+        Die Untersuchung ist schmerzfrei, dauert etwa 15–20 Minuten und erfordert keine Vorbereitung. Sie liegen mit leicht überstrecktem Kopf, wir führen mit einem hochfrequenten Schallkopf entlang des Halses.
+
+        Wann sinnvoll: bei Bluthochdruck, erhöhten Blutfetten, familiärer Belastung mit Schlaganfällen, oder als Bestandteil eines strukturierten Vorsorge-Checks.
+
+  - type: cta-banner
+    heading:
+      de: Termin für die Carotis-Duplex-Sonographie?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

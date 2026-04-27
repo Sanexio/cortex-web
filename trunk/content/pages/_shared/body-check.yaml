@@ -1,0 +1,39 @@
+id: body-check
+site: shared
+slugs:
+  praxis: body-check
+title:
+  de: Body Check
+  en: Body Check
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Untersuchungen · Vorsorge
+  heading:
+    de: Body Check
+  lead:
+    de: Ein strukturierter Vorsorge-Check zur Standortbestimmung Ihres aktuellen Gesundheitszustandes.
+- type: body
+  body_md:
+    de: 'Der Body Check ist eine kompakte Standortbestimmung Ihres Gesundheitszustandes — geeignet sowohl für sportlich aktive Menschen als auch für eine allgemeine Vorsorge.
+
+
+      Wie wir vorgehen: An diesem Termin führen wir eine ärztliche Beratung sowie eine vollständige klinische Untersuchung inklusive 12-Kanal-EKG und Urintest durch. Bitte bringen Sie Ihren Impfausweis
+      mit — wir prüfen bei dieser Gelegenheit auch Ihren Impfstatus.
+
+
+      Im Anschluss besprechen wir die Befunde persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Body Check?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

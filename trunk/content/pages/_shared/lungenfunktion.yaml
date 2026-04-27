@@ -1,0 +1,45 @@
+id: lungenfunktion
+site: shared
+slugs:
+  praxis: lungenfunktion
+  juvantis: lungenfunktion
+
+title:
+  de: Lungenfunktion
+  en: Lung function
+
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+
+wp:
+  page_template: template-detail-page.php
+  legacy_ids: [292]
+
+sections:
+  - type: hero
+    eyebrow:
+      de: Diagnostik · Funktionell
+    heading:
+      de: Lungenfunktion (Spirometrie)
+    lead:
+      de: Vitalkapazität, FEV1 und Atemwegsparameter — die Lunge im Funktionstest.
+
+  - type: body
+    body_md:
+      de: |
+        Mit der Spirometrie messen wir Vitalkapazität, Einsekundenkapazität (FEV1) und weitere Atemwegsparameter. Sie atmen über ein Mundstück in ein Gerät, eine Nasenklammer sorgt dafür, dass alles über den Mund strömt. Auf unsere Anweisung führen Sie verschiedene Atem-Manöver aus — ruhig, tief, schnell, kräftig.
+
+        Die Untersuchung ist schmerzfrei und dauert etwa 10–15 Minuten. Sie liefert Hinweise auf Atemwegserkrankungen wie Asthma, COPD oder Lungenfibrose und ist Bestandteil der Vorsorge bei Rauchern oder Beschwerden wie Atemnot und chronischem Husten.
+
+        Im Anschluss besprechen wir die Werte persönlich mit Ihnen — keine reinen PDF-Befunde ohne Erklärung.
+
+  - type: cta-banner
+    heading:
+      de: Termin für die Lungenfunktion?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

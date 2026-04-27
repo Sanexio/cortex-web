@@ -1,0 +1,41 @@
+id: sonographie-nieren
+site: shared
+slugs:
+  praxis: sonographie/nieren
+title:
+  de: Sonographie der Nieren und Harnwege
+  en: Kidney and Urinary Tract Ultrasound
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Untersuchungen · Sonographie
+  heading:
+    de: Sonographie der Nieren und Harnwege
+  lead:
+    de: Ultraschall der Nieren und ableitenden Harnwege — Filtereinheiten Ihres Körpers im Blick.
+- type: body
+  body_md:
+    de: 'Die Nieren reinigen das Blut von Abfallstoffen — pro Tag filtern sie etwa 360 Liter, sodass das gesamte Blutvolumen rund 30-mal täglich durch die Nieren strömt. Bis zu zwei Liter Urin werden pro
+      Tag ausgeschieden.
+
+
+      Bei der Ultraschalluntersuchung beurteilen wir Größe, Struktur und Beschaffenheit der Nieren sowie der ableitenden Harnwege und achten besonders auf verdächtige Raumforderungen, Steine, Stauungen
+      oder Zysten.
+
+
+      Wie wir vorgehen: Sie liegen entspannt auf der Liege, wir führen die Sonographie der Nieren und der ableitenden Harnwege durch. Eine gefüllte Blase erleichtert die Beurteilung. Im Anschluss besprechen
+      wir den Befund persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Sonographie der Nieren und Harnwege?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

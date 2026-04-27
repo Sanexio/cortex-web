@@ -1,0 +1,40 @@
+id: labor-system-immune
+site: shared
+slugs:
+  praxis: labor/system-immune
+title:
+  de: System Immune
+  en: System Immune
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Labor · System
+  heading:
+    de: System Immune
+  lead:
+    de: Defense Network Readout — gezielte Beurteilung Ihres Immunsystems.
+- type: body
+  body_md:
+    de: 'Das Immunsystem umfasst rund 1,8 Billionen Zellen — in Blut, Haut, Darm, Leber, Milz und sogar im Gehirn. Es schützt nicht nur vor Bakterien und Viren, sondern spielt auch eine zentrale Rolle bei
+      der Abwehr veränderter Körperzellen.
+
+
+      Mit System Immune beurteilen wir Ihren Immunstatus und ergänzende Stoffwechsel-Parameter. Analysierte Parameter: Eisen und Transferrin, Immunglobuline (IgA, IgG, IgM, IgE), Proteinelektrophorese,
+      Elektrolyte (Natrium, Magnesium, Kalium, Calcium), Retikulozytenzahl sowie ein Blutbild mit Differenzierung.
+
+
+      Im Anschluss besprechen wir die Werte persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für System Immune?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

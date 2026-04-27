@@ -1,0 +1,162 @@
+# Diagnostik-Hub — Praxis-Webseite
+# Schema: trunk/schema/page.schema.json
+# Generiert: S49 2026-04-27 (Phase 3)
+# Quelle: Sanexio Section juvantis-body-checks + Praxis-eigene Detail-Pages
+
+id: diagnostik
+site: shared
+slugs:
+  praxis: diagnostik
+  juvantis: body-checks
+
+title:
+  de: Diagnostik
+  en: Diagnostics
+  fr: Diagnostic
+  es: Diagnóstico
+
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+      en: Book appointment
+  juvantis:
+    show_prices: true
+    cta_url: /pages/body-checks
+    cta_label:
+      de: Jetzt Body Check buchen
+      en: Book Body Check
+
+wp:
+  page_template: template-diagnostik-hub.php
+  legacy_ids: [9682]
+  eyebrow:
+    de: Apparative Diagnostik
+    en: Apparative Diagnostics
+
+sections:
+  - type: hero
+    eyebrow:
+      de: Apparative Diagnostik
+    heading:
+      de: Sie sind mehr als die Summe Ihrer Teile.
+    lead:
+      de: |
+        Bei uns laufen Ultraschall, EKG, Lungenfunktion und Labor unter einem Dach
+        zusammen. Apparative Diagnostik und ärztliche Einordnung in einer Hand —
+        das spart Wege und gibt Ihnen schneller Klarheit.
+
+  - type: usp-box
+    variant: dark
+    heading:
+      de: Was uns auszeichnet
+    text:
+      de: |
+        Acht Fachrichtungen, ein Haus, eine gemeinsame Patientenakte. Wenn der
+        Befund Ihrer Schilddrüsen-Sonographie für die internistische Abklärung
+        relevant ist, erfolgt die Abstimmung noch am selben Tag — direkt im
+        selben Haus.
+
+  - type: bento-grid
+    heading:
+      de: Unsere Untersuchungen
+    items:
+      - id: sonographie
+        title:
+          de: Sonographie der Bauchorgane
+        teaser:
+          de: Leber, Galle, Pankreas, Milz, Nieren — strahlungsfreie Bildgebung in wenigen Minuten.
+        image: shopify-mirror://diagnostik/diag-sonographie.jpg
+        href: /sonographie/
+
+      - id: echokardiographie
+        title:
+          de: Echokardiographie
+        teaser:
+          de: Ultraschall des Herzens — Pumpfunktion, Herzklappen, Herzbeutel im Blick.
+        image: shopify-mirror://diagnostik/diag-echokardiographie.jpg
+        href: /echokardiographie/
+
+      - id: carotis-duplex
+        title:
+          de: Carotis-Duplex
+        teaser:
+          de: Ultraschall der Halsschlagadern. Frühe Hinweise auf Gefäßveränderungen.
+        image: shopify-mirror://diagnostik/diag-carotis.jpg
+        href: /carotis-duplex/
+
+      - id: schilddruesen-sono
+        title:
+          de: Schilddrüsen-Sonographie
+        teaser:
+          de: Hochfrequenz-Ultraschall der Schilddrüse — Knoten, Zysten, Größe.
+        image: shopify-mirror://diagnostik/diag-schilddruese.jpg
+        href: /sonographie/schilddruese/
+
+      - id: belastungs-ekg
+        title:
+          de: Belastungs-EKG
+        teaser:
+          de: Ergometrie auf dem Fahrrad — Herzkreislauf unter definierter Belastung.
+        image: shopify-mirror://diagnostik/diag-belastungs-ekg.jpg
+        href: /belastungs-ekg/
+
+      - id: lungenfunktion
+        title:
+          de: Lungenfunktion
+        teaser:
+          de: Spirometrie — Vitalkapazität, FEV1, Atemwegswiderstand.
+        image: shopify-mirror://diagnostik/diag-lungenfunktion.jpg
+        href: /lungenfunktion/
+
+      - id: tumorscreening
+        title:
+          de: Tumor-Screening
+        teaser:
+          de: Strukturierte Vorsorge mit Ultraschall, Labor und körperlicher Untersuchung.
+        image: shopify-mirror://diagnostik/diag-tumorscreening.jpg
+        href: /tumorscreening/
+
+      - id: labor-ueberblick
+        title:
+          de: Labordiagnostik
+        teaser:
+          de: Großes Blutbild, Hormone, Stoffwechsel — strukturierte Befundbesprechung.
+        image: shopify-mirror://labor/labor-mini-check-up.png
+        href: /labor/
+
+  - type: process-steps
+    heading:
+      de: So läuft Ihre Untersuchung ab
+    steps:
+      - num: "1"
+        title:
+          de: Termin
+        text:
+          de: Telefonisch oder online — wir klären vorab, was sinnvoll ist.
+      - num: "2"
+        title:
+          de: Untersuchung
+        text:
+          de: In ruhiger Atmosphäre, individuell auf Sie abgestimmt.
+      - num: "3"
+        title:
+          de: Befund
+        text:
+          de: Ärztliche Einordnung im persönlichen Gespräch — keine Befund-PDFs ohne Erklärung.
+      - num: "4"
+        title:
+          de: Weiteres Vorgehen
+        text:
+          de: Falls nötig, koordinieren wir die nächsten Schritte mit unseren Fachkollegen im Haus.
+
+  - type: cta-banner
+    heading:
+      de: Bereit für Ihre Untersuchung?
+    sub:
+      de: Wir nehmen uns Zeit für ein Gespräch, bevor wir messen.
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

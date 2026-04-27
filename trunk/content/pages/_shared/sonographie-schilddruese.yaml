@@ -1,0 +1,45 @@
+id: sonographie-schilddruese
+site: shared
+slugs:
+  praxis: sonographie/schilddruese
+  juvantis: ultraschall-schilddruese
+
+title:
+  de: Schilddrüsen-Sonographie
+  en: Thyroid Ultrasound
+
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+
+wp:
+  page_template: template-detail-page.php
+  legacy_ids: [357]
+
+sections:
+  - type: hero
+    eyebrow:
+      de: Sonographie · Schilddrüse
+    heading:
+      de: Schilddrüsen-Sonographie
+    lead:
+      de: Ultraschall der Schilddrüse — Knoten, Zysten und Größenveränderungen sichtbar machen.
+
+  - type: body
+    body_md:
+      de: |
+        Die Schilddrüse reguliert über ihre Hormone Stoffwechsel, Herzfrequenz und Energiehaushalt. Veränderungen wie Knoten, Zysten oder Größenveränderungen sind im Ultraschall meist gut zu erkennen — oft genauer als im Labor.
+
+        Wir nutzen einen hochfrequenten Schallkopf und untersuchen beide Schilddrüsenlappen sowie den Isthmus. Die Untersuchung ist schmerzfrei, dauert etwa 10–15 Minuten und erfordert keine Vorbereitung. Sie liegen mit leicht überstrecktem Hals, wir führen den Schallkopf entlang.
+
+        Bei auffälligen Knoten besprechen wir mit Ihnen das weitere Vorgehen — meist durch Verlaufskontrolle, in seltenen Fällen durch eine Feinnadelpunktion.
+
+  - type: cta-banner
+    heading:
+      de: Termin für die Schilddrüsen-Sonographie?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

@@ -1,0 +1,40 @@
+id: labor-system-liver
+site: shared
+slugs:
+  praxis: labor/system-liver
+title:
+  de: System Liver
+  en: System Liver
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Labor · System
+  heading:
+    de: System Liver
+  lead:
+    de: Clearance & Detox Capacity Readout — Funktion und Belastung der Leber.
+- type: body
+  body_md:
+    de: 'Zu den zentralen Aufgaben der Leber gehören Entgiftung, Speicherung von Nährstoffen sowie die Regulation von Fett-, Zucker- und Eiweißstoffwechsel. Sie filtert das gesamte Blutvolumen mehrfach
+      täglich und ist eng in die Immunabwehr eingebunden.
+
+
+      Ungesunde Ernährung, bestimmte Medikamente oder übermäßiger Alkoholkonsum können die Leber chronisch schädigen — bis hin zur Leberzirrhose oder Leberkrebs. System Liver beurteilt Funktion und mögliche
+      Belastung im Labor. Analysierte Parameter: Leberfunktion (GOT, GPT, GGT, Bilirubin), Cholinesterase und Lipase, Gesamtprotein und Proteinelektrophorese.
+
+
+      Im Anschluss besprechen wir die Werte persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für System Liver?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

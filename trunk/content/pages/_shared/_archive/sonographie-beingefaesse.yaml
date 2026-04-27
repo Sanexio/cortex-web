@@ -1,0 +1,45 @@
+id: sonographie-beingefaesse
+site: shared
+slugs:
+  praxis: sonographie/beingefaesse
+  juvantis: ultraschall-beingefaesse
+
+title:
+  de: Gefäß-Sonographie der Beine
+  en: Leg vessel ultrasound
+
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+
+wp:
+  page_template: template-detail-page.php
+  legacy_ids: [360]
+
+sections:
+  - type: hero
+    eyebrow:
+      de: Sonographie · Gefäße
+    heading:
+      de: Gefäß-Sonographie der Beine
+    lead:
+      de: Duplex-Sonographie der Beinvenen und -arterien — Thrombose-Diagnostik und Gefäßstatus.
+
+  - type: body
+    body_md:
+      de: |
+        Mit der Duplex-Sonographie der Beinvenen und -arterien können wir Thrombosen, Krampfadern und arterielle Durchblutungsstörungen direkt sichtbar machen. Wir untersuchen Tiefenvenen und oberflächliche Venen sowie ggf. arterielle Strombahnen entlang der Beine.
+
+        Die Untersuchung dauert etwa 30–45 Minuten und ist schmerzfrei. Sie liegen, wir führen den Schallkopf systematisch von der Leiste zu den Knöcheln. Bei akutem Thromboseverdacht ist die schnelle Diagnose entscheidend für die Therapie — die Sonographie liefert das Ergebnis in einer Sitzung.
+
+        Wann sinnvoll: einseitige Beinschwellung, Schmerz oder Wadenenge nach längerem Sitzen, Krampfadern, oder als Verlaufskontrolle nach Thrombose.
+
+  - type: cta-banner
+    heading:
+      de: Termin für die Gefäß-Sonographie?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

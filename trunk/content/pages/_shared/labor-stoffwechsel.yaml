@@ -1,0 +1,40 @@
+id: labor-stoffwechsel
+site: shared
+slugs:
+  praxis: labor/stoffwechsel
+title:
+  de: Stoffwechsel
+  en: Metabolism
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Labor · Stoffwechsel
+  heading:
+    de: Stoffwechsel
+  lead:
+    de: Fett-, Zucker- und Harnsäurestoffwechsel im Überblick.
+- type: body
+  body_md:
+    de: 'Verkalkungen der Gefäße sind eine Hauptursache für Herz-Kreislauf-Erkrankungen, die in den Industrienationen die häufigste Todesursache darstellen. Ein wesentlicher Faktor sind erhöhte Fett- und
+      Zuckerwerte im Blut.
+
+
+      Mit dem Stoffwechsel-Profil prüfen wir, ob bei Ihnen eine Fettstoffwechsel- oder Zuckerstoffwechselstörung vorliegt. Gleichzeitig bestimmen wir Marker für das Risiko einer Gicht. Analysierte Parameter:
+      Fettwerte (Triglyzeride, Gesamt-Cholesterin, LDL, HDL), HbA1c (Langzeitblutzucker) und Harnsäure (Gicht-Disposition).
+
+
+      Im Anschluss besprechen wir die Werte persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Stoffwechsel?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

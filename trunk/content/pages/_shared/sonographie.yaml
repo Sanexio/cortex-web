@@ -1,0 +1,85 @@
+id: sonographie
+site: shared
+slugs:
+  praxis: sonographie
+  juvantis: sonographie
+
+title:
+  de: Sonographie
+  en: Ultrasound
+
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+
+wp:
+  page_template: template-detail-page.php
+  legacy_ids: [277]
+
+sections:
+  - type: hero
+    eyebrow:
+      de: Diagnostik · Sonographie
+    heading:
+      de: Sonographie
+    lead:
+      de: Ultraschall ist unsere wichtigste strahlungsfreie Bildgebung — direkt in der Praxis, ohne Wartezeit auf ein Radiologie-Institut.
+
+  - type: body
+    heading:
+      de: Sonographie der Bauchorgane
+    body_md:
+      de: |
+        In der Sonographie der Bauchorgane untersuchen wir Leber, Gallenwege, Bauchspeicheldrüse, Milz, Nieren und Harnwege sowie ggf. Aortenstrukturen und Lymphknoten. Hochauflösende Ultraschallgeräte erlauben uns eine differenzierte Beurteilung von Organgröße, Struktur, Gefäßversorgung und auffälligen Raumforderungen.
+
+        Die Untersuchung dauert etwa 30–45 Minuten und ist schmerzfrei. Bitte kommen Sie nüchtern (mindestens 4 Stunden ohne Essen, Wasser ist erlaubt) — die Bauchspeicheldrüse und Gallenblase sind dann besser beurteilbar.
+
+        Im Anschluss besprechen wir die Befunde persönlich mit Ihnen.
+
+  - type: bento-grid
+    heading:
+      de: Weitere Sonographie-Untersuchungen
+    items:
+      - id: schilddruese
+        title:
+          de: Schilddrüsen-Sonographie
+        teaser:
+          de: Knoten, Zysten und Größenveränderungen sichtbar machen.
+        image: shopify-mirror://diagnostik/diag-schilddruese.jpg
+        href: /sonographie/schilddruese/
+
+      - id: beingefaesse
+        title:
+          de: Gefäß-Sonographie der Beine
+        teaser:
+          de: Thrombosen, Krampfadern und arterielle Durchblutungsstörungen direkt sichtbar.
+        image: shopify-mirror://diagnostik/diag-belastungs-ekg.jpg
+        href: /sonographie/beingefaesse/
+
+      - id: echokardiographie
+        title:
+          de: Echokardiographie
+        teaser:
+          de: Ultraschall des Herzens — Pumpfunktion, Klappen, Wandbewegungen.
+        image: shopify-mirror://diagnostik/diag-echokardiographie.jpg
+        href: /echokardiographie/
+
+      - id: carotis
+        title:
+          de: Carotis-Duplex
+        teaser:
+          de: Halsschlagadern — frühe Hinweise auf Gefäßveränderungen.
+        image: shopify-mirror://diagnostik/diag-carotis.jpg
+        href: /carotis-duplex/
+
+  - type: cta-banner
+    heading:
+      de: Welche Sonographie passt zu Ihnen?
+    sub:
+      de: Wir besprechen im Erstgespräch, was sinnvoll ist — und was nicht.
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

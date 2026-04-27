@@ -1,0 +1,41 @@
+id: sonographie-bauchspeicheldruese
+site: shared
+slugs:
+  praxis: sonographie/bauchspeicheldruese
+title:
+  de: Sonographie der Bauchspeicheldrüse
+  en: Pancreas Ultrasound
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Untersuchungen · Sonographie
+  heading:
+    de: Sonographie der Bauchspeicheldrüse
+  lead:
+    de: Ultraschall der Bauchspeicheldrüse — gezielte Beurteilung eines kleinen, aber zentralen Organs.
+- type: body
+  body_md:
+    de: 'Obwohl sie nur 70–100 Gramm wiegt, ist die Bauchspeicheldrüse für Verdauung und Zuckerstoffwechsel zentral. Sie liegt in der Mitte des Körpers, eng verbunden mit Magen, Leber, Darm und Milz. Eine
+      Funktionsstörung kann zu Diabetes oder Verdauungsbeschwerden führen.
+
+
+      Tumore der Bauchspeicheldrüse sind im Frühstadium oft schwer zu erkennen, weil das Organ versteckt liegt und sich Veränderungen schnell auf benachbarte Strukturen ausbreiten können. Eine gezielte
+      Sonographie kann frühe Hinweise liefern.
+
+
+      Wie wir vorgehen: Sie liegen entspannt auf der Liege, wir untersuchen die Bauchspeicheldrüse und die angrenzenden Organe per Ultraschall. Bitte kommen Sie nüchtern. Im Anschluss besprechen wir den
+      Befund persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Sonographie der Bauchspeicheldrüse?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

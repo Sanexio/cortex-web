@@ -1,0 +1,52 @@
+# Echokardiographie Detail-Page — Praxis-Webseite
+# Schema: trunk/schema/page.schema.json
+# Generiert: S49 2026-04-27 (Phase 3 — Detail-Pages)
+# Quelle: Sanexio Produkt ultraschall-echokardiographie (Texte HWG-bereinigt, Sie-Form)
+
+id: echokardiographie
+site: shared
+slugs:
+  praxis: echokardiographie
+  juvantis: echokardiographie
+
+title:
+  de: Echokardiographie
+  en: Echocardiography
+
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+
+wp:
+  page_template: template-detail-page.php
+  legacy_ids: [351]
+
+sections:
+  - type: hero
+    eyebrow:
+      de: Diagnostik · Apparativ
+    heading:
+      de: Echokardiographie
+    lead:
+      de: Ultraschall des Herzens — Pumpfunktion, Klappen, Wandbewegungen in Echtzeit beurteilen.
+
+  - type: body
+    body_md:
+      de: |
+        Mit der Echokardiographie beobachten wir Ihr Herz in Echtzeit bei der Arbeit. Erfasst werden Pumpfunktion, Wandbewegungen, Herzklappen und mögliche strukturelle Veränderungen — vieles davon verursacht im Alltag keine Beschwerden, ist aber für die Risikoeinschätzung relevant.
+
+        Die Untersuchung ist schmerzfrei und dauert etwa 20–30 Minuten. Sie liegen entspannt in Linksseitenlage, wir setzen einen Ultraschallkopf an mehreren Stellen am Brustkorb an. Eine besondere Vorbereitung ist nicht nötig.
+
+        Im Anschluss besprechen wir die Ergebnisse persönlich mit Ihnen — auffällige Befunde ordnen wir gemeinsam ein und besprechen, ob weitere Schritte sinnvoll sind.
+
+  - type: cta-banner
+    heading:
+      de: Termin für eine Echokardiographie?
+    sub:
+      de: Wir besprechen vor der Untersuchung, ob sie für Ihre Situation sinnvoll ist.
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

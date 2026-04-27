@@ -1,0 +1,82 @@
+id: tumorscreening
+site: shared
+slugs:
+  praxis: tumorscreening
+  juvantis: tumorscreening
+
+title:
+  de: Tumor-Screening
+  en: Tumor screening
+
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+
+wp:
+  page_template: template-detail-page.php
+  legacy_ids: [348]
+
+sections:
+  - type: hero
+    eyebrow:
+      de: Diagnostik · Vorsorge
+    heading:
+      de: Tumor-Screening
+    lead:
+      de: Strukturierte Krebsvorsorge — Sonographie, Labor und ärztliche Befundbesprechung.
+
+  - type: body
+    body_md:
+      de: |
+        Tumor-Screening bedeutet, gezielt nach Hinweisen auf bösartige Veränderungen zu suchen, bevor sie Beschwerden machen. Wichtig ist dabei: Screening soll genau dort erfolgen, wo es sinnvoll ist — nicht überall, weil es Möglichkeiten gibt. Welche Untersuchungen für Sie passend sind, hängt von Alter, Familiengeschichte und individuellen Risikofaktoren ab.
+
+        In unserer Praxis kombinieren wir bei Bedarf hochauflösende Sonographie der Bauchorgane, Schilddrüsen-Ultraschall, Halsschlagadern-Duplex und gezielte Laborparameter zu einem strukturierten Vorsorge-Programm. Im Erstgespräch klären wir, was in Ihrer Situation sinnvoll ist.
+
+  - type: bento-grid
+    heading:
+      de: Bausteine im Überblick
+    items:
+      - id: sono-bauch
+        title:
+          de: Sonographie der Bauchorgane
+        teaser:
+          de: Leber, Pankreas, Nieren, Milz — strukturelle Veränderungen sichtbar machen.
+        image: shopify-mirror://diagnostik/diag-sonographie.jpg
+        href: /sonographie/
+
+      - id: schilddruese
+        title:
+          de: Schilddrüsen-Sonographie
+        teaser:
+          de: Knoten und Zysten der Schilddrüse beurteilen.
+        image: shopify-mirror://diagnostik/diag-schilddruese.jpg
+        href: /sonographie/schilddruese/
+
+      - id: labor-vorsorge
+        title:
+          de: Laboruntersuchungen
+        teaser:
+          de: Tumormarker, Blutbild, Leber- und Nierenwerte als Teil der Vorsorge.
+        image: shopify-mirror://labor/labor-pravention.png
+        href: /labor/
+
+      - id: sanexio-pakete
+        title:
+          de: Strukturierte Pakete (Selbstzahler)
+        teaser:
+          de: Über unseren Schwesterbetrieb Sanexio buchbar — Komplett-Check inklusive Bildgebung und Labor.
+        image: shopify-mirror://diagnostik/diag-tumorscreening.jpg
+        href: https://sanexio.eu/products/komplett-check
+        external: true
+
+  - type: cta-banner
+    heading:
+      de: Welche Vorsorge passt zu Ihnen?
+    sub:
+      de: Wir besprechen im Erstgespräch, was in Ihrer Situation sinnvoll ist — und was nicht.
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

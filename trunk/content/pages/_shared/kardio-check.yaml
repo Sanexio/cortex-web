@@ -1,0 +1,37 @@
+id: kardio-check
+site: shared
+slugs:
+  praxis: kardio-check
+title:
+  de: Kardio Check
+  en: Cardio Check
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Untersuchungen · Vorsorge
+  heading:
+    de: Kardio Check
+  lead:
+    de: Strukturierte Herz-Kreislauf-Vorsorge — Herz unter Belastung beurteilt.
+- type: body
+  body_md:
+    de: 'Das menschliche Herz schlägt durchschnittlich 70-mal pro Minute, also über 100.000 Mal am Tag. Pro Minute pumpt es etwa fünf Liter Blut, unter Belastung bis zu 30 Liter. Der Kardio Check untersucht
+      Ihr Herz-Kreislauf-System gezielt unter Belastung.
+
+
+      Wie wir vorgehen: Zunächst eine klinische Untersuchung mit Abhören von Herz und Lunge, dann eine Echokardiographie (Herzultraschall) zur Beurteilung von Pumpfunktion, Klappen und Wandbewegung, anschließend
+      eine Ergometrie (Belastungs-EKG) und schließlich eine Lungenfunktion. Im Anschluss besprechen wir die Befunde persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Kardio Check?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

@@ -1,0 +1,39 @@
+id: labor-status-advanced
+site: shared
+slugs:
+  praxis: labor/status-advanced
+title:
+  de: Status Advanced
+  en: Status Advanced
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Labor · Status
+  heading:
+    de: Status Advanced
+  lead:
+    de: Extended Health Readout — vertiefter Überblick über zentrale Körperfunktionen.
+- type: body
+  body_md:
+    de: 'Status Advanced erweitert den Baseline-Check um eine detailliertere Beurteilung. Sie erhalten einen vertieften Überblick über Ihren aktuellen Gesundheitszustand.
+
+
+      Analysierte Parameter: vollständiger Fettstoffwechsel (Gesamt-Cholesterin, LDL, HDL, Triglyzeride), HbA1c (Diabetes-Marker), Nierenfunktion (Kreatinin und Harnstoff), Leberfunktion (GOT, GPT, GGT,
+      Bilirubin, CHE), Blutbild mit Differenzialblutbild sowie Harnsäure als Hinweis auf eine Gicht-Disposition.
+
+
+      Im Anschluss besprechen wir die Werte persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Status Advanced?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

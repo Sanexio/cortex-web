@@ -1,0 +1,37 @@
+id: sono-check
+site: shared
+slugs:
+  praxis: sono-check
+title:
+  de: Sono Check
+  en: Sono Check
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Untersuchungen · Vorsorge
+  heading:
+    de: Sono Check
+  lead:
+    de: Umfassende Ultraschall-Vorsorge — Schilddrüse, Halsgefäße, Herz und alle Bauchorgane in einer Sitzung.
+- type: body
+  body_md:
+    de: 'Der Sono Check ist ein umfassendes Sonographie-Programm. Wir untersuchen in einer Sitzung folgende Bereiche: Schilddrüse (verdächtige Knoten?), Halsgefäße (Verkalkung?), Herz (Pumpfunktion und
+      Klappenstrukturen), Milz (Größe und Beschaffenheit), Nieren (Stau, Zysten, Tumore), Leber (Verfettung oder Fibrose?), Gallenwege (Steine oder Stau?), Bauchspeicheldrüse (Zysten oder Raumforderungen),
+      Darm (Entzündungszeichen?), Harnblase und Prostata bzw. Uterus (Vergrößerungen oder Auffälligkeiten) sowie Becken- und Beingefäße (Verkalkungen?).
+
+
+      Wie wir vorgehen: Sie liegen entspannt auf der Liege, die Untersuchung dauert etwa 45 Minuten. Bitte kommen Sie nüchtern. Im Anschluss besprechen wir die Befunde persönlich mit Ihnen.'
+- type: cta-banner
+  heading:
+    de: Termin für Sono Check?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/

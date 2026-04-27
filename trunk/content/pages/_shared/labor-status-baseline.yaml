@@ -1,0 +1,39 @@
+id: labor-status-baseline
+site: shared
+slugs:
+  praxis: labor/status-baseline
+title:
+  de: Status Baseline
+  en: Status Baseline
+views:
+  praxis:
+    show_prices: false
+    cta_url: /service/terminanfrage/
+    cta_label:
+      de: Termin vereinbaren
+wp:
+  page_template: template-detail-page.php
+sections:
+- type: hero
+  eyebrow:
+    de: Labor · Status
+  heading:
+    de: Status Baseline
+  lead:
+    de: Initial Health Readout — kompakte Standardparameter zur Orientierung.
+- type: body
+  body_md:
+    de: 'Status Baseline ist ein kompakter Bluttest zur Einschätzung zentraler Organfunktionen sowie des Zucker- und Fettstoffwechsels. Mit einer einzigen Blutentnahme erhalten Sie eine erste Orientierung
+      — frühe Hinweise auf Belastungen von Herz, Gefäßen, Leber oder Niere.
+
+
+      Analysierte Parameter: LDL-Cholesterin (kardiovaskuläres Risiko), HbA1c (Diabetes-Hinweis), Kreatinin (Nierenfunktion), GGT (Leberfunktion) sowie ein Blutbild zur Erfassung von Veränderungen der Blutzellen.
+
+
+      Im Anschluss besprechen wir die Werte persönlich mit Ihnen — keine reinen PDF-Befunde ohne Erklärung.'
+- type: cta-banner
+  heading:
+    de: Termin für Status Baseline?
+  cta_label:
+    de: Termin vereinbaren
+  cta_url: /service/terminanfrage/
