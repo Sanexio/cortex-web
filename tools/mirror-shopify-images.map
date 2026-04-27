@@ -1,0 +1,40 @@
+# Sanexio Shopify CDN → local mirror map
+# Format: scope<TAB>local_name<TAB>source_url
+# scope = subfolder under _media-source/shopify-mirror/
+# Used by tools/mirror-shopify-images.sh (CW-003)
+
+# === Labor (9 Bluttests, all from Sanexio Collection laboruntersuchung) ===
+labor	labor-mini-check-up.png	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/STATUSBASELINE-InitialHealthReadout.png?v=1768151550
+labor	labor-check-up-advanced.png	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/STATUSADVANCED-ExtendedHealthReadout.png?v=1768155258
+labor	labor-pravention.png	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/STATUSP_REVENT_Teaser.png?v=1768769480
+labor	labor-immunsystem.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/Immunsystemangepasst.jpg?v=1767997902
+labor	labor-niere.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/Niere-BEangepasst.jpg?v=1768081646
+labor	labor-leber.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/Leber-BEangepasst.jpg?v=1768083088
+labor	labor-stoffwechsel.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/Atherosklerose.jpg?v=1722190405
+labor	labor-biohack.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/products/BioHack1080x1080.jpg?v=1679737318
+labor	labor-risikoprofil.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/products/CheckUpLabor1080x1080.jpg?v=1679737368
+
+# === Diagnostik (8 cards, mapping to existing Praxis detail pages) ===
+diagnostik	diag-sonographie.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/products/SonoAbdomen1080x1080.jpg?v=1679737045
+diagnostik	diag-echokardiographie.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/Herz42000x2000.jpg?v=1685212574
+diagnostik	diag-carotis.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/Halsgefaesse_m.jpg?v=1684404241
+diagnostik	diag-schilddruese.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/SD-Tumor.jpg?v=1684425118
+diagnostik	diag-belastungs-ekg.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/products/Herz11080x1080.jpg?v=1679737291
+diagnostik	diag-lungenfunktion.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/products/Lunge21080x1080.jpg?v=1679736966
+diagnostik	diag-tumorscreening.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/Lebertumor2.jpg?v=1684427013
+diagnostik	diag-prostata.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/Prostata.jpg?v=1684428079
+
+# === Diagnostik-Sub (S49b — additional cards for tumor-screening mini-hub) ===
+diagnostik	diag-pankreas.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/Pankreas.jpg?v=1685286492
+diagnostik	diag-niere.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/Niere.jpg?v=1684430318
+
+# === Leistungen (3 Bundle cross-brand cards C1) ===
+leistungen	leistung-komplett-check.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/products/KomplettCheck1080x1080.jpg?v=1679737655
+leistungen	leistung-body-check.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/products/BodyCheck1080x1080.jpg?v=1679737480
+leistungen	leistung-kardio-check.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/products/Herz1080x1080.jpg?v=1679737627
+
+# === Untersuchungen-Sub (S49d radikal, 2026-04-27) — additional Bundle/Spezial cards ===
+diagnostik	diag-fit-for-diving.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/products/Diving1080x1080.jpg?v=1679737508
+diagnostik	diag-eye-check.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/products/Auge1080x1080.jpg?v=1679737462
+diagnostik	diag-sono-check.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/products/SonoCheck1080x1080.jpg?v=1679737706
+diagnostik	diag-leber.jpg	https://cdn.shopify.com/s/files/1/0685/8906/0363/files/Lebertumor2.jpg?v=1684427013
