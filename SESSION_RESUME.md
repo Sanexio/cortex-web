@@ -84,7 +84,33 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 
 ## §1 Stand & Version
 
-- **Version:** `0.9.6` — Session 42 **P3a DE-Content-Vervollständigung Phase 1+2: 9 Stub-Pages mit Volltext (aus _content-archive/) + Header-Nav 7-Top-Level-Hierarchie in `inc/nav-data.php` + Footer-Legal um Cookie-Richtlinie ergänzt + Architektur-Entscheidung „Status quo PHP-Code für Nav/Footer/Stammdaten"** (2026-04-25, Cluster-Mini-02). Theme-HEAD `b2d805f` PXZ 2.7.36 (Hauptcommit `1760546`).
+- **Version:** `0.9.7` — Session 47 **Mid-Range-Reality-Check: T1–T8 fluid via `clamp()` + Header-Logo right-sized (296 → 96/120 px) + Wortmarke nur ≥1440 + 4 hard-coded Hero/MFA/Final-Buttons + Privacy-Hinweis ebenfalls clamp() + homepage.css Header-Duplikate entfernt (Pattern `single-source-ui-region` durchgezogen) + Lesetext-Container ≤960 px** (2026-04-27, Cluster-Mini-02 / Praxis-Mac via SSH). Theme-HEAD `501f9d5` PXZ **2.7.71**.
+
+### §1.0 Sessions S43–S47 Catch-Up
+
+S43–S46 fanden ohne Session-Resume-Update statt — nur git-log dokumentiert.
+Pflicht-Nachpflege beim nächsten Audit. Zusammenfassung aus Theme-Commits:
+
+| Session | Theme-Commit | Inhalt |
+|:---:|:---:|---|
+| S43 | `6214b33` | Home-Refactor (Sammel-Commit lange uncommitted) |
+| S44 | `9907b7f` + `e3e0631` | Location-Card SSoT + Nav „Hauptpraxis Grüneburgweg" (PXZ 2.7.51) |
+| S45 | `ff3720a` + `901b602` | Swipeable Room-Slider /zweigpraxis-bockenheimer/ (PXZ 2.7.52/53) |
+| S46 | `7653efa` + `2927f37` | Fullbleed-Slider + Homepage-Carousel + Mobile-Responsive + EN/FR/ES Nav-Parity (PXZ 2.7.63) |
+| **S47** | **`501f9d5`** | **Mid-Range-Reality-Check (PXZ 2.7.71)** — fluid clamp() für T1–T8 + alle Hard-Coded Buttons, Logo right-sized, Wortmarke nur ≥1440, Lesetext-Container ≤960 |
+
+- **Stand:** 2026-04-27 Ende S47:
+  - **Theme-Stand:** PXZ **2.7.36 → 2.7.71** in 5 Sessions. Heutiger Hauptcommit `501f9d5` (5 Files +157/-214 LoC).
+  - **Type-Scale fluid:** T1 Hero `clamp(40px, 5vw, 80px)` · T6 Body `clamp(17px, 1.7vw, 26px)` · alle T-Stufen analog. Mobile-Stufen-Shift-Block in tokens.css für T-Tokens entfernt (Buttons-Override bleibt).
+  - **Header-Reflow:** Logo 64/80/96/120 (statt 110/150/240/296) · Wortmarke nur ≥1440 sichtbar · Nav-List 1.05rem (statt 1.85rem) · CTA 17 px @1100, 18 px @1440 (statt fix 34) · Right-Side bleibt inline (statt column-stack)
+  - **homepage.css aufgeräumt:** Header-Duplikate (.pxz-nav-logo, .pxz-nav-logo-text, .pxz-nav-right, .pxz-nav-cta, .pxz-nav-lang, .pxz-lang) entfernt → einziger Source-of-Truth ist nav.css
+  - **Hard-Coded Hero/MFA/Final-Buttons + Privacy-Hinweis:** Alle auf clamp() umgestellt
+  - **Lesetext-Container:** `.pxz-page-content-inner` max-width 1140 → 960 px (Apple-/Stripe-Standard für 60–75 Zeichen pro Zeile)
+  - **Pre-Flight Session-Ende 47:** `validate.sh` 🟢 · `verify.sh` 🟢 · Sanitizer-Probe alle 5 Dateien im Budget · Probe `tools/probe-mid-range.mjs` bei 5 Viewports: 0 Overflow auf allen
+  - **Patterns + Tutorial neu:** `Nexus/_memory/patterns/mid-range-viewport-coverage.md` · `fluid-type-scale-clamp.md` · `Second Brain/30 Tutorials/Webentwicklung/Webdesign/27-fluid-type-scale-mid-range-coverage.md`
+  - **Akzeptanz:** AK-1 (kein Overflow) ✅ · AK-2 (Header ≤120 px) ⚠ Mid-Range OK / 145 bei ≥1440 (mit Wortmarke, akzeptiert) · AK-3 (Hero ≤56 px @1365) ⚠ 68 px (Spec-vw weicher gewählt, Dr. Stracke "passt") · AK-4 (Container ≤960) ✅ · AK-5 (verify.sh erweitern) ⏸ verschoben
+
+### Vorheriger Stand (zur Orientierung)
 
 - **Stand:** 2026-04-25 Ende S42:
   - **Theme-Stand:** PXZ **2.7.35 → 2.7.36** committed `1760546` (Hauptcommit, 2 Files +76/-23 LoC) + `b2d805f` (Versionsbump).
@@ -111,7 +137,9 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 | **S40-Folge-Iteration** | Footer/Loc/Footer-Logo ×4 | ✅ `7265c70` |
 | **S41 Dr.-Stracke-Polish + Re-Prio** | Header 1-Zeile, 9 Stubs, Reading-Width, Doctolib, Footer-Single-Source, Homepage-Texte | ✅ **`5e9bb22`** PXZ 2.7.35 |
 | **S42 P3a Phase 1+2** | 9 Stub-Volltexte (Archiv-Übernahme) + Header-Nav 7-Top-Level-Hierarchie + Footer-Cookie-Legal + WP-DB-Cleanup + Architektur-Entscheidung „Status quo PHP-Code" | ✅ **`1760546`+`b2d805f`** PXZ 2.7.36 |
-| **Praxis DE-Content P3a Phase 3** | Page-by-Page-Content-Review mit Dr. Stracke (Änderungswünsche umsetzen) | 🔴 startet S43 |
+| **S43–S46** | Home-Refactor + Location-Card SSoT + Room-Slider Zweigpraxis + Fullbleed-Slider + Homepage-Carousel + Mobile-Responsive + EN/FR/ES Nav-Parity | ✅ Theme-only (kein SESSION_RESUME-Update — nachzupflegen) PXZ 2.7.36→2.7.63 |
+| **S47 Mid-Range-Reality-Check** | Fluid clamp() für T1–T8 + Header-Reflow (Logo 296→96, Wortmarke ≥1440) + Hard-Coded Buttons fluid + Lesetext-Container 960 px + homepage.css Header-Duplikate entfernt + 2 Patterns + Tutorial 27 | ✅ **`501f9d5`** PXZ 2.7.71 |
+| **Praxis DE-Content P3a Phase 3** | Page-by-Page-Content-Review mit Dr. Stracke (Änderungswünsche umsetzen) | 🔴 noch offen |
 | **Praxis i18n P6** | Übersetzung aller Pages in EN/FR/ES (WPML) | 🔴 nach S43 |
 | **Praxis Funktionalität** | Forms (WPForms ersetzen), Doctolib-Integration, Cookie-Banner-Plugin, Kontaktformular, E-Mail-Versand | 🔴 nach i18n |
 
@@ -159,7 +187,80 @@ git -C ~/Cortex/projects/Juvantis/juvantis-web/theme rev-parse HEAD
 
 ---
 
-## §3 Letzte Session — Session 42, 2026-04-25 (P3a Phase 1+2: 9 Stub-Volltexte + Header-Nav-Hierarchie + Footer-Cookie + Architektur-Entscheidung „Status quo")
+## §3 Letzte Session — Session 47, 2026-04-27 (Mid-Range-Reality-Check)
+
+### Gerät
+**Cluster-Mini-02** (home-Mac M2) via SSH von Mac-Studio (praxis-studio).
+Dr. Stracke saß am Mac-Studio + Studio Display, Browser auf der Local-Site
+mit `innerWidth: 1365 px`, Claude Code per SSH am Home-Mac.
+
+### Auftrag
+Initial: „Projekt fortsetzen Cortex-Web". Während des Pre-Flight meldete
+Dr. Stracke einen Layout-Bruch im Header + „Body wirkt zu groß" — der
+ganze Sprint wurde zur S47 „Mid-Range-Reality-Check".
+
+### Verlauf
+
+**Phase 0 — Setup-Hürde:**
+Setup-Skript für Praxis-Mac-Browser-Zugriff auf Local-Site funktionierte
+nicht (scp scheiterte, weil Tailscale MagicDNS auf Mac-Studio nicht aktiv).
+Lösung: einzeiliger /etc/hosts-Eintrag ohne das Skript. Site lief sofort.
+
+**Phase 1 — Diagnose Header-Bug:**
+Probe bei 1365 × 879 zeigte: Logo 296 px (S46-Bump) + Wortmarke 370 px +
+Nav-Liste 1049 px + Lang 226 px = ~2200 px Mindestbreite. Header brach
+auf jedem Viewport unter 2200 px. SESSION_RESUME war auf S42-Stand fixiert
+(„7 Top-Level"), tatsächlich war Theme längst auf 5 Top-Level + PXZ 2.7.68.
+
+**Phase 2 — Spec-Freigabe:**
+Architekten-Modus: Spec mit AK-1 bis AK-5, drei Optionen für Mid-Range-
+Schwelle / Wortmarke / Hero-Type-Scale. Dr. Stracke wählte Option A in
+allen drei Punkten (1100 px / Wortmarke aus / clamp()-Hero).
+
+**Phase 3 — Umsetzung:**
+- `nav.css`: Logo 64/80/96/120 (statt 110/150/240/296), Wortmarke nur ≥1440, Nav-List kompakter (1.05rem statt 1.85rem), CTA 17–18 px (statt fix 34), Right-Side inline statt column-stack
+- `tokens.css`: T1–T8 alle als clamp() (vorher fix Desktop + 767px-Override für T1–T5)
+- `homepage.css`: Header-Block (Logo + Wortmarke + Right-Side + CTA + Lang) komplett entfernt — Pattern `single-source-ui-region` aus S38 endlich konsequent durchgezogen. Davor war der Block in homepage.css dupliziert und drift­ete bei jedem S46-Bump
+- 4 Hard-Coded Hero/MFA/Final-Buttons + Final-Privacy ebenfalls clamp()
+- `page.css`: `.pxz-page-content-inner` max-width 1140 → 960 px für Lesetext
+
+**Phase 4 — Selbstprüfung:**
+Probe bei 5 Viewports (1024 / 1280 / 1365 / 1440 / 1920): kein Overflow,
+Hero fluid 51 → 80, Body fluid 17 → 26, Privacy 18 → 32 (statt fix 46).
+
+### Pre-Flight-Metriken am Session-Ende 47
+- `validate.sh` — OK · `verify.sh` — VERIFY OK
+- Sanitizer `--probe`: alle 5 Dateien im Budget
+- HTTP-Sweep: nicht relaufen (Theme-CSS-only Änderung, keine Routes geändert)
+- Pending-Queues: 0 Fragen, 2 Anweisungen (langlaufend WV-001 / WV-002)
+
+### Working-Tree (Commit-Stand am Session-Ende 47)
+- **Theme** ✅ committed `501f9d5` (5 Files +157/-214 LoC) — PXZ 2.7.71
+- **Theme** 🟡 3 Files seit S43–S46 uncommitted (arzt.css / inc/homepage-data.php / template-homepage.php) — nicht von S47, nicht angetastet
+- **Cortex-Web** 🟡 SESSION_RESUME.md (dieses Update) — wird gleich committed
+- **Nexus** 🟡 2 neue Patterns + Tutorial 27 — werden gleich committed
+
+### Patterns + Memory + Tutorials (neu in Session 47)
+- **Pattern neu:** `Nexus/_memory/patterns/mid-range-viewport-coverage.md` — 5-Viewport-Probe-Pflicht (1024/1280/1365/1440/1920) statt nur 1440+430
+- **Pattern neu:** `Nexus/_memory/patterns/fluid-type-scale-clamp.md` — clamp() für T-Tokens, Faustregel für vw-Faktor, Anti-Patterns
+- **Tutorial neu:** `Second Brain/30 Tutorials/Webentwicklung/Webdesign/27-fluid-type-scale-mid-range-coverage.md` — komplett mit Glossar (Viewport, Retina, dpr, vw, Skalierung, Mid-Range, Stufen-Shift, Apple-HIG)
+
+### Nicht erledigt (bewusst)
+- **DESIGN_GUIDELINES §5.2 / §8.2 / §9.1** Update mit clamp()-Konvention — Spec-Block E offen
+- **`probe-mid-range.mjs` in `verify.sh` integrieren** — Spec-Block D offen (verify.sh ist alt, Cleanup-Aufwand größer als heute geplant)
+- **S43–S46-SESSION_RESUME-Lücke vollständig nachpflegen** — heute nur Catch-Up-Tabelle, keine §3-legacy-43..46-Blöcke
+- **3 Theme-Files uncommitted (arzt.css / homepage-data.php / template-homepage.php)** — gehören zu früheren Sessions, klären beim nächsten Sessionstart
+- **P3a Phase 3 Content-Review** — wartet weiter auf Dr. Stracke
+
+### Konsistenz-Auffälligkeiten (KON-001)
+- `sites/praxis-webseite/SESSION_RESUME.md` weiterhin veraltet seit S19
+- Tutorial „WP-CLI mit Local-by-Flywheel auf Mac" weiter offen
+
+## §3-legacy-42 Session 42 (verkürzt)
+
+S42 P3a Phase 1+2: 9 Stub-Pages mit Volltext (DB) + Header-Nav 7-Top-Level (in S46+ konsolidiert auf 5) + Footer-Cookie-Legal + WP-DB-Cleanup (53 alte Menü-Items aus term_id=5 gelöscht) + Architektur-Entscheidung „Status quo PHP-Code". Theme-Commits `1760546`+`b2d805f` PXZ 2.7.36. Pattern `theme-rendering-source-check.md`. Memory `feedback_praxis_nav_via_code.md`. HTTP-Sweep 54/54 = 200.
+
+## §3-legacy-42-detail Session 42 (Detail-Auszug)
 
 ### Gerät
 **Cluster-Mini-02** (home-Mac M2).
@@ -357,7 +458,21 @@ S38 Header-Variante-A + 2 Iterationen (Schrift 21 px bold, Homepage 4+3-Bug-Fix)
 
 ---
 
-## §5 Sofort-Status-Frage an Dr. Stracke — Session 43
+## §5 Sofort-Status-Frage an Dr. Stracke — Session 48
+
+> **S47 abgeschlossen** (Theme `501f9d5` PXZ 2.7.71). Header sauber bei Mid-Range-Viewports (1024/1280/1365/1440/1920) — kein Overflow mehr, Logo right-sized, Wortmarke ≥1440, Type-Scale fluid via clamp(), Lesetext-Container ≤960. Pattern `single-source-ui-region` (S38) endlich konsequent durchgezogen. Body bei 1365 jetzt 20 px statt 26 px, Hero 68 statt 80, Privacy-Hinweis 32 statt 46.
+>
+> **Vor S43-S46-Lücken-Doku + P3a Phase 3 Content-Review starten:**
+>
+> | | Front | Was passiert | Aufwand |
+> |---|---|---|---|
+> | **α** | **P3a Phase 3 Content-Review starten** (ursprünglicher Auftrag aus S42) | Page-Inventory + Walk-Through pro Page | 1 Session Vorbereitung + iterativ |
+> | **β** | **DESIGN_GUIDELINES §5.2/§8.2/§9.1 nachpflegen** + Spec-Block E + verify.sh erweitern (Block D) | Doku + Tooling-Cleanup | ~30 min |
+> | **γ** | **S43-S46 SESSION_RESUME-Catch-Up** vollständig schreiben (§3-legacy-43..46) | Pure Doku-Arbeit, anhand git log + Theme-Commits | ~45 min |
+> | **δ** | **3 uncommitted Theme-Files klären** (arzt.css/homepage-data.php/template-homepage.php) | Diff-Review, ggf. Sammel-Commit | ~15 min |
+> | ε | Andere Front (S2-Aufräum, Juvantis, etc.) | — | — |
+
+## §5-old Sofort-Status-Frage an Dr. Stracke — Session 43 (ARCHIV)
 
 > **S42 abgeschlossen** (Theme `b2d805f` PXZ 2.7.36, +76/-23 LoC). 9 Stubs mit Volltext live, Header-Nav 7-Top-Level + 49 Sub-Items, Footer-Cookie ergänzt, 54/54 HTTP 200. Architektur-Entscheidung „Status quo PHP-Code" verankert.
 >
@@ -409,7 +524,9 @@ Alle historischen Session-Logs unter `_archive/sessions/YYYY-MM/`.
 
 | Session | Datum | Thema | Archiv-Pfad |
 |:---:|---|---|---|
-| **42** | 2026-04-25 | **P3a Phase 1+2: 9 Stub-Pages mit Volltext aus `_content-archive/` (FAQ · Cookie · 4× Fragebögen · Impfen · Labor · Corona) + Header-Nav 7-Top-Level-Hierarchie in `inc/nav-data.php` (Praxis · Ärzte · Diagnostik · Leistungen · Service · Standorte · Kontakt + 49 Sub-Items) + Footer-Legal um Cookie-Richtlinie ergänzt (`inc/footer-data.php` 4 Sprachen) + WP-DB-Cleanup (53 unnötige Menü-Items aus term_id=5 gelöscht) + Architektur-Entscheidung „Status quo PHP-Code" verankert. HTTP-Sweep 54/54 = 200.** Theme-Commits `1760546` + `b2d805f` PXZ 2.7.36. Pattern neu: `theme-rendering-source-check.md`. Memory neu: `feedback_praxis_nav_via_code.md`. | §3 (aktuelle Session) in dieser Datei |
+| **47** | 2026-04-27 | **Mid-Range-Reality-Check: T1–T8 fluid via clamp() + Header-Reflow (Logo 296→96/120, Wortmarke nur ≥1440) + 4 hard-coded Buttons + Privacy-Hinweis ebenfalls clamp() + homepage.css Header-Duplikate entfernt + Lesetext-Container 960 px. Patterns neu: `mid-range-viewport-coverage.md`, `fluid-type-scale-clamp.md`. Tutorial 27 neu.** Theme `501f9d5` PXZ 2.7.71. | §3 (aktuelle Session) in dieser Datei |
+| **43–46** | 2026-04-25 → 26 | Home-Refactor (S43, `6214b33`) · Location-Card SSoT + Nav „Hauptpraxis Grüneburgweg" (S44, `9907b7f`+`e3e0631` PXZ 2.7.51) · Swipeable Room-Slider Zweigpraxis (S45, `ff3720a`+`901b602` PXZ 2.7.52/53) · Fullbleed-Slider + Homepage-Carousel + Aktuelles-Banner + Mobile-Responsive + EN/FR/ES Nav-Parity (S46, `7653efa`+`2927f37` PXZ 2.7.63). **SESSION_RESUME-Catch-Up offen — nur git-log dokumentiert.** | nur via Theme-`git log` (Catch-Up-Front γ in S48) |
+| 42 | 2026-04-25 | P3a Phase 1+2: 9 Stub-Pages mit Volltext + Header-Nav 7-Top-Level (in S46+ auf 5 konsolidiert) + Footer-Cookie + WP-DB-Cleanup + Architektur-Entscheidung „Status quo PHP-Code". Theme-Commits `1760546` + `b2d805f` PXZ 2.7.36. | §3-legacy-42 (verkürzt) in dieser Datei |
 | 41 | 2026-04-25 | Re-Prio „DE vor i18n" + Header-Rollback Flex + 9 DE-Slug-Stubs + 8 Mismatch-Redirects + Reading-Width 1,5× + Doctolib-Floating mittig + Footer-Single-Source-Fix + Homepage-Texte + Container-Cap-Fixes. Theme `5e9bb22` PXZ 2.7.35. | §3-legacy-41 (verkürzt) in dieser Datei |
 | 40 | 2026-04-24/25 | Apple Type-Scale (DS-1..DS-6): T1-T8 Tokens + Pill-Buttons + Body ×1.5 Option B + 11 Polish-Iterationen (Footer ×2/full-width, Homepage-Polish, Badges ×3, Footer-Logo ×4, Loc-Hours). Bundle-Commits `cc2a0e2` (Theme S39+S40-A) + `a4898ba` (Cortex-Web) + `7265c70` (Theme S40-B-Sammel-Commit). | §3-legacy-40 (verkürzt) in dieser Datei |
 | 39 | 2026-04-24 | Home-Polish (Hero-Bild Empfang · Sprachen-Stack · Content +25 %) + Type-Scale-Erkenntnis → Session-40-Trigger. S39-Edits in S40-Bundle-Commit integriert. | §3-legacy-39 (verkürzt) in dieser Datei |
