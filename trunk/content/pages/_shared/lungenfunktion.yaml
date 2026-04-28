@@ -3,22 +3,19 @@ site: shared
 slugs:
   praxis: lungenfunktion
   juvantis: lungenfunktion
-
 title:
   de: Lungenfunktion
   en: Lung function
-
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
-
 wp:
   page_template: template-detail-page.php
-  legacy_ids: [292]
-
+  legacy_ids:
+    - 292
 sections:
   - type: hero
     eyebrow:
@@ -26,17 +23,20 @@ sections:
     heading:
       de: Lungenfunktion (Spirometrie)
     lead:
-      de: Vitalkapazität, FEV1 und Atemwegsparameter — die Lunge im Funktionstest.
-
+      de: Lungenfunktion (Spirometrie) — schnelle Beurteilung Ihrer Atemwege und des Lungenvolumens.
+    image: shopify-mirror://detail/lungenfunktion-hero.jpg
   - type: body
-    body_md:
-      de: |
-        Mit der Spirometrie messen wir Vitalkapazität, Einsekundenkapazität (FEV1) und weitere Atemwegsparameter. Sie atmen über ein Mundstück in ein Gerät, eine Nasenklammer sorgt dafür, dass alles über den Mund strömt. Auf unsere Anweisung führen Sie verschiedene Atem-Manöver aus — ruhig, tief, schnell, kräftig.
+    body_html:
+      de: |-
+        <p>Mit jedem Atemzug nehmen wir etwa 0,5 Liter Luft in die Lungen auf — rund 10 Liter pro Minute, 14.400 Liter am Tag und über fünf Millionen Liter im Jahr. Damit ist die Lunge das Organ, das am direktesten mit der Außenwelt in Kontakt steht. Die Lungen enthalten bis zu 500 Millionen Lungenbläschen mit einer Gesamtoberfläche von etwa 70 Quadratmetern.</p>
 
-        Die Untersuchung ist schmerzfrei und dauert etwa 10–15 Minuten. Sie liefert Hinweise auf Atemwegserkrankungen wie Asthma, COPD oder Lungenfibrose und ist Bestandteil der Vorsorge bei Rauchern oder Beschwerden wie Atemnot und chronischem Husten.
+        <p>Die Lunge kann durch Schadstoffe, angeborene Veränderungen oder Infektionen geschädigt werden. Mit der Spirometrie lässt sich die Lungenfunktion einfach und schmerzfrei beurteilen.</p>
 
-        Im Anschluss besprechen wir die Werte persönlich mit Ihnen — keine reinen PDF-Befunde ohne Erklärung.
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
+        <p>Wir setzen Ihnen zunächst eine Nasenklammer auf, da die Messung der Luftströme ausschließlich über den Mund erfolgt. Sie atmen anschließend nach Anleitung über ein Mundstück und führen vorgegebene Atemmanöver durch.</p>
+
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
       de: Termin für die Lungenfunktion?

@@ -1,29 +1,21 @@
-# Echokardiographie Detail-Page — Praxis-Webseite
-# Schema: trunk/schema/page.schema.json
-# Generiert: S49 2026-04-27 (Phase 3 — Detail-Pages)
-# Quelle: Sanexio Produkt ultraschall-echokardiographie (Texte HWG-bereinigt, Sie-Form)
-
 id: echokardiographie
 site: shared
 slugs:
   praxis: echokardiographie
   juvantis: echokardiographie
-
 title:
   de: Echokardiographie
   en: Echocardiography
-
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
-
 wp:
   page_template: template-detail-page.php
-  legacy_ids: [351]
-
+  legacy_ids:
+    - 351
 sections:
   - type: hero
     eyebrow:
@@ -31,17 +23,20 @@ sections:
     heading:
       de: Echokardiographie
     lead:
-      de: Ultraschall des Herzens — Pumpfunktion, Klappen, Wandbewegungen in Echtzeit beurteilen.
-
+      de: Echokardiographie — das Herz in Echtzeit beim Pumpen sehen.
+    image: shopify-mirror://detail/echokardiographie-hero.jpg
   - type: body
-    body_md:
-      de: |
-        Mit der Echokardiographie beobachten wir Ihr Herz in Echtzeit bei der Arbeit. Erfasst werden Pumpfunktion, Wandbewegungen, Herzklappen und mögliche strukturelle Veränderungen — vieles davon verursacht im Alltag keine Beschwerden, ist aber für die Risikoeinschätzung relevant.
+    body_html:
+      de: |-
+        <p>Das Herz — ein biomechanisches Wunder aus elektrischen Impulsen, Muskelkontraktionen und einer ausgefeilten Ventiltechnik. Bei jedem Herzschlag werden etwa 70 Milliliter Blut aus dem Herzen gepumpt. Mit rund 100.000 Schlägen pro Tag bewegt das Herz durchschnittlich etwa 7.000 Liter Blut täglich durch den Körper. Der dabei erzeugte Blutdruck liegt bei gesunden Erwachsenen zwischen 100 und 140 mmHg und sorgt dafür, dass das Blut die etwa 100.000 Kilometer langen Blutgefäße erreicht und durchströmt.</p>
 
-        Die Untersuchung ist schmerzfrei und dauert etwa 20–30 Minuten. Sie liegen entspannt in Linksseitenlage, wir setzen einen Ultraschallkopf an mehreren Stellen am Brustkorb an. Eine besondere Vorbereitung ist nicht nötig.
+        <p>Mit der Echokardiographie können wir das Herz in Echtzeit bei seiner Arbeit beobachten. Das Verfahren ermöglicht die Erkennung von Wandbewegungsstörungen, Klappenfehlern und anderen strukturellen Veränderungen, die im Alltag nicht zwingend mit Beschwerden einhergehen müssen.</p>
 
-        Im Anschluss besprechen wir die Ergebnisse persönlich mit Ihnen — auffällige Befunde ordnen wir gemeinsam ein und besprechen, ob weitere Schritte sinnvoll sind.
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
+        <p>Für diese Untersuchung legen Sie sich in Linksseitenlage. Wir führen die Untersuchung mit einem speziellen Ultraschallkopf durch. Eine Vorbereitung Ihrerseits ist nicht erforderlich.</p>
+
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
       de: Termin für eine Echokardiographie?

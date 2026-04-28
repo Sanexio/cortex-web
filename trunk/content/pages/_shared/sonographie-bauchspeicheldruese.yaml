@@ -14,28 +14,29 @@ views:
 wp:
   page_template: template-detail-page.php
 sections:
-- type: hero
-  eyebrow:
-    de: Untersuchungen · Sonographie
-  heading:
-    de: Sonographie der Bauchspeicheldrüse
-  lead:
-    de: Ultraschall der Bauchspeicheldrüse — gezielte Beurteilung eines kleinen, aber zentralen Organs.
-- type: body
-  body_md:
-    de: 'Obwohl sie nur 70–100 Gramm wiegt, ist die Bauchspeicheldrüse für Verdauung und Zuckerstoffwechsel zentral. Sie liegt in der Mitte des Körpers, eng verbunden mit Magen, Leber, Darm und Milz. Eine
-      Funktionsstörung kann zu Diabetes oder Verdauungsbeschwerden führen.
+  - type: hero
+    eyebrow:
+      de: Untersuchungen · Sonographie
+    heading:
+      de: Sonographie der Bauchspeicheldrüse
+    lead:
+      de: Ultraschall der Bauchspeicheldrüse — frühe Veränderungen erkennen.
+    image: shopify-mirror://detail/sonographie-bauchspeicheldruese-hero.jpg
+  - type: body
+    body_html:
+      de: |-
+        <p>Obwohl sie nur 70 bis 100 Gramm wiegt, ist die Bauchspeicheldrüse (Pankreas) wichtig für Verdauung und Zuckerstoffwechsel. Sie liegt in der Mitte des Oberbauchs und steht in engem Kontakt zu Magen, Leber, Darm und Milz.</p>
 
+        <p>Funktionsstörungen können zu Diabetes oder einer gestörten Verdauung mit anhaltendem Durchfall führen. Tumore der Bauchspeicheldrüse sind im Frühstadium oft schwer zu erkennen — der Ultraschall ist eine wichtige Untersuchung zur Beurteilung.</p>
 
-      Tumore der Bauchspeicheldrüse sind im Frühstadium oft schwer zu erkennen, weil das Organ versteckt liegt und sich Veränderungen schnell auf benachbarte Strukturen ausbreiten können. Eine gezielte
-      Sonographie kann frühe Hinweise liefern.
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
+        <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Bauchspeicheldrüse und der angrenzenden Organe durch. Es ist günstig, nüchtern zur Untersuchung zu kommen.</p>
 
-      Wie wir vorgehen: Sie liegen entspannt auf der Liege, wir untersuchen die Bauchspeicheldrüse und die angrenzenden Organe per Ultraschall. Bitte kommen Sie nüchtern. Im Anschluss besprechen wir den
-      Befund persönlich mit Ihnen.'
-- type: cta-banner
-  heading:
-    de: Termin für Sonographie der Bauchspeicheldrüse?
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+  - type: cta-banner
+    heading:
+      de: Termin für Sonographie der Bauchspeicheldrüse?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

@@ -14,24 +14,43 @@ views:
 wp:
   page_template: template-detail-page.php
 sections:
-- type: hero
-  eyebrow:
-    de: Untersuchungen · Vorsorge
-  heading:
-    de: Sono Check
-  lead:
-    de: Umfassende Ultraschall-Vorsorge — Schilddrüse, Halsgefäße, Herz und alle Bauchorgane in einer Sitzung.
-- type: body
-  body_md:
-    de: 'Der Sono Check ist ein umfassendes Sonographie-Programm. Wir untersuchen in einer Sitzung folgende Bereiche: Schilddrüse (verdächtige Knoten?), Halsgefäße (Verkalkung?), Herz (Pumpfunktion und
-      Klappenstrukturen), Milz (Größe und Beschaffenheit), Nieren (Stau, Zysten, Tumore), Leber (Verfettung oder Fibrose?), Gallenwege (Steine oder Stau?), Bauchspeicheldrüse (Zysten oder Raumforderungen),
-      Darm (Entzündungszeichen?), Harnblase und Prostata bzw. Uterus (Vergrößerungen oder Auffälligkeiten) sowie Becken- und Beingefäße (Verkalkungen?).
+  - type: hero
+    eyebrow:
+      de: Untersuchungen · Vorsorge
+    heading:
+      de: Sono Check
+    lead:
+      de: Sono-Check — alle wichtigen Organe in einer Ultraschalluntersuchung.
+    image: shopify-mirror://detail/sono-check-hero.jpg
+  - type: body
+    body_html:
+      de: |-
+        <p>Beim Sono-Check beurteilen wir in einer einzigen Untersuchung alle wichtigen inneren Organe. Wir prüfen unter anderem:</p>
 
+        <ul>
+        <li><strong>Schilddrüse</strong> — Knoten und Größenveränderungen</li>
+        <li><strong>Halsgefäße</strong> — Hinweise auf Verkalkungen</li>
+        <li><strong>Herz</strong> — Pumpfunktion und strukturelle Veränderungen</li>
+        <li><strong>Milz</strong> — Größe und Raumforderungen</li>
+        <li><strong>Nieren</strong> — Harnstau, Zysten oder Raumforderungen</li>
+        <li><strong>Leber</strong> — Fett- und Strukturveränderungen</li>
+        <li><strong>Gallenwege</strong> — Gallensteine, Rückstau</li>
+        <li><strong>Bauchspeicheldrüse</strong> — Zysten oder Raumforderungen</li>
+        <li><strong>Darm</strong> — Hinweise auf Entzündungsveränderungen</li>
+        <li><strong>Harnblase</strong> — Hinweise auf Polypen</li>
+        <li><strong>Prostata</strong> — Größe und Raumforderungen</li>
+        <li><strong>Uterus</strong> — Myome und andere Veränderungen</li>
+        <li><strong>Becken- und Beingefäße</strong> — Hinweise auf Verkalkungen</li>
+        </ul>
 
-      Wie wir vorgehen: Sie liegen entspannt auf der Liege, die Untersuchung dauert etwa 45 Minuten. Bitte kommen Sie nüchtern. Im Anschluss besprechen wir die Befunde persönlich mit Ihnen.'
-- type: cta-banner
-  heading:
-    de: Termin für Sono Check?
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
+
+        <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Organe durch. Es ist günstig, nüchtern zur Untersuchung zu kommen. Die Untersuchung dauert etwa 45 Minuten.</p>
+
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+  - type: cta-banner
+    heading:
+      de: Termin für Sono Check?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

@@ -14,27 +14,36 @@ views:
 wp:
   page_template: template-detail-page.php
 sections:
-- type: hero
-  eyebrow:
-    de: Labor · Risiko
-  heading:
-    de: Risikoprofil
-  lead:
-    de: Strukturierte Risiko-Einschätzung für Herz-Kreislauf und Stoffwechsel.
-- type: body
-  body_md:
-    de: 'Das Risikoprofil bündelt zentrale Marker, die für die Einschätzung von Herz-Kreislauf- und Stoffwechsel-Risiko relevant sind — ein orientierender Überblick über viele Körperfunktionen mit einer
-      einzigen Blutentnahme.
+  - type: hero
+    eyebrow:
+      de: Labor · Risiko
+    heading:
+      de: Risikoprofil
+    lead:
+      de: Risikoprofil — orientierender Laborüberblick zu Stoffwechsel, Leber und Niere.
+    image: shopify-mirror://detail/labor-risikoprofil-hero.jpg
+  - type: body
+    body_html:
+      de: |-
+        <p>Mit dem Laborprofil <strong>Risikoprofil</strong> erhalten Sie mit nur einem Piks eine orientierende Übersicht über zentrale Stoffwechsel- und Organparameter — Hinweise auf Veränderungen, die im Alltag oft nicht spürbar sind.</p>
 
+        <h2>Wir analysieren folgende Parameter:</h2>
 
-      Analysierte Parameter: Fettwerte (Triglyzeride, Cholesterin Gesamt, LDL, HDL), HbA1c (Langzeitblutzucker), Kreatinin (Nierenfunktion), GOT, GPT und Gamma-GT (Leberfunktion), Harnsäure (Stoffwechsel)
-      sowie ein Blutbild mit Differenzierung der weißen Blutzellen.
+        <ul>
+        <li>Fettwerte: Triglyzeride, Gesamtcholesterin, LDL, HDL</li>
+        <li>HbA1c (Langzeitblutzucker)</li>
+        <li>Kreatinin (Nierenfunktion)</li>
+        <li>Leberenzyme: GOT, GPT, Gamma-GT</li>
+        <li>Harnsäure</li>
+        <li>Blutbild mit Differenzierung der weißen Blutzellen</li>
+        </ul>
 
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
-      Im Anschluss besprechen wir die Werte persönlich mit Ihnen.'
-- type: cta-banner
-  heading:
-    de: Termin für Risikoprofil?
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+        <p>Wir nehmen Ihnen Blut ab und bestimmen die genannten Parameter im Labor. Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+  - type: cta-banner
+    heading:
+      de: Termin für Risikoprofil?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

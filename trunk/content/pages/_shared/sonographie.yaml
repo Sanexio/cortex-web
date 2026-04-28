@@ -3,22 +3,19 @@ site: shared
 slugs:
   praxis: sonographie
   juvantis: sonographie
-
 title:
   de: Sonographie
   en: Ultrasound
-
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
-
 wp:
   page_template: template-detail-page.php
-  legacy_ids: [277]
-
+  legacy_ids:
+    - 277
 sections:
   - type: hero
     eyebrow:
@@ -26,19 +23,31 @@ sections:
     heading:
       de: Sonographie
     lead:
-      de: Ultraschall ist unsere wichtigste strahlungsfreie Bildgebung — direkt in der Praxis, ohne Wartezeit auf ein Radiologie-Institut.
-
+      de: Sonographie des Bauchraums — alle wichtigen Organe in einer Untersuchung.
+    image: shopify-mirror://detail/sonographie-hero.jpg
   - type: body
     heading:
       de: Sonographie der Bauchorgane
-    body_md:
-      de: |
-        In der Sonographie der Bauchorgane untersuchen wir Leber, Gallenwege, Bauchspeicheldrüse, Milz, Nieren und Harnwege sowie ggf. Aortenstrukturen und Lymphknoten. Hochauflösende Ultraschallgeräte erlauben uns eine differenzierte Beurteilung von Organgröße, Struktur, Gefäßversorgung und auffälligen Raumforderungen.
+    body_html:
+      de: |-
+        <p>Bei der Sonographie des Bauchraums beurteilen wir alle wichtigen inneren Organe in einer einzigen Untersuchung — schmerzfrei, strahlenfrei, in etwa 45 Minuten.</p>
 
-        Die Untersuchung dauert etwa 30–45 Minuten und ist schmerzfrei. Bitte kommen Sie nüchtern (mindestens 4 Stunden ohne Essen, Wasser ist erlaubt) — die Bauchspeicheldrüse und Gallenblase sind dann besser beurteilbar.
+        <p>Was wir uns ansehen:</p>
 
-        Im Anschluss besprechen wir die Befunde persönlich mit Ihnen.
+        <ul>
+        <li><strong>Leber</strong> — ein Organ, das selbst nach Verlust von 75 Prozent seiner Substanz innerhalb von Monaten regenerieren kann.</li>
+        <li><strong>Nieren</strong> — filtern jährlich bis zu 55.000 Liter Blut.</li>
+        <li><strong>Milz</strong> — funktioniert wie der Ölfilter des Körpers; Veränderungen weisen auf Erkrankungen des Blutes oder Lymphsystems hin.</li>
+        <li><strong>Bauchspeicheldrüse</strong> — nur 100 Gramm schwer, aber zentral für Verdauung und Zuckerstoffwechsel.</li>
+        <li><strong>Darm</strong> — etwa 7 Meter lang, mit Wänden von wenigen Millimetern Dicke und einem reichen Mikrobiom.</li>
+        <li>Gallenblase und Gallenwege, Harnblase, Prostata bzw. Uterus, Becken- und Beingefäße.</li>
+        </ul>
 
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
+
+        <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Organe durch. Es ist günstig, nüchtern zur Untersuchung zu kommen. Die Untersuchung dauert etwa 45 Minuten.</p>
+
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: bento-grid
     heading:
       de: Weitere Sonographie-Untersuchungen
@@ -50,7 +59,6 @@ sections:
           de: Knoten, Zysten und Größenveränderungen sichtbar machen.
         image: shopify-mirror://diagnostik/diag-schilddruese.jpg
         href: /sonographie/schilddruese/
-
       - id: beingefaesse
         title:
           de: Gefäß-Sonographie der Beine
@@ -58,7 +66,6 @@ sections:
           de: Thrombosen, Krampfadern und arterielle Durchblutungsstörungen direkt sichtbar.
         image: shopify-mirror://diagnostik/diag-belastungs-ekg.jpg
         href: /sonographie/beingefaesse/
-
       - id: echokardiographie
         title:
           de: Echokardiographie
@@ -66,7 +73,6 @@ sections:
           de: Ultraschall des Herzens — Pumpfunktion, Klappen, Wandbewegungen.
         image: shopify-mirror://diagnostik/diag-echokardiographie.jpg
         href: /echokardiographie/
-
       - id: carotis
         title:
           de: Carotis-Duplex
@@ -74,7 +80,6 @@ sections:
           de: Halsschlagadern — frühe Hinweise auf Gefäßveränderungen.
         image: shopify-mirror://diagnostik/diag-carotis.jpg
         href: /carotis-duplex/
-
   - type: cta-banner
     heading:
       de: Welche Sonographie passt zu Ihnen?

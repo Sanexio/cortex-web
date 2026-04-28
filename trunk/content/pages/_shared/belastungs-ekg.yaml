@@ -3,22 +3,19 @@ site: shared
 slugs:
   praxis: belastungs-ekg
   juvantis: belastungs-ekg
-
 title:
   de: Belastungs-EKG
   en: Exercise ECG
-
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
-
 wp:
   page_template: template-detail-page.php
-  legacy_ids: [289]
-
+  legacy_ids:
+    - 289
 sections:
   - type: hero
     eyebrow:
@@ -26,17 +23,18 @@ sections:
     heading:
       de: Belastungs-EKG (Ergometrie)
     lead:
-      de: Wie reagiert Ihr Herz unter Belastung — EKG, Blutdruck und Sauerstoffsättigung im Verlauf.
-
+      de: Belastungs-EKG — die Belastungsfähigkeit Ihres Herzens unter kontrollierten Bedingungen prüfen.
+    image: shopify-mirror://detail/belastungs-ekg-hero.jpg
   - type: body
-    body_md:
-      de: |
-        Beim Belastungs-EKG (Ergometrie) zeichnen wir EKG, Blutdruck und Sauerstoffsättigung auf, während Sie auf einem Standfahrrad in zwei-Minuten-Stufen die Wattzahl erhöhen. Veränderungen, die in Ruhe nicht sichtbar sind, lassen sich so oft erkennen — etwa Durchblutungsstörungen der Herzkranzgefäße oder belastungsabhängige Rhythmusstörungen.
+    body_html:
+      de: |-
+        <p>Das Belastungs-EKG (Ergometrie) prüft die Belastungsfähigkeit Ihres Herzens. Während der Untersuchung kann das Herz bis zu dreimal pro Sekunde schlagen und das Blut durch das gesamte Gefäßsystem von rund 100.000 Kilometern Länge pumpen.</p>
 
-        Die Untersuchung dauert etwa 20–30 Minuten. Während der Belastung wird Ihr EKG durch eine ärztliche Kollegin oder einen Kollegen telemetrisch überwacht — bei Auffälligkeiten greifen wir sofort ein.
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
-        Bitte bringen Sie bequeme Kleidung und Sportschuhe mit. Eine Vorbereitung ist sonst nicht nötig.
+        <p>Sie fahren auf einem Ergometer (stationäres Fahrrad). Alle zwei Minuten erhöhen wir die Wattzahl. Während der gesamten Untersuchung schreiben wir ein EKG und überwachen Blutdruck und Sauerstoffsättigung. Über Telemonitoring wird das EKG durchgehend von einer Ärztin oder einem Arzt überwacht.</p>
 
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
       de: Termin für ein Belastungs-EKG?

@@ -14,27 +14,27 @@ views:
 wp:
   page_template: template-detail-page.php
 sections:
-- type: hero
-  eyebrow:
-    de: Labor · Stoffwechsel
-  heading:
-    de: Stoffwechsel
-  lead:
-    de: Fett-, Zucker- und Harnsäurestoffwechsel im Überblick.
-- type: body
-  body_md:
-    de: 'Verkalkungen der Gefäße sind eine Hauptursache für Herz-Kreislauf-Erkrankungen, die in den Industrienationen die häufigste Todesursache darstellen. Ein wesentlicher Faktor sind erhöhte Fett- und
-      Zuckerwerte im Blut.
+  - type: hero
+    eyebrow:
+      de: Labor · Stoffwechsel
+    heading:
+      de: Stoffwechsel
+    lead:
+      de: Stoffwechselprofil — Fett- und Zuckerstoffwechsel im Blick.
+    image: shopify-mirror://detail/labor-stoffwechsel-hero.jpg
+  - type: body
+    body_html:
+      de: |-
+        <p>Veränderungen des Fett- und Zuckerstoffwechsels gehören zu den wichtigsten beeinflussbaren Risikofaktoren für Herz-Kreislauf-Erkrankungen. Mit dem Laborprofil <strong>Stoffwechsel</strong> beurteilen wir, ob bei Ihnen Hinweise auf eine Fett- oder Zuckerstoffwechselveränderung vorliegen, und bestimmen zusätzlich einen Marker für das Gicht-Risiko.</p>
 
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
-      Mit dem Stoffwechsel-Profil prüfen wir, ob bei Ihnen eine Fettstoffwechsel- oder Zuckerstoffwechselstörung vorliegt. Gleichzeitig bestimmen wir Marker für das Risiko einer Gicht. Analysierte Parameter:
-      Fettwerte (Triglyzeride, Gesamt-Cholesterin, LDL, HDL), HbA1c (Langzeitblutzucker) und Harnsäure (Gicht-Disposition).
+        <p>Wir nehmen Ihnen Blut ab und bestimmen folgende Werte: Fettwerte (Triglyzeride, Gesamt-Cholesterin, LDL, HDL), HbA1c (Langzeitblutzucker), Harnsäure.</p>
 
-
-      Im Anschluss besprechen wir die Werte persönlich mit Ihnen.'
-- type: cta-banner
-  heading:
-    de: Termin für Stoffwechsel?
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+  - type: cta-banner
+    heading:
+      de: Termin für Stoffwechsel?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

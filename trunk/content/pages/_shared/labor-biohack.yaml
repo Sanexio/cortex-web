@@ -14,26 +14,23 @@ views:
 wp:
   page_template: template-detail-page.php
 sections:
-- type: hero
-  eyebrow:
-    de: Labor · Genetik
-  heading:
-    de: BioHack — Genetische Beratung
-  lead:
-    de: Beratung und Bluttest für ein genetisches Risikoprofil.
-- type: body
-  body_md:
-    de: 'Die genetische Beratung richtet sich an Personen, die ihr individuelles Risikoprofil besser kennenlernen wollen — als Grundlage für eine personalisierte Vorsorge-Strategie.
+  - type: hero
+    eyebrow:
+      de: Labor · Genetik
+    heading:
+      de: BioHack — Genetische Beratung
+    lead:
+      de: BioHack — Genetische Beratung mit individueller Risiko-Einschätzung.
+    image: shopify-mirror://detail/labor-biohack-hero.png
+  - type: body
+    body_html:
+      de: |-
+        <p>Bei der genetischen Beratung sprechen wir mit Ihnen über die Möglichkeiten und Grenzen genetischer Tests, ordnen vorhandene Befunde ein und unterstützen Sie bei der Entscheidung, ob weiterführende Untersuchungen sinnvoll sind.</p>
 
-
-      Wie wir vorgehen: In einem ärztlichen Vorgespräch klären wir Ablauf und mögliche zu bestimmende Laborwerte mit Ihnen. Im Anschluss erfolgt die Blutabnahme. Das Ergebnis senden wir Ihnen per E-Mail
-      als PDF zu.
-
-
-      Hinweis: Aufklärung und Blutentnahme erfolgen bei uns. Die Auswertung der genetischen Parameter erfolgt durch ein spezialisiertes Labor.'
-- type: cta-banner
-  heading:
-    de: Termin für BioHack — Genetische Beratung?
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+        <p>Zum Abschluss der Beratung erhalten Sie eine schriftliche Zusammenfassung.</p>
+  - type: cta-banner
+    heading:
+      de: Termin für BioHack — Genetische Beratung?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

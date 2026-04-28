@@ -14,24 +14,29 @@ views:
 wp:
   page_template: template-detail-page.php
 sections:
-- type: hero
-  eyebrow:
-    de: Untersuchungen · Vorsorge
-  heading:
-    de: Kardio Check
-  lead:
-    de: Strukturierte Herz-Kreislauf-Vorsorge — Herz unter Belastung beurteilt.
-- type: body
-  body_md:
-    de: 'Das menschliche Herz schlägt durchschnittlich 70-mal pro Minute, also über 100.000 Mal am Tag. Pro Minute pumpt es etwa fünf Liter Blut, unter Belastung bis zu 30 Liter. Der Kardio Check untersucht
-      Ihr Herz-Kreislauf-System gezielt unter Belastung.
+  - type: hero
+    eyebrow:
+      de: Untersuchungen · Vorsorge
+    heading:
+      de: Kardio Check
+    lead:
+      de: Kardio-Check — strukturierte Beurteilung von Herz und Lunge in einer Untersuchung.
+    image: shopify-mirror://detail/kardio-check-hero.jpg
+  - type: body
+    body_html:
+      de: |-
+        <p>Das Herz schlägt im Durchschnitt etwa 70-mal pro Minute — über 100.000-mal am Tag und mehr als 36 Millionen-mal im Jahr. Es pumpt rund fünf Liter Blut pro Minute, was über 7.000 Liter am Tag entspricht. Unter Belastung kann ein gesundes Herz bis zu 30 Liter pro Minute pumpen.</p>
 
+        <p>Beim Kardio-Check beurteilen wir Herz und Lunge in einer strukturierten Untersuchung — sowohl in Ruhe als auch unter kontrollierter Belastung.</p>
 
-      Wie wir vorgehen: Zunächst eine klinische Untersuchung mit Abhören von Herz und Lunge, dann eine Echokardiographie (Herzultraschall) zur Beurteilung von Pumpfunktion, Klappen und Wandbewegung, anschließend
-      eine Ergometrie (Belastungs-EKG) und schließlich eine Lungenfunktion. Im Anschluss besprechen wir die Befunde persönlich mit Ihnen.'
-- type: cta-banner
-  heading:
-    de: Termin für Kardio Check?
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
+
+        <p>Wir beginnen mit einer klinischen Untersuchung — Herz und Lunge werden abgehört. Anschließend führen wir einen Herzultraschall (Echokardiographie) durch. Es folgen ein Belastungs-EKG (Ergometrie) sowie eine Lungenfunktion (Spirometrie).</p>
+
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+  - type: cta-banner
+    heading:
+      de: Termin für Kardio Check?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

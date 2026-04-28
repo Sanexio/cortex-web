@@ -14,27 +14,36 @@ views:
 wp:
   page_template: template-detail-page.php
 sections:
-- type: hero
-  eyebrow:
-    de: Labor · Status
-  heading:
-    de: Status Prevent
-  lead:
-    de: Predictive Health Readout — präventives Screening, das Veränderungen frühzeitig sichtbar macht.
-- type: body
-  body_md:
-    de: 'Status Prevent ist das umfassendste Status-Profil. Es bildet Prozesse ab, die im Alltag nicht spürbar sind, aber viel über Ihre Gesundheit aussagen können — Veränderungen werden sichtbar, bevor
-      sie zum Symptom werden.
+  - type: hero
+    eyebrow:
+      de: Labor · Status
+    heading:
+      de: Status Prevent
+    lead:
+      de: 'Labor Status: Prevent — strukturierter Laborüberblick zur frühzeitigen Orientierung.'
+    image: shopify-mirror://detail/labor-status-prevent-hero.png
+  - type: body
+    body_html:
+      de: |-
+        <p>Mit dem Laborprofil <strong>Status: Prevent</strong> erhalten Sie einen strukturierten Einblick in zentrale Stoffwechsel- und Organparameter. Der Überblick kann hilfreich sein, um Veränderungen früh sichtbar zu machen — bevor sich klinische Beschwerden zeigen.</p>
 
+        <h2>Wir analysieren folgende Parameter:</h2>
 
-      Analysierte Parameter: Fettwerte, Langzeitblutzucker und Harnsäure; Nierenwerte mit Natrium und Kalium; Leberwerte einschließlich Lipase und LDH; Gesamteiweiß mit Elektrophorese und Immunglobulinen;
-      Blutbild mit Differenzierung; Herzinsuffizienzmarker und Muskelenzyme; Schilddrüsenwert TSH; CRP als Entzündungsmarker.
+        <ul>
+        <li>Fettwerte sowie Langzeitblutzucker und Harnsäure</li>
+        <li>Nierenwerte mit Natrium und Kalium</li>
+        <li>Leberwerte mit Lipase und LDH</li>
+        <li>Gesamteiweiß mit Elektrophorese inklusive Immunglobulinen</li>
+        <li>Blutbild mit Differenzierung der weißen Blutzellen</li>
+        <li>Herzinsuffizienzmarker und Muskelenzyme</li>
+        <li>Schilddrüsenwert TSH</li>
+        <li>CRP als Entzündungsmarker</li>
+        </ul>
 
-
-      Im Anschluss besprechen wir die Werte persönlich mit Ihnen.'
-- type: cta-banner
-  heading:
-    de: Termin für Status Prevent?
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+  - type: cta-banner
+    heading:
+      de: Termin für Status Prevent?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

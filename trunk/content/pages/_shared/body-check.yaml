@@ -14,26 +14,27 @@ views:
 wp:
   page_template: template-detail-page.php
 sections:
-- type: hero
-  eyebrow:
-    de: Untersuchungen · Vorsorge
-  heading:
-    de: Body Check
-  lead:
-    de: Ein strukturierter Vorsorge-Check zur Standortbestimmung Ihres aktuellen Gesundheitszustandes.
-- type: body
-  body_md:
-    de: 'Der Body Check ist eine kompakte Standortbestimmung Ihres Gesundheitszustandes — geeignet sowohl für sportlich aktive Menschen als auch für eine allgemeine Vorsorge.
+  - type: hero
+    eyebrow:
+      de: Untersuchungen · Vorsorge
+    heading:
+      de: Body Check
+    lead:
+      de: Body-Check — strukturierte ärztliche Bestandsaufnahme Ihres aktuellen Gesundheitszustandes.
+    image: shopify-mirror://detail/body-check-hero.jpg
+  - type: body
+    body_html:
+      de: |-
+        <p>Der Body-Check ist eine strukturierte ärztliche Bestandsaufnahme Ihres aktuellen Gesundheitszustandes. Geeignet sowohl für sportlich aktive Patientinnen und Patienten als auch zur Vorsorge.</p>
 
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
-      Wie wir vorgehen: An diesem Termin führen wir eine ärztliche Beratung sowie eine vollständige klinische Untersuchung inklusive 12-Kanal-EKG und Urintest durch. Bitte bringen Sie Ihren Impfausweis
-      mit — wir prüfen bei dieser Gelegenheit auch Ihren Impfstatus.
+        <p>Eine Ärztin oder ein Arzt führt eine ausführliche Anamnese (Gesundheitsgespräch) sowie eine vollständige klinische Untersuchung durch. Dazu gehört ein 12-Kanal-EKG sowie ein Urintest. Bringen Sie zu diesem Termin auch Ihren Impfpass mit — wir prüfen den Impfstatus gleich mit.</p>
 
-
-      Im Anschluss besprechen wir die Befunde persönlich mit Ihnen.'
-- type: cta-banner
-  heading:
-    de: Termin für Body Check?
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+  - type: cta-banner
+    heading:
+      de: Termin für Body Check?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

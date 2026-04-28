@@ -14,26 +14,34 @@ views:
 wp:
   page_template: template-detail-page.php
 sections:
-- type: hero
-  eyebrow:
-    de: Untersuchungen · Vorsorge
-  heading:
-    de: Komplett-Check
-  lead:
-    de: Das umfassende Präventionsprogramm — alle apparativen Untersuchungen in einem Termin.
-- type: body
-  body_md:
-    de: 'Der Komplett-Check fasst unsere apparativen Vorsorge-Untersuchungen in einem Termin zusammen. Geeignet für eine strukturierte Standortbestimmung in etwa zwei Stunden.
+  - type: hero
+    eyebrow:
+      de: Untersuchungen · Vorsorge
+    heading:
+      de: Komplett-Check
+    lead:
+      de: Komplett-Check — ausführliche Vorsorgeuntersuchung in etwa zwei Stunden.
+    image: shopify-mirror://detail/komplett-check-hero.jpg
+  - type: body
+    body_html:
+      de: |-
+        <p>Der Komplett-Check fasst eine ausführliche Vorsorgeuntersuchung zusammen. In etwa zwei Stunden führen wir eine strukturierte ärztliche Beurteilung durch.</p>
 
+        <h2>Welche Untersuchungen umfasst der Komplett-Check?</h2>
 
-      Enthaltene Untersuchungen: Ultraschall der Schilddrüse, Ultraschall der Halsgefäße (Carotis-Duplex), Echokardiographie (Herzultraschall), Ultraschall aller Bauchorgane, Ergometrie (Belastungs-EKG)
-      sowie Spirometrie (Lungenfunktion).
+        <ul>
+        <li>Ultraschall der Schilddrüse</li>
+        <li>Ultraschall der Halsgefäße (Carotis-Duplex)</li>
+        <li>Echokardiographie (Herzultraschall)</li>
+        <li>Ultraschall des Bauchraums</li>
+        <li>Belastungs-EKG (Ergometrie)</li>
+        <li>Lungenfunktion (Spirometrie)</li>
+        </ul>
 
-
-      Im Anschluss besprechen wir die Befunde persönlich mit Ihnen.'
-- type: cta-banner
-  heading:
-    de: Termin für Komplett-Check?
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+  - type: cta-banner
+    heading:
+      de: Termin für Komplett-Check?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

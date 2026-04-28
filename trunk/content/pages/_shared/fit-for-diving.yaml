@@ -14,24 +14,27 @@ views:
 wp:
   page_template: template-detail-page.php
 sections:
-- type: hero
-  eyebrow:
-    de: Untersuchungen · Tauchtauglichkeit
-  heading:
-    de: Fit for Diving
-  lead:
-    de: Tauchtauglichkeitsuntersuchung — bevor Sie abtauchen.
-- type: body
-  body_md:
-    de: 'Die Tauchtauglichkeitsuntersuchung gibt Ihnen Sicherheit vor dem nächsten Tauchgang. Wir bieten zwei Stufen an: Open Water Diver für Wassertiefen bis 18 Meter, Advanced Open Water Diver (oder Taucher
-      über 40 Jahre) für Wassertiefen bis 30 Meter. Für Deep Diver oder technische Taucher bieten wir Untersuchungen auf Anfrage an.
+  - type: hero
+    eyebrow:
+      de: Untersuchungen · Tauchtauglichkeit
+    heading:
+      de: Fit for Diving
+    lead:
+      de: Tauchtauglichkeitsuntersuchung — Bescheinigung für Open Water und Advanced Open Water.
+    image: shopify-mirror://detail/fit-for-diving-hero.jpg
+  - type: body
+    body_html:
+      de: |-
+        <p>Die Tauchtauglichkeitsuntersuchung dokumentiert Ihre Eignung zum Sporttauchen. Wir untersuchen Sie wahlweise als Open Water Diver (Tauchtiefe bis 18 Meter) oder als Advanced Open Water Diver (Tauchtiefe bis 30 Meter, sowie alle Taucherinnen und Taucher über 40 Jahren). Untersuchungen für Deep-Diver oder technisches Tauchen bieten wir auf Nachfrage an.</p>
 
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
-      Wie wir vorgehen: Für Open Water Diver führen wir eine Ganzkörperuntersuchung inklusive Otoskopie sowie eine Lungenfunktion durch. Für Advanced Open Water Diver wird die Untersuchung um ein Belastungs-EKG
-      erweitert. Im Anschluss besprechen wir den Befund persönlich mit Ihnen.'
-- type: cta-banner
-  heading:
-    de: Termin für Fit for Diving?
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+        <p>Für Open Water Diver führen wir eine Ganzkörperuntersuchung inklusive Otoskopie (Ohruntersuchung) sowie eine Lungenfunktion durch. Bei Advanced Open Water Diver wird die Untersuchung zusätzlich um ein Belastungs-EKG ergänzt.</p>
+
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+  - type: cta-banner
+    heading:
+      de: Termin für Fit for Diving?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

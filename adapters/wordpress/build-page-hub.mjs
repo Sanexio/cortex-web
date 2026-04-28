@@ -49,6 +49,55 @@ function pickLang(field, lang = "de") {
   return field[lang] || field.de || "";
 }
 
+// Minimal Markdown → HTML converter for body_md fallback.
+// Supports: ## heading, ### heading, **bold**, *italic*, [text](url),
+// blank-line paragraphs, single line breaks, - ul lists, 1. ol lists.
+function markdownToHtml(md) {
+  if (!md) return "";
+  const lines = md.replace(/\r\n/g, "\n").split("\n");
+  let html = [];
+  let listType = null;          // 'ul' | 'ol' | null
+  let paraBuf = [];
+  const flushPara = () => {
+    if (paraBuf.length === 0) return;
+    let s = paraBuf.join(" ").trim();
+    if (s) html.push("<p>" + s + "</p>");
+    paraBuf = [];
+  };
+  const flushList = () => {
+    if (listType) { html.push(`</${listType}>`); listType = null; }
+  };
+  const inline = (s) =>
+    s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+     .replace(/\*([^*\s][^*]*)\*/g, "<em>$1</em>")
+     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (line === "") { flushPara(); flushList(); continue; }
+    let m;
+    if ((m = line.match(/^###\s+(.+)$/))) {
+      flushPara(); flushList();
+      html.push("<h3>" + inline(m[1]) + "</h3>");
+    } else if ((m = line.match(/^##\s+(.+)$/))) {
+      flushPara(); flushList();
+      html.push("<h2>" + inline(m[1]) + "</h2>");
+    } else if ((m = line.match(/^[-*]\s+(.+)$/))) {
+      flushPara();
+      if (listType !== "ul") { flushList(); html.push("<ul>"); listType = "ul"; }
+      html.push("<li>" + inline(m[1]) + "</li>");
+    } else if ((m = line.match(/^\d+\.\s+(.+)$/))) {
+      flushPara();
+      if (listType !== "ol") { flushList(); html.push("<ol>"); listType = "ol"; }
+      html.push("<li>" + inline(m[1]) + "</li>");
+    } else {
+      flushList();
+      paraBuf.push(inline(line));
+    }
+  }
+  flushPara(); flushList();
+  return html.join("\n");
+}
+
 // Render PHP value (string, array, scalar) — minimal var_export-like output.
 function phpExport(v, indent = 0) {
   const pad = "  ".repeat(indent);
@@ -84,6 +133,7 @@ function normalizeSection(sec) {
       eyebrow: pickLang(sec.eyebrow),
       heading: pickLang(sec.heading),
       lead: pickLang(sec.lead),
+      image: resolveImage(sec.image),
     };
   }
   if (t === "usp-box") {
@@ -129,24 +179,56 @@ function normalizeSection(sec) {
     };
   }
   if (t === "body") {
+    // Prefer body_html (e.g. mirrored Sanexio rich-text);
+    // fall back to converting body_md → HTML.
+    const html = pickLang(sec.body_html);
+    const md = pickLang(sec.body_md);
+    const body_html = html ? html : markdownToHtml(md);
     return {
       type: "body",
       heading: pickLang(sec.heading),
-      body_md: pickLang(sec.body_md),
+      body_html,
     };
   }
   // Pass-through for legacy types — won't be rendered by hub-renderer.
   return { type: t, _raw: sec };
 }
 
-let count = 0;
+// Pre-Pass: load all page YAMLs once, compute related-overview cards
+// for the detail-page set (template-detail-page.php).
+const ALL = {};
 for (const slug of PAGES) {
   const src = path.join(SRC_DIR, `${slug}.yaml`);
-  if (!fs.existsSync(src)) {
-    console.error(`  ✗ missing: ${src}`);
+  if (!fs.existsSync(src)) continue;
+  ALL[slug] = yaml.load(fs.readFileSync(src, "utf8"));
+}
+function heroImageOf(d) {
+  const hero = (d?.sections || []).find((s) => s.type === "hero");
+  return hero?.image ? resolveImage(hero.image) : null;
+}
+const DETAIL_TPL = "template-detail-page.php";
+const overviewCards = [];
+for (const [slug, data] of Object.entries(ALL)) {
+  if (data?.wp?.page_template !== DETAIL_TPL) continue;
+  const id = data.id || slug;
+  // Category split (S50 v2): labor-* → 'lab', everything else → 'examination'
+  const category = id.startsWith("labor-") ? "lab" : "examination";
+  overviewCards.push({
+    id,
+    category,
+    slug: "/" + (data.slugs?.praxis || slug) + "/",
+    title: pickLang(data.title),
+    image: heroImageOf(data),
+  });
+}
+
+let count = 0;
+for (const slug of PAGES) {
+  const data = ALL[slug];
+  if (!data) {
+    console.error(`  ✗ missing: ${slug}`);
     process.exit(1);
   }
-  const data = yaml.load(fs.readFileSync(src, "utf8"));
 
   // HWG-Guard: Praxis-View darf show_prices=true nicht erlauben
   if (data?.views?.praxis?.show_prices === true) {
@@ -154,15 +236,29 @@ for (const slug of PAGES) {
     process.exit(2);
   }
 
+  // Doctolib-Resolver: per-page Doctolib URL overrides cta_url, falls leer
+  // Default-Fallback. Phase-3-Setup.
+  const ctaUrl =
+    data.views?.praxis?.doctolib_url ||
+    data.views?.praxis?.cta_url ||
+    "/service/terminanfrage/";
+
+  // Related-Overview: alle Detail-Pages außer der aktuellen
+  const isDetail = data?.wp?.page_template === DETAIL_TPL;
+  const related = isDetail
+    ? overviewCards.filter((c) => c.id !== (data.id || slug))
+    : [];
+
   const out = {
     id: data.id,
     slug: data.slugs?.praxis || slug,
     title: pickLang(data.title),
     page_template: data.wp?.page_template || `template-${slug}.php`,
     eyebrow: pickLang(data.wp?.eyebrow),
-    cta_url: data.views?.praxis?.cta_url || "/service/terminanfrage/",
+    cta_url: ctaUrl,
     cta_label: pickLang(data.views?.praxis?.cta_label) || "Termin vereinbaren",
     sections: (data.sections || []).map(normalizeSection),
+    related_overview: related,
   };
 
   const dest = path.join(DEST_DIR, `page-hub-${slug}.php`);

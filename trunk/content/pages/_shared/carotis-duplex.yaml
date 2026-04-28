@@ -3,22 +3,19 @@ site: shared
 slugs:
   praxis: carotis-duplex
   juvantis: carotis-duplex
-
 title:
   de: Carotis Duplex
   en: Carotid Duplex
-
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
-
 wp:
   page_template: template-detail-page.php
-  legacy_ids: [354]
-
+  legacy_ids:
+    - 354
 sections:
   - type: hero
     eyebrow:
@@ -26,17 +23,20 @@ sections:
     heading:
       de: Carotis-Duplex-Sonographie
     lead:
-      de: Ultraschall der Halsschlagadern — frühe Hinweise auf Gefäßveränderungen.
-
+      de: Ultraschall der Halsschlagadern — Engstellen erkennen, bevor sie zum Schlaganfall führen.
+    image: shopify-mirror://detail/carotis-duplex-hero.jpg
   - type: body
-    body_md:
-      de: |
-        Die Halsschlagadern versorgen das Gehirn mit Blut. Werden sie durch Plaques eingeengt, steigt das Risiko für Schlaganfälle. Mit der Duplex-Sonographie messen wir Strömungsgeschwindigkeit, Durchmesser und Wandbeschaffenheit der Halsschlagadern und können Veränderungen oft früh erkennen — bevor Symptome auftreten.
+    body_html:
+      de: |-
+        <p>Das menschliche Gehirn macht etwa 2 Prozent des Körpergewichts aus, benötigt aber rund 20 Prozent des gesamten Energieverbrauchs. 100 Milliarden Neuronen und Billionen von Synapsen stellen pro Sekunde bis zu 200 Millionen Verbindungen her. Nach etwa 5 bis 10 Minuten Unterbrechung der Sauerstoffversorgung wird das Gehirn irreparabel geschädigt.</p>
 
-        Die Untersuchung ist schmerzfrei, dauert etwa 15–20 Minuten und erfordert keine Vorbereitung. Sie liegen mit leicht überstrecktem Kopf, wir führen mit einem hochfrequenten Schallkopf entlang des Halses.
+        <p>Mit dem Ultraschall der Halsschlagadern (Carotis-Duplex) prüfen wir, ob die Blutzufuhr zum Gehirn durch Engstellen eingeschränkt ist oder ob an den Gefäßen bereits Veränderungen bestehen, die das Risiko für einen Schlaganfall erhöhen können.</p>
 
-        Wann sinnvoll: bei Bluthochdruck, erhöhten Blutfetten, familiärer Belastung mit Schlaganfällen, oder als Bestandteil eines strukturierten Vorsorge-Checks.
+        <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
+        <p>Zunächst hören wir mit einem Stethoskop die Halsgefäße ab. Im Anschluss erfolgt die Ultraschalluntersuchung. Hierzu legen Sie sich auf eine Liege und überstrecken den Kopf leicht.</p>
+
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
       de: Termin für die Carotis-Duplex-Sonographie?

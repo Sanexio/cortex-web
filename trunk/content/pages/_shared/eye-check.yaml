@@ -14,22 +14,23 @@ views:
 wp:
   page_template: template-detail-page.php
 sections:
-- type: hero
-  eyebrow:
-    de: Untersuchungen · Reaktion
-  heading:
-    de: Eye Check
-  lead:
-    de: Reaktionszeit-Test — wie schnell verarbeiten Ihre Augen visuelle Information?
-- type: body
-  body_md:
-    de: 'Das Auge ist die Hauptverbindung Ihres Gehirns zur Außenwelt. Mit dem Eye Check messen wir, wie schnell Ihr visuelles System Informationen aufnimmt und in Reaktion umsetzt.
+  - type: hero
+    eyebrow:
+      de: Untersuchungen · Reaktion
+    heading:
+      de: Eye Check
+    lead:
+      de: Eye-Check — Beurteilung von Sehkraft und vorderem Augenabschnitt.
+    image: shopify-mirror://detail/eye-check-hero.jpg
+  - type: body
+    body_html:
+      de: |-
+        <p>Beim Eye-Check beurteilen wir Sehkraft, vorderen Augenabschnitt und Augeninnendruck. Auffälligkeiten besprechen wir gemeinsam und überweisen bei Bedarf gezielt zur Augenärztin oder zum Augenarzt.</p>
 
-
-      Die Untersuchung ist kurz und schmerzfrei und gibt Ihnen ein orientierendes Maß für Ihre Reaktionsfähigkeit. Im Anschluss besprechen wir das Ergebnis persönlich mit Ihnen.'
-- type: cta-banner
-  heading:
-    de: Termin für Eye Check?
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+  - type: cta-banner
+    heading:
+      de: Termin für Eye Check?
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/

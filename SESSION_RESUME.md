@@ -84,12 +84,12 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 
 ## §1 Stand & Version
 
-- **Version:** `0.9.7` — Session 47 **Mid-Range-Reality-Check: T1–T8 fluid via `clamp()` + Header-Logo right-sized (296 → 96/120 px) + Wortmarke nur ≥1440 + 4 hard-coded Hero/MFA/Final-Buttons + Privacy-Hinweis ebenfalls clamp() + homepage.css Header-Duplikate entfernt (Pattern `single-source-ui-region` durchgezogen) + Lesetext-Container ≤960 px** (2026-04-27, Cluster-Mini-02 / Praxis-Mac via SSH). Theme-HEAD `501f9d5` PXZ **2.7.71**.
+- **Version:** `0.9.8` — Session 50 **Sanexio-Detail-Page-Mirror: 25 Detail-Pages bekommen Sanexio-Produktseiten-Layout (Hero mit Bild + Body + CTA + 2 Karussells „Weitere Untersuchungen" / „Laboruntersuchungen" mit Pfeil-Buttons + Auto-Übersicht aus Page-Registry).** Schema erweitert (`hero.image`, `body.body_html`), Builder mit Pre-Pass für `related_overview`, Renderer mit 2-Spalten-Hero + Übersichts-Block. 23 Pages mit Sanexio-Spiegel (Sie-Form, HWG-bereinigt), 2 Pages mit Praxis-eigenem Skelett (eye-check, labor-biohack). PXZ **2.7.73** (2026-04-28, Cluster-Mini-02 / Praxis-Mac via SSH).
 
-### §1.0 Sessions S43–S47 Catch-Up
+### §1.0 Sessions S43–S50 Catch-Up
 
 S43–S46 fanden ohne Session-Resume-Update statt — nur git-log dokumentiert.
-Pflicht-Nachpflege beim nächsten Audit. Zusammenfassung aus Theme-Commits:
+Zusammenfassung aus Theme-Commits:
 
 | Session | Theme-Commit | Inhalt |
 |:---:|:---:|---|
@@ -97,20 +97,26 @@ Pflicht-Nachpflege beim nächsten Audit. Zusammenfassung aus Theme-Commits:
 | S44 | `9907b7f` + `e3e0631` | Location-Card SSoT + Nav „Hauptpraxis Grüneburgweg" (PXZ 2.7.51) |
 | S45 | `ff3720a` + `901b602` | Swipeable Room-Slider /zweigpraxis-bockenheimer/ (PXZ 2.7.52/53) |
 | S46 | `7653efa` + `2927f37` | Fullbleed-Slider + Homepage-Carousel + Mobile-Responsive + EN/FR/ES Nav-Parity (PXZ 2.7.63) |
-| **S47** | **`501f9d5`** | **Mid-Range-Reality-Check (PXZ 2.7.71)** — fluid clamp() für T1–T8 + alle Hard-Coded Buttons, Logo right-sized, Wortmarke nur ≥1440, Lesetext-Container ≤960 |
+| S47 | `501f9d5` | Mid-Range-Reality-Check (PXZ 2.7.71) — fluid clamp() T1–T8 + Header-Logo right-sized + Hard-Coded Buttons fluid + Lesetext ≤960 |
+| S49 | `90fc4db` | Radikaler Sanexio-Spiegel-Umbau — Untersuchungen + Labor als Top-Level (PXZ 2.7.72) |
+| **S50** | **(commits folgen am Session-Ende)** | **Sanexio-Detail-Page-Mirror — 25 Detail-Pages mit Sanexio-Layout (PXZ 2.7.73)** |
 
-- **Stand:** 2026-04-27 Ende S47:
-  - **Theme-Stand:** PXZ **2.7.36 → 2.7.71** in 5 Sessions. Heutiger Hauptcommit `501f9d5` (5 Files +157/-214 LoC).
-  - **Type-Scale fluid:** T1 Hero `clamp(40px, 5vw, 80px)` · T6 Body `clamp(17px, 1.7vw, 26px)` · alle T-Stufen analog. Mobile-Stufen-Shift-Block in tokens.css für T-Tokens entfernt (Buttons-Override bleibt).
-  - **Header-Reflow:** Logo 64/80/96/120 (statt 110/150/240/296) · Wortmarke nur ≥1440 sichtbar · Nav-List 1.05rem (statt 1.85rem) · CTA 17 px @1100, 18 px @1440 (statt fix 34) · Right-Side bleibt inline (statt column-stack)
-  - **homepage.css aufgeräumt:** Header-Duplikate (.pxz-nav-logo, .pxz-nav-logo-text, .pxz-nav-right, .pxz-nav-cta, .pxz-nav-lang, .pxz-lang) entfernt → einziger Source-of-Truth ist nav.css
-  - **Hard-Coded Hero/MFA/Final-Buttons + Privacy-Hinweis:** Alle auf clamp() umgestellt
-  - **Lesetext-Container:** `.pxz-page-content-inner` max-width 1140 → 960 px (Apple-/Stripe-Standard für 60–75 Zeichen pro Zeile)
-  - **Pre-Flight Session-Ende 47:** `validate.sh` 🟢 · `verify.sh` 🟢 · Sanitizer-Probe alle 5 Dateien im Budget · Probe `tools/probe-mid-range.mjs` bei 5 Viewports: 0 Overflow auf allen
-  - **Patterns + Tutorial neu:** `Nexus/_memory/patterns/mid-range-viewport-coverage.md` · `fluid-type-scale-clamp.md` · `Second Brain/30 Tutorials/Webentwicklung/Webdesign/27-fluid-type-scale-mid-range-coverage.md`
-  - **Akzeptanz:** AK-1 (kein Overflow) ✅ · AK-2 (Header ≤120 px) ⚠ Mid-Range OK / 145 bei ≥1440 (mit Wortmarke, akzeptiert) · AK-3 (Hero ≤56 px @1365) ⚠ 68 px (Spec-vw weicher gewählt, Dr. Stracke "passt") · AK-4 (Container ≤960) ✅ · AK-5 (verify.sh erweitern) ⏸ verschoben
+- **Stand:** 2026-04-28 Ende S50:
+  - **Theme-Stand:** PXZ **2.7.72 → 2.7.73** (Bump für S50). Theme-Commits folgen am Session-Ende.
+  - **Schema erweitert:** `hero.image` (optional, lokaler image-key oder absoluter Pfad) + `body.body_html` (alternativ zu `body_md`, für 1:1 HTML-Übernahme aus Sanexio).
+  - **Builder erweitert (`adapters/wordpress/build-page-hub.mjs`):** Pre-Pass-Loop sammelt alle Detail-Pages, generiert pro Page `related_overview` (alle Pages außer der aktuellen, mit category 'lab' / 'examination'). Doctolib-Resolver: `views.praxis.doctolib_url || cta_url || /service/terminanfrage/`. body-Normalize bevorzugt `body_html`, fällt sonst auf `markdownToHtml(body_md)` zurück.
+  - **Renderer erweitert (`template-parts/page-hub-renderer.php`):** Hero mit `image` rendert 2-Spalten-Layout (Bild + Text-Block + Hero-CTA). body-Case rendert `body_html` mit `wp_kses_post`. Übersichts-Block am Seitenende — gesplittet in 2 Karussells „Weitere Untersuchungen" + „Laboruntersuchungen" mit Pfeil-Buttons.
+  - **Template-detail-page.php:** Legacy-WP-Content wird nur noch dann gerendert, wenn der Trunk keinen `body` mit `body_html` liefert (saubere Übergangs-Strategie für nicht-gerollten Pages).
+  - **CSS:** `assets/css/page-hub.css` ergänzt um `.pxz-hub-product-hero` (2-Spalten Desktop, Mobile stacked), `.pxz-hub-related-overview`, `.pxz-hub-overview-grid` (CSS scroll-snap horizontal Karussell), `.pxz-hub-carousel` + `.pxz-hub-carousel-arrow--prev/next`.
+  - **JS neu:** `assets/js/page-hub-carousel.js` — wires up arrow buttons mit scroll-by-card-width + disabled-state. Conditional enqueued nur auf detail-pages.
+  - **Bilder:** 23 Sanexio-Hero-Bilder gespiegelt nach `_media-source/shopify-mirror/detail/<slug>/hero.<ext>` + `wp-content/uploads/2026/04/sanexio-imports/<slug>-hero.<ext>`. 2 Pool-Bilder als Übergang für eye-check + labor-biohack.
+  - **23 Trunk-YAMLs aktualisiert** mit Sie-Form-konvertiertem HWG-bereinigtem `body_html` aus Sanexio-Spiegel. 2 Pages (eye-check, labor-biohack) mit Praxis-eigenem Skelett.
+  - **Pre-Flight Session-Ende 50:** Schema-Validation 28/28 ✅ · Build 27 PHP-Datenfiles ✅ · HTTP-Sweep 25/25 = 200 ✅ · Hero-Bild auf jeder Page ✅ · 0 Placeholder-Karten im Karussell ✅ · Sanitizer-Probe alle 5 Dateien im Budget
+  - **Patterns + Tutorial neu:** `Nexus/_memory/patterns/storefront-auth-mirror.md` · `auto-related-page-grid.md` · `Second Brain/30 Tutorials/Webentwicklung/Webdesign/28-detail-page-mirror-shopify-zu-wp.md`
+  - **Spec:** `sites/praxis-webseite/specs/sprint-2/S50_sanexio-detail-page-mirror.md` (V1.0 + §14 Reduktion auf 4 Sektionen)
+  - **Doctolib-Mapping** ist Phase 3d — Dr. Stracke gibt pro Page den Doctolib-Direktlink (oder `/service/terminanfrage/` als Sammeltermin) im Verlauf rein. YAML-Feld vorbereitet als `views.praxis.doctolib_url`.
 
-### Vorheriger Stand (zur Orientierung)
+### Vorheriger Stand (S47, zur Orientierung)
 
 - **Stand:** 2026-04-25 Ende S42:
   - **Theme-Stand:** PXZ **2.7.35 → 2.7.36** committed `1760546` (Hauptcommit, 2 Files +76/-23 LoC) + `b2d805f` (Versionsbump).
@@ -139,14 +145,20 @@ Pflicht-Nachpflege beim nächsten Audit. Zusammenfassung aus Theme-Commits:
 | **S42 P3a Phase 1+2** | 9 Stub-Volltexte (Archiv-Übernahme) + Header-Nav 7-Top-Level-Hierarchie + Footer-Cookie-Legal + WP-DB-Cleanup + Architektur-Entscheidung „Status quo PHP-Code" | ✅ **`1760546`+`b2d805f`** PXZ 2.7.36 |
 | **S43–S46** | Home-Refactor + Location-Card SSoT + Room-Slider Zweigpraxis + Fullbleed-Slider + Homepage-Carousel + Mobile-Responsive + EN/FR/ES Nav-Parity | ✅ Theme-only (kein SESSION_RESUME-Update — nachzupflegen) PXZ 2.7.36→2.7.63 |
 | **S47 Mid-Range-Reality-Check** | Fluid clamp() für T1–T8 + Header-Reflow (Logo 296→96, Wortmarke ≥1440) + Hard-Coded Buttons fluid + Lesetext-Container 960 px + homepage.css Header-Duplikate entfernt + 2 Patterns + Tutorial 27 | ✅ **`501f9d5`** PXZ 2.7.71 |
-| **Praxis DE-Content P3a Phase 3** | Page-by-Page-Content-Review mit Dr. Stracke (Änderungswünsche umsetzen) | 🔴 noch offen |
-| **Praxis i18n P6** | Übersetzung aller Pages in EN/FR/ES (WPML) | 🔴 nach S43 |
-| **Praxis Funktionalität** | Forms (WPForms ersetzen), Doctolib-Integration, Cookie-Banner-Plugin, Kontaktformular, E-Mail-Versand | 🔴 nach i18n |
+| **S49 Sanexio-Spiegel** | Top-Nav 5 Items (Praxis · Untersuchungen · Labor · Service · Kontakt) + 19 Detail-Pages angelegt + Sanexio-Bilder + Builder Auto-Discovery | ✅ **`90fc4db`** PXZ 2.7.72 |
+| **S50 Sanexio-Detail-Page-Mirror** | Schema (`hero.image`, `body.body_html`) + Builder Pre-Pass `related_overview` + Renderer 2-Spalten-Hero + 2 Karussells mit Pfeilen + 23 Pages mit Sanexio-Spiegel + 2 Pages mit Praxis-Skelett + Spec V1.0 + 2 Patterns + Tutorial 28 | ✅ PXZ 2.7.73 |
+| **Praxis Doctolib-Mapping (Phase 3d)** | Pro Page: Dr.-Stracke-Doctolib-Direktlink in `views.praxis.doctolib_url` einsetzen | 🔴 offen, asynchron |
+| **Praxis Page-Review (Sie-Form / fachlich)** | Dr.-Stracke-Walkthrough der 25 Detail-Pages, Korrekturwünsche umsetzen | 🔴 offen, kommt mit Doctolib |
+| **Praxis i18n P6** | Übersetzung aller Pages in EN/FR/ES (WPML) | 🔴 nach Page-Review |
+| **Praxis Funktionalität** | Forms (WPForms ersetzen), Cookie-Banner-Plugin, Kontaktformular, E-Mail-Versand | 🔴 nach i18n |
 
-**Status:** S42 abgeschlossen. Pre-Live-Blocker unverändert: L-1/L-2 (extern), C-1 (extern). Block P3a Phase 1+2 ✅, Phase 3 (Content-Review) startet S43. Danach i18n, dann Funktionalität.
+**Status:** S50 abgeschlossen. Pre-Live-Blocker unverändert: L-1/L-2 (extern), C-1 (extern). Detail-Pages-Roll-out komplett (25/25 = 200, alle mit Hero-Bild), Doctolib-Mapping + Page-Review folgen.
 
-### §1.2 Vorherige Session — Stand-Auszug Session 41 (verkürzt)
-S41 Re-Priorisierung „DE-Content vor i18n" + S37-Header-Rollback (Flex statt 4+3-Grid) + 9 DE-Slug-Stubs (DB-Migration + WPML-DE in trid 14701-14709) + 8 Slug-Mismatch-Redirects + Reading-Width 1,5× + Doctolib-Floating-Button mittig rechts + Footer-Single-Source-Fix Homepage + Homepage-Texte mit `<br>`-Struktur. Theme-Commit `5e9bb22` PXZ 2.7.35. Pattern `single-source-ui-region` Footer-Variante.
+### §1.2 Vorherige Sessions — Verkürzt
+
+- **S49** (Sanexio-Spiegel-Umbau, `90fc4db`, PXZ 2.7.72): Top-Nav reduziert auf 5 (Praxis · Untersuchungen · Labor · Service · Kontakt; Leistungen + 7 Submenus gelöscht). „Diagnostik" → „Untersuchungen" (Slug-Wechsel + 301-Redirect). 19 NEUE Detail-Pages als Sanexio-Spiegel (10 Untersuchungen + 9 Labor). Section-Type `body` im Schema. Builder Auto-Discovery. 24 Sanexio-Bilder gespiegelt.
+- **S47** (Mid-Range-Reality-Check, `501f9d5`, PXZ 2.7.71): Fluid clamp() T1–T8 · Header-Logo right-sized 296→96 · Wortmarke nur ≥1440 · Lesetext-Container ≤960. Patterns mid-range-viewport-coverage + fluid-type-scale-clamp. Tutorial 27.
+- **S41** (Re-Prio „DE-Content vor i18n", `5e9bb22`, PXZ 2.7.35): 9 DE-Slug-Stubs + 8 Slug-Mismatch-Redirects + Reading-Width 1,5× + Doctolib-Floating-Button + Footer-Single-Source.
 
 ---
 

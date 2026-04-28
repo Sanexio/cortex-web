@@ -144,6 +144,10 @@
                   "de": { "type": "string" },
                   "en": { "type": "string" }
                 }
+              },
+              "image": {
+                "type": "string",
+                "description": "Optional Hero-Bild — lokaler image-key (shopify-mirror://...) oder absoluter Pfad. Wenn gesetzt, rendert Hero als 2-Spalten-Layout (Bild + Text)."
               }
             }
           },
@@ -277,7 +281,7 @@
           },
           {
             "type": "object",
-            "required": ["type", "body_md"],
+            "required": ["type"],
             "additionalProperties": false,
             "properties": {
               "type": { "const": "body" },
@@ -291,14 +295,26 @@
               },
               "body_md": {
                 "type": "object",
-                "required": ["de"],
                 "additionalProperties": false,
                 "properties": {
                   "de": { "type": "string", "minLength": 1 },
                   "en": { "type": "string" }
                 }
+              },
+              "body_html": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "1:1 HTML (für gemirrorte Sanexio-Description). Renderer sanitisiert via wp_kses_post. Builder bevorzugt body_html, fällt sonst auf body_md zurück.",
+                "properties": {
+                  "de": { "type": "string", "minLength": 1 },
+                  "en": { "type": "string" }
+                }
               }
-            }
+            },
+            "anyOf": [
+              { "required": ["body_md"] },
+              { "required": ["body_html"] }
+            ]
           },
           {
             "type": "object",
