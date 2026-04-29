@@ -86,20 +86,26 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 
 - **Version:** `0.9.8` — Session 50 **Sanexio-Detail-Page-Mirror: 25 Detail-Pages bekommen Sanexio-Produktseiten-Layout (Hero mit Bild + Body + CTA + 2 Karussells „Weitere Untersuchungen" / „Laboruntersuchungen" mit Pfeil-Buttons + Auto-Übersicht aus Page-Registry).** Schema erweitert (`hero.image`, `body.body_html`), Builder mit Pre-Pass für `related_overview`, Renderer mit 2-Spalten-Hero + Übersichts-Block. 23 Pages mit Sanexio-Spiegel (Sie-Form, HWG-bereinigt), 2 Pages mit Praxis-eigenem Skelett (eye-check, labor-biohack). PXZ **2.7.73** (2026-04-28, Cluster-Mini-02 / Praxis-Mac via SSH).
 
-### §1.0 Sessions S43–S50 Catch-Up
+### §1.0 Sessions S43–S50 — Index (Hot-Layer, Details cold)
 
-S43–S46 fanden ohne Session-Resume-Update statt — nur git-log dokumentiert.
-Zusammenfassung aus Theme-Commits:
+> **LL-053 Anti-Bloat:** Detailblöcke ausgelagert. Hot-Layer = Index, Cold-Layer = `_archive/sessions/`.
 
-| Session | Theme-Commit | Inhalt |
-|:---:|:---:|---|
-| S43 | `6214b33` | Home-Refactor (Sammel-Commit lange uncommitted) |
-| S44 | `9907b7f` + `e3e0631` | Location-Card SSoT + Nav „Hauptpraxis Grüneburgweg" (PXZ 2.7.51) |
-| S45 | `ff3720a` + `901b602` | Swipeable Room-Slider /zweigpraxis-bockenheimer/ (PXZ 2.7.52/53) |
-| S46 | `7653efa` + `2927f37` | Fullbleed-Slider + Homepage-Carousel + Mobile-Responsive + EN/FR/ES Nav-Parity (PXZ 2.7.63) |
-| S47 | `501f9d5` | Mid-Range-Reality-Check (PXZ 2.7.71) — fluid clamp() T1–T8 + Header-Logo right-sized + Hard-Coded Buttons fluid + Lesetext ≤960 |
-| S49 | `90fc4db` | Radikaler Sanexio-Spiegel-Umbau — Untersuchungen + Labor als Top-Level (PXZ 2.7.72) |
-| **S50** | **(commits folgen am Session-Ende)** | **Sanexio-Detail-Page-Mirror — 25 Detail-Pages mit Sanexio-Layout (PXZ 2.7.73)** |
+| Session | Datum | Theme-Commit(s) | PXZ | Slug | Cold-Archiv |
+|:---:|:---:|:---:|:---:|---|---|
+| S34–S36 | 2026-04-22/23 | `cb4cfc4` · `e8f7cf3` · `3481884` | 2.7.25→26 | 24h-MVP-Sprint (Front 1/2/3) | [`_archive/sessions/2026-04/sessions-34-36-mvp-sprint.md`](_archive/sessions/2026-04/sessions-34-36-mvp-sprint.md) |
+| S38 | 2026-04-23 | `bca1521` · `61fd5db` | 2.7.29 | Header-Variante-A + Footer-Doppelung-Fix | [`_archive/sessions/2026-04/sessions-38-42-polish-arc.md`](_archive/sessions/2026-04/sessions-38-42-polish-arc.md#s38) |
+| S39 | 2026-04-24 | (in `cc2a0e2` integriert) | 2.7.29→31 | Home-Polish + Font-Rollback | [`_archive/sessions/2026-04/sessions-38-42-polish-arc.md`](_archive/sessions/2026-04/sessions-38-42-polish-arc.md#s39) |
+| S40 | 2026-04-25 | `cc2a0e2` · `a4898ba` · `7265c70` | 2.7.32→34 | DS-Block Apple Type-Scale | [`_archive/sessions/2026-04/sessions-38-42-polish-arc.md`](_archive/sessions/2026-04/sessions-38-42-polish-arc.md#s40) |
+| S41 | 2026-04-25 | `5e9bb22` | 2.7.35 | Re-Prio „DE-Content vor i18n" + Polish | [`_archive/sessions/2026-04/sessions-38-42-polish-arc.md`](_archive/sessions/2026-04/sessions-38-42-polish-arc.md#s41) |
+| S42 | 2026-04-25 | `1760546` · `b2d805f` | 2.7.36 | P3a Phase 1+2: Content-Stubs + Header-Nav 7-Top-Level | [`_archive/sessions/2026-04/sessions-38-42-polish-arc.md`](_archive/sessions/2026-04/sessions-38-42-polish-arc.md#s42) |
+| S43 | 2026-04-26 | `6214b33` | 2.7.51 | Home-Refactor (Sammel-Commit) | [`_archive/sessions/2026-04/sessions-43-46-catch-up.md`](_archive/sessions/2026-04/sessions-43-46-catch-up.md#s43) |
+| S44 | 2026-04-26 | `9907b7f` · `e3e0631` | 2.7.51 | Location-Card SSoT + Nav „Hauptpraxis Grüneburgweg" | [`_archive/sessions/2026-04/sessions-43-46-catch-up.md`](_archive/sessions/2026-04/sessions-43-46-catch-up.md#s44) |
+| S45 | 2026-04-26 | `ff3720a` · `901b602` | 2.7.52→53 | Swipeable Room-Slider Zweigpraxis + Dynamic Height | [`_archive/sessions/2026-04/sessions-43-46-catch-up.md`](_archive/sessions/2026-04/sessions-43-46-catch-up.md#s45) |
+| S46 | 2026-04-26 | `7653efa` · `2927f37` | 2.7.63 | Fullbleed-Slider + Homepage-Carousel + Mobile + i18n-Nav-Parity | [`_archive/sessions/2026-04/sessions-43-46-catch-up.md`](_archive/sessions/2026-04/sessions-43-46-catch-up.md#s46) |
+| S47 | 2026-04-27 | `501f9d5` | 2.7.71 | Mid-Range-Reality-Check (fluid clamp() T1–T8 + Header right-sized) | [`_archive/sessions/2026-04/session-47-mid-range-reality-check.md`](_archive/sessions/2026-04/session-47-mid-range-reality-check.md) |
+| S49 | 2026-04-27 | `90fc4db` | 2.7.72 | Sanexio-Spiegel-Umbau (Untersuchungen + Labor als Top-Level) | siehe §1.1 (kein Cold-File, Detail in S50-Block) |
+| S50 | 2026-04-28 | `52cc942` | 2.7.73 | Sanexio-Detail-Page-Mirror — 25 Detail-Pages | siehe §1.1 (HOT — N-1 vor S51) |
+| **S51** | **2026-04-28** | (Doku-only, kein Theme-Commit) | — | **Anti-Bloat-Architektur LL-053 + Sliding-Window + Sanitizer-Hardgate** | **siehe §3 (HOT — N, aktuell)** |
 
 - **Stand:** 2026-04-28 Ende S50:
   - **Theme-Stand:** PXZ **2.7.72 → 2.7.73** (Bump für S50). Theme-Commits folgen am Session-Ende.
@@ -147,6 +153,7 @@ Zusammenfassung aus Theme-Commits:
 | **S47 Mid-Range-Reality-Check** | Fluid clamp() für T1–T8 + Header-Reflow (Logo 296→96, Wortmarke ≥1440) + Hard-Coded Buttons fluid + Lesetext-Container 960 px + homepage.css Header-Duplikate entfernt + 2 Patterns + Tutorial 27 | ✅ **`501f9d5`** PXZ 2.7.71 |
 | **S49 Sanexio-Spiegel** | Top-Nav 5 Items (Praxis · Untersuchungen · Labor · Service · Kontakt) + 19 Detail-Pages angelegt + Sanexio-Bilder + Builder Auto-Discovery | ✅ **`90fc4db`** PXZ 2.7.72 |
 | **S50 Sanexio-Detail-Page-Mirror** | Schema (`hero.image`, `body.body_html`) + Builder Pre-Pass `related_overview` + Renderer 2-Spalten-Hero + 2 Karussells mit Pfeilen + 23 Pages mit Sanexio-Spiegel + 2 Pages mit Praxis-Skelett + Spec V1.0 + 2 Patterns + Tutorial 28 | ✅ PXZ 2.7.73 |
+| **S51 Anti-Bloat-Architektur LL-053** | Hot/Warm/Cold-Memory-Schichten + Sliding-Window-Auto-Archive + Sanitizer-Hardgate (`rotate.sh --enforce`) + Lazy-Read + Single-Source. 3 Cold-Archive-Files + Spec `MEMORY_LAYERS.md` + Pattern + Tooling (`session-index/build.sh`) + `SESSION_LIFECYCLE` Schritt 3c. Resume −16,5 % Tokens. | ✅ Doku-only (kein Theme-Commit) |
 | **Praxis Doctolib-Mapping (Phase 3d)** | Pro Page: Dr.-Stracke-Doctolib-Direktlink in `views.praxis.doctolib_url` einsetzen | 🔴 offen, asynchron |
 | **Praxis Page-Review (Sie-Form / fachlich)** | Dr.-Stracke-Walkthrough der 25 Detail-Pages, Korrekturwünsche umsetzen | 🔴 offen, kommt mit Doctolib |
 | **Praxis i18n P6** | Übersetzung aller Pages in EN/FR/ES (WPML) | 🔴 nach Page-Review |
@@ -199,168 +206,73 @@ git -C ~/Cortex/projects/Juvantis/juvantis-web/theme rev-parse HEAD
 
 ---
 
-## §3 Letzte Session — Session 47, 2026-04-27 (Mid-Range-Reality-Check)
+## §3 Letzte Session — Session 51, 2026-04-28 (Anti-Bloat-Architektur LL-053)
 
 ### Gerät
-**Cluster-Mini-02** (home-Mac M2) via SSH von Mac-Studio (praxis-studio).
-Dr. Stracke saß am Mac-Studio + Studio Display, Browser auf der Local-Site
-mit `innerWidth: 1365 px`, Claude Code per SSH am Home-Mac.
+**Cluster-Mini-02** (home-Mac M2). Claude Code CLI direkt am Home-Mac.
 
 ### Auftrag
-Initial: „Projekt fortsetzen Cortex-Web". Während des Pre-Flight meldete
-Dr. Stracke einen Layout-Bruch im Header + „Body wirkt zu groß" — der
-ganze Sprint wurde zur S47 „Mid-Range-Reality-Check".
+Dr. Stracke startete mit „setze Projekt webdesign fort". Nach Klarstellung Wahl C → Cortex-Web Dachprojekt fortsetzen. Front γ → „S43–S46-SESSION_RESUME-Lücke nachpflegen". Während Phase-2-Spec-Diskussion erweiterte sich der Auftrag auf eine **Anti-Bloat-Architektur**, weil das Resume bereits 27 k Read-Tokens hatte (Truncation beim Read).
 
-### Verlauf
+### Verlauf in 4 Phasen (Architekten-Modus + 3 Schritte)
 
-**Phase 0 — Setup-Hürde:**
-Setup-Skript für Praxis-Mac-Browser-Zugriff auf Local-Site funktionierte
-nicht (scp scheiterte, weil Tailscale MagicDNS auf Mac-Studio nicht aktiv).
-Lösung: einzeiliger /etc/hosts-Eintrag ohne das Skript. Site lief sofort.
+**Phase 1 — Pilot (Schritt 1):**
+Cold-Archive `_archive/sessions/2026-04/sessions-43-46-catch-up.md` für S43–S46 geschrieben (alle 7 Theme-Commits am 2026-04-26, ein Sonntags-Sprint mit Home-Refactor + Location-SSoT + Room-Slider + Fullbleed-Carousel + Mobile-Audit). §1.0-Catch-Up-Tabelle durch Index mit Cold-Anchor-Links ersetzt. Sanitizer-Probe lief grün.
 
-**Phase 1 — Diagnose Header-Bug:**
-Probe bei 1365 × 879 zeigte: Logo 296 px (S46-Bump) + Wortmarke 370 px +
-Nav-Liste 1049 px + Lang 226 px = ~2200 px Mindestbreite. Header brach
-auf jedem Viewport unter 2200 px. SESSION_RESUME war auf S42-Stand fixiert
-(„7 Top-Level"), tatsächlich war Theme längst auf 5 Top-Level + PXZ 2.7.68.
+**Phase 2 — Spec (Schritt 2):**
+Neue Datei `Nexus/_rules/MEMORY_LAYERS.md` mit LL-053a–d definiert (Sliding-Window, Hardgate, Lazy-Read, Single-Source) + 3-Schichten-Modell (HOT/WARM/COLD). Pattern `Nexus/_memory/patterns/session-archive-sliding-window.md`. Cap-Verschärfung: Resume 15 k → 12 k. LL-053 in `GLOBAL_RULES.md` §30 als Anker eingetragen, in `MEMORY.md` als Goldene Regel ergänzt.
 
-**Phase 2 — Spec-Freigabe:**
-Architekten-Modus: Spec mit AK-1 bis AK-5, drei Optionen für Mid-Range-
-Schwelle / Wortmarke / Hero-Type-Scale. Dr. Stracke wählte Option A in
-allen drei Punkten (1100 px / Wortmarke aus / clamp()-Hero).
+**Phase 3 — Tooling (Schritt 3):**
+`Nexus/tools/cortex-sanitizer/rotate.sh` V5.3 erweitert um `--enforce`-Modus (Pre-Commit-Hardgate, Exit 1 bei Soft-Cap-Verletzung). Cap-Tabelle auf LL-053-Werte verschärft. Neuer Generator `Nexus/tools/session-index/build.sh` schreibt `<projekt>/SESSION_INDEX.md` (WARM-Schicht, Bash-3-kompatibel auf BSD-awk). Test gegen Cortex-Web: Index mit 17 Sessions generiert (S07–S46), 767 Tokens / 5 k Cap.
 
-**Phase 3 — Umsetzung:**
-- `nav.css`: Logo 64/80/96/120 (statt 110/150/240/296), Wortmarke nur ≥1440, Nav-List kompakter (1.05rem statt 1.85rem), CTA 17–18 px (statt fix 34), Right-Side inline statt column-stack
-- `tokens.css`: T1–T8 alle als clamp() (vorher fix Desktop + 767px-Override für T1–T5)
-- `homepage.css`: Header-Block (Logo + Wortmarke + Right-Side + CTA + Lang) komplett entfernt — Pattern `single-source-ui-region` aus S38 endlich konsequent durchgezogen. Davor war der Block in homepage.css dupliziert und drift­ete bei jedem S46-Bump
-- 4 Hard-Coded Hero/MFA/Final-Buttons + Final-Privacy ebenfalls clamp()
-- `page.css`: `.pxz-page-content-inner` max-width 1140 → 960 px für Lesetext
+**Phase 4 — Sweep + Konflikt-Resolution + Lifecycle-Integration:**
+- **Sweep:** S38–S42 (Polish-Arc Header + Type-Scale + Re-Prio + Content-Stubs) als zweites Cold-Archive `sessions-38-42-polish-arc.md` ausgelagert. Resume §3-legacy-Blöcke (38, 39, 40, 41, 42, 42-detail, 36) komplett entfernt, nur 1-Zeilen-Verweis-Block geblieben. §1.0-Index erweitert um S34-S36, S38, S39, S40, S41, S42.
+- **§29-Kürzung:** USER.md-Block in GLOBAL_RULES auf 6 Zeilen kompaktiert.
+- **KON-001-Konflikt erkannt:** Hermes-Self-Learning Phase 3 (Cron-Job) hat parallel einen ZWEITEN §30-Block in GLOBAL_RULES eingefügt („Memory-Nudges via trigger.md") — beide nutzten LL-053. Resolution Option D (Dr. Stracke): Mein §30-Block entfernt (SSoT in MEMORY_LAYERS.md), Hermes-Block auf §30/LL-054 umnummeriert. Hermes-Spec angepasst.
+- **Lifecycle-Integration:** `Nexus/_rules/SESSION_LIFECYCLE.md` Schritt 3c „Sliding-Window-Rotation + Hardgate" pflichtig hinzugefügt — neue Sub-Sektion im „Session beenden"-Workflow.
+- **Erste produktive Anwendung von LL-053a:** S47-Detail-Block aus §3 in `_archive/sessions/2026-04/session-47-mid-range-reality-check.md` ausgelagert. Heute (S51) wird neuer §3.
 
-**Phase 4 — Selbstprüfung:**
-Probe bei 5 Viewports (1024 / 1280 / 1365 / 1440 / 1920): kein Overflow,
-Hero fluid 51 → 80, Body fluid 17 → 26, Privacy 18 → 32 (statt fix 46).
+### Pre-Flight-Metriken am Session-Ende 51
 
-### Pre-Flight-Metriken am Session-Ende 47
-- `validate.sh` — OK · `verify.sh` — VERIFY OK
-- Sanitizer `--probe`: alle 5 Dateien im Budget
-- HTTP-Sweep: nicht relaufen (Theme-CSS-only Änderung, keine Routes geändert)
+- Sanitizer `--enforce` → **Exit 0** ✅ (alle 7 überwachten Files unter Cap)
+- Resume-Δ: Cortex-Web SESSION_RESUME 12 387 → 10 348 Tokens (**−16,5 %**)
+- GLOBAL_RULES-Δ: 12 324 → 11 970 Tokens (**−2,9 %**, trotz parallel +Hermes-Block und +LL-053-Anker)
+- 3 neue Cold-Archive-Files (~32 KB Detail-Chronik ausgelagert, S38–S42 + S43–S46 + S47)
+- SESSION_INDEX.md mit 17 Sessions auto-generiert
 - Pending-Queues: 0 Fragen, 2 Anweisungen (langlaufend WV-001 / WV-002)
 
-### Working-Tree (Commit-Stand am Session-Ende 47)
-- **Theme** ✅ committed `501f9d5` (5 Files +157/-214 LoC) — PXZ 2.7.71
-- **Theme** 🟡 3 Files seit S43–S46 uncommitted (arzt.css / inc/homepage-data.php / template-homepage.php) — nicht von S47, nicht angetastet
-- **Cortex-Web** 🟡 SESSION_RESUME.md (dieses Update) — wird gleich committed
-- **Nexus** 🟡 2 neue Patterns + Tutorial 27 — werden gleich committed
+### Working-Tree (Commit-Stand am Session-Ende 51)
 
-### Patterns + Memory + Tutorials (neu in Session 47)
-- **Pattern neu:** `Nexus/_memory/patterns/mid-range-viewport-coverage.md` — 5-Viewport-Probe-Pflicht (1024/1280/1365/1440/1920) statt nur 1440+430
-- **Pattern neu:** `Nexus/_memory/patterns/fluid-type-scale-clamp.md` — clamp() für T-Tokens, Faustregel für vw-Faktor, Anti-Patterns
-- **Tutorial neu:** `Second Brain/30 Tutorials/Webentwicklung/Webdesign/27-fluid-type-scale-mid-range-coverage.md` — komplett mit Glossar (Viewport, Retina, dpr, vw, Skalierung, Mid-Range, Stufen-Shift, Apple-HIG)
+- **Theme** unverändert seit S47 (`501f9d5` PXZ 2.7.71 → S49 `90fc4db` 2.7.72 → S50 `52cc942` 2.7.73). 3 Files seit S43–S46 weiterhin uncommitted (arzt.css / homepage-data.php / template-homepage.php) — nicht heute angefasst.
+- **Cortex-Web** 🟡 uncommitted: `SESSION_RESUME.md` + 3 neue Cold-Files + `SESSION_INDEX.md` + `WORKING_MODE.md` (Hermes-Modifikation, nicht heute).
+- **Nexus** 🟡 uncommitted: `MEMORY.md`, `GLOBAL_RULES.md`, `SESSION_LIFECYCLE.md`, neue `_rules/MEMORY_LAYERS.md`, neues Pattern, neues `tools/session-index/`, modifizierte `tools/cortex-sanitizer/rotate.sh`, modifizierte `specs/hermes-self-learning/SPEC.md`. Plus: parallele Modifikationen durch Hermes (`Second Brain/40 Regeln/LL-053.md`, `LL-054.md`, `_MOC` Updates).
 
-### Nicht erledigt (bewusst)
-- **DESIGN_GUIDELINES §5.2 / §8.2 / §9.1** Update mit clamp()-Konvention — Spec-Block E offen
-- **`probe-mid-range.mjs` in `verify.sh` integrieren** — Spec-Block D offen (verify.sh ist alt, Cleanup-Aufwand größer als heute geplant)
-- **S43–S46-SESSION_RESUME-Lücke vollständig nachpflegen** — heute nur Catch-Up-Tabelle, keine §3-legacy-43..46-Blöcke
-- **3 Theme-Files uncommitted (arzt.css / homepage-data.php / template-homepage.php)** — gehören zu früheren Sessions, klären beim nächsten Sessionstart
-- **P3a Phase 3 Content-Review** — wartet weiter auf Dr. Stracke
+### Neu in Session 51
+
+- **Spec:** `Nexus/_rules/MEMORY_LAYERS.md` (LL-053 SSoT, Hot/Warm/Cold + 4 Mechanismen + Caps + Roll-Out-Plan)
+- **Pattern:** `Nexus/_memory/patterns/session-archive-sliding-window.md`
+- **Cold-Archives:** `sessions-38-42-polish-arc.md`, `sessions-43-46-catch-up.md`, `session-47-mid-range-reality-check.md`
+- **Tool:** `Nexus/tools/cortex-sanitizer/rotate.sh --enforce` (V5.3)
+- **Tool:** `Nexus/tools/session-index/build.sh`
+- **Workflow-Erweiterung:** `Nexus/_rules/SESSION_LIFECYCLE.md` Schritt 3c
 
 ### Konsistenz-Auffälligkeiten (KON-001)
-- `sites/praxis-webseite/SESSION_RESUME.md` weiterhin veraltet seit S19
-- Tutorial „WP-CLI mit Local-by-Flywheel auf Mac" weiter offen
 
-## §3-legacy-42 Session 42 (verkürzt)
+- 🔴 **Hermes-Vault-Stubs verweisen auf falsche Quelle:** `Second Brain/40 Regeln/LL-053.md` zeigt auf `GLOBAL_RULES.md` als SSoT, korrekt wäre `MEMORY_LAYERS.md`. Beim nächsten Hermes-Sync-Lauf vermutlich auto-korrigiert. Beobachten.
+- 🟡 4 Cortex-Web-Tools weiter uncommitted (`probe-1365.mjs`, `probe-mid-range.mjs`, `make-staff-presentation.mjs`, `remote-access/`) — gehören zu S47 oder älter, nicht heute geklärt.
+- 🟡 `sites/praxis-webseite/SESSION_RESUME.md` weiterhin veraltet seit S19.
+- 🟡 3 Theme-Files seit S43–S46 weiter uncommitted.
 
-S42 P3a Phase 1+2: 9 Stub-Pages mit Volltext (DB) + Header-Nav 7-Top-Level (in S46+ konsolidiert auf 5) + Footer-Cookie-Legal + WP-DB-Cleanup (53 alte Menü-Items aus term_id=5 gelöscht) + Architektur-Entscheidung „Status quo PHP-Code". Theme-Commits `1760546`+`b2d805f` PXZ 2.7.36. Pattern `theme-rendering-source-check.md`. Memory `feedback_praxis_nav_via_code.md`. HTTP-Sweep 54/54 = 200.
+## §3-legacy — Sessions 34–46 (Cold-Archive)
 
-## §3-legacy-42-detail Session 42 (Detail-Auszug)
-
-### Gerät
-**Cluster-Mini-02** (home-Mac M2).
-
-### Auftrag
-„Setze Projekt Redesign Webpage um — heute müssen der komplette deutsche Content und die Menüs mit funktionierender Weiterleitung stehen!" — klare Tagesdirektive von Dr. Stracke nach S41 Re-Prio. Klärungsfragen: Stub-Quelle = Variante A (`_content-archive/`), Datenschutz-Page = neue ID 4223, Bio-Stubs trotz leerem Inhalt ins Menü, „funktionierende Weiterleitung" = alle gezogenen Pages über Menü erreichbar.
-
-### Verlauf in drei Phasen
-
-**Phase 1 — 9 Stub-Pages mit Volltext (DB):**
-- Inventar: 62 DE-Pages, 39 unverlinkt; alle 9 Quell-Dateien im `_content-archive/` lokalisiert.
-- Python-Build-Skript (`/tmp/build_stubs.py`): Frontmatter parsen, Body extrahieren, WPForms-Shortcodes durch Mailto/Tel-Fallback ersetzen, Local-Embed-URL relativieren.
-- Mojibake-Quellen (rund-ums-impfen 472, rund-ums-labor 475 — `?` statt Umlaute) frisch von Prod (`westend-hausarzt.com`) via curl gezogen, `entry-content`-Block extrahiert, Class-Attribute weggekürzt.
-- Cookie-Richtlinie 9709: Original-Quelle war nur `wp:complianz/document`-Plugin-Block → eigenen Standard-DSGVO-Cookie-Hinweistext geschrieben (5 H3-Sektionen, 2010 Zeichen).
-- Import via WP-CLI `post update` mit `--post_content` aus File. Verification: alle 9 Pages clen 800–7100 Bytes.
-- FAQ-Slug-Konflikt: 3 anderssprachige Pages (4553/4567/4571) hatten gleichen Slug; meine Page 9705 wurde auf `frequently-asked-questions-2` ge-suffixt → direktem `UPDATE wp_posts SET post_name='frequently-asked-questions'` korrigiert.
-- HTTP-Sweep aller 9 Stub-Slugs nach `wp rewrite flush`: **9/9 = 200**.
-
-**Phase 2 — Header-Nav 7-Top-Level-Hierarchie + Architektur-Pivot:**
-- **Erster Versuch (falsch):** WP-DB-Menü via WP-CLI aufgebaut. 53 Items unter `term_id=5` (Main Menu) angelegt mit Parent-Hierarchie via direktem SQL-UPDATE. HTTP-Sweep aller 49 Menü-Targets nach Redirect: 49/49 = 200.
-- **Live-Probe Dr. Stracke:** „ich sehe weder Phase 1 noch Phase 2 umgesetzt". Diagnose: Theme rendert das Header-Nav **nicht** über `wp_nav_menu()`, sondern über `template-parts/header-nav.php` aus `inc/nav-data.php` (PHP-Array, S2.4 Decision F1b). Das ganze WP-Menü-System ist tote Infrastruktur im Praxis-Theme.
-- **Architektur-Entscheidung Dr. Stracke:** „Status quo — das ist für mich ok." Trade-off-Diskussion (Optionen A/B/C: WP-Menü-Umstellung / Custom-Admin-Page / Hybrid) → Entscheidung pro PHP-Code, NICHT auf WP-Admin umstellen. Memory: `feedback_praxis_nav_via_code.md`. Pattern: `Nexus/_memory/patterns/theme-rendering-source-check.md`.
-- **Zweite Umsetzung (richtig):** `inc/nav-data.php` DE-Block überschrieben mit 7 Top-Level + 49 Sub-Items + `match_prefix` für Active-States.
-- **WP-DB-Cleanup:** Alle 53 angelegten Menü-Items aus term_id=5 via SQL gelöscht (Datenmüll, Theme nutzt sie nicht).
-- HTTP-Sweep der gerenderten Menü-Hrefs (mit Redirect-Follow `-L`): **54/54 = 200** (49 Header + 3 Footer-Legal + Doctolib + Sono-Sub-URLs).
-
-**Phase 3 — Footer-Legal-Block (Cookie-Richtlinie ergänzt):**
-- `inc/footer-data.php` `legal_nav` für alle 4 Sprachen (de/en/fr/es): Cookie-Richtlinie als 3. Legal-Item ergänzt.
-- Datenschutz-Href umgestellt: `/datenschutz/` (zeigte auf alte ID 3) → `/datenschutzerklaerung-2/` (neue ID 4223 mit Volltext-Inhalt).
-- Live-Probe Footer: 3/3 Legal-Links 200 OK.
-
-### Pre-Flight-Metriken am Session-Ende 42
-- `validate.sh` — OK · `verify.sh` — VERIFY OK (10 Showpieces delta=0 auf 1440 + 430)
-- Sanitizer `--probe`: alle 5 Dateien im Budget (MEMORY 19.5 k / Nexus-CLAUDE 27 k / GLOBAL_RULES 42 k / cortex-agent-RESUME 6.9 k / Cortex-Web-RESUME 31.9 k)
-- HTTP-Sweep S42: 54/54 = 200
-- Pending-Queues leer
-
-### Working-Tree (Commit-Stand am Session-Ende 42)
-- **Theme** ✅ committed `1760546` (Hauptcommit, 2 Files +76/-23 LoC) + `b2d805f` (PXZ_VERSION-Bump → 2.7.36)
-- **DB** ✅ Live in Local-WP (9 Stub-Inhalte via WP-CLI + 53 alte Menü-Items via SQL gelöscht)
-- **Cortex-Web** 🟡 uncommitted: SESSION_RESUME.md (dieses Update) — wird gleich committed
-- **Nexus** 🟡 uncommitted: `MEMORY.md` (S42-Zelle-Update + neuer Memory-Eintrag) + `_memory/patterns/theme-rendering-source-check.md` (neu) + `~/.claude/projects/.../memory/feedback_praxis_nav_via_code.md` (neu) — werden gleich committed
-
-### Patterns + Memory (neu in Session 42)
-- **Pattern neu:** `Nexus/_memory/patterns/theme-rendering-source-check.md` — Vor jeder DB-Schreibaktion auf einem Custom-Theme prüfen, ob das Theme tatsächlich `wp_nav_menu()`/Standard-WP-System nutzt oder eine eigene Render-Quelle (PHP-Array, ACF, Block-Pattern) hat. Anti-Pattern aus S42 dokumentiert (53 unnötige Menü-DB-Items).
-- **Memory neu:** `feedback_praxis_nav_via_code.md` (in `~/.claude/projects/.../memory/`) — Status-quo-Entscheidung: Nav/Footer/Stammdaten bleiben PHP-Code, NICHT WP-Admin-bearbeitbar.
-
-### Nicht erledigt (bewusst, kommt in Folge-Sessions)
-- **DB-Migrations-Skript für Prod-Push** (9 Stub-Inhalte + WP-DB-Cleanup-Statements) — Pflicht-Punkt vor M1, aber kann erst sinnvoll erstellt werden, wenn S43 Content-Review abgeschlossen ist.
-- **Page-by-Page-Content-Review mit Dr. Stracke** — Auftrag für Session 43.
-- **i18n** (Übersetzungen aller Pages in EN/FR/ES) — nach Content-Review.
-- **Funktionalität** (Forms, Doctolib, Cookie-Banner-Plugin, Kontaktformular) — nach i18n.
-- Externe Blocker unverändert (L-1/L-2 Legal-Review, C-1 DF-Support, A-2 Foto-Shooting).
-
-### Konsistenz-Auffälligkeiten (KON-001)
-- `sites/praxis-webseite/SESSION_RESUME.md` ist mit ~35 k Tokens (Stand Session 19) **weiterhin stark veraltet** und überholt. Sanitizer überwacht es nicht. LL-044-Kandidat für Rotation in S43 (TODO).
-- Tutorial „WP-CLI mit Local-by-Flywheel auf Mac (Sock-Pfad-Workaround)" weiterhin offen (heute mehrfach genutzt, würde künftige Sessions beschleunigen).
-
-## §3-legacy-41 Session 41 (verkürzt)
-
-S41 Re-Priorisierung „DE-Content vor i18n" + S37-Header-Rollback (Flex statt 4+3-Grid, PXZ 2.7.34 → 2.7.35) + 9 DE-Slug-Stubs (DB-Migration IDs 9701-9709 + WPML-DE-Zuweisung in trid 14701-14709, FAQ in trid=602 verschmolzen) + 8 Slug-Mismatch-Redirects in `inc/redirects.php` + Reading-Width 1,5× (`standard.css`+`page.css`) + Doctolib-Floating-Button mittig rechts (`components.css` §7) + Footer-Single-Source-Fix Homepage (chalk-Override aus `homepage.css` entfernt, Pattern `single-source-ui-region` Footer-Variante) + Doctolib-CTA → Col 1 Adresse + Footer-Nav-Links weiß + Homepage-Texte mit `<br>`-Struktur (mfa_subtitle 3 Zeilen, spec_intro 2 Zeilen, spec/team/loc-Title 1 Zeile) + Container-Cap-Fixes (`.pxz-mfa-hero max-width: none`). HTTP-Sweep 21/21 = 200. Theme-Commit `5e9bb22` PXZ 2.7.35.
-
-## §3-legacy-40 Session 40 (verkürzt)
-
-S40 DS-Block Apple Type-Scale (DS-1..DS-6: Referenz `apple.com/de` → Puppeteer-Scale-Probe → T1–T8 Tokens + Pill-Buttons + Body ×1.5 Option B + Mobile-Stufen-Shift). 116 font-size-Deklarationen auf T-Tokens gemappt. Commits Theme `cc2a0e2` + Cortex-Web `a4898ba`. Phase B: 11 Polish-Requests (Footer ×2/full-width/Flex, Homepage 1987→2019/Hero-Sub `<br>`/Final ×2/MFA ×1.5, Loc-Badges ×3 + Zweitstandort-Hours + Anfahrt-Button, Footer-Logo ×4 auf Header-SVG). Sammel-Commit `7265c70` (PXZ 2.7.34) am S41-Anfang nachgeholt. Patterns: `reference-driven-type-scale`, `button-text-disambiguation`. Tutorial 10.
-
-## §3-legacy-39 Session 39 (verkürzt)
-
-Home-Polish (Hero-Bild `grueneburgweg-empfang.jpg`, Sprachen-Stack unter CTA, Content +25 % auf 1600/1500/1750 px, Hero-Img 1600 px) + Font-Verdopplungs-Rollback (mechanische Regel ohne Type-Scale = FK-3). Meta-Erkenntnis: Claude hat kein visuelles Urteil — Session 40 bekommt Referenz-Seite. S39-Änderungen blieben uncommitted und wurden in S40-Bundle-Commit `cc2a0e2` integriert. PXZ 2.7.29 → 2.7.31.
-
-## §3-legacy-38 Session 38 (verkürzt)
-
-S38 Header-Variante-A + 2 Iterationen (Schrift 21 px bold, Homepage 4+3-Bug-Fix) + Footer-Doppelung gefixt · PXZ 2.7.29 · Pattern `Nexus/_memory/patterns/single-source-ui-region.md` + Tutorial `Second Brain/30 Tutorials/Webentwicklung/WordPress & CSS/24-doppelte-render-quellen-aufspueren.md` · Commits `bca1521` (Theme) · `61fd5db` (Cortex-Web).
-
----
-
-## §3-legacy-36 Session 34–36 — 24h-MVP-Sprint (verkürzt, Vollversion `_archive/sessions/2026-04/sessions-34-36-mvp-sprint.md`)
-
-**Auftrag:** Dr. Stracke „MVP innerhalb 24–48 h" → 24h-Sprint, autonomer Modus mit Kurz-Spec pro Block.
-
-**Drei-Fronten-Verlauf:**
-- **Front 1 — S34 B-2c + B-2d:** Zweigpraxis Bockenheimer Hub + Detail · `inc/redirects.php` mit 15 Legacy-301-Redirects (URI-basiert, parse_request-Hook, cross-site-aware) · 14 Orphan-Pages bereinigt · Slug-Fix Parent-Prefix-Doublung
-- **Front 2 — S35 B-1-template + B-1-6rest + B-2b:** `team-praxis.mjs` + `template-arzt.php` Bio-Renderer für `bio.de` + Qualifikations-Pills · `arzt.css` `.pxz-arzt-chips` · 6 Bio-Stubs für dr-barcsay/seelig/jawich/shahin/landeberg/arbitmann · 6 Merge-Ops via Redirect-Map + Trash
-- **Front 3 — S36 B-3 + B-4-Review + Nav-Anpassung:** `/aktuelles/` neu, Google-Maps-Embed `/standorte/` (Marker-Platzhalter), Impressum + Datenschutz haben Content (Legal-Review L-1/L-2 als Pre-Live-Blocker), Nav `repeat(4, auto)` 7→4+3, S38-Spec geschrieben
-
-**Commits:** Cortex-Web `3481884` · Theme `cb4cfc4` (PXZ 2.7.25) · Theme `e8f7cf3` (PXZ 2.7.26)
-**Artefakte:** `MVP_HANDOFF.md` · `specs/sprint-2/S38_header-menu-redesign.md`
-**Pre-Flight:** 29/29 URLs HTTP 200 · `verify.sh` OK · Sanitizer SESSION_RESUME bei Soft-Warn (15375 Tokens, in S38 rotiert)
+> **LL-053-Sweep (Session 51, 2026-04-28):** Detail-Blöcke S34–S46 ausgelagert. Hot-Layer behält nur §3 (Session 47, N-1 vor S50).
+>
+> Cold-Archive-Files (verlinkt aus §1.0-Index):
+> - **S34–S36** — 24h-MVP-Sprint: [`sessions-34-36-mvp-sprint.md`](_archive/sessions/2026-04/sessions-34-36-mvp-sprint.md)
+> - **S38–S42** — Polish-Arc Header → Type-Scale → Re-Prio → Content-Stubs: [`sessions-38-42-polish-arc.md`](_archive/sessions/2026-04/sessions-38-42-polish-arc.md)
+> - **S43–S46** — Sonntags-Sprint Home-Refactor + Location-SSoT + Slider: [`sessions-43-46-catch-up.md`](_archive/sessions/2026-04/sessions-43-46-catch-up.md)
+>
+> Vor dem Sweep waren §3-legacy-36, -38, -39, -40, -41, -42, -42-detail im Hot-Layer. Single-Source-Konsequenz (LL-053d): jede Session hat genau einen Detail-Pfad.
 
 ---
 
@@ -470,19 +382,25 @@ S38 Header-Variante-A + 2 Iterationen (Schrift 21 px bold, Homepage 4+3-Bug-Fix)
 
 ---
 
-## §5 Sofort-Status-Frage an Dr. Stracke — Session 48
+## §5 Sofort-Status-Frage an Dr. Stracke — Session 52
 
-> **S47 abgeschlossen** (Theme `501f9d5` PXZ 2.7.71). Header sauber bei Mid-Range-Viewports (1024/1280/1365/1440/1920) — kein Overflow mehr, Logo right-sized, Wortmarke ≥1440, Type-Scale fluid via clamp(), Lesetext-Container ≤960. Pattern `single-source-ui-region` (S38) endlich konsequent durchgezogen. Body bei 1365 jetzt 20 px statt 26 px, Hero 68 statt 80, Privacy-Hinweis 32 statt 46.
+> **S51 abgeschlossen (2026-04-28):** Anti-Bloat-Architektur LL-053 produktiv. Cortex-Web SESSION_RESUME 12 387 → 10 348 Tokens (−16,5 %). Alle 7 überwachten Files unter Cap. Sanitizer-Hardgate `--enforce` läuft, blockt Commit bei Verletzung. Drei Cold-Archives angelegt (S38–S42, S43–S46, S47). `SESSION_LIFECYCLE` Schritt 3c jetzt pflichtig.
 >
-> **Vor S43-S46-Lücken-Doku + P3a Phase 3 Content-Review starten:**
+> **Praxis-Pfad zu M1 unverändert** (nicht heute angefasst): Doctolib-Mapping + Page-Review + i18n + Funktionalität + 3 externe Blocker.
+>
+> **Default-Optionen für Session 52:**
 >
 > | | Front | Was passiert | Aufwand |
 > |---|---|---|---|
-> | **α** | **P3a Phase 3 Content-Review starten** (ursprünglicher Auftrag aus S42) | Page-Inventory + Walk-Through pro Page | 1 Session Vorbereitung + iterativ |
-> | **β** | **DESIGN_GUIDELINES §5.2/§8.2/§9.1 nachpflegen** + Spec-Block E + verify.sh erweitern (Block D) | Doku + Tooling-Cleanup | ~30 min |
-> | **γ** | **S43-S46 SESSION_RESUME-Catch-Up** vollständig schreiben (§3-legacy-43..46) | Pure Doku-Arbeit, anhand git log + Theme-Commits | ~45 min |
-> | **δ** | **3 uncommitted Theme-Files klären** (arzt.css/homepage-data.php/template-homepage.php) | Diff-Review, ggf. Sammel-Commit | ~15 min |
-> | ε | Andere Front (S2-Aufräum, Juvantis, etc.) | — | — |
+> | **α** | **P3a Phase 3 Content-Review starten** (Default seit S42) | Page-Inventory + Walk-Through pro Page (25 Detail-Pages) | 1 Session Vorbereitung + iterativ |
+> | **β** | **3 uncommitted Theme-Files klären** (arzt.css/homepage-data.php/template-homepage.php seit S43–S46) | Diff-Review, Sammel-Commit | ~15 min |
+> | **γ** | **4 uncommitted Cortex-Web-Tools klären** (probe-1365.mjs / probe-mid-range.mjs / make-staff-presentation.mjs / remote-access/) — gehören zu S47 oder älter | Diff-Review, ggf. .gitignore oder Commit | ~15 min |
+> | **δ** | **Doctolib-Mapping starten** (Phase 3d für 25 Detail-Pages) — Sie liefern die Direktlinks pro Page | iterativ, abhängig von Ihrer Vorlage | — |
+> | **ε** | **DESIGN_GUIDELINES §5.2/§8.2/§9.1 nachpflegen** mit clamp()-Konvention (Spec-Block E aus S47 offen) | Doku-Cleanup | ~30 min |
+> | **ζ** | **`sites/praxis-webseite/SESSION_RESUME.md` aufräumen** (seit S19 veraltet) — kann jetzt mit LL-053 sauber rotiert werden | Sliding-Window auf Site-Resume anwenden | ~30 min |
+> | η | Andere Front (Juvantis, Cortex-Mesh, etc.) | — | — |
+>
+> **Vorlauf nicht nötig:** Nach Schritt 3c-Workflow rotiert das System bei „Session beenden" automatisch. Sliding-Window kümmert sich.
 
 ## §5-old Sofort-Status-Frage an Dr. Stracke — Session 43 (ARCHIV)
 
