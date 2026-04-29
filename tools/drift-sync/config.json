@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "_comment": "Drift-Sync watched sources. Spec: specs/drift-sync/SPEC.md §4. Erstellt 2026-04-29 in Session 51.",
+  "shopify_store_env": "SHOPIFY_STORE",
+  "shopify_token_env": "SHOPIFY_ADMIN_TOKEN",
+  "report_dir": "tools/drift-sync/reports",
+  "backup_dir": "_archive/drift-sync",
+  "scopes": {
+    "labor": {
+      "_note": "Sanexio-Collection 'Labor' (handle=laboruntersuchung, id=493689143563) — Bluttests",
+      "type": "collection",
+      "collection_handle": "laboruntersuchung",
+      "praxis_target": {
+        "page_template": "template-detail-page.php",
+        "trunk_dir": "trunk/content/products/bluttests",
+        "wp_parent_slug": "labor",
+        "page_status_default": "draft"
+      },
+      "auto_publish_allowed": true
+    },
+    "ultraschall": {
+      "_note": "Sanexio-Collection 'Ultraschall' (handle=ultraschalluntersuchung, id=610973581579) — Sono-spezifisch",
+      "type": "collection",
+      "collection_handle": "ultraschalluntersuchung",
+      "praxis_target": {
+        "page_template": "template-detail-page.php",
+        "trunk_dir": "trunk/content/pages/_shared",
+        "wp_parent_slug": "untersuchungen",
+        "page_status_default": "draft"
+      },
+      "auto_publish_allowed": false
+    },
+    "funktion": {
+      "_note": "Sanexio-Collection 'Funktion' (handle=funktionsuntersuchung, id=610973647115) — Lungenfunktion, Belastungs-EKG, Eye-Check",
+      "type": "collection",
+      "collection_handle": "funktionsuntersuchung",
+      "praxis_target": {
+        "page_template": "template-detail-page.php",
+        "trunk_dir": "trunk/content/pages/_shared",
+        "wp_parent_slug": "untersuchungen",
+        "page_status_default": "draft"
+      },
+      "auto_publish_allowed": false
+    },
+    "check-up": {
+      "_note": "Sanexio-Collection 'Check Up' (handle=ultraschalluntersuchungen Plural, id=493688062219) — Body-Check-Pakete",
+      "type": "collection",
+      "collection_handle": "ultraschalluntersuchungen",
+      "praxis_target": {
+        "page_template": "template-detail-page.php",
+        "trunk_dir": "trunk/content/pages/_shared",
+        "wp_parent_slug": "untersuchungen",
+        "page_status_default": "draft"
+      },
+      "auto_publish_allowed": false
+    },
+    "pages-shared": {
+      "type": "pages",
+      "page_handles": ["body-checks", "bluttests", "biomarker"],
+      "praxis_target": {
+        "page_template": "template-page-hub.php",
+        "trunk_dir": "trunk/content/pages/_shared",
+        "page_status_default": "draft"
+      },
+      "auto_publish_allowed": false
+    }
+  }
+}
