@@ -1,0 +1,32 @@
+id: labor-abwehr-immunsystem
+sku: JVT-8752122003723
+category: bluttests
+status: active
+parameters:
+  - code: TBD
+    einheit: —
+title:
+  de: 'LABOR - SYSTEM: IMMUNE'
+views:
+  juvantis:
+    show_price: true
+    cta_label:
+      de: Jetzt buchen
+    cta_url: https://sanexio.eu/products/labor-abwehr-immunsystem
+  praxis:
+    show_price: false
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/
+images:
+  hero: media://shopify-mirror/labor/labor-abwehr-immunsystem-hero
+sanexio_source:
+  type: product
+  handle: labor-abwehr-immunsystem
+  resource_id: 8752122003723
+  last_synced_at: '2026-04-29T16:49:50.426Z'
+  last_synced_hash: 1b47d091b2ea58dd4ea5319100060e2f5c0e891438b3c21578cae2e37df72a1a
+  drift_strategy: auto-curate
+  local_edits: false
+  collection: laboruntersuchung
+  scope: labor

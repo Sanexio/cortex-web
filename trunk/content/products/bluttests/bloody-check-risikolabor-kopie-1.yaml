@@ -1,0 +1,32 @@
+id: bloody-check-risikolabor-kopie-1
+sku: JVT-8752064889099
+category: bluttests
+status: active
+parameters:
+  - code: TBD
+    einheit: —
+title:
+  de: 'LABOR - SYSTEM: LIVER'
+views:
+  juvantis:
+    show_price: true
+    cta_label:
+      de: Jetzt buchen
+    cta_url: https://sanexio.eu/products/bloody-check-risikolabor-kopie-1
+  praxis:
+    show_price: false
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/
+images:
+  hero: media://shopify-mirror/labor/bloody-check-risikolabor-kopie-1-hero
+sanexio_source:
+  type: product
+  handle: bloody-check-risikolabor-kopie-1
+  resource_id: 8752064889099
+  last_synced_at: '2026-04-29T16:49:48.563Z'
+  last_synced_hash: 5fb6cf12aa24a6a95315027d527210d2ca6a841d4697e3b5617141c601f8568c
+  drift_strategy: auto-curate
+  local_edits: false
+  collection: laboruntersuchung
+  scope: labor

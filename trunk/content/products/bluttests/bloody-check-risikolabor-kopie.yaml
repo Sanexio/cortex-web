@@ -1,0 +1,32 @@
+id: bloody-check-risikolabor-kopie
+sku: JVT-8751091220747
+category: bluttests
+status: active
+parameters:
+  - code: TBD
+    einheit: —
+title:
+  de: Labor - Stoffwechsel
+views:
+  juvantis:
+    show_price: true
+    cta_label:
+      de: Jetzt buchen
+    cta_url: https://sanexio.eu/products/bloody-check-risikolabor-kopie
+  praxis:
+    show_price: false
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/
+images:
+  hero: media://shopify-mirror/labor/bloody-check-risikolabor-kopie-hero
+sanexio_source:
+  type: product
+  handle: bloody-check-risikolabor-kopie
+  resource_id: 8751091220747
+  last_synced_at: '2026-04-29T16:49:47.763Z'
+  last_synced_hash: d4a6457961fc3eb25f0799cc1b268fdf3be119446b207359d4c85d48dbc47ae3
+  drift_strategy: auto-curate
+  local_edits: false
+  collection: laboruntersuchung
+  scope: labor

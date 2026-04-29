@@ -1,0 +1,38 @@
+{
+  "_comment": "Heilversprechen-Wortliste für HWG-Auto-Curation (Schritt C4). Bei Treffer: Stop + manuelle Review. Liste organisch erweiterbar.",
+  "_legal_basis": "HWG (Heilmittelwerbegesetz) §3, §11. Berufsordnung der Landesärztekammer Hessen §27.",
+  "halt_words": [
+    "garantiert heilt",
+    "100% Heilung",
+    "wirkt sicher",
+    "verspricht",
+    "Wunder",
+    "verspricht Erfolg",
+    "alle Patienten",
+    "in jedem Fall",
+    "sicher gesund"
+  ],
+  "review_words": [
+    "Heilung",
+    "heilt",
+    "behandelt erfolgreich",
+    "Schutz vor",
+    "verhindert",
+    "schützt vor",
+    "beugt vor"
+  ],
+  "auto_replace": {
+    "Du ": "Sie ",
+    "du ": "Sie ",
+    " dich ": " Sie ",
+    " dir ": " Ihnen ",
+    " dein ": " Ihr ",
+    " deine ": " Ihre ",
+    " deiner ": " Ihrer ",
+    " deinem ": " Ihrem ",
+    " deinen ": " Ihren ",
+    " deins ": " Ihres ",
+    "Bloody Check": "Blutuntersuchung",
+    "Body Check": "Untersuchung"
+  }
+}

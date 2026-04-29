@@ -24,14 +24,24 @@ sections:
     image: shopify-mirror://detail/kardio-check-hero.jpg
   - type: body
     body_html:
-      de: |-
-        <p>Das Herz schlägt im Durchschnitt etwa 70-mal pro Minute — über 100.000-mal am Tag und mehr als 36 Millionen-mal im Jahr. Es pumpt rund fünf Liter Blut pro Minute, was über 7.000 Liter am Tag entspricht. Unter Belastung kann ein gesundes Herz bis zu 30 Liter pro Minute pumpen.</p>
+      de: >-
+        <p>Das Herz schlägt im Durchschnitt etwa 70-mal pro Minute — über 100.000-mal am Tag und
+        mehr als 36 Millionen-mal im Jahr. Es pumpt rund fünf Liter Blut pro Minute, was über 7.000
+        Liter am Tag entspricht. Unter Belastung kann ein gesundes Herz bis zu 30 Liter pro Minute
+        pumpen.</p>
 
-        <p>Beim Kardio-Check beurteilen wir Herz und Lunge in einer strukturierten Untersuchung — sowohl in Ruhe als auch unter kontrollierter Belastung.</p>
+
+        <p>Beim Kardio-Check beurteilen wir Herz und Lunge in einer strukturierten Untersuchung —
+        sowohl in Ruhe als auch unter kontrollierter Belastung.</p>
+
 
         <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
-        <p>Wir beginnen mit einer klinischen Untersuchung — Herz und Lunge werden abgehört. Anschließend führen wir einen Herzultraschall (Echokardiographie) durch. Es folgen ein Belastungs-EKG (Ergometrie) sowie eine Lungenfunktion (Spirometrie).</p>
+
+        <p>Wir beginnen mit einer klinischen Untersuchung — Herz und Lunge werden abgehört.
+        Anschließend führen wir einen Herzultraschall (Echokardiographie) durch. Es folgen ein
+        Belastungs-EKG (Ergometrie) sowie eine Lungenfunktion (Spirometrie).</p>
+
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
@@ -40,3 +50,13 @@ sections:
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: product
+  handle: kardio-check
+  resource_id: 8109678788875
+  collection: ultraschalluntersuchungen
+  scope: check-up
+  last_synced_at: '2026-04-29T15:49:54.256Z'
+  last_synced_hash: 1b2b18f6e5ecbcd385ff0093a0ec7a262fefe0c69f8e0dd6ae4239758bc74b5e
+  drift_strategy: auto-curate
+  local_edits: true

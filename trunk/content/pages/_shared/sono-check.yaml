@@ -24,28 +24,49 @@ sections:
     image: shopify-mirror://detail/sono-check-hero.jpg
   - type: body
     body_html:
-      de: |-
-        <p>Beim Sono-Check beurteilen wir in einer einzigen Untersuchung alle wichtigen inneren Organe. Wir prüfen unter anderem:</p>
+      de: >-
+        <p>Beim Sono-Check beurteilen wir in einer einzigen Untersuchung alle wichtigen inneren
+        Organe. Wir prüfen unter anderem:</p>
+
 
         <ul>
+
         <li><strong>Schilddrüse</strong> — Knoten und Größenveränderungen</li>
+
         <li><strong>Halsgefäße</strong> — Hinweise auf Verkalkungen</li>
+
         <li><strong>Herz</strong> — Pumpfunktion und strukturelle Veränderungen</li>
+
         <li><strong>Milz</strong> — Größe und Raumforderungen</li>
+
         <li><strong>Nieren</strong> — Harnstau, Zysten oder Raumforderungen</li>
+
         <li><strong>Leber</strong> — Fett- und Strukturveränderungen</li>
+
         <li><strong>Gallenwege</strong> — Gallensteine, Rückstau</li>
+
         <li><strong>Bauchspeicheldrüse</strong> — Zysten oder Raumforderungen</li>
+
         <li><strong>Darm</strong> — Hinweise auf Entzündungsveränderungen</li>
+
         <li><strong>Harnblase</strong> — Hinweise auf Polypen</li>
+
         <li><strong>Prostata</strong> — Größe und Raumforderungen</li>
+
         <li><strong>Uterus</strong> — Myome und andere Veränderungen</li>
+
         <li><strong>Becken- und Beingefäße</strong> — Hinweise auf Verkalkungen</li>
+
         </ul>
+
 
         <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
-        <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Organe durch. Es ist günstig, nüchtern zur Untersuchung zu kommen. Die Untersuchung dauert etwa 45 Minuten.</p>
+
+        <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Organe durch.
+        Es ist günstig, nüchtern zur Untersuchung zu kommen. Die Untersuchung dauert etwa 45
+        Minuten.</p>
+
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
@@ -54,3 +75,13 @@ sections:
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: product
+  handle: sono-check
+  resource_id: 8117415444747
+  collection: ultraschalluntersuchung
+  scope: ultraschall
+  last_synced_at: '2026-04-29T15:49:53.671Z'
+  last_synced_hash: d853c4e219ffbc630ad83a287f8df464b212b51feff308d59022a6a85ae287b6
+  drift_strategy: auto-curate
+  local_edits: true

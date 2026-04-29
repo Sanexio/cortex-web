@@ -24,19 +24,30 @@ sections:
     image: shopify-mirror://detail/komplett-check-hero.jpg
   - type: body
     body_html:
-      de: |-
-        <p>Der Komplett-Check fasst eine ausführliche Vorsorgeuntersuchung zusammen. In etwa zwei Stunden führen wir eine strukturierte ärztliche Beurteilung durch.</p>
+      de: >-
+        <p>Der Komplett-Check fasst eine ausführliche Vorsorgeuntersuchung zusammen. In etwa zwei
+        Stunden führen wir eine strukturierte ärztliche Beurteilung durch.</p>
+
 
         <h2>Welche Untersuchungen umfasst der Komplett-Check?</h2>
 
+
         <ul>
+
         <li>Ultraschall der Schilddrüse</li>
+
         <li>Ultraschall der Halsgefäße (Carotis-Duplex)</li>
+
         <li>Echokardiographie (Herzultraschall)</li>
+
         <li>Ultraschall des Bauchraums</li>
+
         <li>Belastungs-EKG (Ergometrie)</li>
+
         <li>Lungenfunktion (Spirometrie)</li>
+
         </ul>
+
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
@@ -45,3 +56,13 @@ sections:
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: product
+  handle: komplett-check
+  resource_id: 8117165523211
+  collection: ultraschalluntersuchungen
+  scope: check-up
+  last_synced_at: '2026-04-29T15:49:54.255Z'
+  last_synced_hash: 264769efbad00fdc66a0e6844749953a024a9d9a1f1ec750e9bbc03dc988ae4b
+  drift_strategy: auto-curate
+  local_edits: true

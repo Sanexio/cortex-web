@@ -1,0 +1,32 @@
+id: biohack-test
+sku: JVT-8115637125387
+category: bluttests
+status: active
+parameters:
+  - code: TBD
+    einheit: —
+title:
+  de: 'BioHack-Bluttest: Genetische Beratung'
+views:
+  juvantis:
+    show_price: true
+    cta_label:
+      de: Jetzt buchen
+    cta_url: https://sanexio.eu/products/biohack-test
+  praxis:
+    show_price: false
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/
+images:
+  hero: media://shopify-mirror/labor/biohack-test-hero
+sanexio_source:
+  type: product
+  handle: biohack-test
+  resource_id: 8115637125387
+  last_synced_at: '2026-04-29T16:49:47.037Z'
+  last_synced_hash: 74ff08a6dcc2457546b11a768a9c7da5d72d9649266208bb07e25f731a978a67
+  drift_strategy: auto-curate
+  local_edits: false
+  collection: laboruntersuchung
+  scope: labor

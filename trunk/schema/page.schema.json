@@ -392,6 +392,60 @@
           "items": { "type": "integer", "minimum": 1 }
         }
       }
+    },
+    "sanexio_source": {
+      "type": "object",
+      "description": "Provenance-Block (LL-053-konform, drift-sync seit 2026-04-29). Verknüpft Trunk-YAML mit Sanexio-Source. Auch bei lokal editiertem Praxis-Content bleibt der Bezug erhalten. Spec: specs/drift-sync/SPEC.md §E2.",
+      "required": ["type", "handle", "resource_id", "last_synced_at", "last_synced_hash"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["page", "product"],
+          "description": "Shopify-Resource-Typ"
+        },
+        "handle": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Shopify-Handle (= Slug). Convenience, kann sich ändern; resource_id ist stabil."
+        },
+        "collection": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Sanexio-Collection-Handle (nur bei type=product)."
+        },
+        "resource_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Shopify-Numerische-ID — STABIL über Handle-Renaming, primärer Drift-Anker."
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["labor", "untersuchungen", "body-checks", "pages-shared"],
+          "description": "Logischer Drift-Scope (siehe tools/drift-sync/config.json)."
+        },
+        "last_synced_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 Timestamp des letzten erfolgreichen Sync."
+        },
+        "last_synced_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 der canonicalized Source-Daten (preis-unabhängig). Drift-Vergleich gegen current_hash."
+        },
+        "drift_strategy": {
+          "type": "string",
+          "enum": ["auto-curate", "manual", "frozen"],
+          "default": "auto-curate",
+          "description": "auto-curate: Auto-Sync (D3 Default) · manual: Drift wird nur gemeldet · frozen: kein Drift-Check"
+        },
+        "local_edits": {
+          "type": "boolean",
+          "default": false,
+          "description": "true = Praxis-Content wurde lokal angepasst. Auto-Sync stoppt bei Drift (LOCAL_DRIFT-Strategie)."
+        }
+      }
     }
   }
 }

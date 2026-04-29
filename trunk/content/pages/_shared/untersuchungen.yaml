@@ -19,167 +19,189 @@ views:
 wp:
   page_template: template-untersuchungen-hub.php
   legacy_ids:
-  - 9682
+    - 9682
 sections:
-- type: hero
-  eyebrow:
-    de: Apparative Untersuchungen
-  heading:
-    de: Sie sind mehr als die Summe Ihrer Teile.
-  lead:
-    de: Bei uns laufen Ultraschall, EKG, Lungenfunktion und Labor unter einem Dach zusammen. Apparative Untersuchung und ärztliche Einordnung in einer Hand — das spart Wege und gibt Ihnen schneller Klarheit.
-- type: usp-box
-  variant: dark
-  heading:
-    de: Was uns auszeichnet
-  text:
-    de: Acht Fachrichtungen, ein Haus, eine gemeinsame Patientenakte. Wenn der Befund Ihrer Schilddrüsen-Sonographie für die internistische Abklärung relevant ist, erfolgt die Abstimmung noch am selben
-      Tag — direkt im selben Haus.
-- type: bento-grid
-  heading:
-    de: Unser Untersuchungs-Spektrum
-  items:
-  - id: echokardiographie
-    title:
-      de: Echokardiographie
-    teaser:
-      de: Ultraschall des Herzens — Pumpfunktion, Klappen, Wandbewegungen.
-    image: shopify-mirror://diagnostik/diag-echokardiographie.jpg
-    href: /echokardiographie/
-  - id: carotis
-    title:
-      de: Carotis-Duplex
-    teaser:
-      de: Ultraschall der Halsschlagadern — frühe Hinweise auf Gefäßveränderungen.
-    image: shopify-mirror://diagnostik/diag-carotis.jpg
-    href: /carotis-duplex/
-  - id: schilddruese
-    title:
-      de: Schilddrüsen-Sonographie
-    teaser:
-      de: Knoten, Zysten und Größenveränderungen sichtbar machen.
-    image: shopify-mirror://diagnostik/diag-schilddruese.jpg
-    href: /sonographie/schilddruese/
-  - id: bauchorgane
-    title:
-      de: Sonographie der Bauchorgane
-    teaser:
-      de: Leber, Galle, Pankreas, Milz, Nieren — strahlungsfreie Bildgebung.
-    image: shopify-mirror://diagnostik/diag-sonographie.jpg
-    href: /sonographie/
-  - id: pankreas
-    title:
-      de: Bauchspeicheldrüse
-    teaser:
-      de: Gezielter Ultraschall eines kleinen, aber zentralen Organs.
-    image: shopify-mirror://diagnostik/diag-pankreas.jpg
-    href: /sonographie/bauchspeicheldruese/
-  - id: nieren
-    title:
-      de: Nieren und Harnwege
-    teaser:
-      de: Filtereinheiten Ihres Körpers im Blick.
-    image: shopify-mirror://diagnostik/diag-niere.jpg
-    href: /sonographie/nieren/
-  - id: prostata
-    title:
-      de: Prostata und Harnblase
-    teaser:
-      de: Größe, Restharn, Auffälligkeiten.
-    image: shopify-mirror://diagnostik/diag-prostata.jpg
-    href: /sonographie/prostata/
-  - id: leber
-    title:
-      de: Leber und Gallenblase
-    teaser:
-      de: Funktion, Struktur und mögliche Schäden.
-    image: shopify-mirror://diagnostik/diag-leber.jpg
-    href: /sonographie/leber/
-  - id: belastungs-ekg
-    title:
-      de: Belastungs-EKG
-    teaser:
-      de: Ergometrie auf dem Fahrrad — Herzkreislauf unter Belastung.
-    image: shopify-mirror://diagnostik/diag-belastungs-ekg.jpg
-    href: /belastungs-ekg/
-  - id: lungenfunktion
-    title:
-      de: Lungenfunktion
-    teaser:
-      de: Spirometrie — Vitalkapazität, FEV1, Atemwegswiderstand.
-    image: shopify-mirror://diagnostik/diag-lungenfunktion.jpg
-    href: /lungenfunktion/
-  - id: body-check
-    title:
-      de: Body Check
-    teaser:
-      de: Klinische Untersuchung mit EKG und Urintest.
-    image: shopify-mirror://leistungen/leistung-body-check.jpg
-    href: /body-check/
-  - id: sono-check
-    title:
-      de: Sono Check
-    teaser:
-      de: Umfassende Ultraschall-Vorsorge in einer Sitzung.
-    image: shopify-mirror://diagnostik/diag-sono-check.jpg
-    href: /sono-check/
-  - id: komplett-check
-    title:
-      de: Komplett-Check
-    teaser:
-      de: Alle apparativen Untersuchungen in einem Termin.
-    image: shopify-mirror://leistungen/leistung-komplett-check.jpg
-    href: /komplett-check/
-  - id: kardio-check
-    title:
-      de: Kardio Check
-    teaser:
-      de: Strukturierte Herz-Kreislauf-Vorsorge.
-    image: shopify-mirror://leistungen/leistung-kardio-check.jpg
-    href: /kardio-check/
-  - id: fit-for-diving
-    title:
-      de: Fit for Diving
-    teaser:
-      de: Tauchtauglichkeitsuntersuchung für Open Water und Advanced.
-    image: shopify-mirror://diagnostik/diag-fit-for-diving.jpg
-    href: /fit-for-diving/
-  - id: eye-check
-    title:
-      de: Eye Check
-    teaser:
-      de: Reaktionszeit-Test — wie schnell verarbeiten Ihre Augen Information?
-    image: shopify-mirror://diagnostik/diag-eye-check.jpg
-    href: /eye-check/
-- type: process-steps
-  heading:
-    de: So läuft Ihre Untersuchung ab
-  steps:
-  - num: '1'
-    title:
-      de: Termin
+  - type: hero
+    eyebrow:
+      de: Apparative Untersuchungen
+    heading:
+      de: Sie sind mehr als die Summe Ihrer Teile.
+    lead:
+      de: >-
+        Bei uns laufen Ultraschall, EKG, Lungenfunktion und Labor unter einem Dach zusammen.
+        Apparative Untersuchung und ärztliche Einordnung in einer Hand — das spart Wege und gibt
+        Ihnen schneller Klarheit.
+  - type: usp-box
+    variant: dark
+    heading:
+      de: Was uns auszeichnet
     text:
-      de: Telefonisch oder online — wir klären vorab, was sinnvoll ist.
-  - num: '2'
-    title:
-      de: Untersuchung
-    text:
-      de: In ruhiger Atmosphäre, individuell auf Sie abgestimmt.
-  - num: '3'
-    title:
-      de: Befund
-    text:
-      de: Ärztliche Einordnung im persönlichen Gespräch — keine PDFs ohne Erklärung.
-  - num: '4'
-    title:
-      de: Weiteres Vorgehen
-    text:
-      de: Falls nötig, koordinieren wir die nächsten Schritte mit unseren Fachkollegen im Haus.
-- type: cta-banner
-  heading:
-    de: Bereit für Ihre Untersuchung?
-  sub:
-    de: Wir nehmen uns Zeit für ein Gespräch, bevor wir messen.
-  cta_label:
-    de: Termin vereinbaren
-  cta_url: /service/terminanfrage/
+      de: >-
+        Acht Fachrichtungen, ein Haus, eine gemeinsame Patientenakte. Wenn der Befund Ihrer
+        Schilddrüsen-Sonographie für die internistische Abklärung relevant ist, erfolgt die
+        Abstimmung noch am selben Tag — direkt im selben Haus.
+  - type: bento-grid
+    heading:
+      de: Ultraschall
+    items:
+      - id: echokardiographie
+        title:
+          de: Echokardiographie
+        teaser:
+          de: Ultraschall des Herzens — Pumpfunktion, Klappen, Wandbewegungen.
+        image: shopify-mirror://diagnostik/diag-echokardiographie.jpg
+        href: /echokardiographie/
+      - id: carotis
+        title:
+          de: Carotis-Duplex
+        teaser:
+          de: Ultraschall der Halsschlagadern — frühe Hinweise auf Gefäßveränderungen.
+        image: shopify-mirror://diagnostik/diag-carotis.jpg
+        href: /carotis-duplex/
+      - id: schilddruese
+        title:
+          de: Schilddrüsen-Sonographie
+        teaser:
+          de: Knoten, Zysten und Größenveränderungen sichtbar machen.
+        image: shopify-mirror://diagnostik/diag-schilddruese.jpg
+        href: /sonographie/schilddruese/
+      - id: bauchorgane
+        title:
+          de: Sonographie der Bauchorgane
+        teaser:
+          de: Leber, Galle, Pankreas, Milz, Nieren — strahlungsfreie Bildgebung.
+        image: shopify-mirror://diagnostik/diag-sonographie.jpg
+        href: /sonographie/
+      - id: pankreas
+        title:
+          de: Bauchspeicheldrüse
+        teaser:
+          de: Gezielter Ultraschall eines kleinen, aber zentralen Organs.
+        image: shopify-mirror://diagnostik/diag-pankreas.jpg
+        href: /sonographie/bauchspeicheldruese/
+      - id: nieren
+        title:
+          de: Nieren und Harnwege
+        teaser:
+          de: Filtereinheiten Ihres Körpers im Blick.
+        image: shopify-mirror://diagnostik/diag-niere.jpg
+        href: /sonographie/nieren/
+      - id: prostata
+        title:
+          de: Prostata und Harnblase
+        teaser:
+          de: Größe, Restharn, Auffälligkeiten.
+        image: shopify-mirror://diagnostik/diag-prostata.jpg
+        href: /sonographie/prostata/
+      - id: leber
+        title:
+          de: Leber und Gallenblase
+        teaser:
+          de: Funktion, Struktur und mögliche Schäden.
+        image: shopify-mirror://diagnostik/diag-leber.jpg
+        href: /sonographie/leber/
+  - type: bento-grid
+    heading:
+      de: Funktion
+    items:
+      - id: belastungs-ekg
+        title:
+          de: Belastungs-EKG
+        teaser:
+          de: Ergometrie auf dem Fahrrad — Herzkreislauf unter Belastung.
+        image: shopify-mirror://diagnostik/diag-belastungs-ekg.jpg
+        href: /belastungs-ekg/
+      - id: lungenfunktion
+        title:
+          de: Lungenfunktion
+        teaser:
+          de: Spirometrie — Vitalkapazität, FEV1, Atemwegswiderstand.
+        image: shopify-mirror://diagnostik/diag-lungenfunktion.jpg
+        href: /lungenfunktion/
+      - id: eye-check
+        title:
+          de: Eye Check
+        teaser:
+          de: Reaktionszeit-Test — wie schnell verarbeiten Ihre Augen Information?
+        image: shopify-mirror://diagnostik/diag-eye-check.jpg
+        href: /eye-check/
+  - type: bento-grid
+    heading:
+      de: Check-Ups
+    items:
+      - id: body-check
+        title:
+          de: Body Check
+        teaser:
+          de: Klinische Untersuchung mit EKG und Urintest.
+        image: shopify-mirror://leistungen/leistung-body-check.jpg
+        href: /body-check/
+      - id: sono-check
+        title:
+          de: Sono Check
+        teaser:
+          de: Umfassende Ultraschall-Vorsorge in einer Sitzung.
+        image: shopify-mirror://diagnostik/diag-sono-check.jpg
+        href: /sono-check/
+      - id: komplett-check
+        title:
+          de: Komplett-Check
+        teaser:
+          de: Alle apparativen Untersuchungen in einem Termin.
+        image: shopify-mirror://leistungen/leistung-komplett-check.jpg
+        href: /komplett-check/
+      - id: kardio-check
+        title:
+          de: Kardio Check
+        teaser:
+          de: Strukturierte Herz-Kreislauf-Vorsorge.
+        image: shopify-mirror://leistungen/leistung-kardio-check.jpg
+        href: /kardio-check/
+      - id: fit-for-diving
+        title:
+          de: Fit for Diving
+        teaser:
+          de: Tauchtauglichkeitsuntersuchung für Open Water und Advanced.
+        image: shopify-mirror://diagnostik/diag-fit-for-diving.jpg
+        href: /fit-for-diving/
+  - type: process-steps
+    heading:
+      de: So läuft Ihre Untersuchung ab
+    steps:
+      - num: '1'
+        title:
+          de: Termin
+        text:
+          de: Telefonisch oder online — wir klären vorab, was sinnvoll ist.
+      - num: '2'
+        title:
+          de: Untersuchung
+        text:
+          de: In ruhiger Atmosphäre, individuell auf Sie abgestimmt.
+      - num: '3'
+        title:
+          de: Befund
+        text:
+          de: Ärztliche Einordnung im persönlichen Gespräch — keine PDFs ohne Erklärung.
+      - num: '4'
+        title:
+          de: Weiteres Vorgehen
+        text:
+          de: Falls nötig, koordinieren wir die nächsten Schritte mit unseren Fachkollegen im Haus.
+  - type: cta-banner
+    heading:
+      de: Bereit für Ihre Untersuchung?
+    sub:
+      de: Wir nehmen uns Zeit für ein Gespräch, bevor wir messen.
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: body-checks
+  resource_id: 157742203147
+  scope: pages-shared
+  last_synced_at: '2026-04-29T15:49:54.538Z'
+  last_synced_hash: 08cd4177af84ac19bf39d7b665cffaba1989ddeac2dd88b6d07b3929321cf1ca
+  drift_strategy: auto-curate
+  local_edits: true

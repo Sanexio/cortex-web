@@ -1,0 +1,32 @@
+id: bloody-check
+sku: JVT-8112990322955
+category: bluttests
+status: active
+parameters:
+  - code: TBD
+    einheit: —
+title:
+  de: Labor - Risikoprofil
+views:
+  juvantis:
+    show_price: true
+    cta_label:
+      de: Jetzt buchen
+    cta_url: https://sanexio.eu/products/bloody-check
+  praxis:
+    show_price: false
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/
+images:
+  hero: media://shopify-mirror/labor/bloody-check-hero
+sanexio_source:
+  type: product
+  handle: bloody-check
+  resource_id: 8112990322955
+  last_synced_at: '2026-04-29T16:49:46.126Z'
+  last_synced_hash: 4651a8954bca818e2ed0fe096659e54ea54dc56a22ff66a9cb4bd7a214a9dfbd
+  drift_strategy: auto-curate
+  local_edits: false
+  collection: laboruntersuchung
+  scope: labor

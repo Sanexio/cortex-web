@@ -24,7 +24,7 @@
 //   cw-transfer list
 
 import { spawnSync } from "node:child_process";
-import { resolve, dirname } from "node:path";
+import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { RENDERER_REGISTRY as SHOPIFY_RENDERERS } from "../adapters/shopify/lib/renderer-registry.mjs";
 import { EXTRACTOR_REGISTRY as SHOPIFY_EXTRACTORS } from "../adapters/shopify/lib/extractor-registry.mjs";
@@ -173,14 +173,70 @@ function cmdList() {
   process.stdout.write("\nSee specs/cross-site-transfer/PATTERNS.md for context.\n");
 }
 
+// --- drift-Verb (Sanexio→Praxis Auto-Sync, seit 2026-04-29) ---
+// Spec: specs/drift-sync/SPEC.md
+
+function cmdDrift(subVerb, ...rest) {
+  const driftDir = resolve(REPO_ROOT, "tools", "drift-sync");
+  if (!subVerb || subVerb === "help") {
+    process.stdout.write(`cw-transfer drift — Sanexio → Praxis Auto-Sync
+
+Usage:
+  cw-transfer drift status [--scope=<name>] [--json]      Drift-Bericht (read-only)
+  cw-transfer drift sync   [--scope=<name>] [--auto-publish] [--dry-run]
+                                                          Auto-Curate + Push (D3 default = WP-draft)
+  cw-transfer drift backfill                              Bestehende Trunk-YAMLs mit sanexio_source-Block versehen
+  cw-transfer drift help                                  diese Hilfe
+
+Scopes (siehe tools/drift-sync/config.json):
+  labor             Sanexio-Bluttests-Collection (auto-publish erlaubt)
+  untersuchungen    Ultraschall-Untersuchungen (immer draft)
+  body-checks       Body-Check-Produkte (immer draft)
+  pages-shared      Hub-Pages body-checks/bluttests/biomarker (immer draft)
+
+Drift-Status:
+  NEW          Auf Sanexio neu — wird auto-curated angelegt
+  UPDATED      Sanexio hat Änderung — Trunk wird aktualisiert (lokale views.praxis bleibt)
+  LOCAL_DRIFT  Praxis lokal editiert UND Sanexio geändert — STOPP, manuelle Auflösung
+  REMOVED      Auf Sanexio nicht mehr — Trunk archiviert, WP auf draft
+  CLEAN        Synchron, nichts zu tun
+
+Spec: specs/drift-sync/SPEC.md
+`);
+    process.exit(0);
+  }
+
+  if (subVerb === "status") {
+    const args = rest.filter((a) => a !== undefined);
+    const result = spawnSync("bun", [join(driftDir, "detect.mjs"), ...args], { stdio: "inherit" });
+    process.exit(result.status || 0);
+  }
+
+  if (subVerb === "sync") {
+    const args = rest.filter((a) => a !== undefined);
+    const result = spawnSync("bun", [join(driftDir, "sync.mjs"), ...args], { stdio: "inherit" });
+    process.exit(result.status || 0);
+  }
+
+  if (subVerb === "backfill") {
+    const backfillScript = join(driftDir, "backfill.mjs");
+    const result = spawnSync("bun", [backfillScript, ...rest], { stdio: "inherit" });
+    process.exit(result.status || 0);
+  }
+
+  die(1, `unknown drift sub-verb "${subVerb}" — try: cw-transfer drift help`);
+}
+
 // --- main ---
 
-const [, , verb, spec, arg] = process.argv;
+const [, , verb, ...rest] = process.argv;
+const [spec, arg] = rest;
 switch (verb) {
   case "push": cmdPush(spec, arg); break;
   case "pull": cmdPull(spec, arg); break;
   case "diff": cmdDiff(spec, arg); break;
   case "list": cmdList(); break;
+  case "drift": cmdDrift(spec, ...rest.slice(1)); break;
   case "help":
   case undefined:
   case "--help":

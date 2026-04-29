@@ -1,0 +1,32 @@
+id: labor-check-up
+sku: JVT-8752139305227
+category: bluttests
+status: active
+parameters:
+  - code: TBD
+    einheit: —
+title:
+  de: 'LABOR - STATUS: ADVANCED'
+views:
+  juvantis:
+    show_price: true
+    cta_label:
+      de: Jetzt buchen
+    cta_url: https://sanexio.eu/products/labor-check-up
+  praxis:
+    show_price: false
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/
+images:
+  hero: media://shopify-mirror/labor/labor-check-up-hero
+sanexio_source:
+  type: product
+  handle: labor-check-up
+  resource_id: 8752139305227
+  last_synced_at: '2026-04-29T16:49:52.622Z'
+  last_synced_hash: b13c8b0206bead3b5fbce00218c80fc8f74d769d086eca6d48c0378ebae66f6f
+  drift_strategy: auto-curate
+  local_edits: false
+  collection: laboruntersuchung
+  scope: labor

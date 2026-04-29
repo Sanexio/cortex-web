@@ -382,7 +382,41 @@ Neue Datei `Nexus/_rules/MEMORY_LAYERS.md` mit LL-053a–d definiert (Sliding-Wi
 
 ---
 
-## §5 Sofort-Status-Frage an Dr. Stracke — Session 52
+## §5 Sofort-Status-Frage an Dr. Stracke — Session 53
+
+> **S52 abgeschlossen (2026-04-29, Session abgebrochen vor Session-beenden-Workflow):**
+> Untersuchungen-Submenu in 3 Gruppen unterteilt — Theme-Commits `a4ecf5c` (PXZ 2.7.75 Mega-Menu + Hub sektioniert) + `fb88c41` (PXZ 2.7.76 Labels gekürzt auf Ultraschall/Funktion/Check-Ups). Gruppen-Verteilung: 8 Ultraschall + 3 Funktion (inkl. Eye Check) + 5 Check-Ups. Mega-Menu Desktop / `<h3>`-Trenner Mobile / 3 Bento-Sections auf Hub. Spec `S52_untersuchungen-submenu-gruppen.md`. Memory neu: `feedback_design_length_proactive.md` (Längen-Hinweise früh geben).
+>
+> **🟡 OFFEN AUS S52 — EINSTIEGSPUNKT FÜR S53 (Dr.-Stracke-Anfrage am Ende, nicht beantwortet):**
+> Architektur-Entscheidung: „Soll ich künftig eigenständig neue Untersuchungen auf der Sanexio-Storefront erkennen + automatisch der Praxis-Webseite (Menü + Hub-Page) in der richtigen Gruppe zuordnen — oder Architektur erst verfestigen?"
+>
+> 4 Optionen liegen vor (kein Spec geschrieben, nur Architektur-Skizze im Chat):
+> - **A** Single-Source-Registry `untersuchungen.registry.yaml` mit Pflichtfeld `group: ultraschall|funktion|checkup` → `nav-data.php` + `untersuchungen.yaml` werden daraus generiert (~1 Session)
+> - **B** A + Detection-Tool `tools/sanexio-watch.mjs` (Storefront-Diff Trunk vs. Live) (+0,5 Session)
+> - **C** A + B + Bestätigungs-Gate (pro neuer Slug Vorschlag an Dr. Stracke per Telegram/Chat, dann Auto-Rollout) (+0,3 Session) — von mir als haltbarste empfohlen
+> - **D** Status quo, jede neue Untersuchung als Einzel-Auftrag mit Phase 1–4
+>
+> Ungeklärt: SSoT für Klassifikation (heute lebt die Gruppen-Zuordnung in nav-data.php UND untersuchungen.yaml — Drift technisch möglich), Detection-Mechanismus (heute gibt es keinen), Klassifikations-Sicherheit (Eye Check war Grenzfall — fachlich Funktion, Marketing-Name suggeriert Check-Up).
+>
+> **🔴 Session-Beenden-Workflow nicht ausgeführt:** kein Konsistenz-Audit, kein Sanitizer-Probe/Apply, kein Sliding-Window, kein Dashboard. Bei nächstem Session-Start: explizit „Session 52 nachträglich beenden" anbieten ODER S53 startet direkt mit der Architektur-Frage und beendet beide Sessions am Ende von S53.
+>
+> **Praxis-Pfad zu M1 unverändert:** Doctolib-Mapping + Page-Review + i18n + Funktionalität + 3 externe Blocker (L-1/L-2/C-1).
+>
+> **Default-Optionen für Session 53:**
+>
+> | | Front | Was passiert | Aufwand |
+> |---|---|---|---|
+> | **α** | **Sanexio-Auto-Mirror-Architektur** (Fortsetzung S52-Frage) — Sie wählen A/B/C/D, ich schreibe Spec | iterativ |
+> | **β** | **Session 52 nachträglich beenden** (6-Schritte-Workflow + Sanitizer + Dashboard) | ~10 min |
+> | γ | P3a Phase 3 Content-Review starten | iterativ |
+> | δ | Doctolib-Mapping starten (Phase 3d für 16 Detail-Pages) | iterativ |
+> | ε | 3 uncommitted Theme-Files klären (arzt.css/homepage-data.php/template-homepage.php) | ~15 min |
+> | ζ | 4 uncommitted Cortex-Web-Tools klären | ~15 min |
+> | η | DESIGN_GUIDELINES §5.2/§8.2/§9.1 nachpflegen (clamp() aus S47) | ~30 min |
+> | θ | sites/praxis-webseite/SESSION_RESUME.md aufräumen (seit S19 veraltet) | ~30 min |
+> | ι | Andere Front (Juvantis, Cortex-Mesh, etc.) | — |
+
+## §5-old-Session-52 Sofort-Status-Frage an Dr. Stracke — Session 52 (ARCHIV)
 
 > **S51 abgeschlossen (2026-04-28):** Anti-Bloat-Architektur LL-053 produktiv. Cortex-Web SESSION_RESUME 12 387 → 10 348 Tokens (−16,5 %). Alle 7 überwachten Files unter Cap. Sanitizer-Hardgate `--enforce` läuft, blockt Commit bei Verletzung. Drei Cold-Archives angelegt (S38–S42, S43–S46, S47). `SESSION_LIFECYCLE` Schritt 3c jetzt pflichtig.
 >

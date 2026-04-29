@@ -24,12 +24,20 @@ sections:
     image: shopify-mirror://detail/body-check-hero.jpg
   - type: body
     body_html:
-      de: |-
-        <p>Der Body-Check ist eine strukturierte ärztliche Bestandsaufnahme Ihres aktuellen Gesundheitszustandes. Geeignet sowohl für sportlich aktive Patientinnen und Patienten als auch zur Vorsorge.</p>
+      de: >-
+        <p>Der Body-Check ist eine strukturierte ärztliche Bestandsaufnahme Ihres aktuellen
+        Gesundheitszustandes. Geeignet sowohl für sportlich aktive Patientinnen und Patienten als
+        auch zur Vorsorge.</p>
+
 
         <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
-        <p>Eine Ärztin oder ein Arzt führt eine ausführliche Anamnese (Gesundheitsgespräch) sowie eine vollständige klinische Untersuchung durch. Dazu gehört ein 12-Kanal-EKG sowie ein Urintest. Bringen Sie zu diesem Termin auch Ihren Impfpass mit — wir prüfen den Impfstatus gleich mit.</p>
+
+        <p>Eine Ärztin oder ein Arzt führt eine ausführliche Anamnese (Gesundheitsgespräch) sowie
+        eine vollständige klinische Untersuchung durch. Dazu gehört ein 12-Kanal-EKG sowie ein
+        Urintest. Bringen Sie zu diesem Termin auch Ihren Impfpass mit — wir prüfen den Impfstatus
+        gleich mit.</p>
+
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
@@ -38,3 +46,13 @@ sections:
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: product
+  handle: body-check
+  resource_id: 8115901825291
+  collection: ultraschalluntersuchungen
+  scope: check-up
+  last_synced_at: '2026-04-29T15:49:54.254Z'
+  last_synced_hash: f92794f061727dde5371f6304a0555c85517c297e27b3dff2e2e5bd3a2196bfd
+  drift_strategy: auto-curate
+  local_edits: true

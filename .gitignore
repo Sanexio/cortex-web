@@ -45,3 +45,7 @@ sites/*/screenshots/claude/
 
 # CW-008 — Cross-site-transfer backups (local only)
 adapters/*/.backups/
+
+# Drift-Sync — Drift-Reports sind zeitstempel-spezifisch, nicht git-trackbar wertvoll.
+# Spec: specs/drift-sync/SPEC.md
+tools/drift-sync/reports/

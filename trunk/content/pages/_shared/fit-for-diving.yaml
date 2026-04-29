@@ -24,12 +24,21 @@ sections:
     image: shopify-mirror://detail/fit-for-diving-hero.jpg
   - type: body
     body_html:
-      de: |-
-        <p>Die Tauchtauglichkeitsuntersuchung dokumentiert Ihre Eignung zum Sporttauchen. Wir untersuchen Sie wahlweise als Open Water Diver (Tauchtiefe bis 18 Meter) oder als Advanced Open Water Diver (Tauchtiefe bis 30 Meter, sowie alle Taucherinnen und Taucher über 40 Jahren). Untersuchungen für Deep-Diver oder technisches Tauchen bieten wir auf Nachfrage an.</p>
+      de: >-
+        <p>Die Tauchtauglichkeitsuntersuchung dokumentiert Ihre Eignung zum Sporttauchen. Wir
+        untersuchen Sie wahlweise als Open Water Diver (Tauchtiefe bis 18 Meter) oder als Advanced
+        Open Water Diver (Tauchtiefe bis 30 Meter, sowie alle Taucherinnen und Taucher über 40
+        Jahren). Untersuchungen für Deep-Diver oder technisches Tauchen bieten wir auf Nachfrage
+        an.</p>
+
 
         <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
-        <p>Für Open Water Diver führen wir eine Ganzkörperuntersuchung inklusive Otoskopie (Ohruntersuchung) sowie eine Lungenfunktion durch. Bei Advanced Open Water Diver wird die Untersuchung zusätzlich um ein Belastungs-EKG ergänzt.</p>
+
+        <p>Für Open Water Diver führen wir eine Ganzkörperuntersuchung inklusive Otoskopie
+        (Ohruntersuchung) sowie eine Lungenfunktion durch. Bei Advanced Open Water Diver wird die
+        Untersuchung zusätzlich um ein Belastungs-EKG ergänzt.</p>
+
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
@@ -38,3 +47,13 @@ sections:
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: product
+  handle: fit-for-diving
+  resource_id: 8116777615627
+  collection: ultraschalluntersuchungen
+  scope: check-up
+  last_synced_at: '2026-04-29T15:49:54.253Z'
+  last_synced_hash: e8d24532b2d97e61180f2f3b3a1e7bcb977e90016b4eb4e36bc8594a08ed02a8
+  drift_strategy: auto-curate
+  local_edits: true

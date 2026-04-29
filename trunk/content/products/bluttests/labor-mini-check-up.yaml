@@ -1,0 +1,32 @@
+id: labor-mini-check-up
+sku: JVT-8752193831179
+category: bluttests
+status: active
+parameters:
+  - code: TBD
+    einheit: —
+title:
+  de: 'LABOR - STATUS: BASELINE'
+views:
+  juvantis:
+    show_price: true
+    cta_label:
+      de: Jetzt buchen
+    cta_url: https://sanexio.eu/products/labor-mini-check-up
+  praxis:
+    show_price: false
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/
+images:
+  hero: media://shopify-mirror/labor/labor-mini-check-up-hero
+sanexio_source:
+  type: product
+  handle: labor-mini-check-up
+  resource_id: 8752193831179
+  last_synced_at: '2026-04-29T16:49:53.859Z'
+  last_synced_hash: 064b87c7cf5112443cdf7600f6e3d0f5b328b8e557e52c2d17b8e3fa7cbd77e0
+  drift_strategy: auto-curate
+  local_edits: false
+  collection: laboruntersuchung
+  scope: labor
