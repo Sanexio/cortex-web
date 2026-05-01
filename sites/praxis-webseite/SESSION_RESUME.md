@@ -30,7 +30,204 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-04-27 Ende Session 49 — Radikaler Sanexio-Spiegel-Umbau, PXZ 2.7.72)
+## §1 Stand & Version (gültig: 2026-05-01 Ende Session 58 — Praxisgemeinschaft-Refresh: Doctor-Fotos + LL-057/LL-058 + mailto-CTA + Mega-Menu + Reviews-Karussell, PXZ 2.7.94)
+
+- **PXZ_VERSION:** **2.7.94** Theme-HEAD `6045cda` (S58f). Reihe: `6045cda` (S58f) → `c04ec4c` (S58e) → `b56f6a0` (S58d) → `0aeccd3` (S58c) → `6ecdfcf` (S58b) → `8491ed6` (S58) → `e1e3ed6` (S57) → `9d257cf` (S56).
+- **Cortex-Web HEAD:** `5f8177b` (Page-Content-Snapshot /team/) → `6de121f` (Trunk-Container-Standard + Jawich) → `4c6d8da` (Trunk Doctor-Bios Backfill).
+- **Nexus-Architektur:** LL-057 (Fachtermini im Chat erklären) + LL-058 (Cross-Page-Konsistenz) eingeführt.
+
+### S58 (2026-05-01 später am Tag) — Praxisgemeinschaft-Refresh + Reviews-Karussell
+
+**Block 1: Co-Brand-Logo Sanexio-Header** (`6045cda` Reihe Anfang) — Praxiszentrum-Cobrand-Logo neben Sanexio-Wordmark vergrößert: 36→56 px Mobile, 44→72 Tablet, 52→**88 px** Desktop, plus Text-Stufen 13/15/16 → 15/18/20 px. War vorher visuell ~8:1 dominiert vom Sanexio-Wordmark.
+
+**Block 2: 6 Doctor-Fotos** — Bilder lagen physisch in `/wp-content/uploads/2026/04/` (Dr-Barcsay, Dr-Seelig, Dr-Jawich, Dr-Shahin, Landeberg, Arbitmann), waren aber **keine WP-Attachments**. Per `wp media import` registriert (IDs 9878–9883) und in Trunk-YAMLs + `inc/data/team.json` verknüpft. Gleichzeitig **Trunk-Drift-Aufräumung**: Trunk-YAMLs hatten Stub-Bios („Schwerpunkt Innere Medizin"), team.json die ausführlichen S2.3-Bios — Trunk auf JSON-Volltexte nachgepflegt, Adapter-Roundtrip idempotent (Cortex-Web `4c6d8da`). Sektions-Titel auf jeder Arzt-Page „Weitere Ärztinnen und Ärzte" → **„Weitere Partner der Praxisgemeinschaft"** (Landeberg/Arbitmann sind keine Ärzte). Linnea-Tippfehler („Linne"→„Linnea") gefixt.
+
+**Block 3: Container-Standard** — `_rules/CONTAINER_STANDARD.md` neu (Trunk-Doc): outer 1600 px (`.pxz-container` aus components.css), innen 75ch Lese-Kanal (`.pxz-prose`). Migriert: `team.css` (intro 760→1600, grid 1500→1600), `page-hub.css` (1200→1600, plus Schriftgrößen lead 22→26, card-teaser 15→19, usp 19→22). object-fit cover→**contain** für `.pxz-hub-card-media img`, damit Shopify-Mirror-Texte nicht beschnitten werden. Page-Content `/team/` (post_id 9672) inhaltlich überarbeitet (real Personalstruktur + Urologie/Gyn ergänzt) — Snapshot in `_content-archive/kern/de/team-9672_s58_2026-05-01.md` (Frozen + supersedes-Markup).
+
+**Block 4: Header-Restrukturierung** (`6ecdfcf`) — Top-Nav 5→**4 Items**: „Praxis"→**„Praxisgemeinschaft"**, „Patientenservice" entfällt als Top-Item, ist jetzt 2. Spalte des Mega-Menüs unter „Praxisgemeinschaft" (analog Untersuchungen-grouped-Pattern). 4 Sprachen synchron (DE/EN/FR/ES).
+
+**Block 5: CTA-Wechsel** — Header-CTA + Mobile-Sticky-CTA von `#service`/`/sprechstunden/`-Anker auf `mailto:praxis@westend-hausarzt.de` (PXZ_EMAIL-Konstante wieder verwendet). Wording in 4 Sprachen: „Anfrage senden" / „Send inquiry" / „Envoyer une demande" / „Enviar consulta" (long) + „Anfrage / Inquiry / Demande / Consulta" (short).
+
+**Block 6: Reviews-Karussell** (Reihe `0aeccd3` → `b56f6a0` → `c04ec4c` → `6045cda`) — Standorte-Section auf Homepage entfernt, durch Patientenstimmen ersetzt. 19 Google-5-Sterne-Reviews per Helper `pxz_homepage_reviews()` (Single-Source, gleich für alle 4 Sprach-Blöcke), sortiert nach Textlänge, Originalsprache erhalten (`<blockquote lang="…">`), Datum weg, Maps-Link `cid=7619231455121296052`. Karussell mit 1/2/3 Cards je Viewport (CSS-Variable `--pxz-rcr-cards`, JS liest sie via getComputedStyle), Default-Höhe `clamp(420px, 50vw, 520px)` ≈ MFA-Section. **Click-to-Expand** mit `-webkit-line-clamp: 9` und Track-Höhen-Transition. **Endlos-Modus** mit nahtlosem **Instant-Snap-Trick**: Klone der ersten/letzten cardsPerView Cards an Track-Rand, Wrap animiert in Klon-Slot, transitionend snappt instant zur echten Position (Fallback-Timer 600 ms für reduced-motion).
+
+**Block 7: Nexus-Architektur-Erweiterung** — Zwei neue LL-Regeln + Auto-Memory:
+- **LL-057** (Fachtermini im Chat erklären, Cortex/Nexus-Scope): jede technische Begrifflichkeit bei Erstverwendung in 1 Satz erklären, bis Dr. Stracke pro Bereich aufhebt. Konkretisiert LL-024 für Fachvokabular. Spec: `Nexus/_rules/GLOBAL_RULES.md` §33. Auslöser: Adapter-Begriffsschwall (Trunk/Drift/Stub/YAML).
+- **LL-058** (Cross-Page-Konsistenz): bei Content-/Design-Änderungen Pflicht-Audit auf gleichen Kontext anderswo + synchrones Mitziehen in derselben Session. Spec: `Nexus/_rules/GLOBAL_RULES.md` §34. Architektur-Companion: praxis-webseite/_rules/CONTAINER_STANDARD.md. Auslöser: Container-Wildwuchs (760/840/1080/1140/1200/1260/1500/1600 px).
+- Auto-Memory: `feedback_explain_terms_in_chat.md`, `feedback_cross_page_consistency.md`, plus `feedback_no_obvious_questions.md` (User-Tadel: keine offensichtlichen Rückfragen, wenn Antwort aus etablierten Memorys folgt).
+
+### S58 Open Items / Nicht angefasst
+
+- Reviews-Avatare: aktuell Initialen-Disc. Echte Google-Reviewer-Fotos liegen hinter Consent-Wall — `web-pilot`-Lauf möglich, von Dr. Stracke noch nicht beauftragt.
+- Container-Migration: 8 weitere Templates (`template-arzt`, `template-standard`, page.css, sprechstunden.css, kontakt.css, page-hub.css ✅, bridge-product.css, checkup-hub.css) — Migrationsregel via CONTAINER_STANDARD.md: bei nächstem Edit jeweils mitziehen. Kein Big-Bang nötig.
+- Praxis-/team/ post_content lokal-only — Beim Live-Push in DB übernehmen (Snapshot in `_content-archive/kern/de/team-9672_s58_2026-05-01.md`).
+
+---
+
+## §1.5 Vorgänger Session 56 (2026-05-01 vormittags) — Homepage-Container + 5 Arzt-SEO + Co-Brand + LL-056
+
+(N-1, Sliding-Window-Pattern. Detail-Block siehe `_archive/sessions/2026-05/session-56.md` falls archiviert; ansonsten unverändert unten verfügbar.)
+
+### S56 (2026-05-01) — Homepage-Container + 5 Arzt-SEO + Sanexio-Co-Brand + LL-056
+
+**Block 1: Homepage MFA-Container „Wir suchen dich"** (Dr.-Stracke-Direktive):
+- DE-Subtitle aktualisiert: „… mit eigener klarer Verantwortung und echtem Einfluss." (vorher „mit eigenen Patient:innen, klarer …").
+- 2. Button („Mehr über die Stelle") → **Mail-Button** mit `mailto:praxis@westend-hausarzt.de` (Subject vorbelegt). DE/EN/FR/ES Labels gepflegt.
+- „Lieber klassisch per E-Mail?"-Note + zugehöriges CSS entfernt.
+- Card-Padding bottom 56/80/96 → 40/56/64 px (an kürzeren Inhalt angepasst).
+
+**Block 2: Klappentexte unter Fachrichtungen** (`team_roles.bio` DE, 7 von 8 Ärzten):
+- saul: „Hausärztliche Versorgung." · stracke: „Notfallmedizin. Schwerpunkt Kardiologie." · seelig: „Operative Gynäkologie." · barcsay: „Vasektomie." (+ medikamentöse Tumortherapie) · shahin: „Neurologie und Psychiatrie." · arbitmann: „Physiotherapie und Naturheilpraxis." · landeberg: „Verhaltenstherapie."
+- jawich/HNO **unverändert** — keine User-Vorgabe.
+
+**Block 3: 5 Arzt-Profile SEO-optimiert** (`inc/data/team.json` bio + qualifications):
+- barcsay (offenbacherurologen.de) · seelig (praxis-seelig.de) · landeberg (psychotherapeutikum.net) · arbitmann (naturheilpraxis-arbitmann.com).
+- **shahin:** auf reine Praxis-Tätigkeit fokussiert (kein Klinik-Werdegang Saarbrücken/Marburg/Gießen) — Dr.-Stracke-Direktive.
+- Stracke und Saul **unangetastet**.
+
+**Block 4: Sanexio-Logo + Co-Branding** (alle 8 Sanexio-Seiten: /team/ + 7 Arzt-Slugs):
+- SVG `assets/logo-sanexio.svg`: „PRAXISGEMEINSCHAFT" Untertext **14 → 28 px** (letter-spacing 12 → 7), klar lesbar.
+- Header neu: Sanexio-Wordmark + Trennlinie + **Praxis-Co-Brand** (Logo + „Praxiszentrum / Dr. Stracke & Kollegen"). Mobile: nur Logo-Icon.
+- Neue CSS-Komponente `.pxz-nav-logo-cluster` + `.pxz-nav-cobrand` in `assets/css/nav.css`.
+
+**Block 5: LL-056 Drift-Mitigation (Architektur-Erweiterung Nexus)** — gepusht auf origin:
+- `_skripte/sync-second-brain.py` Idempotenz-Helper `write_idempotent_dates()` (5 Call-Sites umgestellt). 4 Smoke-Tests grün.
+- `nexus-sync.sh` AUTO_ADD_WHITELIST Backstop um 3 Globs erweitert (Projekt-MDs + 2 MOCs).
+- `check-nexus-drift.sh` 3-Klassen-Klassifikation (auto-content / cron-output / manual-content).
+- `_rules/GLOBAL_RULES.md` §32 + INDEX.md-Pointer + Memory `feedback_vault_edit_in_session.md`.
+
+### Theme-Repo-Status (S56-Ende)
+
+- **HEAD:** `9d257cf` (S56-Changelog) → `2f485b7` (S56-Code) → `e49b187` (S54).
+- **Uncommitted (vorbestehend, S52-Builder-Output):** `assets/css/arzt.css`, `assets/css/room-slider.css`, `assets/js/room-slider.js`, alle 27 `inc/data/page-hub-*.php`, `inc/nav-data.php`, `inc/slider-render.php`. Dr.-Stracke-Entscheidung über Commit weiter offen.
+- **Theme-Repo hat kein Remote** — lokal-only seit S0.1.
+
+### Nexus-Repo-Status (S56-Ende)
+
+- **HEAD:** `6d151a9` (LL-056) — push OK auf `origin/main`.
+- Nur Heartbeat dirty (nexus-sync räumt im 5-Min-Cron).
+- Sanitizer-Probe: alle Watch-Files im Budget. SOFT-WARN auf GLOBAL_RULES.md (12839 Tokens) — durch §32-Erweiterung um ~640 Tokens erhöht, vorbestehend.
+
+### Offene Punkte für Folge-Session (S57)
+
+- **α) Doctolib-Direktlinks pro Page** (Phase 3d, Sanexio-Mirror)
+- **β) Page-Review / Sie-Form-Walkthrough** mit Dr. Stracke (25 Sanexio-Mirror-Pages)
+- **γ) eye-check + labor-biohack** — Praxis-eigenes Bild + Text
+- **δ) 30+ uncommitted Theme-Files aus S52** (page-hub-output + arzt.css + slider) — Commit-Entscheidung Dr. Stracke
+- **ε) EN/FR/ES-Übersetzung** für MFA-Subtitle + 7 Klappentexte + 5 Arzt-Bios (heute nur DE)
+- **ζ) HNO/Jawich:** Klappentext fehlte in der S56-Liste — entfernen oder neu setzen?
+- **η) Browser-Cache-Verifikation** der 5 neuen Arzt-Seiten durch Dr. Stracke (Cmd+Shift+R)
+- **θ) Theme-Repo ohne Remote** — strategische Frage ob GitHub-Remote sinnvoll
+- **ι) `~/Cortex/.claude/hooks/` nicht versioniert** — sollte ggf. ins Nexus-Repo ziehen
+
+### LL-056 Erfolgsindikator (ab S57 messbar)
+
+Nach 24h ohne inhaltliche Vault-Edits sollten **0 Datums-Bump-Drifts** im `git status` von `~/Cortex/Nexus/` erscheinen. Falls doch welche auftauchen → Idempotenz-Helper hat eine Stelle übersehen, dort patchen.
+
+---
+
+## §1-Legacy (vorheriger Stand, historisch)
+
+### Vorheriger Stand — 2026-04-30 Ende Session 55 — Slider-Halbierung + Labor-Begriffe + Untersuchungen-Sweep, PXZ 2.7.85
+
+- **PXZ_VERSION:** **2.7.85** uncommitted (Theme-Repo). Vorgänger committed: `e49b187` (S54, PXZ 2.7.78).
+- **Versionsfolge S55:** 2.7.78 → 79 (Slider-Pair v1) → 80 (Glassmorphism-Strip) → 81 (Single-Container) → 82 (Spezifitäts-Fix) → 83 (Labor-Begriffe DE) → 84 (Labor-Mega-Menu) → **85 (Untersuchungen-Sweep)**.
+
+### S55 (2026-04-30) — Slider-Halbierung + Labor-Begriffe + Untersuchungen-Sweep
+
+**Block 1: Homepage-Slider auf halbe Höhe (4 Iterationen S55a/b/c/c-fix):**
+- Container 32:9-Strip mit 2 Bildern à 16:9 nebeneinander (kein Crop), Captions hidden, ein einziger Card-Container.
+- 4 Versuche nötig (Pair-Layout falsch verstanden, dann zu komplex mit Glassmorphism, dann CSS-Spezifitäts-Bug — 0,1,0 verlor gegen 0,2,1 vom Default-Fullbleed).
+- Final-Fix in 2.7.82: Selektoren auf `.pxz-room-slider[data-pair="true"] …` hochgezogen (0,3,1).
+- **Files:** `inc/slider-render.php` (`pxz_render_homepage_slider` paart Slides via `array_chunk`, neuer Helper `pxz_render_fullbleed_pair_cell`), `assets/css/room-slider.css` (PAIR-LAYOUT-Block).
+- **JS unverändert.**
+
+**Block 2: Labor-Menü deutsche Kurz-Begriffe (PXZ 2.7.83, 9 Pages):**
+- Status Baseline → **Basis-Check**, Status Advanced → **Erweiterter Check**, Status Prevent → **Vorsorge-Check**, System Immune → **Immunsystem**, System Renal → **Nieren**, System Liver → **Leber**, BioHack — Genetische Beratung → **Genetik-Beratung**. Stoffwechsel + Risikoprofil bleiben.
+- Pro YAML: title.de + hero.heading + lead + body_html + cta-banner.heading durchgängig ersetzt (perl-Bulk).
+- **Schutz-Block** `sanexio_source.local_edits: true` an jedes der 9 YAMLs angehängt — verhindert Drift-Sync-Rollback. `original_label` als Provenance.
+- WP-DB `wp_posts.post_title` für IDs 9850–9855 + 9857 via Local-MySQL aktualisiert.
+
+**Block 3: Labor-Submenu in 3 Gruppen (Mega-Menu, PXZ 2.7.84):**
+- **Check-Up** (Basis-Check, Erweiterter Check, Vorsorge-Check) · **Organe** (Immunsystem, Nieren, Leber, Stoffwechsel) · **Risikoprofile** (Risikoprofil, Genetik-Beratung).
+- 4 Sprachen-Gruppen-Labels gepflegt (DE/EN/FR/ES).
+- Helper `$build_unt_groups` (S52) wiederverwendet — keine Duplikation.
+
+**Block 4: Untersuchungen-Sweep (PXZ 2.7.85, 10 Pages):**
+- Bindestrich-Fixes: Body Check → **Body-Check**, Kardio Check → **Kardio-Check**, Sono Check → **Sono-Check**, Carotis Duplex → **Carotis-Duplex**.
+- Eindeutschungen: Eye Check → **Augen-Check**, Fit for Diving → **Tauchtauglichkeit**.
+- Menü-konsistente Kürzungen (4 Sonographie-Pages): „Sonographie der Bauchspeicheldrüse" → **Bauchspeicheldrüse** etc. — bei diesen 4 nur title.de + hero.heading.de gekürzt; lead, body, cta behalten ausführliche sprachlich korrekte Form („führen wir die Sonographie der Leber durch").
+- 6 simple Pages: Replacement durchgängig.
+- 10× `sanexio_source`-Block mit `local_edits: true` angehängt.
+- WP-DB `post_title` für IDs 354 + 9840–9849 aktualisiert (10 Pages).
+- nav-data.php `$u_funktion_de` + `$u_checkup_de` (DE-Untersuchungs-Submenu) gepflegt.
+
+**Builder-Run:** `bun adapters/wordpress/build-page-hub.mjs` → 27 PHP-Data-Files. Schema-Validation OK.
+
+**HTTP-Verify** auf 4 Beispielen: 0× alte Begriffe, 13–18× neue Begriffe, Browser-Tab-Title kurz.
+
+### Theme-Repo-Status (S55-Ende)
+
+- **HEAD:** `e49b187` (S54). **Uncommitted:** 32 Files (Theme-Sources + 27 page-hub-PHP + functions.php + CHANGELOG + nav-data + slider-render + room-slider.css).
+- **Cortex-Web-Repo:** 19 Trunk-YAMLs modified + SESSION_RESUME (Praxis + Cortex-Web).
+
+### Offene Punkte für Folge-Session (S56)
+
+- **α) Doctolib-Direktlinks pro Page** (Phase 3d, Sanexio-Mirror)
+- **β) Page-Review / Sie-Form-Korrekturen** auf den 25 Sanexio-Mirror-Pages
+- **γ) eye-check + labor-biohack** — Praxis-eigenes Bild + Text
+- **δ) S52-Builder-Output-Commits + heutige S55-Commits konsolidieren** (Theme-Repo + Cortex-Web)
+- **ε) Blocksy-Backup-Menü konsolidieren** (optional)
+- **ζ) 88 stale refs** aus Sanitizer-Learn aufräumen
+- **η) GLOBAL_RULES.md über Cap** (Nexus-Side, nicht durch heutige Arbeit verursacht — manuell verdichten)
+- **θ) `arzt.css` + S52 page-hub-output-Files** im Theme-Repo committen (offen seit Tagen)
+
+### S54 (2026-04-29) — FINAL CTA entfernt (Dr.-Stracke-Direktive)
+
+- **Final-CTA-Section auf Homepage komplett raus** ("Sie haben Fragen? Wir sind da." + "Termin anfragen"-Button + Telefon + Privatpatienten-Hinweis).
+- Mobile-CTA-Sticky-Bar (`.pxz-mobile-cta`) bleibt als einziger CTA-Anker auf der Homepage. Privat-Telefon weiterhin im Combined-Standorte-Container sichtbar.
+- Daten `cta_title_a` + `cta_title_b` aus `inc/homepage-data.php` raus (4 Sprachen).
+- CSS `.pxz-final*` aus `assets/css/homepage.css` raus.
+- **Hunk-Aufräumung mit-committed:** S47-Stats-Refactor + S53-template-homepage-Hunk lagen seit Tagen uncommitted; in `e49b187` mit-genommen.
+- **Tools-Drift behoben** (verify.sh war FAILED nach S54): `alignment-probe.mjs` + `ab-diff.mjs` + `page-registry.mjs` referenzieren jetzt `.pxz-loc-card--combined` statt `.pxz-loc-card--main`/`.pxz-final-card`.
+
+### S53 (2026-04-29) — Standorte-Container vereint (Layout A, Padding +20%)
+
+- **Hauptstandort + Zweitstandort in 1 Card** auf Homepage Standort-Section + `/standorte/` + `/standorte/zweigpraxis-bockenheimer/`.
+- **Layout A:** 2 Spalten oben (je Standort: Adresse · Sprechzeiten · Maps-Link) + gemeinsamer Footer-Block (Tel allgemein/privat · E-Mail · Offene-Sprechstunde-Hinweis · Termine-zentral-Hinweis). Redundante Felder (Tel-allg, E-Mail, Hours-Label) jetzt nur 1×.
+- **Padding +20%:** Mobile 87/67, Tablet 115/96, Desktop 134/115 (vs. Single-Card 72/56, 96/80, 112/96).
+- **Menü-Konsoldierung Praxis-Submenu (4 Sprachen):** 2 Items „Hauptpraxis Grüneburgweg" + „Zweigpraxis Bockenheimer" → 1 Item „Standorte" / „Locations" / „Sites" / „Sedes" → `/standorte/`.
+- **Detail-Pages bleiben** (URL-Stabilität, Room-Slider als Wert) — zeigen jetzt denselben Combined-Container im Hero-Bereich + ihren jeweiligen Room-Slider darunter.
+- **Files NEU:** `template-parts/loc-combined.php`. **Files DEL:** `template-parts/loc-main.php`, `loc-secondary.php` (Dead Code, Git-History).
+- **Files EDIT:** `inc/practice-data.php` (1 neuer Key `loc_combined_badge` × 4 langs), `assets/css/loc-cards.css` (`.pxz-loc-card--combined` ~70 Z. neu), `template-homepage.php`, `template-standard.php`, `inc/nav-data.php`, `functions.php`, `CHANGELOG.md`.
+- **Blocksy-Backup-Menü (`ct-menu`) nicht angerührt** — ist via `nav.css:16` `#header.ct-header { display:none !important }` versteckt, im DOM für Crawler. Memory `feedback_praxis_nav_via_code.md` sagt explizit „NICHT auf WP-Admin-Menü umstellen". Aufräumen wäre Folge-Aufgabe ohne User-sichtbaren Effekt.
+
+### Verify Session-Ende S54
+
+- **verify.sh ✅** alle §-Checks grün (nach Tools-Drift-Behebung).
+- **HTTP-Sweep:** 3 URLs (Homepage + /standorte/ + /standorte/zweigpraxis-bockenheimer/) je HTTP 200, Combined-Container-Marker auf allen 3 vorhanden, 0 PHP-Fehler.
+- **Sanitizer-Probe:** 7/7 Watchset-Files im Budget. SOFT-WARN auf `Nexus/_rules/GLOBAL_RULES.md` (12180 von 12k Tokens) — nicht durch S53/S54, vorbestehend.
+- **Sanitizer-Learn:** 0 Duplikate · 0 Cross-Project-Leaks · 88 stale refs (vorbestehend, gleicher Trend wie Session 49).
+
+### Theme-Repo-Status
+
+- HEAD: `e49b187` (S54)
+- Vorgänger: `f014ef2` (S53), `fb88c41` (S52-it), `a4ecf5c` (S52), `cbd6470` (S52 Doctolib-Button), `52cc942` (S50)
+- **Uncommitted:** 27 Files aus S52-Iteration (alle `inc/data/page-hub-*.php` + `assets/css/arzt.css`). Nicht von S53/S54-Sprint, gehören zu S52-Builder-Output. Dr.-Stracke-Entscheidung über Commit offen.
+
+### Offene Punkte für Folge-Session (S55)
+
+- **α) Doctolib-Direktlinks pro Page** (Phase 3d, Sanexio-Mirror) — Dr. Stracke gibt im Verlauf rein
+- **β) Page-Review / Sie-Form-Korrekturen** auf den 25 Sanexio-Mirror-Pages — Dr.-Stracke-Walkthrough
+- **γ) eye-check + labor-biohack** — Praxis-eigenes Bild + Text (Stub)
+- **δ) S52-Builder-Output-Commits klären** (27 uncommitted Files: `inc/data/page-hub-*.php` + `arzt.css`)
+- **ε) Blocksy-Backup-Menü konsolidieren** (optional, nicht User-sichtbar)
+- **ζ) 88 stale refs** aus Sanitizer-Learn — bei Gelegenheit aufräumen
+
+---
+
+## §1-Legacy (vorheriger Stand, historisch)
+
+### Vorheriger Stand — 2026-04-27 Ende Session 49 (Radikaler Sanexio-Spiegel-Umbau, PXZ 2.7.72)
 
 - **PXZ_VERSION:** **2.7.72** committed `90fc4db`. Cortex-Web-Repo: Trunk + Spec + Tools + Backups committed.
 
