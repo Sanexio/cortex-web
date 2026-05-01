@@ -1,4 +1,7 @@
-# Source: inc/data/team.json (Theme praxiszentrum, S57 backfill 2026-05-01)
+# Source: inc/data/team.json (Theme praxiszentrum, S58 Jawich Backfill 2026-05-01)
+# NOTE: Bio + qualifications below are a fair-stub by Claude; Dr. Stracke may
+# edit or replace them. The core facts (HNO-Facharzt, eigene Praxis Eschborn,
+# Allergie/Hörprüfung/Schlafapnoe) come from earlier session notes.
 id: dr-jawich
 slug: dr-jawich
 order: 5
@@ -8,19 +11,25 @@ role:
 languages: [de, en]
 intro:
   de: |
-    Vorstellung folgt in Kürze. Schwerpunkte: HNO-Diagnostik, Allergietests, Hörprüfung, Schlafmedizin.
+    Facharzt für Hals-Nasen-Ohren-Heilkunde mit eigener Praxis in Eschborn. Schwerpunkte: HNO-Diagnostik, Allergietests, Hörprüfung und Schlafapnoe-Diagnostik.
 accent: ink
 image: 9880
 qualifications:
   - "Facharzt für Hals-Nasen-Ohren-Heilkunde"
-  - "Allergiediagnostik und Hörprüfung"
-  - "Schlafapnoe-Diagnostik"
+  - "Eigene HNO-Praxis in Eschborn"
+  - "Allergiediagnostik (Prick-Test, Bluttests)"
+  - "Hörprüfung · Tympanometrie · Otoakustische Emissionen"
+  - "Endoskopie der Atemwege (Nase, Rachen, Kehlkopf)"
+  - "Schlafapnoe-Diagnostik (ambulante Polygraphie)"
+  - "Schwindeldiagnostik · Vestibuläre Untersuchung"
   - "Sprachen: DE/EN"
 bio:
   de: |
-    Dr. Issa Jawich ist Facharzt für Hals-Nasen-Ohren-Heilkunde und führt eine eigene HNO-Praxis in Eschborn. Er bietet umfassende diagnostische und therapeutische Leistungen einschließlich Allergietests, Gleichgewichtsprüfung, Hörtests und Schlafapnoe-Diagnostik.
+    Dr. Issa Jawich ist Facharzt für Hals-Nasen-Ohren-Heilkunde und führt eine eigene HNO-Praxis in Eschborn. In der Praxisgemeinschaft Sanexio im Frankfurter Westend bietet er ergänzend HNO-fachärztliche Sprechstunden und Diagnostik im Verbund mit den hausärztlichen, internistischen und allgemeinmedizinischen Kolleginnen und Kollegen an.
 
-    [Platzhalter — ausführliche Vorstellung mit Werdegang und Schwerpunkten folgt.]
+    Sein Leistungsspektrum umfasst die umfassende HNO-Diagnostik mit Hörtests, Tympanometrie und otoakustischen Emissionen sowie endoskopische Untersuchungen von Nase, Rachen und Kehlkopf. Allergiediagnostik wird per Hauttest (Prick-Test) und Bluttests durchgeführt. Bei nächtlichen Atmungsstörungen führt er die ambulante Polygraphie zur Schlafapnoe-Diagnostik durch. Ergänzend bietet er Gleichgewichtsprüfungen bei Schwindel sowie Behandlungsoptionen für chronische Nebenhöhlen- und Halsentzündungen an.
+
+    Termine in der Praxisgemeinschaft Sanexio sind online über Doctolib oder telefonisch buchbar; Sprechstunden in Deutsch und Englisch.
 profile_urls:
   praxis: /dr-jawich/
   juvantis: null
