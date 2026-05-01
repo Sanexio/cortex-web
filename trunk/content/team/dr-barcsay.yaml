@@ -1,24 +1,32 @@
+# Source: inc/data/team.json (Theme praxiszentrum, S57 backfill 2026-05-01)
 id: dr-barcsay
 slug: dr-barcsay
 order: 3
 name: "Dr. Fabian Barcsay"
 role:
-  de: "Facharzt für Innere Medizin"
+  de: "Facharzt für Urologie, F.E.B.U."
 languages: [de, en]
 intro:
   de: |
-    Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.
+    Facharzt für Urologie und medikamentöse Tumortherapie. Schwerpunkte: Uroonkologie, Vasektomie und urologische Vorsorge.
 accent: ink
-image: null
+image: 9878
 qualifications:
-  - Innere Medizin
-  - Hausärztliche Versorgung
+  - "Facharzt für Urologie"
+  - "Fellow of the European Board of Urology (F.E.B.U.)"
+  - "Medikamentöse Tumortherapie (Zusatzqualifikation)"
+  - "Psychosomatische Grundversorgung"
+  - "Vasektomie (zertifiziertes Zentrum, ca. 350 Eingriffe/Jahr)"
+  - "Uroonkologische Diagnostik und Therapie"
+  - "Urologische Vorsorge · Männergesundheit"
   - "Sprachen: DE/EN"
 bio:
   de: |
-    Dr. Fabian Barcsay ist Facharzt für Innere Medizin und Teil der Praxisgemeinschaft Sanexio. Er betreut Patientinnen und Patienten in der hausärztlichen und fachärztlichen Sprechstunde.
+    Dr. Fabian Barcsay ist Facharzt für Urologie und Fellow of the European Board of Urology (F.E.B.U.) — der höchsten europäischen Qualifikationsstufe seines Fachgebiets. Seine urologische Weiterbildung absolvierte er am Krankenhaus Nordwest Frankfurt unter Prof. Dr. E. W. Becht; seit 2022 ist er ärztlicher Leiter und Hygienebeauftragter Arzt im MVZ Offenbacher Urologen.
 
-    [Platzhalter — ausführliche Vorstellung mit Werdegang und Schwerpunkten folgt. Dr. Stracke wird diesen Abschnitt in Kürze aktualisieren.]
+    Seine fachlichen Schwerpunkte sind die Uroonkologie mit operativer und medikamentöser Tumortherapie sowie die Vasektomie. Als Regionenexperte führt er etwa 350 Vasektomien pro Jahr durch und ist Mitglied eines zertifizierten Vasektomiezentrums. Ergänzend übernimmt er die urologische Vorsorge, Männergesundheit und psychosomatische Grundversorgung. Zusatzqualifikationen in medikamentöser Tumortherapie und Psychosomatik runden das Profil ab.
+
+    In der Praxisgemeinschaft Sanexio im Frankfurter Westend bietet Dr. Barcsay urologische Sprechstunden für Privatpatientinnen und -patienten an. Termine sind online über Doctolib oder telefonisch buchbar.
 profile_urls:
   praxis: /dr-barcsay/
   juvantis: null

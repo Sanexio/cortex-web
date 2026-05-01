@@ -1,24 +1,33 @@
+# Source: inc/data/team.json (Theme praxiszentrum, S57 backfill 2026-05-01)
 id: dr-seelig
 slug: dr-seelig
 order: 4
 name: "Dr. Stefanie Seelig"
 role:
-  de: "Fachärztin für Innere Medizin"
+  de: "Fachärztin für Gynäkologie und Geburtshilfe"
 languages: [de, en]
 intro:
   de: |
-    Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.
+    Fachärztin für Gynäkologie und Geburtshilfe. Schwerpunkte: operative Gynäkologie, Schwangerenvorsorge, hochauflösende Ultraschalldiagnostik.
 accent: ink
-image: null
+image: 9879
 qualifications:
-  - Innere Medizin
-  - Hausärztliche Versorgung
+  - "Fachärztin für Gynäkologie und Geburtshilfe"
+  - "Über 20 Jahre klinische Erfahrung (Oberärztin · Chefärztin)"
+  - "Operative Gynäkologie (ambulant und stationär, belegärztlich)"
+  - "Geburtshilfe und Schwangerenvorsorge"
+  - "3D/4D-Ultraschalldiagnostik"
+  - "Elastographie · Videokolposkopie"
+  - "Gynäkologische Krebsvorsorge"
+  - "Ergänzende Naturheilverfahren"
   - "Sprachen: DE/EN"
 bio:
   de: |
-    Dr. Stefanie Seelig ist Fachärztin für Innere Medizin und Teil der Praxisgemeinschaft Sanexio. Sie betreut Patientinnen und Patienten in der internistischen und hausärztlichen Sprechstunde.
+    Dr. Stefanie Seelig ist Fachärztin für Gynäkologie und Geburtshilfe mit über 20 Jahren klinischer Erfahrung in Facharzt-, Oberarzt- und Chefarzttätigkeit. In der Praxisgemeinschaft Sanexio im Frankfurter Westend betreut sie Patientinnen in allen Lebensphasen — von der gynäkologischen Vorsorge über die Schwangerschaft bis zur operativen Gynäkologie.
 
-    [Platzhalter — ausführliche Vorstellung mit Werdegang und Schwerpunkten folgt. Dr. Stracke wird diesen Abschnitt in Kürze aktualisieren.]
+    Ihr Leistungsspektrum umfasst die gynäkologische Krebsvorsorge, die Schwangerenvorsorge mit hochauflösender 3D/4D-Sonographie, Elastographie und Videokolposkopie. Bei klinisch indizierten Befunden führt sie ambulante und stationäre Operationen belegärztlich durch. Konservative Therapieansätze werden bei Bedarf um ergänzende Naturheilverfahren erweitert.
+
+    Fachliche Schwerpunkte sind die operative Gynäkologie und die Geburtshilfe. Termine sind online über Doctolib oder telefonisch buchbar; Sprechstunden in Deutsch und Englisch.
 profile_urls:
   praxis: /dr-seelig/
   juvantis: null

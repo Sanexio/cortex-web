@@ -1,24 +1,33 @@
+# Source: inc/data/team.json (Theme praxiszentrum, S57 backfill 2026-05-01)
 id: dr-arbitmann
 slug: dr-arbitmann
 order: 8
 name: "Anna Arbitmann"
 role:
-  de: "Ärztin"
+  de: "Physiotherapeutin"
 languages: [de, en]
 intro:
   de: |
-    Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.
+    Physiotherapeutin und Heilpraktikerin. Schwerpunkte: Craniosacrale Osteopathie, Manuelle Lymphdrainage, Neuraltherapie.
 accent: ink
-image: null
+image: 9883
 qualifications:
-  - Innere Medizin
-  - Hausärztliche Versorgung
-  - "Sprachen: DE/EN"
+  - "Physiotherapeutin"
+  - "Heilpraktikerin (Naturheilpraxis)"
+  - "Manuelle Lymphdrainage (Földi Klinik Hinterzarten)"
+  - "Craniosacrale Osteopathie"
+  - "Neuraltherapie"
+  - "Klassische Physiotherapie"
+  - "Indikationen: Neurologie · Vegetativum · Herz-Kreislauf · Atemwege · HNO · Augen"
+  - "Muskel-, Weichteil- und Bandscheibenschmerz · Fibromyalgie"
+  - "Sprache: DE"
 bio:
   de: |
-    Anna Arbitmann ist Ärztin in der Praxisgemeinschaft Sanexio und betreut Patientinnen und Patienten im Rahmen der internistischen und hausärztlichen Sprechstunde.
+    Anna Arbitmann ist Physiotherapeutin und Heilpraktikerin und führt eine eigene Naturheilpraxis in Frankfurt-Innenstadt sowie Bad Homburg. In der Praxisgemeinschaft Sanexio im Westend bietet sie zusätzlich physiotherapeutische und naturheilkundliche Sprechstunden an.
 
-    [Platzhalter — ausführliche Vorstellung mit Werdegang und Schwerpunkten folgt. Dr. Stracke wird diesen Abschnitt in Kürze aktualisieren.]
+    Ihr Behandlungsspektrum verbindet klassische Physiotherapie mit craniosacraler Osteopathie, Neuraltherapie und manueller Lymphdrainage. Die Lymphdrainage erlernte sie an der Földi Klinik Hinterzarten — einer der führenden europäischen Fachkliniken für Lymphologie. Indikationsschwerpunkte sind Erkrankungen aus den Bereichen Neurologie und vegetatives Nervensystem, Herz-Kreislauf, Atemwege und HNO sowie Augenheilkunde; ergänzt um Muskel-, Weichteil- und Bandscheibenschmerzen einschließlich Fibromyalgie.
+
+    Termine in der Praxisgemeinschaft Sanexio sind telefonisch buchbar.
 profile_urls:
   praxis: /dr-arbitmann/
   juvantis: null

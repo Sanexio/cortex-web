@@ -1,24 +1,26 @@
+# Source: inc/data/team.json (Theme praxiszentrum, S57 backfill 2026-05-01)
 id: dr-jawich
 slug: dr-jawich
 order: 5
 name: "Dr. Issa Jawich"
 role:
-  de: "Facharzt für Innere Medizin"
+  de: "Facharzt für Hals-Nasen-Ohren-Heilkunde"
 languages: [de, en]
 intro:
   de: |
-    Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.
+    Vorstellung folgt in Kürze. Schwerpunkte: HNO-Diagnostik, Allergietests, Hörprüfung, Schlafmedizin.
 accent: ink
-image: null
+image: 9880
 qualifications:
-  - Innere Medizin
-  - Hausärztliche Versorgung
+  - "Facharzt für Hals-Nasen-Ohren-Heilkunde"
+  - "Allergiediagnostik und Hörprüfung"
+  - "Schlafapnoe-Diagnostik"
   - "Sprachen: DE/EN"
 bio:
   de: |
-    Dr. Issa Jawich ist Facharzt für Innere Medizin und Teil der Praxisgemeinschaft Sanexio. Er betreut Patientinnen und Patienten in der internistischen und hausärztlichen Sprechstunde.
+    Dr. Issa Jawich ist Facharzt für Hals-Nasen-Ohren-Heilkunde und führt eine eigene HNO-Praxis in Eschborn. Er bietet umfassende diagnostische und therapeutische Leistungen einschließlich Allergietests, Gleichgewichtsprüfung, Hörtests und Schlafapnoe-Diagnostik.
 
-    [Platzhalter — ausführliche Vorstellung mit Werdegang und Schwerpunkten folgt. Dr. Stracke wird diesen Abschnitt in Kürze aktualisieren.]
+    [Platzhalter — ausführliche Vorstellung mit Werdegang und Schwerpunkten folgt.]
 profile_urls:
   praxis: /dr-jawich/
   juvantis: null

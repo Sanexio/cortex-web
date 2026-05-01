@@ -1,24 +1,34 @@
+# Source: inc/data/team.json (Theme praxiszentrum, S57 backfill 2026-05-01)
 id: dr-landeberg
 slug: dr-landeberg
 order: 7
-name: "Linne Landeberg"
+name: "Linnea Landeberg"
 role:
-  de: "Ärztin"
+  de: "Psychotherapeutin"
 languages: [de, en]
 intro:
   de: |
-    Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.
+    Approbierte Psychologische Psychotherapeutin. Verhaltenstherapie für Erwachsene, Kinder und Jugendliche.
 accent: ink
-image: null
+image: 9882
 qualifications:
-  - Innere Medizin
-  - Hausärztliche Versorgung
+  - "Approbierte Psychologische Psychotherapeutin"
+  - "Erwachsene · Kinder · Jugendliche"
+  - "Kognitive Verhaltenstherapie"
+  - "EMDR · Traumatherapie"
+  - "Spieltherapie und kreative Medien"
+  - "Depression · Angst · Zwang · Trauma · Burn-out"
+  - "Persönlichkeits-, Ess- und Schlafstörungen"
+  - "ADHS · Autismus-Spektrum"
+  - "Privatversicherte · Selbstzahler · Telemedizin"
   - "Sprachen: DE/EN"
 bio:
   de: |
-    Linne Landeberg ist Ärztin in der Praxisgemeinschaft Sanexio und betreut Patientinnen und Patienten im Rahmen der internistischen und hausärztlichen Sprechstunde.
+    Linnea Landeberg ist approbierte Psychologische Psychotherapeutin und behandelt Erwachsene sowie Kinder und Jugendliche. Ihr Studium der Psychologie absolvierte sie an der Technischen Universität Darmstadt; klinische Erfahrung sammelte sie an mehreren Fachkliniken sowie in der Arbeits- und Verkehrspsychologie.
 
-    [Platzhalter — ausführliche Vorstellung mit Werdegang und Schwerpunkten folgt. Dr. Stracke wird diesen Abschnitt in Kürze aktualisieren.]
+    Ihr therapeutisches Fundament ist die kognitive Verhaltenstherapie. Sie ergänzt diese um EMDR (Eye Movement Desensitization and Reprocessing) zur Traumaverarbeitung sowie um spieltherapeutische und kreative Verfahren für jüngere Patientinnen und Patienten. Behandelt werden Depressionen, Angst- und Zwangsstörungen, Trauma- und Belastungsfolgestörungen, Burn-out, Persönlichkeitsstörungen, Ess- und Schlafstörungen, ADHS, Störungen aus dem Autismus-Spektrum sowie schizophrene Erkrankungen.
+
+    In der Praxisgemeinschaft Sanexio im Frankfurter Westend bietet sie psychotherapeutische Sprechstunden für Privatversicherte und Selbstzahler an; Telemedizin ist auf Anfrage möglich. Termine sind online über Doctolib oder telefonisch buchbar.
 profile_urls:
   praxis: /dr-landeberg/
   juvantis: null

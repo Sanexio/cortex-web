@@ -1,24 +1,34 @@
+# Source: inc/data/team.json (Theme praxiszentrum, S57 backfill 2026-05-01)
 id: dr-shahin
 slug: dr-shahin
 order: 6
 name: "Dr. George Shahin"
 role:
-  de: "Facharzt für Innere Medizin"
+  de: "Facharzt für Neurologie"
 languages: [de, en]
 intro:
   de: |
-    Vorstellung folgt in Kürze. Schwerpunkt Innere Medizin.
+    Facharzt für Neurologie und Psychiatrie. Schwerpunkte in der Praxis: Kopfschmerz, Schwindel, Schlaganfall-Vorsorge, Bewegungsstörungen sowie psychiatrische Sprechstunde.
 accent: ink
-image: null
+image: 9881
 qualifications:
-  - Innere Medizin
-  - Hausärztliche Versorgung
+  - "Facharzt für Neurologie und Psychiatrie"
+  - "Botulinumtoxintherapie (zertifiziert)"
+  - "Geriatrie (Zusatzbezeichnung)"
+  - "Schlafmedizin (BUB-Qualifikation)"
+  - "EEG · Doppler/Duplex · Nervenleitgeschwindigkeit · evozierte Potentiale"
+  - "Kognitions- und Demenzdiagnostik"
+  - "Migräne · Kopfschmerz · Schwindel · Polyneuropathie"
+  - "Parkinson · Multiple Sklerose · Epilepsie · Schlaganfall-Vorsorge"
+  - "Depression · Angst · Zwang · Schlafstörung"
   - "Sprachen: DE/EN"
 bio:
   de: |
-    Dr. George Shahin ist Facharzt für Innere Medizin und Teil der Praxisgemeinschaft Sanexio. Er betreut Patientinnen und Patienten in der internistischen und hausärztlichen Sprechstunde.
+    Dr. George Shahin ist Facharzt für Neurologie und Psychiatrie und betreut in der Praxisgemeinschaft Sanexio im Frankfurter Westend das gesamte Spektrum ambulanter neurologischer und psychiatrischer Krankheitsbilder.
 
-    [Platzhalter — ausführliche Vorstellung mit Werdegang und Schwerpunkten folgt. Dr. Stracke wird diesen Abschnitt in Kürze aktualisieren.]
+    In der Praxis stehen ihm EEG, Doppler- und Duplex-Sonographie der hirnversorgenden Gefäße, Elektroneurographie (Nervenleitgeschwindigkeit), evozierte Potentiale (VEP, AEP, SEP) sowie standardisierte Kognitions- und Demenz-Tests zur Verfügung. Therapeutisch versorgt er Patientinnen und Patienten mit Kopfschmerzen und Migräne, Schwindel, Polyneuropathien, Parkinson und anderen Bewegungsstörungen, Multipler Sklerose und Epilepsie sowie die Schlaganfall-Vorsorge. In der psychiatrischen Sprechstunde behandelt er Depressionen, Angst-, Zwangs- und Schlafstörungen. Botulinumtoxintherapie wird vor Ort durchgeführt.
+
+    Termine sind online über Doctolib oder telefonisch buchbar; Sprechstunden in Deutsch und Englisch.
 profile_urls:
   praxis: /dr-shahin/
   juvantis: null
