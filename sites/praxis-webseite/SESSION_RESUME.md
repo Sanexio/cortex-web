@@ -30,14 +30,107 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-05-02 Ende Session 68 — Cluster „Untersuchungen" 4-sprachig komplett + Pattern-Generation 2 etabliert)
+## §1 Stand & Version (gültig: 2026-05-03 Ende Session 69 — Cluster „Labor" 4-sprachig komplett + Pattern-Generation 2.1 mit Cleanup-Phase + LL-059 Hard-Delete-Direktive)
 
-- **PXZ_VERSION:** **2.7.121** (Theme-Repo HEAD `aba9982`, unverändert seit S64 — S68 hat keine Theme-Code-Änderung).
-- **Cortex-Web HEAD:** S67 pending (S68-Commit kommt am Session-Ende).
+- **PXZ_VERSION:** **2.7.121** (Theme-Repo HEAD `aba9982`, unverändert seit S64 — S65–S69 sind reine DB-Operationen).
+- **Cortex-Web HEAD:** S69 pending (Commit am Session-Ende).
 - **WPML-Status:** 6 aktive Sprachen (DE/EN/FR/ES/IT/pt-PT) — unverändert.
-- **Page-Inventar publish:** **DE 64 / EN 62 (+11) / FR 61 (+11) / ES 59 (+11) / IT 0 / pt-PT 0**.
-- **Skript-Pattern-Reife:** **4-fach validiert + Generation 2 etabliert** (S65 EN single + S66 FR single + S67 ES single + S68 EN+FR+ES Cluster-Sweep mit Bridge+Update-Mode).
-- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` auf S68-Stand aktualisiert.
+- **Page-Inventar publish:** **DE 64 / EN 71 (+9 netto) / FR 70 (+9 netto) / ES 68 (+9 netto) / IT 0 / pt-PT 0**.
+- **Skript-Pattern-Reife:** **5-fach validiert + Generation 2.1 etabliert** (S69 erweitert Pattern-Gen-2 um optionale Cleanup-Phase mit Hard-Delete).
+- **Neue Memory-Regel:** Hard-Delete statt Trash bei DB-/Page-Cleanups (`feedback_no_legacy_ballast_hard_delete.md`, cross-projekt).
+- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` auf S69-Stand aktualisiert.
+
+### S69 (2026-05-03) — Cluster „Labor" Konsolidierter Sweep + Cleanup (45 Operationen)
+
+**Auslöser:** Wiederaufnahme nach S68. Aus dem 7-Optionen-Statement (a–g) Front (a) gewählt: Cluster-Sweep „Labor + Check-Ups". Audit ergab: Check-Ups schon in S68 erledigt → Scope reduziert auf reinen Labor-Cluster. Dr.-Stracke-Direktive: „Es wird nur übersetzt, was aktuell auf der DE-Webseite verwendet wird — alles andere kann komplett gelöscht werden" → Cleanup-Phase voran geschaltet, Pattern-Gen-2.1 etabliert.
+
+**Phase-1-Verständnis (Klassifikations-Audit Labor-Cluster):**
+Aus `nav-data.php` 1 Hub + 9 Detail-Pages = 10 DE-Pages. Plus 1 Legacy-Page `rund-ums-labor` (9707, trid 14707), die im Trunk `inc/data/page-hub-leistungen.php` aktiv verlinkt ist → bleibt + wird übersetzt. Hub `labor` (296, trid 551) hat in **allen 3 Sprachen** WPML-AT-Drift-Bestand (EN 4855, FR 4849, ES 4843 — letzteres mit semantisch verengtem Slug `analiticas-de-sangre`). 9 Detail-Pages (Status/System/Stoffwechsel/Biohack/Risikoprofil) sind Klasse B (clen=0, Trunk-Render via template-detail-page.php). Live-Referenz-Audit (grep im Theme + Trunk) ergab 13 sicher löschbare Pages: 475 (DE-draft + trid 628 ES/FR/EN-Waisen) + 9 DE-drafts mit Importer-Müll-Slugs.
+
+**Phase-2-Spec-Konsens:**
+Konsolidiertes Skript `tools/s69-cluster-labor.php` (Pattern-Generation 2.1, ~620 LOC). Cleanup-Phase (`wp_delete_post($id, true)` cascade) vor 3 Sweep-Phasen: BRIDGE0 (clen=0 Klasse B), BRIDGEC (Klasse-A-Volltext mit slug_override), UPDATE (Klasse-A-Drift-Fix mit optional slug_new). Glossar-konforme Slugs: `laboratorio` (ES Hub Kurzform), `about-our-lab` / `autour-du-laboratoire` / `sobre-el-laboratorio` (rund-ums-labor 3-sprachig). Volltext-Übersetzungen: 4× DE-zu-X für Hub `labor` (3469 Z) + 3× DE-zu-X für `rund-ums-labor` (1235 Z). Skript idempotent + `--commit` + `--lang` + `--skip-cleanup`.
+
+**Phase-3-Umsetzung:**
+
+DB-Backup `_backups/s69/pre-s69-20260503-002001.sql` (51 MB, gitignored). Skript Dry-Run zeigt 45 PLAN, Commit-Run ergibt **DELETED=12 + CREATED=30 + UPDATED=3 = 45 Operationen, 0 ERROR / 0 WARN**.
+
+**Cleanup (12 hard-deletes):**
+- 475 (DE-draft `rund-ums-labor-legacy-475`) + Waisen 4438/4442/4452 (trid 628 ES/FR/EN ohne aktiven DE-Counterpart)
+- 9869–9877 (9 DE-drafts: `bloody-check`, `bloody-check-risikolabor-kopie/-1`, `bloody-check-stoffwechsel-kopie`, `labor-abwehr-immunsystem`, `labor-pravention`, `labor-check-up`, `labor-mini-check-up`, trids 14740–14748)
+
+**Bridge-clen0 (27 ops, neue Page-IDs 10005–10031):**
+
+| trid | DE-Slug | DE-ID | EN-ID | FR-ID | ES-ID |
+|---:|---|---:|---:|---:|---:|
+| 14731 | status-baseline | 9850 | 10005 | 10006 | 10007 |
+| 14732 | status-advanced | 9851 | 10008 | 10009 | 10010 |
+| 14733 | status-prevent | 9852 | 10011 | 10012 | 10013 |
+| 14734 | system-immune | 9853 | 10014 | 10015 | 10016 |
+| 14735 | system-renal | 9854 | 10017 | 10018 | 10019 |
+| 14736 | system-liver | 9855 | 10020 | 10021 | 10022 |
+| 14737 | stoffwechsel | 9856 | 10023 | 10024 | 10025 |
+| 14738 | biohack | 9857 | 10026 | 10027 | 10028 |
+| 14739 | risikoprofil | 9858 | 10029 | 10030 | 10031 |
+
+**Bridge-with-content (3 ops, rund-ums-labor 9707, trid 14707):**
+
+| Sprache | Page-ID | Slug | Title | Inhaltslänge |
+|---|---:|---|---|---:|
+| en | 10032 | about-our-lab | About our lab | 998 Z |
+| fr | 10033 | autour-du-laboratoire | Autour du laboratoire | 1200 Z |
+| es | 10034 | sobre-el-laboratorio | Sobre el laboratorio | 1160 Z |
+
+**Update (3 ops, Hub `labor`, trid 551, Drift-Fix mit Volltext):**
+
+| Sprache | Page-ID | Title | clen alt → neu | Slug-Migration |
+|---|---:|---|---|---|
+| en | 4855 | Laboratory diagnostics | 2063 → 3326 Z | (kein) |
+| fr | 4849 | Diagnostic de laboratoire | 2230 → 3829 Z | (kein) |
+| es | 4843 | Laboratorio | 2194 → 3724 Z | `analiticas-de-sangre` → `laboratorio` |
+
+**Phase-4-Smoke-Tests (alle ✅):**
+- Aggregat: DELETED=12 + CREATED=30 + UPDATED=3 = 45 ops, 0 ERROR/WARN
+- Inventar publish: DE 64 / EN 71 (62 − 1 + 10) / FR 70 (61 − 1 + 10) / ES 68 (59 − 1 + 10) — exakt rechnerisch
+- Cluster-Trid-Lage: alle 11 trids haben jetzt 4 Sprachen (DE+EN+FR+ES)
+- Lösch-Verifikation: 0 von 12 IDs noch in DB
+- Idempotenz Re-Run: SKIP=12 (Cleanup) + EXISTS=30 (Bridge) + UPDATED=3 (byte-identical re-write) — Inventar stabil
+- Slug-Migration ES: `analiticas-de-sangre` → `laboratorio`, 0 Theme-Refs auf alten Slug (LL-058 Audit)
+- PHP-Lint clean, 0 PHP-Errors beim Run
+
+**S69 — Files NEU / MOD:**
+
+- **NEU:** `sites/praxis-webseite/tools/s69-cluster-labor.php` (Cortex-Web-Repo, ~620 LOC, Pattern-Gen-2.1)
+- **NEU:** `sites/praxis-webseite/_backups/s69/pre-s69-20260503-002001.sql` (Rollback-Point, 51 MB, gitignored)
+- **NEU:** Auto-Memory `feedback_no_legacy_ballast_hard_delete.md` (cross-projekt Hard-Delete-Direktive)
+- **MOD:** Auto-Memory `project_praxis_redesign_s63_resume.md` (S69-Stand)
+- **MOD:** Theme-Code keine Änderung — Theme-HEAD bleibt `aba9982`
+- **WP-DB:** 12 Pages gelöscht (inkl. WPML-Cascade trid 628 + 14740–14748), 30 neue Pages (10005–10034), 3 UPDATE auf 4843/4849/4855
+
+**Cross-Cutting (LL-058) für Folge-Wellen:**
+
+- **Pattern-Generation 2.1 ist die neue Standardform** für Cluster-Sweeps mit Cleanup-Anteil. Generation 2 (ohne Cleanup) bleibt für saubere Greenfield-Cluster.
+- **Cleanup-Pflicht-Audit ist neuer Phase-1-Bestandteil:** vor jedem Cluster-Sweep verwaiste DE-Pages, Drafts, Importer-Müll, WPML-Waisen identifizieren. Live-Referenz-Audit pflichtig (grep + DB-Joins gegen Trunk-Daten).
+- **Klasse-A-Hub-Update kann Slug-Migration enthalten:** wenn Bestand-Slug glossar-non-compliant ist (Beispiel ES `analiticas-de-sangre`), wird im UPDATE-Mode `slug_new` gesetzt — SEO-Risiko niedrig bei nicht-aktiven WPML-AT-Pages, Konsistenz-Gewinn hoch.
+- **Verbindliche Arbeitsregel S66 voll umgesetzt:** Drift-Fix der historischen 2021-Pages erfolgt automatisch im selben Sweep wie die neuen Pages.
+
+**S69 — Open Items / Folge-Punkte:**
+
+- **χ unverändert:** Lokales `?lang=*`-Routing-Bug.
+- **ψ unverändert:** Templates IT/pt-PT-Schicht erweitern.
+- **κ verstärkt:** Trunk-i18n für `inc/data/page-hub-*.php` jetzt für **beide** Hubs Pflicht (`page-hub-labor.php` + `page-hub-untersuchungen.php`), weil Klasse-B-Detail-Pages aus Trunk rendern und der Trunk DE-only ist.
+- **Folge-Wellen verbleibend:** Cluster-Sweep „Service" (~6 × 3 = 18 ops, ½ Session); Cluster-Sweep „Legal/Karriere" (~3 × 3 = 9 ops, ½ Session); IT+pt-PT je 78 Pages (blockiert durch ψ).
+- **Native-Quality-Review** der 3 Hub-Updates (EN/FR/ES Volltexte zu `labor`, je ~3700 Z) optional vor Live-Deploy.
+- **Carry-over S62 unverändert:** π/ρ/σ/τ.
+
+**Nächste Front bei Wiederaufnahme S70:**
+- (a) **Cluster-Sweep „Service"** (~6 Pages × 3 = 18 ops) — kleinster verbleibender Cluster, Pattern-Gen-2.1 wiederverwenden
+- (b) Cluster-Sweep „Legal/Karriere" (~3 × 3 = 9 ops, ½ Session)
+- (c) Templates IT/pt-PT erweitern (Folge-Punkt ψ) — Voraussetzung für IT/pt-PT-Wellen
+- (d) Trunk-i18n `inc/data/page-hub-*.php` (Folge-Punkt κ) — für Render-Konsistenz Klasse-B-Pages aus S68 + S69
+- (e) Diagnose χ (lokales Routing-Bug)
+- (f) Native-Quality-Review der 3 Hub-Updates aus S69 (en/fr/es `labor`)
+
+---
 
 ### S68 (2026-05-02) — Cluster „Untersuchungen" Konsolidierter Sweep EN+FR+ES (51 Operationen)
 
