@@ -30,14 +30,104 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-05-02 Ende Session 67 — ES-Cluster „Praxisgemeinschaft" angelegt; Cluster jetzt 4-sprachig DE/EN/FR/ES)
+## §1 Stand & Version (gültig: 2026-05-02 Ende Session 68 — Cluster „Untersuchungen" 4-sprachig komplett + Pattern-Generation 2 etabliert)
 
-- **PXZ_VERSION:** **2.7.121** (Theme-Repo HEAD `aba9982`, unverändert seit S64).
-- **Cortex-Web HEAD:** S66 `339d51d` (S67 wird beim Session-Ende committed).
+- **PXZ_VERSION:** **2.7.121** (Theme-Repo HEAD `aba9982`, unverändert seit S64 — S68 hat keine Theme-Code-Änderung).
+- **Cortex-Web HEAD:** S67 pending (S68-Commit kommt am Session-Ende).
 - **WPML-Status:** 6 aktive Sprachen (DE/EN/FR/ES/IT/pt-PT) — unverändert.
-- **Page-Inventar publish:** DE 64 / EN 51 / FR 50 / **ES 48 (+12)** / IT 0 / pt-PT 0.
-- **Skript-Pattern-Reife:** **3-fach validiert** (S65 EN + S66 FR + S67 ES) — bereit für Update-Mode-Erweiterung in S68 für Drift-Fix existierender 2021-Pages.
-- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` aktualisiert (Cluster Praxisgemeinschaft 4-sprachig DE/EN/FR/ES komplett).
+- **Page-Inventar publish:** **DE 64 / EN 62 (+11) / FR 61 (+11) / ES 59 (+11) / IT 0 / pt-PT 0**.
+- **Skript-Pattern-Reife:** **4-fach validiert + Generation 2 etabliert** (S65 EN single + S66 FR single + S67 ES single + S68 EN+FR+ES Cluster-Sweep mit Bridge+Update-Mode).
+- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` auf S68-Stand aktualisiert.
+
+### S68 (2026-05-02) — Cluster „Untersuchungen" Konsolidierter Sweep EN+FR+ES (51 Operationen)
+
+**Auslöser:** Wiederaufnahme nach S67. Aus dem 5-Optionen-Statement (α=EN-Welle Untersuchungen mit Update-Mode / β=Pattern-Doku ω / γ=Templates IT/pt-PT / δ=Diagnose χ / ε=Native-Quality-Review) Direktive Dr. Stracke: „setze selbstständig fort" → Front α (EN-Welle Untersuchungen + Update-Mode-Skript-Erweiterung) gewählt mit Eskalation zum konsolidierten EN+FR+ES-Sweep, weil Pattern-Generation 2 das in einer Session erlaubt und die verbindliche Arbeitsregel S66 „pro Cluster-Sweep auch FR/ES-Drift mit-fixen" damit umfassender umgesetzt wird.
+
+**Phase-1-Verständnis (Klassifikations-Audit):**
+17 DE-Pages des Clusters (gemäß `nav-data.php` `$unt_match_prefix`): Hub `untersuchungen` (1) + Ultraschall-Gruppe (8: echokardiographie, carotis-duplex, schilddruese, sonographie, bauchspeicheldruese, nieren, prostata, leber) + Funktion-Gruppe (3: belastungs-ekg, lungenfunktion, eye-check) + Check-Up-Gruppe (5: body-check, sono-check, komplett-check, kardio-check, fit-for-diving). WPML-Lage zeigt klare 2-Klassen-Trennung:
+- **Klasse A (UPDATE, 6 Pages, alle 2021er):** sonographie, belastungs-ekg, lungenfunktion, echokardiographie, carotis-duplex, schilddruese — DE existiert als 2021er-Original, EN/FR/ES als WPML-AT-Bestand mit Drift (z. B. Lungenfunktion FR 6596 Z vs DE 2320 Z).
+- **Klasse B (BRIDGE, 11 Pages, alle 2026er):** Hub + 4 Sonographie-Sub (DE-IDs 9840–9843, alle template-detail-page.php mit `clen=0`) + 5 Check-Ups (9844–9848, dito) + eye-check (9849, dito). Hub 9682 hat 283 Z DE-Inhalt (template-untersuchungen-hub.php).
+
+**Phase-2-Spec-Konsens:**
+Konsolidiertes Skript `tools/s68-cluster-untersuchungen.php` (Pattern-Generation 2, Multi-Lang + Multi-Mode in einem Skript). Klasse A bekommt `wp_update_post`-basierten UPDATE (Slug erhalten für SEO, post_content + post_title überschrieben). Klasse B bekommt Direct-DB-Insert (Slug invariant zu DE, content leer ausser Hub). Beide Modes idempotent. Glossar-Compliance aus `nav-data.php` für Titles. Volltext-Übersetzungen für 6 Klasse-A + Hub × 3 Sprachen = 21 Volltexte.
+
+**Phase-3-Umsetzung:**
+
+`sites/praxis-webseite/tools/s68-cluster-untersuchungen.php` (1160 LOC, idempotent, `--commit` + `--lang=en|fr|es` Filter). DB-Backup: `_backups/s68/pre-s68-20260502-233038.sql` (51 MB, gitignored). Dry-Run-Plan zeigt 51 PLAN-Operationen (33 BRIDGE + 18 UPDATE), Commit-Run ergibt 33 CREATED + 18 UPDATED.
+
+**51 Operationen — neue Page-IDs (Klasse B BRIDGE):**
+
+| trid | DE-Slug | DE-ID | EN-ID | FR-ID | ES-ID | Übersetzungstiefe |
+|---:|---|---:|---:|---:|---:|---|
+| 1134 | untersuchungen (Hub) | 9682 | 9972 | 9973 | 9974 | Title + 273-315 Z Inhalt je Sprache |
+| 14721 | bauchspeicheldruese | 9840 | 9975 | 9976 | 9977 | Title only (Pancreas/Pancréas/Páncreas), `clen=0` |
+| 14722 | nieren | 9841 | 9978 | 9979 | 9980 | Title only |
+| 14723 | prostata | 9842 | 9981 | 9982 | 9983 | Title only |
+| 14724 | leber | 9843 | 9984 | 9985 | 9986 | Title only |
+| 14725 | body-check | 9844 | 9987 | 9988 | 9989 | Title invariant „Body Check" |
+| 14726 | sono-check | 9845 | 9990 | 9991 | 9992 | Title invariant „Sono Check" |
+| 14727 | komplett-check | 9846 | 9993 | 9994 | 9995 | Complete Check / Examen complet / Examen completo |
+| 14728 | kardio-check | 9847 | 9996 | 9997 | 9998 | Cardio Check (alle 3 invariant) |
+| 14729 | fit-for-diving | 9848 | 9999 | 10000 | 10001 | Fit for Diving (alle 3 invariant) |
+| 14730 | eye-check | 9849 | 10002 | 10003 | 10004 | Eye Check (alle 3 invariant) |
+
+**18 UPDATEs (Klasse A Drift-Fix):**
+
+| trid | DE-Slug | DE-ID | EN-ID | FR-ID | ES-ID | Drift-Befund (alt → neu, Bytes) |
+|---:|---|---:|---:|---:|---:|---|
+| 540 | sonographie | 277 | 4904 | 4899 | 4895 | EN 5129→2393 / FR 5692→2739 / ES 5332→2639 |
+| 545 | belastungs-ekg | 289 | 4887 | 4883 | 4879 | EN 1449→1949 / FR 1618→2235 / ES 1619→2089 |
+| 548 | lungenfunktion | 292 | 4875 | 4869 | 4863 | EN 5882→2195 / FR **6596→2345** / ES 6410→2326 |
+| 575 | echokardiographie | 351 | 4761 | 4754 | 4701 | EN 3119→2462 / FR 3632→2770 / ES 3470→2654 |
+| 578 | carotis-duplex | 354 | 4749 | 4745 | 4695 | EN 1991→965 / FR 2115→1072 / ES 2101→1060 |
+| 581 | schilddruese | 357 | 4741 | 4737 | 4691 | EN 2851→1586 / FR 3313→1784 / ES 3182→1743 |
+
+**Thumbnail-Sync (Folge-Op nach Skript):** `_thumbnail_id` für 3 Klasse-A-Trids mit Bild gesynct auf DE-Wert: Sonographie EN/FR/ES alle auf 4001, Belastungs-EKG auf 4120, Lungenfunktion auf 4128. Echokardiographie/Carotis/Schilddrüse haben keine Thumbnails (NULL → keine Op nötig).
+
+**Phase-4-Smoke-Tests (alle ✅):**
+- 51 ops Aggregate: 33 CREATED + 18 UPDATED, 0 ERROR / 0 WARN
+- Inventar publish: DE 64 / EN 62 / FR 61 / ES 59 (+11 pro EN/FR/ES bestätigt)
+- Idempotenz Re-Run: 33 EXISTS (Bridge skip) + 18 UPDATED (Update byte-identical re-write) — Inventar stabil
+- Cluster-Trid-Lage: alle 17 trids haben jetzt 4 Sprachen (DE+EN+FR+ES)
+- Klasse-B-Slug-Identität: alle 11 BRIDGE-Pages haben DE-Slug ✅
+- Klasse-A-Slug-Erhalt: alle 6 UPDATE-Pages behalten lokalisierte 2021er-Slugs ✅
+- Drift-Befund Lungenfunktion FR-ID 4869 verifiziert: vorher 6596 Z + Thumbnail 4130, jetzt 2345 Z + Thumbnail 4128 (DE-konsistent)
+- PHP-Lint: clean (keine Syntax-Errors)
+- 0 PHP-Errors beim Insert/Update
+
+**S68 — Files NEU / MOD:**
+
+- **NEU:** `sites/praxis-webseite/tools/s68-cluster-untersuchungen.php` (Cortex-Web-Repo, 1160 LOC, Pattern-Gen-2)
+- **NEU:** `sites/praxis-webseite/_backups/s68/pre-s68-20260502-233038.sql` (Rollback-Point, 51 MB, gitignored)
+- **MOD:** `Nexus/_memory/patterns/wpml-bridge-cluster-import.md` (Pattern ω erweitert: Generation-2-Doku, Update-Mode, Klassifikations-Audit)
+- **MOD:** Theme-Code keine Änderung — Theme-HEAD bleibt `aba9982`
+- **WP-DB:** 33 neue Pages (9972–10004), 33 neue `wp_icl_translations`-Einträge, ~250 neue/aktualisierte `wp_postmeta`-Einträge
+
+**Cross-Cutting (LL-058) für Folge-Wellen:**
+
+- **Pattern-Generation 2 ist die neue Standardform für Cluster-Sweeps:** ein Skript für alle Sprachen + Update-Mode für Drift-Fix. Generation 1 (single-lang) bleibt für isolierte Sprach-Wellen verfügbar.
+- **Verbindliche Arbeitsregel S66 voll umgesetzt:** Drift-Fix der historischen 2021-Pages erfolgt automatisch im selben Sweep wie die neuen Pages. Native-Review der gefixten Pages bleibt als optionaler Folge-Punkt offen (kein Sprint nötig — Translations sind glossar-compliant und DE-getreu).
+- **Klasse-B-Inhalts-Folge-Punkt:** 11 Klasse-B-Pages haben Bridge mit `clen=0`. Die zugehörigen Renderer (`template-detail-page.php`) ziehen Inhalt aus Trunk (`inc/data/page-hub-*.php`). Trunk ist noch DE-only — i18n des Trunks ist Punkt #9 im Memory-Plan.
+
+**S68 — Open Items / Folge-Punkte:**
+
+- **χ unverändert:** Lokales `?lang=*`-Routing-Bug.
+- **ψ unverändert:** Templates IT/pt-PT-Schicht erweitern (Voraussetzung für IT/pt-PT-Wellen).
+- **ω abgeschlossen:** Pattern-Doku 4-fach validiert + Generation 2 dokumentiert.
+- **NEU κ:** Trunk-i18n für `inc/data/page-hub-*.php` (für Klasse-B-Render-Konsistenz EN/FR/ES). Aktuell zeigen die Klasse-B-Detail-Pages den DE-Trunk-Inhalt.
+- **Folge-Wellen verbleibend:** Cluster-Sweep „Labor + Check-Ups" (~17 × 3 = 51 ops); Cluster-Sweep „Service" (~6 × 3 = 18 ops); Cluster-Sweep „Legal/Karriere" (~3 × 3 = 9 ops); IT+pt-PT je 78 Pages (blockiert durch ψ).
+- **Carry-over S62 unverändert:** π/ρ/σ/τ.
+
+**Nächste Front bei Wiederaufnahme S69:**
+- (a) **Cluster-Sweep „Labor + Check-Ups"** (~17 Pages × 3 = 51 ops) via Generation-2-Skript-Klon `s69-cluster-labor.php`
+- (b) Cluster-Sweep „Service" (kleiner, ~6 × 3 = 18 ops, ½ Session)
+- (c) Cluster-Sweep „Legal/Karriere" (kleinster, ~3 × 3 = 9 ops, ½ Session)
+- (d) Templates IT/pt-PT erweitern (Folge-Punkt ψ) — Voraussetzung für IT/pt-PT-Wellen
+- (e) Trunk-i18n `inc/data/page-hub-*.php` (Folge-Punkt κ) — für Render-Konsistenz Klasse-B-Pages
+- (f) Diagnose χ (lokales Routing-Bug)
+- (g) Native-Quality-Review der 18 Klasse-A-Updates aus S68
+
+---
 
 ### S67 (2026-05-02) — ES-Cluster „Praxisgemeinschaft" (12 Pages)
 
