@@ -30,7 +30,355 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-05-01 Ende Session 58 — Praxisgemeinschaft-Refresh: Doctor-Fotos + LL-057/LL-058 + mailto-CTA + Mega-Menu + Reviews-Karussell, PXZ 2.7.94)
+## §1 Stand & Version (gültig: 2026-05-02 Ende Session 63 — i18n-Redesign 6 Sprachen, PXZ 2.7.103 → **2.7.120**)
+
+- **PXZ_VERSION:** **2.7.120** (Theme-Repo, S60–S63 jetzt **als Sammel-Commit** aufgelöst).
+- **Cortex-Web HEAD:** unverändert seit S58 (`5a07c1e`).
+- **WPML-Status:** **6 aktive Sprachen** (DE/EN/FR/ES/**IT/pt-PT**). DB-State: `wp_icl_languages` ids 1, 4, 3, 2, 27, 41.
+- **Sammel-Commit-Auflösung:** Theme-Backlog „S60a–l + S61 + S62 uncommitted" + S63-i18n-Erweiterung in einem strukturierten Commit (löst µ-Memory-Item auf).
+- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` für nächstes „Projekt Redesign starten".
+
+### S63 (2026-05-02) — i18n-Redesign auf 6 Sprachen (DE/EN/FR/ES/IT/pt-PT)
+
+**Auslöser (Dr.-Stracke-Direktive):** Komplette Webseite in alle Sprachen übersetzen — patientengetrieben (portugiesische + italienische Bestandspatienten in Frankfurt-Westend).
+
+**Strategische Entscheidungen** (Phase 2):
+- E1: Engine = **Claude direkt**, kein DeepL Pro (medizinischer Kontext + HWG-Konformität + Sie-Form-Konsistenz schlagen DeepLs Wort-für-Wort-Ansatz; spart 25–50 €/Monat WPML-AT-Subscription)
+- E2: Tooling = **WPML als reiner Strukturträger** (Sprach-Switcher + Page-Duplizierung), keine WPML-AT-Subscription
+- E3: Reihenfolge = **sequentiell pro Sprache** EN→FR→ES→IT→PT, Cluster-weise innerhalb einer Sprache
+- E4: PT-Variante = **pt-PT** (europäisches Portugiesisch); pt-BR optional als spätere 7. Sprache
+
+**Erreicht in dieser Session:**
+
+1. **Nexus-Sync-Divergenz gelöst** — 4 lokale Commits + 1 Remote-Commit gemerged ohne Konflikt, Backup-Tag `pre-merge-2026-05-02-cm02` gesetzt
+2. **`inc/i18n-glossary.php` (NEU)** — Single Source of Truth für 92 medizinisch-juristische Begriffe × 6 Sprachen mit Helper `pxz_g($key, $lang)`. Sektionen: Praxis-Identität, Personal & Rollen, Versicherung & Abrechnung, Termine, Untersuchungen, Sonographie-Organe, Check-Ups, Labor, Befund/Dokumente, Vorsorge, Service, Legal, Karriere, Geographie, UI/CTAs, Form-Felder. **Wichtig:** „Praxisgemeinschaft" → EN „shared medical practice" (NICHT „joint practice" — andere Rechtsform).
+3. **WPML auf 6 Sprachen erweitert** — IT + pt-PT in `wp_icl_languages` aktiviert + `icl_sitepress_settings.active_languages` umgestellt + Cache geflusht. `$sitepress->get_active_languages()` liefert jetzt 6 Einträge.
+4. **8 Stammdaten-Dateien auf 6 Sprachen erweitert:**
+   - `inc/nav-data.php` (Top-Nav 4 Items + 3 Mega-Menus mit jeweils 3 Gruppen)
+   - `inc/footer-data.php` (Tagline, Claim, Col-Labels, Legal-Nav, Copyright, Appointment-CTA)
+   - `inc/practice-data.php` (Adressen, Sprechzeiten, Telefon-Labels, U-Bahn-Codes, Open-Clinic-Section)
+   - `inc/homepage-data.php` (Hero, MFA-Block, Stats, 8 Specialties, Team-Roles, Service-Tiers, Reviews, Footer-Cols, Anchor-Nav)
+   - `inc/team-data.php` (`pxz_render_other_doctors()` Renderer mit Sprach-String-Tabelle)
+   - `inc/diagnostik-data.php` (Refactor von DE-only auf 6-Sprachen-Tabelle für 4 Categories + 3 Sono-Children)
+   - `inc/cookie-consent.php` (Refactor mit `pxz_cookie_consent_strings()` + Render-Funktion liest Sprache pro Request)
+5. **2 Files geprüft → kein Edit nötig:** `inc/specialty-icons.php` (nur Icon-Mapping), `inc/homepage-slider-data.php` (Block-Aggregation aus WPML-Pages)
+6. **`functions.php`** — PXZ_VERSION 2.7.119 → 2.7.120 + Glossar-Include vor allen anderen `inc/`-Datendateien
+7. **Naming-Decision:** Bestehende `pxz_t($key, $default)` ist WPML-`icl_t()`-Wrapper. Glossar-Helper heißt **`pxz_g()`** (kein Konflikt). Architektur dokumentiert im Glossar-File.
+
+**Lücken-Inventar (für Folge-Sessions):**
+- Stammdaten verbleibend: `seo-data.php` (~490 Z, 25+ Pages), `service-forms.php` (~499 Z, 4+ Forms), `termin-anfrage.php` (~516 Z, Modal+Mailing)
+- Page-Übersetzungen: 25 EN + 26 FR + 28 ES + 78 IT + 78 pt-PT = **235 Page-Übersetzungen**
+- Native-Quality-Review der 23 bestehenden EN/FR/ES-Pages
+- WPML-String-Translation für hartkodierte Theme-Strings in Templates
+
+**Smoke-Test grün:** PHP-Syntax aller 8 Files clean, Cross-File-Test über alle 6 Sprachen (Top-Nav + Footer-Tagline + Hero + Practice-Phone + Cookie-Button) zeigt korrekte Lookups.
+
+**Nächste Front bei Wiederaufnahme:** Either (a) Stammdaten-Reste seo-data + service-forms + termin-anfrage → vollständiges Theme-i18n; oder (b) direkt zu Page-Cluster-Übersetzungen EN-Welle (Cluster Praxisgemeinschaft).
+
+
+
+### S62 (2026-05-01) — Termin-Anfrage CTA + Mail-Modal mit IGeL-Hinweis
+
+**Auslöser (Dr.-Stracke-Direktive):** Termin-Buttons auf Untersuchungs- und
+Labor-Seiten prominenter machen, Corporate-Rot statt Schwarz, nach Klick
+individualisierte Mail-Anfrage mit Telefonnummer-Eingabe + Untersuchungs-
+Zusammenfassung + GKV/PKV-Erstattungs-Hinweis.
+
+**Spec-Achsen freigegeben** (Phase 2):
+- A2 Hubs + alle Detail-Pages (Untersuchungen, Labor, Diagnostik,
+  Sonographie, Check-Ups, Bridge)
+- B2 neue Klasse `.pxz-btn-cta-termin` (rot, größer, Pfeil-Icon, Pulse-Glow)
+- C1 eigenes Theme-Form (PHP + AJAX + `wp_mail()`) — kein Plugin-Lock-in
+- D1 Modal-Overlay statt Sub-Page
+- E1 IGeL-Bestätigung als Pflicht-Checkbox
+- F2 Mail-CTA + Doctolib + Telefon koexistieren
+- Wunschtermin als freies Textfeld
+
+**Umsetzung in 5 Bausteinen:**
+
+1. **`inc/termin-anfrage.php`** (NEU) — Helper `pxz_termin_cta_pair($slug)`
+   rendert Trigger-Button + Companions, `pxz_termin_get_untersuchung_data()`
+   holt Title/Eyebrow/Lead aus `inc/data/page-hub-<slug>.php` mit WP-Postmeta-
+   Fallback, `pxz_termin_render_modal()` hängt das Modal-HTML via
+   `wp_footer`-Hook nur dort an, wo der CTA tatsächlich rendert (Static-Flag).
+   AJAX-Handler `wp_ajax_pxz_termin_submit` (+ `nopriv`-Variante) validiert
+   serverseitig, prüft Honeypot + Nonce, sendet Plain-Text-Mail an
+   `PXZ_EMAIL` mit individualisiertem Betreff `[Terminanfrage] <Untersuchung>
+   — <Patient>` und strukturiertem Body (Untersuchung · Patient · Bestätigungen
+   · GKV/PKV-Hinweis je nach Versicherungsart). Reply-To = Patient. Zusätzliche
+   Bestätigungsmail an Patient mit Untersuchungs-Zusammenfassung + IGeL-
+   Hinweis.
+2. **`assets/css/termin-anfrage.css`** (NEU) — `.pxz-btn-cta-termin`:
+   Corporate-Rot `#C8161D`, 52 px Mindesthöhe, 1.05/2 rem Padding,
+   `border-radius: 9999px`, Box-Shadow-Stack 6/18 + 2/6 px in 45/25 % Logo-Rot,
+   Pfeil-Icon mit `translateX(3px)` on hover, Pulse-Glow-Animation 2.6 s
+   Cycle (Box-Shadow 0 → 8 px Spread, deaktiviert bei Hover/Focus und bei
+   `prefers-reduced-motion: reduce`). Modal-Stack: Overlay (rgba 0,0,0,0.55
+   + backdrop-blur 4 px), Dialog (max 640 px, border-radius 22 px, Slide-up-
+   In-Animation), Form-Grid (2 Spalten ab 521 px).
+3. **`assets/js/termin-anfrage.js`** (NEU) — vanilla, kein jQuery. Liest
+   `data-pxz-termin-*` Attribute beim Trigger-Click, befüllt Vorschau-Block
+   + Hidden-Inputs, öffnet Modal mit Focus-Trap und Escape-Key-Handler,
+   sendet Form per `fetch()` an `admin-ajax.php`. HTML5-Validity-Check vor
+   Submit. Erfolgs-Block ersetzt das Form, Fehler erscheint inline.
+4. **`functions.php`** — `PXZ_VERSION` 2.7.102 → **2.7.103**, neue
+   Enqueue-Bedingung für sechs Templates (`template-untersuchungen-hub`,
+   `-labor`, `-diagnostik-hub`, `-checkup-hub`, `-bridge-product`,
+   `-detail-page`), `wp_localize_script` für `pxzTermin.ajaxUrl`,
+   `require_once inc/termin-anfrage.php`.
+5. **CTAs umgestellt:**
+   - `template-parts/page-hub-renderer.php`: Hero-CTA + `cta-banner`-Section
+     rufen `pxz_termin_cta_pair($page_hub_data['slug'])` (vorher
+     `.pxz-btn-primary` schwarz + Doctolib-URL). Hero-CTA erscheint jetzt
+     auch auf Hubs ohne Image (vorher unterdrückt).
+   - `template-checkup-hub.php`: Bottom-CTA-Block.
+   - `template-diagnostik-hub.php` (Sub-Hub `/sonographie/`): Bottom-CTA-Block.
+   - `template-bridge-product.php`: zusätzliche Sektion „Lieber direkt in
+     der Praxis?" mit Termin-Pair (Cross-Brand-CTA zu Sanexio bleibt).
+
+**Form-Felder:** Anrede (optional), Vorname *, Nachname *, Telefon * (wird
+explizit als Rückruf-Feld kommuniziert), E-Mail *, Versicherung *
+(GKV / PKV / Selbstzahler), Wunschtermin (freies Textfeld), Anmerkung,
+IGeL-Bestätigung *, Datenschutz-Einwilligung *. Honeypot `company_url`
++ WP-Nonce gegen Bot/CSRF.
+
+### S62 — Files NEU / MOD
+
+- **NEU:** `inc/termin-anfrage.php`, `assets/css/termin-anfrage.css`,
+  `assets/js/termin-anfrage.js`, `Nexus/_memory/patterns/wp-modal-mail-cta-individualized.md`.
+- **MOD:** `functions.php` (Version-Bump + Enqueue + Require),
+  `template-parts/page-hub-renderer.php` (Hero + Banner CTAs),
+  `template-checkup-hub.php`, `template-diagnostik-hub.php`,
+  `template-bridge-product.php`, `CHANGELOG.md`.
+- **Lokal-Datenschutz-Slug:** `/datenschutzerklaerung/` verwendet
+  (lokal verifiziert via `wp post list`). Falls Live-URL anders ist
+  (z. B. `/datenschutz/` oder `/privacy-policy/`), in `inc/termin-anfrage.php`
+  ändern.
+
+### S62 — Smoke-Test grün
+
+| Page | Trigger | Modal | PHP-Errors |
+|------|---------|-------|-----------|
+| `/untersuchungen/` | 2 | 1 | 0 |
+| `/labor/` | 2 | 1 | 0 |
+| `/sonographie/` | 2 | 1 | 0 |
+| `/belastungs-ekg/` | 2 | 1 | 0 |
+| `/lungenfunktion/` | 2 | 1 | 0 |
+| `/echokardiographie/` | 2 | 1 | 0 |
+| `/labor/status-baseline/` | 2 | 1 | 0 |
+| `/basic-check/` | 1 | 1 | 0 |
+
+PHP-Lint clean auf allen 6 geänderten/neuen PHP-Files. Alte
+`.pxz-btn-primary` für Termin-Zwecke nirgends mehr in den
+betroffenen Untersuchungs-Templates.
+
+### S62 — Bestands-Befunde (NICHT durch S62 verursacht)
+
+- `/diagnostik/` macht 301 → `/untersuchungen/` (S49d-Restruktur, vorbestehend).
+- `/check-ups/` (Page-ID 461) liegt im **Trash**. Template-Code ist bereit;
+  Wiederherstellung der Page entscheidet Dr. Stracke. Falls die Page-Hub-
+  Funktion gewollt ist: `wp post status 461 publish` reicht.
+
+### S62 — Open Items / Folge-Punkte
+
+- **π NEU:** Browser-Smoke-Test durch Dr. Stracke (Modal öffnen, Form
+  abschicken, Pulse-Animation visuell prüfen, Mobile-Responsive).
+- **ρ NEU:** **SMTP-Brücke auf Live** prüfen. `wp_mail()` ohne SMTP-Plugin
+  geht auf Domainfactory typisch ins Leere. Empfehlung: WP Mail SMTP
+  installieren + via App-Password gegen `praxis@westend-hausarzt.de`
+  konfigurieren. Lokal genügt MailHog/Mailpit (LBF eingebaut).
+- **σ NEU:** Datenschutz-Slug Live verifizieren (`wp_remote_get` oder
+  Browser auf `https://westend-hausarzt.com/datenschutzerklaerung/`).
+- **τ NEU:** Tutorial-Eintrag „WordPress Theme-AJAX + wp_localize_script"
+  in `Second Brain/30 Tutorials/WordPress/WordPress Grundlagen.md`
+  ergänzen (LL-022). Pattern-File ist da, Tutorial-Eintrag offen.
+- **µ erweitert:** Sammel-Commit-Empfehlung jetzt für **S60a–l + S61 + S62**.
+  Theme-Repo-`git status` zeigt ~50 Files (40 vorher + 8 S62). Plus
+  3 NEW-Files für S62. Plus `pattern wp-modal-mail-cta-individualized.md`
+  in Nexus (Tier-1, separat).
+- **ο, α–δ, ν, ξ unverändert** (Logo /praxis/-Hero, Doctolib-Direktlinks,
+  Page-Review/Sie-Form, eye-check Praxis-eigenes Bild, Detail-Hero-Bilder
+  vs. Sanexio-Original, EN/FR/ES-Native-Review).
+- **θ unverändert:** GLOBAL_RULES.md HARD-WARN (14 k / 12 k Tokens).
+
+### S61 (2026-05-01) — /praxis/ Lead schmaler + /karriere/ Container-Padding + Logo-Asset-Cleanup
+
+- **/praxis/ Hero-Lead:** in 4 Sprachen inhaltlich von ~322 auf ~165 Zeichen gekürzt (Kernaussage: Hausarztpraxis Stracke + 8 Fachbereiche + Spezialist im selben Flur). Zusätzlich `.pxz-pg-lead { max-width: none }` (S60c) → `max-width: 75ch` (= `.pxz-sect-intro`-Pattern), damit der Lead optisch zu den restlichen Section-Intros passt. **Reverse von S60c-Entscheidung** — Dr. Stracke wollte Lead schmaler statt voll-bleed.
+- **/karriere/ Form-Container:** `.pxz-kar-form-wrap` hatte `padding-top: 0`, Card klebte am Hero. Neu: `32 / 40 / 48 px` (Mobile/Tab/Desktop) — analog zur Skala der bestehenden Hero-Bottom-Padding-Werte.
+- **Logo-Cleanup im Theme:** `assets/logo.png`, `assets/logo-icon.png`, `assets/logo-sanexio-compact.svg` via `git rm` entfernt. Grep-verifiziert: 0 Refs in PHP/CSS/JS/JSON/HTML/MD. Übrig: `logo.svg` (Praxis-Stempel, Header/Footer/`/praxis/`-Hero) + `logo-sanexio.svg` (Sanexio-Wordmark, Header-Sanexio-Slot/Cross-Brand-CTA). Auslöser: Dr. Stracke wies auf falsches Logo im `/praxis/`-Hero hin → Asset-Inventur ergab 3 ungenutzte Datei-Karteileichen.
+
+### S61 — Files NEU / MOD / DEL
+
+- **MOD:** `template-praxisgemeinschaft.php` (4 Lead-Strings DE/EN/FR/ES), `assets/css/praxisgemeinschaft.css` (`.pxz-pg-lead` max-width), `assets/css/karriere.css` (`.pxz-kar-form-wrap` padding-top 3 Breakpoints).
+- **DEL:** `assets/logo.png`, `assets/logo-icon.png`, `assets/logo-sanexio-compact.svg` (alle git-getrackt → revertierbar).
+- **WP-DB / Uploads:** unverändert.
+
+### S61 — Open Items / Folge-Punkte
+
+- **ο NEU:** Korrektes Logo für `/praxis/`-Hero noch ungeklärt — aktuell weiter `logo.svg` (Stracke-Stempel). Dr. Stracke wollte das Logo wechseln, hat aber „erstmal egal" gesagt und stattdessen den Asset-Cleanup priorisiert. Frage offen: Soll im Hero `logo-sanexio.svg`, eine neue Praxisgemeinschafts-Datei oder gar kein Logo? Bei nächster Session ansprechen.
+- **µ verändert:** Sammel-Commit-Empfehlung jetzt für **S60a–l + S61** (statt nur S60). 4 Files MOD + 3 DEL aus S61 oben drauf.
+- **α–δ, ν, ξ unverändert** (Doctolib · Page-Review · eye-check Praxis-eigenes Bild · S52-Builder-Output · andere Detail-Hero-Bilder · EN/FR/ES-Native-Review).
+- **θ unverändert:** GLOBAL_RULES.md HARD-WARN (14 k / 12 k Tokens, vorbestehend seit S56).
+
+### S61 — Smoke-Tests
+
+Lokale Edits, kein Browser-Test in dieser Session. Erwartetes Verhalten: `/praxis/`-Lead jetzt zentrierter Block (75ch ≈ 56 rem), `/karriere/`-Card mit sichtbarem Abstand zum Hero, gelöschte Logos nirgends 404 (waren ungenutzt). **Verifikation bei nächstem Browser-Reload mit Hard-Refresh (Cmd+Shift+R).**
+
+
+
+### S60 (2026-05-01) — Sammel-Sprint /praxis/ + Menü + /team/ + Detail-Pages
+
+**S60a–c — /praxis/ Content-Aufbau + Container-Rhythm:**
+- Lead/Story komplett neu, patientenzentriert (alle gewerblichen Begriffe raus: Kostengemeinschaft, BGB, Fixkosten, Outsourcing, Klinik-Niveau).
+- Lead + Story-Body von `max-width: 75ch` → `max-width: none` (= Homepage `.pxz-hero-sub`-Pattern, voll-bleed).
+
+**S60d — /praxis/ Logo + 8 Vorteile + Menü-Restruktur:**
+- Hero-Logo der Praxisgemeinschaft (`assets/logo.svg`, CSS-Background-Crop wie nav.css, 96/120/160 px responsive).
+- Story auf 2 Sätze: Schwerpunkte (Innere Medizin · Notfallmedizin · hausärztlich) + Tech-Liste (Sonographie, Spiroergometrie, Schlafapnoe, Lungenfunktion, Langzeit-EKG/-RR, Labor) + Internat. Patienten.
+- Spec-Intro auf 2 Sätze (Wortlaut Dr. Stracke).
+- Vorteile 6 → **8** (Symmetrie 2×4 auf XL): + Offene Sprechstunde 11–12, + Termine online buchen, + International Patients.
+- SEO via `inc/seo-data.php → pxz_seo_data_praxis()` neu + `wp_aioseo_posts`-DB-Eintrag.
+- **Menü-Restruktur** (`inc/nav-data.php`): Submenu „Praxisgemeinschaft" raus, Top-Level „Kontakt" → unter Praxis-Spalte 1, „Sprechzeiten"-Submenu raus, neuer Top-Level **FAQ** (`/faq/` ID 9888 neu, mit Einweisungen + Arbeitsunfähigkeit). Neue Top-Nav: **Praxis · Untersuchungen · Labor · FAQ**.
+
+**S60e — /team/ neu + Hub-Card-Bilder Shopify-Format:**
+- /team/ Hero-Meta drastisch gekürzt: Eyebrow „Team", H1 „Unser Team.", Sub „Neun Ärzt:innen, fünf MFAs — im Frankfurter Westend."
+- /team/ Post-Content ~70 % kürzer, 4 H2-Sektionen → 1 H2 „Was uns verbindet" mit 4 Bullets. Floskeln raus („Medizin ist Teamarbeit", „Kompetenz auf Facharztniveau", „nicht als Einzelkämpfer").
+- /team/ SEO via `pxz_seo_data_team()` + AIOSEO-DB neu.
+- Hub-Card-Bilder (`/untersuchungen/`, `/labor/`): `object-fit: contain` → `cover`, kein Background-Padding (= Sanexio `card_image_padding: 0`).
+
+**S60f–g — Aspect-Ratio-Fix + Hero/Overview-Media quadratisch:**
+- Padding-Top-Hack für `.pxz-hub-card-media`, `.pxz-hub-hero-media`, `.pxz-hub-overview-media` (`aspect-ratio: 1/1` allein griff in Flex-Cells nicht durch — siehe Pattern `aspect-ratio-padding-top-hack.md`).
+- Detail-Page Hero-Media von 4/3 → 1/1.
+
+**S60h — Detail-Page Hero-Schrift Token-basiert:**
+- `.pxz-hub-hero-eyebrow`/`-heading`/`-lead` an Theme-Tokens (`--pxz-t7-size`, `--pxz-t3-size`, `--pxz-t5-size`) angeglichen — identisch mit `.pxz-eyebrow`/`.pxz-title-2`/`.pxz-lead` aus components.css. Vorher eigene clamp()-Werte (Heading bis 72 px) inkonsistent zum Rest des Themes.
+
+**S60i–j — Body-Container + Schriftgröße:**
+- `.pxz-hub-body { max-width: 720px → none }` (= volle `.pxz-hub-container` 1600 px wie Hero darüber).
+- Body-Content-Größe `--pxz-t6-size` → `--pxz-t5-size` (= Hero-Lead).
+- Body-H2/H3 Theme-Tokens (statt Browser-Default). Listen-Margins/Paddings.
+- Legacy-Content gleich.
+
+**S60k — Hero-Bild 30 % schmaler:**
+- Grid-Spalten-Verhältnis `1fr 1fr` → `0.7fr 1fr` (Bild-Spalte ~41 % statt 50 %). Erste Variante via `max-width: 70%` ließ Bild kollabieren (Container-Width-Anchor weg in Padding-Top-Hack); Grid-Verhältnis ist sauber.
+
+**S60l — Eye-Check Hero-Bild = Sanexio-Original:**
+- `eye-check-hero.jpg` war nicht das Sanexio-Original. Über `tools/mirror-shopify-images.map` URL geholt (`Auge1080x1080.jpg`) und überschrieben. MD5 jetzt identisch mit `diag-eye-check.jpg`. Backups: `*.bak-pre-s60l`.
+
+### S60 — Files NEU / MOD / DEL
+
+- **NEU:** Pattern-Files `Nexus/_memory/patterns/aspect-ratio-padding-top-hack.md` + `seo-override-aioseo-direct-db.md`.
+- **MOD:** `template-praxisgemeinschaft.php`, `inc/nav-data.php`, `inc/seo-data.php`, `assets/css/praxisgemeinschaft.css`, `assets/css/page-hub.css`, `functions.php` (PXZ 2.7.99 → 2.7.102), `CHANGELOG.md`.
+- **WP-DB:** post 9671 meta+aioseo, post 9672 meta+content+aioseo, post 9888 (FAQ) NEU.
+- **Uploads:** `eye-check-hero.jpg` ersetzt; 2 `.bak-pre-s60l`-Files.
+
+### S60 — Smoke-Tests grün
+
+`/praxis/`, `/team/`, `/faq/`, `/labor/`, `/untersuchungen/`, `/labor/biohack/`, `/labor/system-immune/`, `/eye-check/`, `/contact-us/` — alle HTTP 200. PHP-Lint clean auf 4 geänderten PHP-Files. Top-Nav rendert: Praxis · Untersuchungen · Labor · FAQ.
+
+### S60 — Open Items
+
+- **α–δ unverändert** (Doctolib, Page-Review, eye-check Praxis-eigenes Bild, S52-Builder-Output 27+ uncommitted Files).
+- **µ NEU:** S60a–l selbst uncommitted im Theme-Repo. Sammel-Commit empfohlen vor neuer Session. Plus 2 `.bak`-Files in uploads aufräumen.
+- **ν NEU:** Andere Detail-Page-Hero-Bilder (außer eye-check) auf Sanexio-Identität prüfen — Sweep-Skript möglich (`md5 hero-bild` vs. `md5 diag-bild` aus mirror-map).
+- **ξ NEU:** EN/FR/ES-Übersetzungen der neuen /praxis/-Texte (Story, 8 Vorteile) ohne Native-Speaker-Review.
+- **θ unverändert:** GLOBAL_RULES.md HARD-WARN (14 k/12 k Tokens, vorbestehend).
+
+### S59a (2026-05-01) — Praxis-Restruktur PXZ 2.7.95
+
+**Top-Nav 3-Spalten-Mega-Menu** statt 2-Spalten:
+- Top-Item zurück auf „Praxis"/„Practice"/„Cabinet"/„Consulta" (S58 hatte „Praxisgemeinschaft").
+- Spalte 1 „Praxis": Praxisgemeinschaft (= /praxis/, Submenu-Label-Rename von „Über uns") · Unser Team · Standorte · Karriere.
+- Spalte 2 „Patientenservice" (unverändert): 7 Items.
+- Spalte 3 „Partner:innen" (NEU): klickbare Group-Label `/unsere-partner/` + 8 Partner-Profile direkt.
+- Renderer (`template-parts/header-nav.php`) um optionales `group_label_href` erweitert (`<h3>` wird `<a>` wenn href gesetzt). Rückwärtskompatibel.
+
+**Standorte-Page** (`/standorte/`, ID 9691):
+- Page-Title „Hauptpraxis Grüneburgweg" → „Standorte".
+- Hero: Eyebrow „Standorte" + H1 „Zwei Adressen. Ein Gedanke." (Stil Homepage-Hero, via post_meta `pxz_standard_eyebrow`/`pxz_standard_h1`).
+
+**Praxisgemeinschaft-Page** (`/praxis/`, ID 9671):
+- Page-Title „Unsere Praxis" → „Praxisgemeinschaft".
+- Neues `template-praxisgemeinschaft.php`. Page-Template umgestellt von `template-standard.php`.
+- Inhalt komplett neu: Hero („Acht Disziplinen. Ein Team."), Intro über interdisziplinäre Zusammenarbeit, 8-Card-Grid Fachbereiche (Eterno-Stil, HWG-konform, 4 langs), 2-Card-Grid Kooperationspraxen (Kardiologie → ccb.de, Ophthalmologie → schmidt-augenarzt.de).
+- Icons aus `assets/icons/specialties/*.svg` in Corporate-Rot via `currentColor`-Trick (`pxz_specialty_icon_svg()`).
+
+**Partner-Übersicht** (`/unsere-partner/`, ID 9887, neu angelegt):
+- Eigenes `template-partner.php`. Card-Grid mit allen 8 Partner:innen aus `pxz_team_doctors()`. Foto/Initialen + Name + Title + Profile-Link.
+
+### S59b (2026-05-01) — Cobrand-Logo CSS-Crop PXZ 2.7.96
+
+**Auslöser:** Mein in S59a angelegtes `logo-icon.svg` (roter Kreis + weißes Plus) war **nicht** das echte Praxis-Logo. Dr.-Stracke-Korrektur: das ECHTE `logo.svg` verwenden, kein Ersatz, und den roten Bereich darin auf die Größe des Plus-Symbols bringen.
+
+**Erkenntnis (qlmanage + PIL):** `logo.svg` ist ein rundes medizinisches Siegel (Caduceus + Schriftring „Praxiszentrum · Dr. Stracke · & Kollegen") in 1600×1600 viewBox mit ~50 % Whitespace. Roter Stempel-Bbox: x=[369,1230], y=[361,1238] → ~862×878 px.
+
+**Lösung:** CSS-Background-Crop. `<img>` ersetzt durch `<span class="pxz-nav-cobrand-icon" style="background-image:…">`. `background-size = container × 1600/900` (mit 22 px Sicherheits-Padding um die 878-Bbox). Container-`overflow` clipt Whitespace automatisch.
+
+Background-Sizes pro Breakpoint: 67 → 119, 81 → 144, 108 → 192, 135 → 240 px.
+
+**Files DEL:** `assets/logo-icon.svg` (Plus-Substitut).
+
+### S59c (2026-05-01) — Logo-Crop auf alle Header + Footer PXZ 2.7.97
+
+Dasselbe Pattern auf:
+- **Praxis-Header** (header-nav.php else-Branch, alle non-Sanexio Pages): `<img>` → `<span class="pxz-nav-logo-icon">`. Background-Sizes 114/142/171/213 (= Container 64/80/96/120 × 1600/900).
+- **Footer-Brand-Mark** (site-footer.php + footer.css): `<img>` → `<span class="pxz-footer-brand-icon">`. CSS nutzt prozentbasiertes `background-size: 177.78% 177.78%` (= 1600/900) — automatisch korrekt für 288 px / 352 px Breakpoints.
+
+LL-058 (Cross-Page-Konsistenz): synchron mitgezogen — derselbe Whitespace-Bug existierte überall.
+
+### S59d (2026-05-01) — /praxis/ Container-Breiten = Homepage PXZ 2.7.98
+
+**Vorher:** `.pxz-pg-hero-inner` 880 px · `.pxz-pg-lead` 70ch · `.pxz-pg-spec/coop .pxz-sect-head` 760 px → enger als Homepage.
+
+**Nachher (Homepage-Pattern):**
+- `.pxz-pg-hero` voll-bleed (`max-width: none`), Padding wie `.pxz-hero-top`: 80/104/128 px oben, 40/56/72 unten, horizontal `clamp(1rem, 4vw, 3rem)`.
+- `.pxz-pg-hero-inner` max-width: none.
+- `.pxz-pg-lead` max-width: 75 ch (= `.pxz-home .pxz-sect-intro`).
+- Section-Heads max-width: none. Section-Intros max-width: 75 ch, `margin: 1.75rem auto 0`.
+- Outer-Container `.pxz-container { max-width: 1600px }` bleibt unverändert (war schon korrekt).
+
+### S59 — Files NEU / MOD / DEL
+
+- **NEU:** `template-praxisgemeinschaft.php`, `template-partner.php`, `assets/css/praxisgemeinschaft.css`.
+- **MOD:** `inc/nav-data.php`, `template-parts/header-nav.php`, `template-parts/site-footer.php`, `assets/css/nav.css`, `assets/css/footer.css`, `functions.php`, `CHANGELOG.md`.
+- **DEL:** `assets/logo-icon.svg` (S59b-Korrektur).
+- **WP-DB:** post 9671 title+template, post 9691 title+post_meta, post 9887 (NEU) inkl. _wp_page_template.
+
+### S59 — Smoke-Tests grün
+
+`/praxis/` (HTTP 200, 8 Fachbereich-Cards + 2 Kooperations-Cards, Container 1600 px) · `/unsere-partner/` (HTTP 200, 8 Partner-Cards) · `/standorte/` (HTTP 200, neuer Hero) · `/` (Top-Nav „Praxis", Praxis-Logo gecroppt) · `/team/` (Cobrand-Order praxis→sanexio, Logo gecroppt). PHP-Lint clean auf allen 5 geänderten Files.
+
+### S59 — Theme-Repo-Status (Ende-Session)
+
+- **HEAD vor S59:** `6045cda` (S58f).
+- **S59 als Sammel-Commit gepusht** mit Pathspec-Add (nur S59-Files) — die uncommitted S52-Builder-Output-Files (page-hub-*.php + arzt.css + room-slider.*) bleiben weiter unangetastet (Open-Item seit Tagen).
+- **Theme-Repo hat kein Remote** — lokal-only seit S0.1.
+
+### S59 — Open Items / Folge-Punkte
+
+- **α) Doctolib-Direktlinks pro Page** (Phase 3d, Sanexio-Mirror) — unverändert offen.
+- **β) Page-Review / Sie-Form-Walkthrough** (25 Sanexio-Mirror-Pages) — unverändert offen.
+- **γ) eye-check + labor-biohack** Praxis-eigenes Bild + Text — unverändert offen.
+- **δ) S52-Builder-Output-Commits + room-slider-Änderungen** (33 uncommitted Files seit Tagen) — Dr.-Stracke-Entscheidung über Commit weiter offen.
+- **ε) EN/FR/ES-Übersetzungen** der Klappentexte auf /praxis/ + /unsere-partner/ ohne native-speaker-Review — Zweitkorrektur empfohlen, kein Blocker.
+- **ζ) Logo-Crop visueller Feinschliff** — falls bei großem Header (Desktop ≥1440 px, 120 px Logo) zu groß/zu eng wirkt: `background-size`-Faktor in nav.css/`.pxz-nav-logo-icon` anpassen (aktuell 213 px = 120 × 1600/900). Pattern: `Nexus/_memory/patterns/svg-background-crop.md`.
+- **η) /praxis/ post_content Legacy** in WP-DB bleibt — vom neuen Template nicht gerendert, aber DB-Eintrag liegt da. Optional Cleanup.
+- **θ) Sanitizer GLOBAL_RULES.md HARD-WARN** (14111/12k Tokens, vorbestehend seit S56) — manuelle Verdichtung anstehend.
+
+### S59 — Architektur-Erweiterungen
+
+- **Renderer-Pattern `group_label_href`** für Mega-Menu (header-nav.php) — optional, rückwärts-kompatibel. Nutzbar auch für andere Top-Items wenn deren Spalten-Header eine Übersichtsseite haben sollen.
+- **CSS-Background-Crop-Pattern** für Whitespace-padded SVGs — neues Pattern `Nexus/_memory/patterns/svg-background-crop.md` mit qlmanage+PIL-Bbox-Skript.
+
+---
+
+## §1-Sliding-Window — N-1 (S58, 2026-05-01 vormittags) — kompakt
+
+S58 (PXZ 2.7.94, Theme `6045cda`): Praxisgemeinschaft-Refresh (heute morgen, vor S59) — 6 Doctor-Fotos importiert (IDs 9878–9883), Trunk-Drift-Cleanup, „Weitere Partner der Praxisgemeinschaft" als Section-Title, Container-Standard `_rules/CONTAINER_STANDARD.md`, Top-Nav 5→4 Items mit Praxisgemeinschaft + Patientenservice als Mega-Menu-Spalten (in S59 weiter restrukturiert), Header-CTA auf `mailto:`, Reviews-Karussell mit Endlos-Modus + Click-to-Expand. LL-057 (Fachtermini erklären), LL-058 (Cross-Page-Konsistenz). Detail siehe Cold-Archive bzw. CHANGELOG-Eintrag 2.7.94 / S58a–f.
+
+---
+
+## §1-Legacy (vorheriger Stand vor S59 — gültig bis 2026-05-01 vormittags)
 
 - **PXZ_VERSION:** **2.7.94** Theme-HEAD `6045cda` (S58f). Reihe: `6045cda` (S58f) → `c04ec4c` (S58e) → `b56f6a0` (S58d) → `0aeccd3` (S58c) → `6ecdfcf` (S58b) → `8491ed6` (S58) → `e1e3ed6` (S57) → `9d257cf` (S56).
 - **Cortex-Web HEAD:** `5f8177b` (Page-Content-Snapshot /team/) → `6de121f` (Trunk-Container-Standard + Jawich) → `4c6d8da` (Trunk Doctor-Bios Backfill).
