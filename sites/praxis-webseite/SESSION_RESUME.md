@@ -30,13 +30,83 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-05-02 Ende Session 63 — i18n-Redesign 6 Sprachen, PXZ 2.7.103 → **2.7.120**)
+## §1 Stand & Version (gültig: 2026-05-02 Ende Session 64 — i18n-Stammdaten Reste, PXZ 2.7.120 → **2.7.121**)
 
-- **PXZ_VERSION:** **2.7.120** (Theme-Repo, S60–S63 jetzt **als Sammel-Commit** aufgelöst).
+- **PXZ_VERSION:** **2.7.121** (Theme-Repo HEAD `aba9982`, S64-Sammel-Commit).
 - **Cortex-Web HEAD:** unverändert seit S58 (`5a07c1e`).
-- **WPML-Status:** **6 aktive Sprachen** (DE/EN/FR/ES/**IT/pt-PT**). DB-State: `wp_icl_languages` ids 1, 4, 3, 2, 27, 41.
-- **Sammel-Commit-Auflösung:** Theme-Backlog „S60a–l + S61 + S62 uncommitted" + S63-i18n-Erweiterung in einem strukturierten Commit (löst µ-Memory-Item auf).
-- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` für nächstes „Projekt Redesign starten".
+- **WPML-Status:** **6 aktive Sprachen** (DE/EN/FR/ES/IT/pt-PT) — unverändert.
+- **Stammdaten-i18n abgeschlossen:** 11 von 11 zu lokalisierenden Stammdaten-Files auf 6 Sprachen. Theme-Substrat ist jetzt vollständig 6-sprachig.
+- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` aktualisiert (Stammdaten-Spalte erledigt).
+
+### S64 (2026-05-02) — i18n-Stammdaten Reste auf 6 Sprachen
+
+**Auslöser:** Wiederaufnahme nach S63. Front A der drei Front-Optionen aus dem
+Architekten-Statement: Stammdaten-Reste komplett abschließen, bevor Page-Cluster-
+Übersetzungen oder Native-Review kommen.
+
+**Phase-2-Spec freigegeben** (Architekten-Modus):
+- Pattern wiederverwendet: `pxz_<file>_strings($lang)` returnt `[lang => …]`,
+  Render liest `pxz_current_lang()` (DE-Fallback). Bestätigt durch S63-Files.
+- AJAX-Sprach-Tracking: Hidden-Field `<input name="lang">` snapshot-tet
+  Patient-Sprache; Whitelist `[de,en,fr,es,it,pt-pt]` im Handler.
+- Mail-Strategie: Praxis-Mail bleibt deutsch (mit Sprach-Marker im Header),
+  Patient-Bestätigung in Patient-Sprache.
+- Canonical-URLs: `apply_filters('wpml_permalink', ...)` für nicht-DE; DE
+  bleibt hardkodiert. JSON-LD-`name`-Felder bleiben deutsch (Praxisname ist
+  sprach-invariant).
+- Bewusst aus Scope: Page-Hub-Daten (`inc/data/page-hub-*.php`) bleiben DE —
+  gehören zur Page-Cluster-Welle.
+
+**Erreicht in dieser Session:**
+
+1. **`inc/seo-data.php`** — neuer Helper `pxz_seo_localize($de_data, $i18n)`
+   legt eine Title/Description-Schicht über die DE-Defaults. Alle 25 Page-
+   Lookups liefern jetzt 6-sprachig: praxis, team, 6 Check-Up-Pages,
+   leistungen, impfungen, 8 Diagnostik-Pages, doctor (Template-basiert),
+   404. Canonical via `wpml_permalink`-Filter. JSON-LD-`availableLanguage`
+   auf `['de','en','fr','es','it','pt']` erweitert.
+2. **`inc/service-forms.php`** — vier-schichtige Lookup-Architektur:
+   `pxz_service_forms_strings()` (Form-Level), `_field_strings()` (Field-Level),
+   `_ui_strings()` (Errors/UI/Mail), `_field_schema()` (sprach-invariantes
+   Field-Schema mit Type/Required/Min/Max). `pxz_service_forms_definitions($lang)`
+   setzt zusammen. Renderer mit `lang`-Hidden-Field, AJAX-Handler validiert
+   gegen Whitelist, sendet Praxis-Mail DE und Patient-Confirmation in
+   Patient-Sprache.
+3. **`inc/termin-anfrage.php`** — `pxz_termin_strings($lang)` mit ~60
+   Schlüsseln/Sprache (Trigger-Label, Modal-Header, IGeL-Hinweis,
+   Form-Labels, Versicherungs-/Anrede-Optionen, Datenschutz-Text,
+   Submit-Buttons, Erfolgs-Block, Validation-Errors, Confirmation-Mail-
+   Text inkl. IGeL/GKV/PKV-Klausel-Übersetzung). Modal komplett aus
+   String-Tabelle gerendert. Honeypot-Label und Doctolib-Label
+   sprachvariant.
+4. **`functions.php`** — `PXZ_VERSION` 2.7.120 → **2.7.121**.
+5. **`CHANGELOG.md`** — Eintrag `[2.7.121] — S64 — i18n-Stammdaten Reste`.
+
+**Smoke-Tests grün** (Phase-4-Selbstprüfung):
+- PHP-Lint clean auf 5 geänderten Files.
+- 6 Sprachen × 6 Service-Forms × 2 Assertions = **72 PASS / 0 FAIL**.
+- 6 Sprachen × 8 SEO-Pages × 2 Assertions = **96 PASS / 0 FAIL**.
+- 6 Sprachen × 8 Termin-Modal-Schlüssel = **48 PASS / 0 FAIL**.
+- Kein PHP-Error im CLI-Stub-Run.
+
+**S64 — Files NEU / MOD:**
+- **MOD:** `inc/seo-data.php` (490 → 800+ Z), `inc/service-forms.php`
+  (499 → 1500+ Z), `inc/termin-anfrage.php` (516 → 1050+ Z),
+  `functions.php` (Version-Bump), `CHANGELOG.md` (S64-Eintrag).
+- **Theme-Commit:** `aba9982` „feat(s64): i18n stammdaten — seo-data +
+  service-forms + termin-anfrage on 6 languages (PXZ 2.7.120 → 2.7.121)".
+
+**Nächste Front bei Wiederaufnahme:** Page-Cluster-Übersetzungen.
+- Option B (priorisiert in S63-Resume): EN-Welle 25 Pages, Cluster-weise
+  (Praxisgemeinschaft → Untersuchungen → Labor → Service → Legal/Karriere).
+- Option C: Native-Quality-Review der 23 bestehenden EN/FR/ES-Pages —
+  Glossar-Konsistenz prüfen.
+- Option D: WPML-String-Translation für hartkodierte Theme-Strings in
+  Templates.
+- **Carry-over aus S62:** π Browser-Smoke-Test, ρ SMTP-Brücke Live,
+  σ Datenschutz-Slug-Verifikation, τ Tutorial WP-Theme-AJAX.
+
+---
 
 ### S63 (2026-05-02) — i18n-Redesign auf 6 Sprachen (DE/EN/FR/ES/IT/pt-PT)
 
