@@ -132,6 +132,19 @@ S66-Wahl, mit Pattern jetzt zweifach validiert:
 - (d) Diagnose χ (lokales Routing-Bug)
 - (e) Pattern-Doku ω (nach c oder gleich vor c als Voraussetzung für IT/pt-PT-Welle)
 
+**Verbindliche Arbeitsregel (S66-Befund Lungenfunktion 2026-05-02):**
+Bei jedem Cluster-Sweep (Untersuchungen, Labor, Service, Legal/Karriere)
+werden die bestehenden FR/ES-Drift-Pages dieses Clusters mit
+`translatedWithWPMLTM`-Marker (WPML-AT Auto-Übersetzungen aus 2021,
+~23 historische Pages) **automatisch mit-korrigiert** — Skript-Pattern
+muss um Update-Mode erweitert werden: bei vorhandener Target-Page mit
+WPML-AT-Marker → Content + `_thumbnail_id` + Postmeta auf aktuellen
+DE-Stand überschreiben statt EXISTS-skip. Drift-Beispiel Lungenfunktion:
+DE-ID 292 (2 320 Z, Image 4128) vs FR-ID 4869 (6 596 Z, Image 4177,
+WPML-AT 2021-02-27). Damit ist Open Item #9 (Native-Review) ohne
+Extra-Sprint erledigt — pro Cluster-Welle ein Cluster gleichzeitig
+neu-angelegt + drift-gefixt.
+
 ---
 
 
