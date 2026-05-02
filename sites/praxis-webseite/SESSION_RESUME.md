@@ -30,13 +30,77 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-05-02 Ende Session 66 — FR-Cluster „Praxisgemeinschaft" angelegt)
+## §1 Stand & Version (gültig: 2026-05-02 Ende Session 67 — ES-Cluster „Praxisgemeinschaft" angelegt; Cluster jetzt 4-sprachig DE/EN/FR/ES)
 
 - **PXZ_VERSION:** **2.7.121** (Theme-Repo HEAD `aba9982`, unverändert seit S64).
-- **Cortex-Web HEAD:** S65 `8f05dc9` (S66 wird beim Session-Ende committed).
+- **Cortex-Web HEAD:** S66 `339d51d` (S67 wird beim Session-Ende committed).
 - **WPML-Status:** 6 aktive Sprachen (DE/EN/FR/ES/IT/pt-PT) — unverändert.
-- **Page-Inventar publish:** DE 64 / EN 51 / **FR 50 (+12)** / ES 36 / IT 0 / pt-PT 0.
-- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` aktualisiert (FR-Cluster Praxisgemeinschaft erledigt).
+- **Page-Inventar publish:** DE 64 / EN 51 / FR 50 / **ES 48 (+12)** / IT 0 / pt-PT 0.
+- **Skript-Pattern-Reife:** **3-fach validiert** (S65 EN + S66 FR + S67 ES) — bereit für Update-Mode-Erweiterung in S68 für Drift-Fix existierender 2021-Pages.
+- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` aktualisiert (Cluster Praxisgemeinschaft 4-sprachig DE/EN/FR/ES komplett).
+
+### S67 (2026-05-02) — ES-Cluster „Praxisgemeinschaft" (12 Pages)
+
+**Auslöser:** Wiederaufnahme nach S66. Nach Lungenfunktion-Drift-Befund (FR-Page
+4869 von 2021 mit `translatedWithWPMLTM`-Marker, drift gegen aktuelle DE)
+delegierte Dr. Stracke die Wahl an Claude. Entscheidung: **ES-Welle (Option a)
+vor Cluster-Untersuchungen-Sweep (Option b)**, um Pattern dreifach zu
+stabilisieren bevor Update-Mode-Erweiterung kommt.
+
+**Phase-3-Umsetzung:**
+
+`sites/praxis-webseite/tools/s67-es-cluster-praxisgemeinschaft.php` (Klon von
+S66, ~270 Z, ES-Sprach-Code + ES-Strings, idempotent, Dry-Run + `--commit`).
+DB-Backup: `_backups/s67/pre-s67-20260502-224053.sql` (17 MB, gitignored).
+
+**12 ES-Pages angelegt (IDs 9960–9971):**
+
+| trid | DE-Slug | ES-ID | Übersetzungstiefe |
+|---:|---|---:|---|
+| 1123 | praxis | 9960 | Title „Comunidad de consulta médica" (Glossar `pxz_g('praxisgemeinschaft','es')`); Self-Render |
+| 1124 | team | 9961 | Title „Nuestro equipo"; Self-Render |
+| 14749 | unsere-partner | 9962 | Title „Nuestros socios" (Glossar `partner:es=Socios`); Self-Render |
+| 1127–1133 | 7 Doctor-Pages | 9963–9969 | Titles invariant; Self-Render |
+| 1138 | standorte | 9970 | Title „Nuestros centros" + 3 Postmeta („Nuestros centros" / „Dos direcciones. Una sola filosofía." / leer) + 6965 Z post_content vollständig übersetzt |
+| 1139 | zweigpraxis-bockenheimer | 9971 | Title „Consulta secundaria Bockenheimer Landstraße" + 2 Postmeta + 2151 Z post_content vollständig übersetzt |
+
+**Phase-4-Smoke-Tests (alle ✅):**
+- 12 ES-Pages publish + WPML-Trid-Bridge sauber
+- Inventar: DE 64 / EN 51 / FR 50 / ES 48 (+12)
+- Idempotenz: Re-Run 12× EXISTS
+- Doctor-Slug-Identität 7/7 OK (template-arzt.php-Lookup intakt)
+- Postmeta-Override (eyebrow „Nuestros centros", H1 „Dos direcciones. Una sola filosofía.") korrekt
+- 0 PHP-Errors, PHP-Lint clean
+- Glossar-Compliance: „Praxisgemeinschaft" → „comunidad de consulta médica" (NICHT „consulta de grupo")
+
+**S67 — Files NEU / MOD:**
+- **NEU:** `sites/praxis-webseite/tools/s67-es-cluster-praxisgemeinschaft.php`
+- **NEU:** `sites/praxis-webseite/_backups/s67/pre-s67-20260502-224053.sql` (gitignored)
+- **MOD:** keine Theme-Code-Änderung
+- **WP-DB:** 12 neue Pages (9960–9971), 12 neue `wp_icl_translations`, ~80 neue Postmeta
+
+**Pattern-Reife nach S67:** Skript-Pattern in 3 Sprachen identisch durchgelaufen
+(EN, FR, ES). Dreifach-Validierung erlaubt jetzt Pattern-Doku ω in
+`Nexus/_memory/patterns/wpml-bridge-cluster-import.md` mit hoher Sicherheit
+(weniger spekulative Generalisierung). Nächster logischer Schritt: Pattern um
+**Update-Mode** erweitern (für Drift-Fix der 2021-Pages mit
+`translatedWithWPMLTM`-Marker, siehe Verbindliche Arbeitsregel S66).
+
+**Nächste Front bei Wiederaufnahme S68:**
+- (a) **EN-Welle Cluster „Untersuchungen"** (~13 Pages) **mit Skript-Update-Mode** — neue Pages anlegen + bestehende FR/ES-Drift (z. B. Lungenfunktion FR 4869) **gleich mit-fixen**. Konsolidierter Cluster-Sweep.
+- (b) Pattern-Doku ω schreiben (jetzt reif nach 3-facher Validierung)
+- (c) Templates IT/pt-PT erweitern (Folge-Punkt ψ)
+- (d) Diagnose χ (lokales Routing-Bug)
+- (e) Native-Quality-Review der bisherigen S65–S67-Pages durch Dr. Stracke
+
+---
+
+### S66 (2026-05-02) — FR-Cluster „Praxisgemeinschaft" (12 Pages)
+
+**Auslöser:** Wiederaufnahme nach S65. Aus dem 6-Optionen-Architekten-Statement
+(A=FR-Welle / B=ES-Welle / C=EN-nächster-Cluster / D=Diagnose χ / E=Templates IT/pt-PT / F=Pattern-Doku) wählte Dr. Stracke **Option A** (FR-Welle Cluster
+Praxisgemeinschaft). Spec-Freigabe nach Phase-2-Review der FR-Title-/Eyebrow-/H1-
+Vorschläge.
 
 ### S66 (2026-05-02) — FR-Cluster „Praxisgemeinschaft" (12 Pages)
 
