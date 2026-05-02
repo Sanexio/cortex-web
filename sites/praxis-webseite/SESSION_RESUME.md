@@ -30,13 +30,110 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-05-02 Ende Session 65 — EN-Cluster „Praxisgemeinschaft" angelegt)
+## §1 Stand & Version (gültig: 2026-05-02 Ende Session 66 — FR-Cluster „Praxisgemeinschaft" angelegt)
 
 - **PXZ_VERSION:** **2.7.121** (Theme-Repo HEAD `aba9982`, unverändert seit S64).
-- **Cortex-Web HEAD:** unverändert seit S58 (`5a07c1e`).
+- **Cortex-Web HEAD:** S65 `8f05dc9` (S66 wird beim Session-Ende committed).
 - **WPML-Status:** 6 aktive Sprachen (DE/EN/FR/ES/IT/pt-PT) — unverändert.
-- **Page-Inventar publish:** DE 64 / **EN 51 (+12)** / FR 38 / ES 36 / IT 0 / pt-PT 0.
-- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` aktualisiert (EN-Cluster Praxisgemeinschaft erledigt).
+- **Page-Inventar publish:** DE 64 / EN 51 / **FR 50 (+12)** / ES 36 / IT 0 / pt-PT 0.
+- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` aktualisiert (FR-Cluster Praxisgemeinschaft erledigt).
+
+### S66 (2026-05-02) — FR-Cluster „Praxisgemeinschaft" (12 Pages)
+
+**Auslöser:** Wiederaufnahme nach S65. Aus dem 6-Optionen-Architekten-Statement
+(A=FR-Welle / B=ES-Welle / C=EN-nächster-Cluster / D=Diagnose χ / E=Templates IT/pt-PT / F=Pattern-Doku) wählte Dr. Stracke **Option A** (FR-Welle Cluster
+Praxisgemeinschaft). Spec-Freigabe nach Phase-2-Review der FR-Title-/Eyebrow-/H1-
+Vorschläge.
+
+**Phase-2-Spec-Konsens:**
+- Skript-Pattern aus S65 1:1 wiederverwendet, nur Sprach-Code `en→fr` und FR-Strings.
+- Glossar-Compliance: „Praxisgemeinschaft" → **„cabinet médical en communauté
+  de pratique"** (NICHT „cabinet de groupe"; Rechtsform-Begriff).
+- Doctor-Titles invariant (Slugs bereits FR; team-data.php-Lookup unabhängig vom Title).
+- 2 Standard-Template-Pages (`standorte`, `zweigpraxis-bockenheimer`) bekamen
+  Volltext-Übersetzung post_content + Postmeta.
+
+**Phase-3-Umsetzung:**
+
+`sites/praxis-webseite/tools/s66-fr-cluster-praxisgemeinschaft.php` (Klon von
+S65, ~270 Z, idempotent, Dry-Run + `--commit`). DB-Backup vor Insert:
+`_backups/s66/pre-s66-20260502-222041.sql` (17 MB, gitignored via `sites/*/_backups/`).
+
+**12 FR-Pages angelegt (IDs 9948–9959):**
+
+| trid | DE-Slug | FR-ID | Template | Übersetzungstiefe |
+|---:|---|---:|---|---|
+| 1123 | praxis | 9948 | template-praxisgemeinschaft.php | nur Title („Cabinet médical en communauté de pratique"); Content via Self-Render |
+| 1124 | team | 9949 | template-team.php | nur Title („Notre équipe"); Self-Render |
+| 14749 | unsere-partner | 9950 | template-partner.php | nur Title („Nos partenaires"); Self-Render |
+| 1127 | docteur-saul | 9951 | template-arzt.php | Title invariant (Person bereits FR-betitelt) |
+| 1133 | dr-arbitmann | 9952 | template-arzt.php | Title invariant |
+| 1128 | dr-barcsay | 9953 | template-arzt.php | Title invariant |
+| 1130 | dr-jawich | 9954 | template-arzt.php | Title invariant |
+| 1132 | dr-landeberg | 9955 | template-arzt.php | Title invariant |
+| 1129 | dr-seelig | 9956 | template-arzt.php | Title invariant |
+| 1131 | dr-shahin | 9957 | template-arzt.php | Title invariant |
+| 1138 | standorte | 9958 | template-standard.php | Title („Nos cabinets") + 3 Postmeta („Nos cabinets" / „Deux adresses. Une seule philosophie." / leer) + 6992 Z post_content komplett übersetzt |
+| 1139 | zweigpraxis-bockenheimer | 9959 | template-standard.php | Title („Cabinet annexe Bockenheimer Landstraße") + 2 Postmeta + 2158 Z post_content komplett übersetzt |
+
+**Phase-4-Smoke-Tests:**
+
+| Test | Resultat |
+|---|---|
+| 12 FR-Pages publish + WPML-Trid-Bridge | ✅ DB-Query bestätigt |
+| Inventar publish: DE 64 / EN 51 / FR 50 (+12) / ES 36 | ✅ |
+| Idempotenz (Skript-Re-Run) | ✅ alle 12 melden „EXISTS" |
+| Doctor-Slug-Identität (template-arzt.php Lookup) | ✅ 7/7 FR-Slug = DE-Slug |
+| Postmeta-Spotcheck standorte FR (`pxz_standard_h1`/`pxz_standard_eyebrow`) | ✅ FR-Strings korrekt |
+| PHP-Errors beim Insert | 0 |
+| PHP-Lint Skript | clean |
+| Browser-Smoke `?lang=fr` | ⏳ analog S65 — lokales Routing-Bug χ noch offen |
+
+**S66 — Files NEU / MOD:**
+
+- **NEU:** `sites/praxis-webseite/tools/s66-fr-cluster-praxisgemeinschaft.php`
+  (Cortex-Web-Repo, ~270 LOC, FR-Variant des S65-Skripts; Re-runnable)
+- **NEU:** `sites/praxis-webseite/_backups/s66/pre-s66-20260502-222041.sql`
+  (Rollback-Point, 17 MB, gitignored)
+- **MOD:** Theme-Code keine Änderung — Theme-HEAD bleibt `aba9982`
+- **WP-DB:** 12 neue Pages (9948–9959), 12 neue `wp_icl_translations`-Einträge,
+  ~80 neue `wp_postmeta`-Einträge
+
+**Cross-Cutting (LL-058) für Folge-Wellen:**
+
+- **ES-Welle für gleichen Cluster (Option B aus S66-Statement)** ist nun
+  doppelt validiertes Pattern (S65 EN, S66 FR). ES-Skript wäre `s67-es-...`,
+  identische Mechanik. Skript-Pattern hat sich als Tier-1-Asset erwiesen.
+- **Pattern-Reife (Folge-Punkt ω):** Nach S66 reicht eine 3. Welle (ES) für
+  Pattern-Doku-Stabilisierung in `Nexus/_memory/patterns/wpml-bridge-cluster-import.md`.
+- **IT/pt-PT bleiben blockiert (Folge-Punkt ψ):** Templates `praxisgemeinschaft`/
+  `team`/`partner`/`arzt` haben hardcoded `$pxz_pg_copy` nur in DE/EN/FR/ES.
+  Vor IT/pt-PT-Welle: Sprach-Schichten erweitern (analog S63-Stammdaten-Pattern).
+
+**S66 — Open Items / Folge-Punkte:**
+
+- **χ unverändert:** Lokales `?lang=fr|en`-Routing kapotterer als Live (AIOSEO-
+  Canonical-Override-Verdacht). Live nicht betroffen, Browser-Smoke FR via
+  Cookie-Switch oder nach Live-Deploy.
+- **ψ unverändert:** Templates IT/pt-PT-Schicht erweitern.
+- **ω hochgestuft:** Nach S67 ES-Welle ist Pattern-Doku reif zum Schreiben.
+- **Folge-Wellen verbleibend:** ES (28) für Cluster Praxisgemeinschaft;
+  EN-Wellen für 4 weitere Cluster (Untersuchungen ~13 / Labor+CheckUps ~17 /
+  Service ~6 / Legal+Karriere ~3); IT+pt-PT je 78 Pages (blockiert durch ψ);
+  Native-Quality-Review.
+- **Carry-over S62 unverändert:** π Browser-Smoke-Test, ρ SMTP-Brücke Live,
+  σ Datenschutz-Slug Live verifizieren, τ Tutorial WP-Theme-AJAX.
+
+**Nächste Front bei Wiederaufnahme S67:** Empfehlungs-Set unverändert zur
+S66-Wahl, mit Pattern jetzt zweifach validiert:
+- (a) **ES-Welle Cluster Praxisgemeinschaft** (12 Pages, ½–1 Session, identisches Pattern)
+- (b) EN-Welle nächster Cluster „Untersuchungen" (~13 Pages, 1 Session)
+- (c) Templates IT/pt-PT erweitern (Folge-Punkt ψ)
+- (d) Diagnose χ (lokales Routing-Bug)
+- (e) Pattern-Doku ω (nach c oder gleich vor c als Voraussetzung für IT/pt-PT-Welle)
+
+---
+
 
 ### S65 (2026-05-02) — EN-Cluster „Praxisgemeinschaft" (12 Pages)
 
