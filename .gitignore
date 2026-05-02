@@ -46,6 +46,9 @@ sites/*/screenshots/claude/
 # CW-008 — Cross-site-transfer backups (local only)
 adapters/*/.backups/
 
+# Site-level DB backups (S65: pre-insert MySQL dumps, ~17 MB each, transient rollback points)
+sites/*/_backups/
+
 # Drift-Sync — Drift-Reports sind zeitstempel-spezifisch, nicht git-trackbar wertvoll.
 # Spec: specs/drift-sync/SPEC.md
 tools/drift-sync/reports/
