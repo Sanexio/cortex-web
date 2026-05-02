@@ -30,13 +30,135 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-05-02 Ende Session 64 — i18n-Stammdaten Reste, PXZ 2.7.120 → **2.7.121**)
+## §1 Stand & Version (gültig: 2026-05-02 Ende Session 65 — EN-Cluster „Praxisgemeinschaft" angelegt)
 
-- **PXZ_VERSION:** **2.7.121** (Theme-Repo HEAD `aba9982`, S64-Sammel-Commit).
+- **PXZ_VERSION:** **2.7.121** (Theme-Repo HEAD `aba9982`, unverändert seit S64).
 - **Cortex-Web HEAD:** unverändert seit S58 (`5a07c1e`).
-- **WPML-Status:** **6 aktive Sprachen** (DE/EN/FR/ES/IT/pt-PT) — unverändert.
-- **Stammdaten-i18n abgeschlossen:** 11 von 11 zu lokalisierenden Stammdaten-Files auf 6 Sprachen. Theme-Substrat ist jetzt vollständig 6-sprachig.
-- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` aktualisiert (Stammdaten-Spalte erledigt).
+- **WPML-Status:** 6 aktive Sprachen (DE/EN/FR/ES/IT/pt-PT) — unverändert.
+- **Page-Inventar publish:** DE 64 / **EN 51 (+12)** / FR 38 / ES 36 / IT 0 / pt-PT 0.
+- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` aktualisiert (EN-Cluster Praxisgemeinschaft erledigt).
+
+### S65 (2026-05-02) — EN-Cluster „Praxisgemeinschaft" (12 Pages)
+
+**Auslöser:** Wiederaufnahme nach S64. Aus dem 4-Optionen-Architekten-Statement
+(B/C/D/E) wählte Dr. Stracke **Option B** (Page-Cluster-Welle EN starten),
+mit Direktive „sicherste Umsetzung". Sub-Scope-Wahl an Claude delegiert →
+B-Komplett (12 Pages) statt B-Pilot, weil das Risiko nach Template-Inspektion
+deutlich kleiner war als angenommen.
+
+**Befunde aus Phase-1-Verständnis (kritisch):**
+
+1. **Self-Render-Templates entdeckt (LL-058 Cross-Cutting):**
+   Die Templates `template-praxisgemeinschaft.php`, `template-team.php`,
+   `template-arzt.php`, `template-partner.php` rendern **alle Inhalte aus
+   internen PHP-Arrays** (`$pxz_pg_copy`, hartkodiert in DE/EN/FR/ES seit S59)
+   und ignorieren `post_content` komplett. Konsequenz: für 10 von 12 Pages
+   gab es **nichts inhaltlich zu übersetzen** — nur die WPML-Brücke war zu
+   schließen. Risiko deutlich geringer als geplant.
+2. **Standard-Template-Pages (2 Pages):** `standorte` und `zweigpraxis-bockenheimer`
+   nutzen `template-standard.php`, das Postmeta + `the_content()` rendert.
+   Diese 2 Pages benötigten echte Übersetzung (post_content + Postmeta).
+3. **WPML-URL-Strategie (lokal kaputt, Live OK):** `language_negotiation_type=3`
+   (URL-Parameter `?lang=en`). Live-Site reagiert korrekt (`?lang=en` → 200),
+   **lokal redirected `?lang=en` zu DE** (vermutlich AIOSEO-Canonical-Override
+   oder Local-by-Flywheel-Cache). Lokales Routing-Problem ist isoliert,
+   blockiert nicht die DB-Inserts. Folge-Punkt χ (siehe unten).
+4. **Doctor-Page-Slug-Match:** `template-arzt.php` identifiziert Doctor via
+   `$current_slug = get_post()->post_name`. Daher müssen EN-Pages **identische
+   Slugs** wie DE-Pages haben (Direct-DB-Insert umgeht `wp_unique_post_slug()`).
+
+**Phase-3-Umsetzung — neues Tool:**
+
+`sites/praxis-webseite/tools/s65-en-cluster-praxisgemeinschaft.php` (~250 Z)
+— Idempotentes WPML-Bridge-Skript. Modus: Dry-Run (default) + `--commit`.
+Pro Page:
+- `wp_posts`-Insert (direkt, behält DE-Slug; status=publish)
+- `wp_postmeta`-Copy von DE + Overrides für EN-Strings
+- `wp_icl_translations`-Insert (gleiche trid, language_code=en, source=de)
+
+DB-Backup vor Insert: `_backups/s65/pre-s65-pilot-20260502-212404.sql` (17 MB,
+wp_posts + wp_postmeta + wp_icl_translations).
+
+**12 EN-Pages angelegt (IDs 9936–9947):**
+
+| trid | DE-Slug | EN-ID | Template | Übersetzungstiefe |
+|---:|---|---:|---|---|
+| 1123 | praxis | 9936 | template-praxisgemeinschaft.php | nur Title („Shared medical practice"); Content via Self-Render |
+| 1124 | team | 9937 | template-team.php | nur Title; Content via Self-Render |
+| 14749 | unsere-partner | 9938 | template-partner.php | nur Title; Content via Self-Render |
+| 1127 | docteur-saul | 9939 | template-arzt.php | Title invariant; Bio aus team-data.php |
+| 1133 | dr-arbitmann | 9940 | template-arzt.php | dito |
+| 1128 | dr-barcsay | 9941 | template-arzt.php | dito |
+| 1130 | dr-jawich | 9942 | template-arzt.php | dito |
+| 1132 | dr-landeberg | 9943 | template-arzt.php | dito |
+| 1129 | dr-seelig | 9944 | template-arzt.php | dito |
+| 1131 | dr-shahin | 9945 | template-arzt.php | dito |
+| 1138 | standorte | 9946 | template-standard.php | Title + 3 Postmeta + 6644 Z post_content komplett übersetzt |
+| 1139 | zweigpraxis-bockenheimer | 9947 | template-standard.php | Title + 2 Postmeta + 2101 Z post_content komplett übersetzt |
+
+**Glossar-Compliance:** `pxz_g()`-Begriffe wurden für die Übersetzungen
+herangezogen — wichtigste Anwendung: „Praxisgemeinschaft" → **„shared
+medical practice"** (NICHT „joint practice"; siehe Memory
+`project_praxis_rechtsform_praxisgemeinschaft.md`).
+
+**Smoke-Tests (Phase 4):**
+
+| Test | Resultat |
+|---|---|
+| 12 EN-Pages publish + WPML-Trid-Bridge | ✅ DB-Query bestätigt |
+| Inventar publish: DE 64 / EN 51 (+12) / FR 38 / ES 36 | ✅ |
+| Idempotenz (Skript-Re-Run) | ✅ alle 12 melden „EXISTS" |
+| Doctor-Slug-Identität (template-arzt.php Doctor-Lookup) | ✅ EN-Slugs = DE-Slugs |
+| PHP-Errors beim Insert | 0 |
+| Browser-Smoke `?lang=en` | ⏳ blockiert durch lokalen Routing-Bug χ |
+
+**S65 — Files NEU / MOD:**
+
+- **NEU:** `sites/praxis-webseite/tools/s65-en-cluster-praxisgemeinschaft.php`
+  (Cortex-Web-Repo, ~250 LOC, Re-runnable für künftige Cluster)
+- **NEU:** `sites/praxis-webseite/_backups/s65/pre-s65-pilot-20260502-212404.sql`
+  (Rollback-Point, 17 MB, gitignored empfohlen)
+- **MOD:** keine Theme-Code-Änderungen — Theme-HEAD bleibt `aba9982`
+- **WP-DB:** 12 neue Pages (9936–9947), 12 neue `wp_icl_translations`-Einträge,
+  ~80 neue `wp_postmeta`-Einträge
+
+**Cross-Cutting (LL-058) für Folge-Wellen:**
+
+- **FR/ES-Welle für gleichen Cluster** kann mit identischem Skript-Pattern
+  (Sprach-Code austauschen, EN-Übersetzungen für Postmeta/Content durch FR/ES
+  ersetzen). Vorlage steht.
+- **IT/pt-PT-Welle benötigt Vorarbeit:** Templates `praxisgemeinschaft`,
+  `team`, `partner`, `arzt` haben nur DE/EN/FR/ES in `$pxz_pg_copy` —
+  müssen um IT/pt-PT-Schicht erweitert werden, BEVOR IT/pt-PT-Pages
+  Sinn ergeben (siehe Folge-Punkt ψ).
+- **Skript-Pattern** ist Tier-1-Asset, gehört in `Nexus/_memory/patterns/`
+  als „wpml-bridge-cluster-import.md" (siehe Folge-Punkt ω).
+
+**S65 — Open Items / Folge-Punkte:**
+
+- **χ NEU:** Lokales `?lang=en`-Routing kapotterer als Live. Diagnose-Ansatz:
+  AIOSEO-Canonical-Settings prüfen, ggf. `wp_redirect`-Filter im Theme
+  testen. Live ist nicht betroffen (curl `?lang=en` → 200), Browser-Smoke
+  durch Dr. Stracke daher entweder lokal mit Workaround (Cookie-Switch)
+  oder nach Live-Deploy.
+- **ψ NEU:** Templates `template-praxisgemeinschaft.php`, `template-team.php`,
+  `template-partner.php`, `template-arzt.php` haben hardcoded `$pxz_pg_copy`
+  nur in DE/EN/FR/ES. Für IT/pt-PT-Welle müssen die Sprach-Schichten
+  erweitert werden (analog zu S63-Stammdaten-Pattern).
+- **ω NEU:** Pattern `wpml-bridge-cluster-import.md` in
+  `Nexus/_memory/patterns/` schreiben (S65 als Vorlage).
+- **Carry-over Wellen 2–5:** FR (26 fehlend), ES (28 fehlend), IT (78 neu),
+  pt-PT (78 neu) für gesamten Cluster Praxisgemeinschaft + nachfolgende
+  Cluster (Untersuchungen, Labor, Service, Legal/Karriere).
+- **Carry-over S62 unverändert:** π Browser-Smoke-Test, ρ SMTP-Brücke Live,
+  σ Datenschutz-Slug Live verifizieren, τ Tutorial WP-Theme-AJAX.
+
+**Nächste Front bei Wiederaufnahme S66:** Either (a) FR/ES-Welle für
+Cluster Praxisgemeinschaft (gleiches Skript-Pattern, ½–1 Session), (b)
+nächster Cluster „Untersuchungen" in EN starten, (c) Templates für IT/pt-PT
+erweitern (Folge-Punkt ψ), (d) lokales Routing-Problem χ diagnostizieren.
+
+---
 
 ### S64 (2026-05-02) — i18n-Stammdaten Reste auf 6 Sprachen
 
