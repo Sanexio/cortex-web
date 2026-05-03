@@ -30,15 +30,67 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-05-03 Ende Session 69 — Cluster „Labor" 4-sprachig komplett + Pattern-Generation 2.1 mit Cleanup-Phase + LL-059 Hard-Delete-Direktive)
+## §1 Stand & Version (gültig: 2026-05-03 Ende SPRINT-ENDSPURT — alle 5 Sprachen 100% Coverage + LL-060 Autonomy Mode v1 + Pattern-Generation 2.3)
 
-- **PXZ_VERSION:** **2.7.121** (Theme-Repo HEAD `aba9982`, unverändert seit S64 — S65–S69 sind reine DB-Operationen).
-- **Cortex-Web HEAD:** S69 pending (Commit am Session-Ende).
-- **WPML-Status:** 6 aktive Sprachen (DE/EN/FR/ES/IT/pt-PT) — unverändert.
-- **Page-Inventar publish:** **DE 64 / EN 71 (+9 netto) / FR 70 (+9 netto) / ES 68 (+9 netto) / IT 0 / pt-PT 0**.
-- **Skript-Pattern-Reife:** **5-fach validiert + Generation 2.1 etabliert** (S69 erweitert Pattern-Gen-2 um optionale Cleanup-Phase mit Hard-Delete).
-- **Neue Memory-Regel:** Hard-Delete statt Trash bei DB-/Page-Cleanups (`feedback_no_legacy_ballast_hard_delete.md`, cross-projekt).
-- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` auf S69-Stand aktualisiert.
+- **PXZ_VERSION:** **2.7.123** (Theme-Repo HEAD `a32d1c6`).
+- **Cortex-Web HEAD:** `a374db2` (sC-Commit; sD κ-Architektur ist im Theme-Repo).
+- **Nexus HEAD:** `019b3ff` (LL-060 Autonomy Mode v1 verankert).
+- **WPML-Status:** 6 aktive Sprachen (DE/EN/FR/ES/IT/pt-PT).
+- **Page-Inventar publish:** **DE 63 / EN 63 / FR 63 / ES 63 / IT 63 / pt-PT 63 — alle 5 Zielsprachen 100% Coverage** (315 Übersetzungen aktiv).
+- **Skript-Pattern-Reife:** **9-fach validiert · Generation 2.3 etabliert** (Cleanup-WPML-Rows + Doubletten-Robust + WPML-Hook-Workaround).
+- **Neue Architektur-Regel:** LL-060 Autonomy Mode v1 — Default Pull-Strategie, Debrief am Welle-Ende, Strategie-Stops nur bei Architektur/Geld/Drittsystem/Live-Deploy/destruktiven Ops. OpenClaw-Vorbild.
+- **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` auf SPRINT-ENDSPURT-Stand.
+
+### Tagesblock 2026-05-03 — SPRINT-ENDSPURT (S70 + sA + sB + sC + sD)
+
+**Auslöser:** Frust-Befund Dr. Stracke nach S69 → „Klein-Klein ist eine Katastrophe. Übersetzungen schnell und effizient." Antwort: LL-060 Autonomy Mode v1 etabliert, 4-Tage-Endspurt-Plan in einer Session durchgezogen.
+
+**S70 (Cluster Service+Karriere/Legal, Pattern-Gen-2.2):**
+6 DE-Pages × EN/FR/ES = 18 ops. Neue Page-IDs 10035–10043 (BRIDGE-with-content für einweisungen, karriere; BRIDGE-clen0 für neupatienten) + 9 UPDATE-Drift-Fix für terminanfrage/rezeptbestellung/ueberweisung-Stubs. WPML-Auto-Hook-Bug entdeckt + Pattern-Gen-2.2 etabliert (UPDATE statt INSERT für icl_translations). Theme HEAD unverändert. Cortex-Web Commit `42555a0`.
+
+**sA Phase 1 (EN/FR/ES-Lückenschluss, Pattern-Gen-2.3):**
+10 DE-Pages × EN/FR/ES = 30 ops + 4 Cleanup. Neue Page-IDs 10053–10082. Klasse-A-Volltext für datenschutzerklaerung, basic-check, service, aktuelles, cookie-richtlinie-eu, faq (18 ops); Klasse-B-Bridge für home-neu, sprechstunden, fragebogen-vor-termin, videosprechstunde (12 ops). Cleanup hard-deleted: 4356 (importer junk DE-Page mit FR-Slug), 4796/4790/4788 (Datenschutz-Drafts WPML-Boilerplate, nicht DE-konsistent). **Architektur-Issue λ Datenschutz-Doppelung gelöst** (Trid-3-Doubletten 144+64 bereinigt). Pattern-Gen-2.3 fixed: Cleanup hard-deleted auch icl_translations-Rows; sa_get_trid `ORDER BY translation_id DESC` für Doubletten-Robustheit. Cortex-Web Commit `ae3cc62`.
+
+**sA Phase 2 (Templates IT/pt-PT erweitert, ψ):**
+4 Theme-Templates (template-team.php, template-arzt.php, template-partner.php, template-praxisgemeinschaft.php) auf 6 Sprachen erweitert — ~130 neue Strings (Specialties 8 cards × 6 Felder × 2 Sprachen + Cooperations 2×6×2 + Stats 4×2 + Advantages 8×4×2 + Copy-Block 13×2 + Partner-Block 5×2). Glossar-Bug pxz_g pt-pt→pt-Mapping fixed (galt vorher nur bei `$lang===null`, jetzt auch explizit). PXZ 2.7.121 → 2.7.122. Theme-Commit `8832165`.
+
+**sB (IT-Volumen-Welle, Pattern-Gen-2.3):**
+63 DE-Pages → IT in einem Bulk-Skript. 14 Klasse-A-Volltext-Übersetzungen (datenschutz, cookie, impressum, einweisungen, arbeitsunfaehigkeit, standorte, zweigpraxis-bockenheimer, service, aktuelles, basic-check, faq, rund-ums-labor + 2 Legacy-Stubs); 49 Klasse-B-Bridge mit DE-Content embedded für Template-Render-Konsistenz. Neue Page-IDs 10083–10145. 0 ERROR. Idempotenz Re-Run: 63 EXISTS. Cortex-Web Commit `9834223`.
+
+**sC (pt-PT-Volumen-Welle, Pattern-Gen-2.3):**
+Identisches Pattern wie sB, Sprachcode `pt-pt`, formelles europäisches Portugiesisch. 14 Klasse-A-Volltext + 49 Klasse-B-Bridge. Neue Page-IDs 10146–10208. 0 ERROR. Idempotenz Re-Run: 63 EXISTS. Cortex-Web Commit `a374db2`.
+
+**sD (Trunk-i18n κ Architektur, minimal-invasiv):**
+`template-detail-page.php` bekam Sprach-Lookup-Helper `pxz_resolve_page_hub_data_file($page_id)`: WPML-Trid-Resolution → DE-Slug → Suche `page-hub-<slug>-<lang>.php` mit Fallback DE-Original; bei DE-Fallback in Nicht-DE-Sprache höflicher Hinweis-Banner. `page-hub-renderer.php`: 5 hartkodierte DE-Strings durch Glossar-Lookup ersetzt (Mehr erfahren, Zurück, Weiter, Weitere Untersuchungen, Laboruntersuchungen). Mail-CTA-Override entfernt (pxz_termin_cta_pair hat 6-Sprach-Defaults seit S64). Glossar um 5 Keys erweitert. PXZ 2.7.122 → 2.7.123. Theme-Commit `a32d1c6`.
+
+**Aggregat 2026-05-03:**
+- Sessions: 5 (S70 + sA-Phase-1 + sA-Phase-2 + sB + sC + sD)
+- Operationen: 18 (S70) + 34 (sA-1) + 130 Strings (sA-2) + 63 (sB) + 63 (sC) + 5 Glossar-Keys + Renderer (sD) = ~313 Operationen
+- Page-IDs neu: 10035–10208 (174 IDs)
+- Übersetzungs-Volumen eigene Übersetzungen: ~150.000 Z (S70 + sA + sB + sC Volltexte; ohne Klasse-B-Stubs)
+- Commits Cortex-Web: 5 (b45c0a4 S69-Closure, ae3cc62, 9834223, a374db2, 42555a0)
+- Commits Theme: 2 (8832165, a32d1c6)
+- Commits Nexus: 1 (019b3ff LL-060)
+
+**Pattern-Reife-Sprung:**
+Pattern-Generation 2.0 → 2.3 in einem Tag (Bug-discovery → Fix → Validierung × 5 Sprints). Bulk-Welle pro Sprache (63 ops/Welle) ist effizienter als Cluster-Sweep (typisch 18 ops × 3 Sprachen / Welle).
+
+**Verbleibend (Folge-Wellen, optional):**
+- E Native-Quality-Review extern (juristisch-kritisch: Datenschutz/Impressum/Cookie)
+- F Live-Deploy Domainfactory (Tier-3, braucht Freigabe)
+- G Volumen-Übersetzung 31 page-hub-*.php IT+pt-PT (Klasse-B-Detail-Bodies, ~5–10 Sessions)
+- χ unverändert (lokales `?lang=*`-Routing-Bug, Live OK)
+- λ ✅ gelöst (in sA mit Datenschutz-Trid-Doubletten-Cleanup)
+- ψ ✅ gelöst (in sA-Phase-2 mit Templates IT/pt-PT)
+- κ ✅ Architektur-Layer in sD; Volumen-Schicht (Folge-Welle G) optional
+
+**Nächste Front bei Wiederaufnahme:** Wahl aus E/F/G — Architektur und Coverage stehen.
+
+---
+
+### Cold-Archive-Verweis
+
+Detail-Blöcke S69 + S68 + S65–S67 + S64 + S63 + S62 stehen unten weiterhin im Hot-Memory (sliding-window-Cleanup beim nächsten Sanitizer-Run, LL-053).
 
 ### S69 (2026-05-03) — Cluster „Labor" Konsolidierter Sweep + Cleanup (45 Operationen)
 
