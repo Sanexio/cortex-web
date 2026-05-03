@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: labor/system-immune
 title:
-  de: System Immune
+  de: Immunsystem
   en: System Immune
 views:
   praxis:
@@ -18,14 +18,14 @@ sections:
     eyebrow:
       de: Labor · System
     heading:
-      de: System Immune
+      de: Immunsystem
     lead:
-      de: 'Labor System: Immune — Laborprofil zur Beurteilung des Immunsystems.'
+      de: 'Labor Immunsystem — Laborprofil zur Beurteilung des Immunsystems.'
     image: shopify-mirror://detail/labor-system-immune-hero.jpg
   - type: body
     body_html:
       de: |-
-        <p>Mit dem Laborprofil <strong>System: Immune</strong> erhalten Sie eine strukturierte Beurteilung Ihres Immunsystems. Bei einer geschätzten Anzahl von etwa 10.000 Leukozyten pro Mikroliter Blut und einem Blutvolumen von rund 7 Litern verfügt der Mensch allein im Blut über knapp 70 Milliarden weiße Blutkörperchen. Bezieht man das gesamte Immunsystem ein, kommt man auf rund 1,8 Billionen Zellen — in Haut, Darm, Leber, Milz, Knochenmark.</p>
+        <p>Mit dem Laborprofil <strong>Immunsystem</strong> erhalten Sie eine strukturierte Beurteilung Ihres Immunsystems. Bei einer geschätzten Anzahl von etwa 10.000 Leukozyten pro Mikroliter Blut und einem Blutvolumen von rund 7 Litern verfügt der Mensch allein im Blut über knapp 70 Milliarden weiße Blutkörperchen. Bezieht man das gesamte Immunsystem ein, kommt man auf rund 1,8 Billionen Zellen — in Haut, Darm, Leber, Milz, Knochenmark.</p>
 
         <h2>Wir analysieren folgende Parameter:</h2>
 
@@ -43,7 +43,13 @@ sections:
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
-      de: Termin für System Immune?
+      de: Termin für Immunsystem?
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: system-immune
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Labor-Menu (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'System Immune'

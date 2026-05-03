@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: labor/system-liver
 title:
-  de: System Liver
+  de: Leber
   en: System Liver
 views:
   praxis:
@@ -18,14 +18,14 @@ sections:
     eyebrow:
       de: Labor · System
     heading:
-      de: System Liver
+      de: Leber
     lead:
-      de: 'System: Liver — Laborprofil zur Beurteilung der Leberfunktion.'
+      de: 'Leber — Laborprofil zur Beurteilung der Leberfunktion.'
     image: shopify-mirror://detail/labor-system-liver-hero.jpg
   - type: body
     body_html:
       de: |-
-        <p>Mit dem Laborprofil <strong>System: Liver</strong> erhalten Sie eine strukturierte Beurteilung der Leberfunktion. Zentrale Aufgaben der Leber sind Entgiftung — also der Abbau und die Umwandlung körpereigener und externer Substanzen wie Medikamente und Alkohol —, die Speicherung von Nährstoffen sowie die Regulation des Fett-, Zucker- und Eiweißstoffwechsels. Die Leber filtert das gesamte Blutvolumen bis zu 30-mal täglich und ist eng in die Immunabwehr eingebunden.</p>
+        <p>Mit dem Laborprofil <strong>Leber</strong> erhalten Sie eine strukturierte Beurteilung der Leberfunktion. Zentrale Aufgaben der Leber sind Entgiftung — also der Abbau und die Umwandlung körpereigener und externer Substanzen wie Medikamente und Alkohol —, die Speicherung von Nährstoffen sowie die Regulation des Fett-, Zucker- und Eiweißstoffwechsels. Die Leber filtert das gesamte Blutvolumen bis zu 30-mal täglich und ist eng in die Immunabwehr eingebunden.</p>
 
         <p>Ungünstige Ernährung, bestimmte Medikamente oder übermäßiger Alkoholkonsum können zu chronischen Leberveränderungen führen — bis hin zur Leberzirrhose oder zu Lebertumoren.</p>
 
@@ -42,7 +42,13 @@ sections:
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
-      de: Termin für System Liver?
+      de: Termin für Leber?
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: system-liver
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Labor-Menu (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'System Liver'

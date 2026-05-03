@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: labor/status-baseline
 title:
-  de: Status Baseline
+  de: Basis-Check
   en: Status Baseline
 views:
   praxis:
@@ -18,14 +18,14 @@ sections:
     eyebrow:
       de: Labor · Status
     heading:
-      de: Status Baseline
+      de: Basis-Check
     lead:
-      de: 'Status: Baseline — schneller Bluttest zur orientierenden Einschätzung zentraler Organfunktionen.'
+      de: 'Basis-Check — schneller Bluttest zur orientierenden Einschätzung zentraler Organfunktionen.'
     image: shopify-mirror://detail/labor-status-baseline-hero.png
   - type: body
     body_html:
       de: |-
-        <p>Das Laborprofil <strong>Status: Baseline</strong> ist ein schneller Bluttest zur orientierenden Einschätzung zentraler Organfunktionen sowie des Zucker- und Fettstoffwechsels. Bereits mit einem kleinen Piks erhalten Sie eine erste Einschätzung relevanter Laborwerte, die frühzeitig Hinweise auf Belastungen von Herz, Gefäßen, Leber und Nieren geben können.</p>
+        <p>Das Laborprofil <strong>Basis-Check</strong> ist ein schneller Bluttest zur orientierenden Einschätzung zentraler Organfunktionen sowie des Zucker- und Fettstoffwechsels. Bereits mit einem kleinen Piks erhalten Sie eine erste Einschätzung relevanter Laborwerte, die frühzeitig Hinweise auf Belastungen von Herz, Gefäßen, Leber und Nieren geben können.</p>
 
         <h2>Wir analysieren folgende Parameter:</h2>
 
@@ -40,7 +40,13 @@ sections:
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
-      de: Termin für Status Baseline?
+      de: Termin für Basis-Check?
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: status-baseline
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Labor-Menu (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'Status Baseline'

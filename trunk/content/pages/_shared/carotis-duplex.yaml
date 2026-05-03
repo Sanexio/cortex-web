@@ -4,7 +4,7 @@ slugs:
   praxis: carotis-duplex
   juvantis: carotis-duplex
 title:
-  de: Carotis Duplex
+  de: Carotis-Duplex
   en: Carotid Duplex
 views:
   praxis:
@@ -43,3 +43,9 @@ sections:
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: carotis-duplex
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Untersuchungen-Sweep (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'Carotis Duplex'

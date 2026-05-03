@@ -84,9 +84,10 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 
 ## §1 Stand & Version
 
-- **Version:** `0.9.8` — Session 50 **Sanexio-Detail-Page-Mirror: 25 Detail-Pages bekommen Sanexio-Produktseiten-Layout (Hero mit Bild + Body + CTA + 2 Karussells „Weitere Untersuchungen" / „Laboruntersuchungen" mit Pfeil-Buttons + Auto-Übersicht aus Page-Registry).** Schema erweitert (`hero.image`, `body.body_html`), Builder mit Pre-Pass für `related_overview`, Renderer mit 2-Spalten-Hero + Übersichts-Block. 23 Pages mit Sanexio-Spiegel (Sie-Form, HWG-bereinigt), 2 Pages mit Praxis-eigenem Skelett (eye-check, labor-biohack). PXZ **2.7.73** (2026-04-28, Cluster-Mini-02 / Praxis-Mac via SSH).
+- **Version:** `0.9.11` — Praxis-Sprint hat seit S51 vier Polish-Sessions gefahren: **S52 (Untersuchungen-Submenu in 3 Gruppen + Doctolib-Probe, PXZ 2.7.76), S53 (Standorte-Container vereint, PXZ 2.7.77), S54 (FINAL CTA entfernt, PXZ 2.7.78), S55 (Slider-Halbierung + Labor-Begriffe DE + Labor-Mega-Menu + Untersuchungen-Sweep, PXZ 2.7.79–2.7.85, uncommitted).** Cortex-Web-HEAD `5e6f15c`. Praxis-Theme-HEAD `e49b187`. **Detail-Chronik in `sites/praxis-webseite/SESSION_RESUME.md` §1** (Single-Source LL-053d — Cortex-Web-Resume bleibt Dach-Niveau).
+- **Vorheriger Stand (S50, zur Orientierung):** Sanexio-Detail-Page-Mirror, 25 Detail-Pages mit Sanexio-Produktseiten-Layout, PXZ 2.7.73.
 
-### §1.0 Sessions S43–S50 — Index (Hot-Layer, Details cold)
+### §1.0 Sessions S43–S54 — Index (Hot-Layer, Details cold)
 
 > **LL-053 Anti-Bloat:** Detailblöcke ausgelagert. Hot-Layer = Index, Cold-Layer = `_archive/sessions/`.
 
@@ -105,7 +106,11 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 | S47 | 2026-04-27 | `501f9d5` | 2.7.71 | Mid-Range-Reality-Check (fluid clamp() T1–T8 + Header right-sized) | [`_archive/sessions/2026-04/session-47-mid-range-reality-check.md`](_archive/sessions/2026-04/session-47-mid-range-reality-check.md) |
 | S49 | 2026-04-27 | `90fc4db` | 2.7.72 | Sanexio-Spiegel-Umbau (Untersuchungen + Labor als Top-Level) | siehe §1.1 (kein Cold-File, Detail in S50-Block) |
 | S50 | 2026-04-28 | `52cc942` | 2.7.73 | Sanexio-Detail-Page-Mirror — 25 Detail-Pages | siehe §1.1 (HOT — N-1 vor S51) |
-| **S51** | **2026-04-28/29** | `cc71286` (Cortex-Web) · `12dd7d8`+`af41475` (Nexus) | — | **LL-053 Anti-Bloat + Drift-Sync Sanexio→Praxis + WV-002 V2-Fix** | **siehe §3 (HOT — N, aktuell)** |
+| S51 | 2026-04-28/29 | `cc71286` (Cortex-Web) · `12dd7d8`+`af41475` (Nexus) | — | LL-053 Anti-Bloat + Drift-Sync Sanexio→Praxis + WV-002 V2-Fix | siehe §3 (HOT — letzte Cortex-Web-Architektur-Session) |
+| S52 | 2026-04-29 | `bfaefd2` (Cortex-Web Probe-Tools) · `cbd6470`+`a4ecf5c`+`fb88c41` (Theme) | 2.7.76 | Untersuchungen-Submenu in 3 Gruppen (Ultraschall/Funktion/Check-Ups) + Mega-Menu Desktop + h3-Trenner Mobile + Hub-Page sektioniert + Doctolib-Floating-Button-Probe | Praxis-Resume §1.0/§3 (S52-Block) |
+| S53 | 2026-04-29 | `f014ef2` (Theme) | 2.7.77 | Standorte-Container vereint (Layout A: 2 Spalten + gemeinsamer Footer) + Padding +20% + Praxis-Submenu „Standorte" (4 langs) | Praxis-Resume §1 §53 |
+| S54 | 2026-04-29 | `e49b187` (Theme) | 2.7.78 | FINAL CTA von Homepage entfernt + Tools-Drift-Fix | Praxis-Resume §1 §54 |
+| **S55** | **2026-04-30** | uncommitted (Theme + Cortex-Web Trunk) | **2.7.79–2.7.85** | **Homepage-Slider auf halbe Höhe (32:9-Strip, 2 Bilder) + Labor-Begriffe DE (9) + Labor-Mega-Menu (Check-Up/Organe/Risikoprofile) + Untersuchungen-Sweep (10 Pages: Body-Check, Augen-Check, Tauchtauglichkeit, Sono-Kürzungen)** | **Praxis-Resume §1 (HOT — N)** |
 
 - **Stand:** 2026-04-28 Ende S50:
   - **Theme-Stand:** PXZ **2.7.72 → 2.7.73** (Bump für S50). Theme-Commits folgen am Session-Ende.
@@ -156,12 +161,15 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 | **S51 LL-053 Anti-Bloat** | Hot/Warm/Cold-Memory + Sliding-Window + Sanitizer-Hardgate + Lazy-Read + Single-Source. 3 Cold-Archives + Spec + Pattern + Tooling + Lifecycle Schritt 3c. | ✅ |
 | **S51 Drift-Sync Sanexio→Praxis** | Provenance-Schema (`sanexio_source`-Block) + Drift-Detector + HWG-Curate-Pipeline + Auto-Sync mit Review-Gate (D3-Stufe). 5 Drift-Scopes. Live-Test: 9 NEW Bluttest-Trunk-YAMLs auto-curated. | ✅ Tooling produktiv, WP-Push für Pages folgt |
 | **S51 WV-002 V2-Fix** | `nexus-sync.sh` Pathspec-Isolation: Auto-Sync committet nur whitelisted Pfade via expliziter Pathspec, vereinnahmt User-Stages nicht mehr. | ✅ `12dd7d8` |
+| **S52 Untersuchungen-Submenu + Doctolib-Probe** | 3 Gruppen Ultraschall/Funktion/Check-Ups + Mega-Menu Desktop + h3-Trenner Mobile + Hub-Page sektioniert + Eye-Check zu Funktion + Doctolib-Floating-Button-Probe-Tools | ✅ PXZ 2.7.76 (Theme `cbd6470`+`a4ecf5c`+`fb88c41` · Cortex-Web `bfaefd2`) |
+| **S53 Standorte-Container vereint** | Hauptstandort + Zweitstandort in 1 Card (Layout A: 2 Spalten oben + gemeinsamer Footer mit Tel/E-Mail/Notes) auf Homepage + `/standorte/` + `/standorte/zweigpraxis-bockenheimer/`, Padding +20%, Praxis-Submenu „Standorte" (4 langs), `loc-main.php` + `loc-secondary.php` gelöscht | ✅ **`f014ef2`** PXZ 2.7.77 |
+| **S54 FINAL CTA entfernt + Tools-Drift-Fix** | FINAL-CTA-Section von Homepage komplett raus (Mobile-Sticky-Bar bleibt einziger CTA-Anker), `cta_title_a/b` aus 4 Sprachen raus, `.pxz-final*` CSS raus, `alignment-probe`/`ab-diff`/`page-registry` auf `.pxz-loc-card--combined` | ✅ **`e49b187`** PXZ 2.7.78 |
 | **Praxis Doctolib-Mapping (Phase 3d)** | Pro Page: Dr.-Stracke-Doctolib-Direktlink in `views.praxis.doctolib_url` einsetzen | 🔴 offen, asynchron |
 | **Praxis Page-Review (Sie-Form / fachlich)** | Dr.-Stracke-Walkthrough der 25 Detail-Pages, Korrekturwünsche umsetzen | 🔴 offen, kommt mit Doctolib |
 | **Praxis i18n P6** | Übersetzung aller Pages in EN/FR/ES (WPML) | 🔴 nach Page-Review |
 | **Praxis Funktionalität** | Forms (WPForms ersetzen), Cookie-Banner-Plugin, Kontaktformular, E-Mail-Versand | 🔴 nach i18n |
 
-**Status:** S50 abgeschlossen. Pre-Live-Blocker unverändert: L-1/L-2 (extern), C-1 (extern). Detail-Pages-Roll-out komplett (25/25 = 200, alle mit Hero-Bild), Doctolib-Mapping + Page-Review folgen.
+**Status:** S54 abgeschlossen (Praxis-Theme PXZ 2.7.78, Cortex-Web HEAD `5e6f15c`). Pre-Live-Blocker unverändert: L-1/L-2 (extern), C-1 (extern). Letzte Cortex-Web-Architektur-Session war S51 (Anti-Bloat + Drift-Sync) — S52–S54 sind reine Praxis-Polish-Sessions. Nächste Front S55: α Doctolib-Mapping · β Page-Review (25 Sanexio-Pages) · γ eye-check + labor-biohack Bild/Text · δ S52-Builder-Output-Commits (27 uncommitted Theme-Files) · ε Blocksy-Backup-Menü · ζ stale-refs.
 
 ### §1.2 Vorherige Sessions
 
@@ -206,91 +214,11 @@ git -C ~/Cortex/projects/Juvantis/juvantis-web/theme rev-parse HEAD
 
 ---
 
-## §3 Letzte Session — Session 51, 2026-04-28 (Anti-Bloat-Architektur LL-053)
+## §3 Letzte Cortex-Web-Architektur-Session
 
-### Gerät
-**Cluster-Mini-02** (home-Mac M2). Claude Code CLI direkt am Home-Mac.
+**S51 (2026-04-28/29) — Anti-Bloat-Architektur LL-053 + Drift-Sync Sanexio→Praxis + WV-002 V2-Fix.** 6 Phasen, Commit `cc71286` (Cortex-Web, 32 Files) + `12dd7d8`+`af41475` (Nexus). Detail im Cold-Archive: [`_archive/sessions/2026-04/session-51-anti-bloat-drift-sync.md`](_archive/sessions/2026-04/session-51-anti-bloat-drift-sync.md). Auslagerung am 2026-04-30 (S55-Session-Beenden) per LL-053a Sliding-Window.
 
-### Auftrag
-Dr. Stracke startete mit „setze Projekt webdesign fort". Nach Klarstellung Wahl C → Cortex-Web Dachprojekt fortsetzen. Front γ → „S43–S46-SESSION_RESUME-Lücke nachpflegen". Während Phase-2-Spec-Diskussion erweiterte sich der Auftrag auf eine **Anti-Bloat-Architektur**, weil das Resume bereits 27 k Read-Tokens hatte (Truncation beim Read).
-
-### Verlauf in 4 Phasen (Architekten-Modus + 3 Schritte)
-
-**Phase 1 — Pilot (Schritt 1):**
-Cold-Archive `_archive/sessions/2026-04/sessions-43-46-catch-up.md` für S43–S46 geschrieben (alle 7 Theme-Commits am 2026-04-26, ein Sonntags-Sprint mit Home-Refactor + Location-SSoT + Room-Slider + Fullbleed-Carousel + Mobile-Audit). §1.0-Catch-Up-Tabelle durch Index mit Cold-Anchor-Links ersetzt. Sanitizer-Probe lief grün.
-
-**Phase 2 — Spec (Schritt 2):**
-Neue Datei `Nexus/_rules/MEMORY_LAYERS.md` mit LL-053a–d definiert (Sliding-Window, Hardgate, Lazy-Read, Single-Source) + 3-Schichten-Modell (HOT/WARM/COLD). Pattern `Nexus/_memory/patterns/session-archive-sliding-window.md`. Cap-Verschärfung: Resume 15 k → 12 k. LL-053 in `GLOBAL_RULES.md` §30 als Anker eingetragen, in `MEMORY.md` als Goldene Regel ergänzt.
-
-**Phase 3 — Tooling (Schritt 3):**
-`Nexus/tools/cortex-sanitizer/rotate.sh` V5.3 erweitert um `--enforce`-Modus (Pre-Commit-Hardgate, Exit 1 bei Soft-Cap-Verletzung). Cap-Tabelle auf LL-053-Werte verschärft. Neuer Generator `Nexus/tools/session-index/build.sh` schreibt `<projekt>/SESSION_INDEX.md` (WARM-Schicht, Bash-3-kompatibel auf BSD-awk). Test gegen Cortex-Web: Index mit 17 Sessions generiert (S07–S46), 767 Tokens / 5 k Cap.
-
-**Phase 4 — Sweep + Konflikt-Resolution + Lifecycle-Integration:**
-- **Sweep:** S38–S42 (Polish-Arc Header + Type-Scale + Re-Prio + Content-Stubs) als zweites Cold-Archive `sessions-38-42-polish-arc.md` ausgelagert. Resume §3-legacy-Blöcke (38, 39, 40, 41, 42, 42-detail, 36) komplett entfernt, nur 1-Zeilen-Verweis-Block geblieben. §1.0-Index erweitert um S34-S36, S38, S39, S40, S41, S42.
-- **§29-Kürzung:** USER.md-Block in GLOBAL_RULES auf 6 Zeilen kompaktiert.
-- **KON-001-Konflikt erkannt:** Hermes-Self-Learning Phase 3 (Cron-Job) hat parallel einen ZWEITEN §30-Block in GLOBAL_RULES eingefügt („Memory-Nudges via trigger.md") — beide nutzten LL-053. Resolution Option D (Dr. Stracke): Mein §30-Block entfernt (SSoT in MEMORY_LAYERS.md), Hermes-Block auf §30/LL-054 umnummeriert. Hermes-Spec angepasst.
-- **Lifecycle-Integration:** `Nexus/_rules/SESSION_LIFECYCLE.md` Schritt 3c „Sliding-Window-Rotation + Hardgate" pflichtig hinzugefügt — neue Sub-Sektion im „Session beenden"-Workflow.
-- **Erste produktive Anwendung von LL-053a:** S47-Detail-Block aus §3 in `_archive/sessions/2026-04/session-47-mid-range-reality-check.md` ausgelagert.
-
-**Phase 5 — Drift-Sync Sanexio→Praxis (vollumfänglich, nach Dr.-Stracke-Auftrag „setze das heute vollumfänglich um"):**
-- **Architektur-Spec:** `specs/drift-sync/SPEC.md` mit 5 Drift-Strategien (NEW/UPDATED/CLEAN/LOCAL_DRIFT/REMOVED/FROZEN) + 5 HWG-Curation-Schritte (C1–C5) + 5 Watched-Sources-Scopes (labor, ultraschall, funktion, check-up, pages-shared)
-- **Provenance-Schema:** `trunk/schema/{page,product}.schema.json` um `sanexio_source`-Block erweitert. Stabile Verknüpfung über `resource_id`, auch bei lokalem Praxis-Edit (LOCAL_DRIFT-Schutz)
-- **Tooling:** `tools/drift-sync/{detect,sync,backfill}.mjs` + `lib/{provenance,shopify-collection,shopify-page,trunk-walker,hwg-curate,hwg-vocab}.{mjs,json}`
-- **CLI-Verben:** `cw-transfer drift status|sync|backfill`
-- **Live-Test:** Backfill markierte 7 Bestand-Trunk-YAMLs mit Provenance (`local_edits=true` als Schutz). Drift-Detection LIVE: 9 NEW Bluttests + 8 Ultraschall + 3 Funktion erkannt. Drift-Sync für Scope `labor` LIVE: 9 NEW Bluttest-Trunk-YAMLs auto-curated mit Sie-Form, ohne Preise, CTA `/service/terminanfrage/`. AJV-Validation `validate.sh OK (10 file(s))`. Re-Detection: 9 CLEAN.
-- **Commit:** `cc71286 feat(s51): Drift-Sync Sanexio→Praxis + LL-053 Anti-Bloat` (32 Files, 2750 +/288 −)
-
-**Phase 6 — WV-002 V2-Fix (`nexus-sync.sh` Pathspec-Isolation):**
-- **Auslöser:** Beim Cortex-Web-Commit von Phase 5 wurde der erste Nexus-Commit-Versuch vom Auto-Sync vereinnahmt — `git commit -m "..."` ohne Pathspec hat ALLES staged committed (heutige LL-053-Files inkl., Auto-Sync-Hash 5154154 mit Message „Auto-sync: ... 1 Dateien geaendert" statt geplant `feat(s51): ...`).
-- **V1 (2026-04-28) hatte AUTO_ADD_WHITELIST eingeführt** — verhinderte blindes `git add -A`, aber nicht die Vereinnahmung anderer User-Stages durch `git commit` ohne Pathspec.
-- **V2-Fix (`12dd7d8`):** `git commit -m "..." -- "${WHITELISTED_PATHS[@]}"` mit expliziter Pathspec → committet nur whitelisted Pfade aus Working-Copy, ignoriert anderen Staging-Status. User-Stages bleiben unberührt.
-- **Wiedervorlagen.md:** WV-002 als 🟢 VOLL GELÖST markiert (Commit `af41475`).
-- **Memory-Eintrag:** `feedback_nexus_sync_pathspec_isolation.md` in Auto-Memory.
-
-### Pre-Flight-Metriken am Session-Ende 51 (V2, nach Phase 5+6)
-
-- Sanitizer `--enforce` → **Exit 0** ✅ (alle 7 überwachten Files unter Cap)
-- Resume-Δ über Tag: 12 387 → ~11 770 Tokens (mit Phase-5+6-Erweiterung leicht gewachsen, immer noch −5 % gegenüber Sessionstart)
-- GLOBAL_RULES: 11 970 Tokens (unter Cap)
-- 3 neue Cold-Archive-Files (~32 KB Detail-Chronik ausgelagert)
-- SESSION_INDEX.md mit 17 Sessions auto-generiert
-- 9 NEW Bluttest-Trunk-YAMLs LIVE in Repo (Schema-validiert)
-- WV-002 V2-Fix LIVE im Auto-Sync (greift ab nächstem Sync-Lauf, Cluster-Mini-02 sofort, SSMD-MacBookPro nach `git pull`)
-- Pending-Queues: 0 Fragen, **0 Anweisungen** (WV-002 erledigt; nur WV-001 langlaufend)
-
-### Working-Tree (Commit-Stand am Session-Ende 51)
-
-- **Theme** unverändert seit S47 (`501f9d5` PXZ 2.7.71 → S49 `90fc4db` 2.7.72 → S50 `52cc942` 2.7.73). 3 Files seit S43–S46 weiterhin uncommitted (arzt.css / homepage-data.php / template-homepage.php) — nicht heute angefasst.
-- **Cortex-Web** ✅ Commit `cc71286 feat(s51): Drift-Sync Sanexio→Praxis + LL-053 Anti-Bloat` (32 Files)
-- **Nexus** ✅ 3 Commits: `5154154` (LL-053-Spec/Pattern/Tooling, vom Auto-Sync vereinnahmt — Inhalt korrekt), `12dd7d8` (`fix(nexus-sync): WV-002 V2 — pathspec-isolierter Auto-Commit`), `af41475` (`docs(wv-002): V2-Fix dokumentiert`)
-
-### Neu in Session 51 (final)
-
-**Anti-Bloat-Architektur:**
-- **Spec:** `Nexus/_rules/MEMORY_LAYERS.md` (LL-053 SSoT)
-- **Pattern:** `Nexus/_memory/patterns/session-archive-sliding-window.md`
-- **Cold-Archives:** 3 Files (S38–S42, S43–S46, S47)
-- **Tools:** `rotate.sh --enforce` (V5.3) + `tools/session-index/build.sh`
-- **Workflow:** `SESSION_LIFECYCLE` Schritt 3c
-
-**Drift-Sync:**
-- **Spec:** `Cortex-Web/specs/drift-sync/SPEC.md`
-- **Schema-Erweiterungen:** `sanexio_source`-Block in page+product Schemas
-- **Tools:** `tools/drift-sync/{detect,sync,backfill}.mjs` + 6 lib-Files
-- **CLI:** `cw-transfer drift status|sync|backfill`
-- **Live-Daten:** 7 Trunk-YAMLs mit Provenance, 9 neue Bluttest-Trunk-YAMLs
-
-**Auto-Sync-Härtung:**
-- **Patch:** `nexus-sync.sh` V2 mit Pathspec-Isolation (Commit `12dd7d8`)
-
-### Konsistenz-Auffälligkeiten (KON-001) am Session-Ende 51
-
-- 🟡 **Hermes-Vault-Stubs verweisen auf falsche Quelle:** `Second Brain/40 Regeln/LL-053.md` zeigt auf `GLOBAL_RULES.md` als SSoT, korrekt wäre `MEMORY_LAYERS.md`. Beim nächsten Hermes-Sync-Lauf vermutlich auto-korrigiert.
-- 🟡 4 Cortex-Web-Tools weiter uncommitted (`probe-1365.mjs`, `probe-mid-range.mjs`, `make-staff-presentation.mjs`, `remote-access/`) — gehören zu S47 oder älter, nicht heute geklärt.
-- 🟡 `sites/praxis-webseite/SESSION_RESUME.md` weiterhin veraltet seit S19.
-- 🟡 3 Theme-Files seit S43–S46 weiter uncommitted.
-- 🟡 Stub-Parameter in 9 NEW Bluttest-Trunk-YAMLs (`code: TBD, einheit: —`) — Sanexio-Admin-API liefert keine medizinische Parameter-Liste über die Schnittstelle, manuelle Pflege oder body-html-Parsing in Folge-Session.
-- 🟡 WP-Push für Pages (`wp:page`) noch nicht in `cw-transfer PUSH_TOOLS`. Drift-Sync schreibt Trunk-YAMLs für Page-Scopes, der Push-Schritt wird mit `deferred: true` markiert. Folge-Session.
+S52–S55 sind reine Praxis-Polish-Sessions (Submenu-Gruppen / Standorte vereint / FINAL CTA / Slider-Halbierung / Begriffe-Sweep) — Detail in `sites/praxis-webseite/SESSION_RESUME.md`.
 
 ## §3-legacy — Sessions 34–46 (Cold-Archive)
 
@@ -411,9 +339,20 @@ Neue Datei `Nexus/_rules/MEMORY_LAYERS.md` mit LL-053a–d definiert (Sliding-Wi
 
 ---
 
-## §5 Sofort-Status-Frage an Dr. Stracke — Session 53
+## §5 Sofort-Status-Frage an Dr. Stracke — Session 55
 
-> **Numerierungs-Hinweis:** S52 (Untersuchungen-Submenu) fand 2026-04-29 11:37–13:49 statt, S51 (LL-053 + Drift-Sync + WV-002) fand 2026-04-29 16:00–22:00 statt. Beide am gleichen Tag, S51 ist numerisch älter aber chronologisch jünger — Folge der parallelen Arbeit. Folgesession ist **S53**.
+> **Numerierungs-Hinweis:** S52 (Untersuchungen-Submenu) fand 2026-04-29 11:37–13:49 statt, S51 (LL-053 + Drift-Sync + WV-002) fand 2026-04-29 16:00–22:00 statt. Beide am gleichen Tag, S51 ist numerisch älter aber chronologisch jünger — Folge der parallelen Arbeit. S53 (Standorte vereint, PXZ 2.7.77) und S54 (FINAL CTA entfernt, PXZ 2.7.78) folgten am 2026-04-29. Nächste Session ist **S55**.
+>
+> **S52 abgeschlossen** (Theme `cbd6470` PXZ 2.7.74 + `a4ecf5c` 2.7.75 + `fb88c41` 2.7.76 · Cortex-Web `bfaefd2`):
+> Untersuchungen-Submenu in 3 Gruppen (8 Ultraschall + 3 Funktion + 5 Check-Ups). Mega-Menu Desktop, `<h3>`-Trenner Mobile, 3 Bento-Sections auf Hub. Spec `S52_untersuchungen-submenu-gruppen.md`. Doctolib-Floating-Button-Probe-Tools.
+>
+> **S53 abgeschlossen** (Theme `f014ef2` PXZ 2.7.77):
+> Standorte-Container vereint (Layout A: 2 Spalten + gemeinsamer Footer), Padding +20%, Praxis-Submenu „Standorte" (4 langs), `loc-main.php` + `loc-secondary.php` gelöscht.
+>
+> **S54 abgeschlossen** (Theme `e49b187` PXZ 2.7.78):
+> FINAL-CTA-Section komplett raus (Mobile-Sticky-Bar bleibt einziger CTA-Anker), `cta_title_a/b` aus 4 Sprachen raus, `.pxz-final*` CSS raus, Tools-Drift-Fix (alignment-probe/ab-diff/page-registry auf `.pxz-loc-card--combined`).
+>
+> **S52-Architektur-Frage gilt als beantwortet:** Drift-Sync (S51) liefert Detection + Auto-Curation. Gruppen-Zuordnung + Auto-Menü-Update sind als optionale Erweiterung verbleibend, aber nicht akut.
 >
 > **S52 abgeschlossen** (Theme `cbd6470` PXZ 2.7.74 + `a4ecf5c` 2.7.75 + `fb88c41` 2.7.76):
 > Untersuchungen-Submenu in 3 Gruppen (8 Ultraschall + 3 Funktion + 5 Check-Ups). Mega-Menu Desktop, `<h3>`-Trenner Mobile, 3 Bento-Sections auf Hub. Spec `S52_untersuchungen-submenu-gruppen.md`. Doctolib-Floating-Button auf Logo-Rot.
@@ -421,37 +360,24 @@ Neue Datei `Nexus/_rules/MEMORY_LAYERS.md` mit LL-053a–d definiert (Sliding-Wi
 > **S51 abgeschlossen** (Cortex-Web `cc71286`, Nexus `12dd7d8` + `af41475`):
 > LL-053 Anti-Bloat-Architektur + Drift-Sync Sanexio→Praxis (vollumfänglich) + WV-002 V2-Fix. 28 Tasks. Resume initial −16,5 % Tokens, mit S51-Phase-5+6-Erweiterung jetzt bei 11 770 (~−5 %). Sanitizer `--enforce` Exit 0.
 >
-> **🟡 OFFEN aus S52 (Architektur-Frage, nicht beantwortet):**
-> Soll Claude künftig eigenständig neue Untersuchungen auf Sanexio erkennen + dem Praxis-Menü + Hub-Page in der richtigen Gruppe zuordnen?
->
-> **❗ Wichtige Querverbindung S51 ↔ S52:** Die heute in S51 gebaute **Drift-Sync-Pipeline** (`cw-transfer drift status|sync`) ist eine bereits produktive Antwort auf Teile dieser S52-Frage:
-> - ✅ **Detection** ist gelöst — `cw-transfer drift status` listet neue Sanexio-Produkte
-> - ✅ **Auto-Curation** ist gelöst — HWG-Cleanup, Sie-Form, Trunk-YAML-Generation
-> - 🟡 **Gruppen-Zuordnung** (ultraschall/funktion/check-up) ist NICHT gelöst — drift-sync nutzt Scopes, aber die Gruppen-Klassifikation für Mega-Menu fehlt
-> - 🔴 **Auto-Menü-Update** + **Auto-Hub-Page-Update** noch nicht implementiert
->
-> S52-Optionen können daher pragmatischer beantwortet werden:
-> - **A** Single-Source-Registry: kann auf Drift-Sync `sanexio_source.scope` aufbauen (scope ↔ gruppe mappen)
-> - **B** Detection-Tool: schon da (`drift detect`)
-> - **C** Bestätigungs-Gate: D3-Stufe der Drift-Sync ist genau das (WP-Draft-Status), Telegram-Trigger fehlt noch
-> - **D** Status quo: nicht mehr nötig
->
 > **Praxis-Pfad zu M1 unverändert:** Doctolib-Mapping + Page-Review + i18n + Funktionalität + 3 externe Blocker (L-1/L-2/C-1).
 >
-> **Default-Optionen für Session 53:**
+> **Default-Optionen für Session 55:**
 >
 > | | Front | Was passiert | Aufwand |
 > |---|---|---|---|
-> | **α** | **S52-Architektur-Frage final beantworten** — Drift-Sync auf Mega-Menu-Gruppen erweitern (Mapping `scope → gruppe` + `nav-data.php`-Auto-Update + Hub-Page-Auto-Update) | 2-3 Sessions |
-> | **β** | **WP-Push für Pages** — `wp:page` in `cw-transfer PUSH_TOOLS` registrieren (deferred-Pages aus heutiger Drift-Sync nachziehen) | ~1 Session |
-> | **γ** | **9 Bluttest-Trunk-YAMLs reviewen** — Stub-Parameter manuell pflegen (HGB, Glucose etc.) ODER body_html-Parser für medizinische Parameter | iterativ |
-> | **δ** | **Doctolib-Mapping** für 25 Detail-Pages — Sie liefern Direktlinks | iterativ |
-> | **ε** | **P3a Phase 3 Content-Review** starten (seit S42 als Hauptfront vorgemerkt) | iterativ |
-> | **ζ** | **3 uncommitted Theme-Files** klären (arzt.css/homepage-data.php/template-homepage.php seit S43–S46) | ~15 min |
-> | **η** | **4 uncommitted Cortex-Web-Tools** klären (S47-Probes etc.) | ~15 min |
-> | θ | DESIGN_GUIDELINES §5.2/§8.2/§9.1 nachpflegen (clamp() aus S47) | ~30 min |
-> | ι | sites/praxis-webseite/SESSION_RESUME.md aufräumen (LL-053-Sweep) | ~30 min |
-> | κ | Andere Front (Juvantis, Cortex-Mesh, etc.) | — |
+> | **α** | **Doctolib-Mapping** für 25 Detail-Pages — Sie liefern Direktlinks | iterativ |
+> | **β** | **Page-Review / Sie-Form-Korrekturen** auf den 25 Sanexio-Mirror-Pages (Dr.-Stracke-Walkthrough) | längere Session |
+> | **γ** | **eye-check + labor-biohack** — Praxis-eigenes Bild + Text (Stub schließen) | ~30–60 min |
+> | **δ** | **S52-Builder-Output-Commits** klären (27 uncommitted Theme-Files: `inc/data/page-hub-*.php` + `arzt.css`) | ~30 min |
+> | **ε** | **Blocksy-Backup-Menü konsolidieren** (optional, nicht User-sichtbar) | ~15 min |
+> | **ζ** | **88 stale refs** aus Sanitizer-Learn aufräumen | ~30 min |
+> | η | **WP-Push für Pages** — `wp:page` in `cw-transfer PUSH_TOOLS` registrieren | ~1 Session |
+> | θ | **9 Bluttest-Trunk-YAMLs reviewen** — Stub-Parameter pflegen | iterativ |
+> | ι | **Cortex-Web-Tools committen** (probe-1365, probe-mid-range, make-staff-presentation, remote-access/) | ~15 min |
+> | κ | **S52-Architektur-Frage** (Auto-Mega-Menu-Gruppen) — Drift-Sync auf Mega-Menu erweitern | 2–3 Sessions |
+> | λ | DESIGN_GUIDELINES §5.2/§8.2/§9.1 nachpflegen (clamp() aus S47) | ~30 min |
+> | μ | Andere Front (Juvantis, Cortex-Mesh, etc.) | — |
 >
 > **Vorlauf nicht nötig:** S51 hat den Schritt-3c-Workflow eingeführt — Sliding-Window-Rotation läuft pflichtig bei jedem „Session beenden". Sanitizer `--enforce` ist Pre-Commit-Vorbedingung. Nexus-Auto-Sync vereinnahmt User-Stages nicht mehr.
 

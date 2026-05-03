@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: sonographie/bauchspeicheldruese
 title:
-  de: Sonographie der Bauchspeicheldrüse
+  de: Bauchspeicheldrüse
   en: Pancreas Ultrasound
 views:
   praxis:
@@ -18,7 +18,7 @@ sections:
     eyebrow:
       de: Untersuchungen · Sonographie
     heading:
-      de: Sonographie der Bauchspeicheldrüse
+      de: Bauchspeicheldrüse
     lead:
       de: Ultraschall der Bauchspeicheldrüse — frühe Veränderungen erkennen.
     image: shopify-mirror://detail/sonographie-bauchspeicheldruese-hero.jpg
@@ -40,3 +40,9 @@ sections:
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: sonographie-bauchspeicheldruese
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Untersuchungen-Sweep (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'Sonographie der Bauchspeicheldrüse'

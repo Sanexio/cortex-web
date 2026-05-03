@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: kardio-check
 title:
-  de: Kardio Check
+  de: Kardio-Check
   en: Cardio Check
 views:
   praxis:
@@ -18,7 +18,7 @@ sections:
     eyebrow:
       de: Untersuchungen · Vorsorge
     heading:
-      de: Kardio Check
+      de: Kardio-Check
     lead:
       de: Kardio-Check — strukturierte Beurteilung von Herz und Lunge in einer Untersuchung.
     image: shopify-mirror://detail/kardio-check-hero.jpg
@@ -46,7 +46,7 @@ sections:
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
-      de: Termin für Kardio Check?
+      de: Termin für Kardio-Check?
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/

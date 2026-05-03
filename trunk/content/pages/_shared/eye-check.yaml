@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: eye-check
 title:
-  de: Eye Check
+  de: Augen-Check
   en: Eye Check
 views:
   praxis:
@@ -18,7 +18,7 @@ sections:
     eyebrow:
       de: Untersuchungen · Reaktion
     heading:
-      de: Eye Check
+      de: Augen-Check
     lead:
       de: Eye-Check — Beurteilung von Sehkraft und vorderem Augenabschnitt.
     image: shopify-mirror://detail/eye-check-hero.jpg
@@ -30,7 +30,13 @@ sections:
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
-      de: Termin für Eye Check?
+      de: Termin für Augen-Check?
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: eye-check
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Untersuchungen-Sweep (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'Eye Check'

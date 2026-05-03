@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: labor/biohack
 title:
-  de: BioHack — Genetische Beratung
+  de: Genetik-Beratung
   en: BioHack — Genetic Consultation
 views:
   praxis:
@@ -18,9 +18,9 @@ sections:
     eyebrow:
       de: Labor · Genetik
     heading:
-      de: BioHack — Genetische Beratung
+      de: Genetik-Beratung
     lead:
-      de: BioHack — Genetische Beratung mit individueller Risiko-Einschätzung.
+      de: Genetik-Beratung mit individueller Risiko-Einschätzung.
     image: shopify-mirror://detail/labor-biohack-hero.png
   - type: body
     body_html:
@@ -30,7 +30,14 @@ sections:
         <p>Zum Abschluss der Beratung erhalten Sie eine schriftliche Zusammenfassung.</p>
   - type: cta-banner
     heading:
-      de: Termin für BioHack — Genetische Beratung?
+      de: Termin für Genetik-Beratung?
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: product
+  handle: biohack-test
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Labor-Menu (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'BioHack — Genetische Beratung'
+  related_product_yaml: trunk/content/products/bluttests/biohack-test.yaml

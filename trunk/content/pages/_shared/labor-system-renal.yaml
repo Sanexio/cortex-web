@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: labor/system-renal
 title:
-  de: System Renal
+  de: Nieren
   en: System Renal
 views:
   praxis:
@@ -18,14 +18,14 @@ sections:
     eyebrow:
       de: Labor · System
     heading:
-      de: System Renal
+      de: Nieren
     lead:
-      de: 'System: Renal — Laborprofil zur Beurteilung der Nierenfunktion.'
+      de: 'Nieren — Laborprofil zur Beurteilung der Nierenfunktion.'
     image: shopify-mirror://detail/labor-system-renal-hero.jpg
   - type: body
     body_html:
       de: |-
-        <p>Mit dem Laborprofil <strong>System: Renal</strong> erhalten Sie eine strukturierte Beurteilung der Nierenfunktion. Eine Niere besteht aus etwa einer Million Filtereinheiten, die das Blut kontinuierlich von Abfallstoffen reinigen. Beide Nieren zusammen filtern täglich rund 360 Liter Blut — das gesamte Blutvolumen des Körpers passiert die Nieren etwa 30-mal pro Tag. Davon werden bis zu zwei Liter Urin pro Tag ausgeschieden.</p>
+        <p>Mit dem Laborprofil <strong>Nieren</strong> erhalten Sie eine strukturierte Beurteilung der Nierenfunktion. Eine Niere besteht aus etwa einer Million Filtereinheiten, die das Blut kontinuierlich von Abfallstoffen reinigen. Beide Nieren zusammen filtern täglich rund 360 Liter Blut — das gesamte Blutvolumen des Körpers passiert die Nieren etwa 30-mal pro Tag. Davon werden bis zu zwei Liter Urin pro Tag ausgeschieden.</p>
 
         <p>Die Filtrationsleistung liegt bei einer gesunden erwachsenen Person bei etwa 90–120 Millilitern pro Minute. Im Labor lässt sich die Nierenfunktion indirekt erfassen — Hinweise auf eine Einschränkung können so frühzeitig sichtbar werden.</p>
 
@@ -41,7 +41,13 @@ sections:
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
-      de: Termin für System Renal?
+      de: Termin für Nieren?
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: system-renal
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Labor-Menu (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'System Renal'

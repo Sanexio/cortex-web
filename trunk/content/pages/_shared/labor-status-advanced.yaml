@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: labor/status-advanced
 title:
-  de: Status Advanced
+  de: Erweiterter Check
   en: Status Advanced
 views:
   praxis:
@@ -18,14 +18,14 @@ sections:
     eyebrow:
       de: Labor · Status
     heading:
-      de: Status Advanced
+      de: Erweiterter Check
     lead:
-      de: 'Status: Advanced — erweiterter Bluttest mit detaillierter Beurteilung zentraler Körperfunktionen.'
+      de: 'Erweiterter Check — erweiterter Bluttest mit detaillierter Beurteilung zentraler Körperfunktionen.'
     image: shopify-mirror://detail/labor-status-advanced-hero.png
   - type: body
     body_html:
       de: |-
-        <p>Das Laborprofil <strong>Status: Advanced</strong> erweitert das Profil <em>Status: Baseline</em> um eine detailliertere Beurteilung zentraler Körperfunktionen. Sie erhalten damit einen deutlich vertieften Überblick über zentrale Stoffwechsel-, Leber-, Nieren- und Immunparameter.</p>
+        <p>Das Laborprofil <strong>Erweiterter Check</strong> erweitert das Profil <em>Basis-Check</em> um eine detailliertere Beurteilung zentraler Körperfunktionen. Sie erhalten damit einen deutlich vertieften Überblick über zentrale Stoffwechsel-, Leber-, Nieren- und Immunparameter.</p>
 
         <h2>Wir analysieren folgende Parameter:</h2>
 
@@ -42,7 +42,13 @@ sections:
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
-      de: Termin für Status Advanced?
+      de: Termin für Erweiterter Check?
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: status-advanced
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Labor-Menu (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'Status Advanced'

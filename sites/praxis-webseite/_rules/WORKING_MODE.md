@@ -59,6 +59,16 @@ Vor jeder Implementierung liefern:
 - Keine eigenständigen Designänderungen
 - Keine Scope-Erweiterung
 
+**Bash-Freigabe (seit 2026-04-26):** Sobald die Phase-1+2-Spec freigegeben ist,
+laufen Bash-Befehle in Phase 3 **ohne Einzelfreigabe pro Befehl**. Standard
+für alle Projekte. Ausnahme nur, wenn Dr. Stracke das Projekt explizit als
+„bash-restriktiv" markiert. Praxis-Webseite ist aktuell **nicht** so markiert.
+
+Hartcodierte Schutzschicht bleibt unabhängig davon bestehen:
+- LL-050 — destruktive Git-Ops (rebase --skip, reset --hard, push --force, …) brauchen Freigabe
+- Diff/Status vor irreversiblen Dateioperationen
+- Permissions-`deny`-Liste in `~/Cortex/.claude/settings.local.json`
+
 ### Phase 4 — Selbstprüfung (verpflichtend)
 
 Nach jeder Umsetzung:

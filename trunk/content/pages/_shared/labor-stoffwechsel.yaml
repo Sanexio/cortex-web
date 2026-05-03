@@ -38,3 +38,9 @@ sections:
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: stoffwechsel
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Labor-Menu (Dr. Stracke): deutsche Kurz-Begriffe (Title unverändert, Schutz-Block für Konsistenz)'
+  original_label: 'Stoffwechsel'

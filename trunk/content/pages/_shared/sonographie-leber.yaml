@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: sonographie/leber
 title:
-  de: Sonographie der Leber und Gallenblase
+  de: Leber und Gallenblase
   en: Liver and Gallbladder Ultrasound
 views:
   praxis:
@@ -18,7 +18,7 @@ sections:
     eyebrow:
       de: Untersuchungen · Sonographie
     heading:
-      de: Sonographie der Leber und Gallenblase
+      de: Leber und Gallenblase
     lead:
       de: Ultraschall der Leber und Gallenwege — Veränderungen früh sichtbar machen.
     image: shopify-mirror://detail/sonographie-leber-hero.jpg
@@ -40,3 +40,9 @@ sections:
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: sonographie-leber
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Untersuchungen-Sweep (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'Sonographie der Leber und Gallenblase'

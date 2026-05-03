@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: sono-check
 title:
-  de: Sono Check
+  de: Sono-Check
   en: Sono Check
 views:
   praxis:
@@ -18,7 +18,7 @@ sections:
     eyebrow:
       de: Untersuchungen · Vorsorge
     heading:
-      de: Sono Check
+      de: Sono-Check
     lead:
       de: Sono-Check — alle wichtigen Organe in einer Ultraschalluntersuchung.
     image: shopify-mirror://detail/sono-check-hero.jpg
@@ -71,7 +71,7 @@ sections:
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
-      de: Termin für Sono Check?
+      de: Termin für Sono-Check?
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/

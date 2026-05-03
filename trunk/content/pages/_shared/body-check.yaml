@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: body-check
 title:
-  de: Body Check
+  de: Body-Check
   en: Body Check
 views:
   praxis:
@@ -18,7 +18,7 @@ sections:
     eyebrow:
       de: Untersuchungen · Vorsorge
     heading:
-      de: Body Check
+      de: Body-Check
     lead:
       de: Body-Check — strukturierte ärztliche Bestandsaufnahme Ihres aktuellen Gesundheitszustandes.
     image: shopify-mirror://detail/body-check-hero.jpg
@@ -42,7 +42,7 @@ sections:
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
-      de: Termin für Body Check?
+      de: Termin für Body-Check?
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/

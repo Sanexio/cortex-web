@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: sonographie/nieren
 title:
-  de: Sonographie der Nieren und Harnwege
+  de: Nieren und Harnwege
   en: Kidney and Urinary Tract Ultrasound
 views:
   praxis:
@@ -18,7 +18,7 @@ sections:
     eyebrow:
       de: Untersuchungen · Sonographie
     heading:
-      de: Sonographie der Nieren und Harnwege
+      de: Nieren und Harnwege
     lead:
       de: Ultraschall der Nieren und ableitenden Harnwege — Raumforderungen früh erkennen.
     image: shopify-mirror://detail/sonographie-nieren-hero.jpg
@@ -40,3 +40,9 @@ sections:
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: sonographie-nieren
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Untersuchungen-Sweep (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'Sonographie der Nieren und Harnwege'

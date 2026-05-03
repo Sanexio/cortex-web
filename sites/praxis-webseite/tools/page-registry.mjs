@@ -21,33 +21,31 @@ export const pages = [
     url: `${BASE}/`,
     viewports: [1440, 768, 430],
     expected: {
+      // S54 (2026-04-29): .pxz-loc-card--main + .pxz-loc-card--sec ersetzt
+      // durch .pxz-loc-card--combined (Padding +20%, S53). .pxz-final-card
+      // entfernt (S54).
       1440: {
-        ".pxz-loc-card--main": {
-          paddingTop: "112px",
+        ".pxz-loc-card--combined": {
+          paddingTop: "134px",
           paddingLeft: "96px",
           paddingRight: "96px",
-          paddingBottom: "96px",
+          paddingBottom: "115px",
           position: "relative",
         },
-        ".pxz-loc-card--main .pxz-loc-badge": {
+        ".pxz-loc-card--combined .pxz-loc-badge": {
           position: "static",
         },
         ".pxz-mfa-card": {
           paddingTop: "112px",
           paddingLeft: "96px",
         },
-        ".pxz-final-card": {
-          padding: "0px",
-          backgroundColor: "rgba(0, 0, 0, 0)",
-          boxShadow: "none",
-        },
       },
       768: {
-        ".pxz-loc-card--main": {
-          paddingTop: "96px",
+        ".pxz-loc-card--combined": {
+          paddingTop: "115px",
           paddingLeft: "72px",
         },
-        ".pxz-loc-card--main .pxz-loc-badge": {
+        ".pxz-loc-card--combined .pxz-loc-badge": {
           position: "static",
         },
         ".pxz-mfa-card": {
@@ -59,11 +57,11 @@ export const pages = [
         },
       },
       430: {
-        ".pxz-loc-card--main": {
-          paddingTop: "72px",
+        ".pxz-loc-card--combined": {
+          paddingTop: "87px",
           paddingLeft: "40px",
         },
-        ".pxz-loc-card--main .pxz-loc-badge": {
+        ".pxz-loc-card--combined .pxz-loc-badge": {
           position: "static",
         },
         ".pxz-mfa-card": {

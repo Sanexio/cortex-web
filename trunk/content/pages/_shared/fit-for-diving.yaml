@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: fit-for-diving
 title:
-  de: Fit for Diving
+  de: Tauchtauglichkeit
   en: Fit for Diving
 views:
   praxis:
@@ -18,7 +18,7 @@ sections:
     eyebrow:
       de: Untersuchungen · Tauchtauglichkeit
     heading:
-      de: Fit for Diving
+      de: Tauchtauglichkeit
     lead:
       de: Tauchtauglichkeitsuntersuchung — Bescheinigung für Open Water und Advanced Open Water.
     image: shopify-mirror://detail/fit-for-diving-hero.jpg
@@ -43,7 +43,7 @@ sections:
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
   - type: cta-banner
     heading:
-      de: Termin für Fit for Diving?
+      de: Termin für Tauchtauglichkeit?
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/

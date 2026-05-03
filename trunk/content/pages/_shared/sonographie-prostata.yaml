@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: sonographie/prostata
 title:
-  de: Sonographie der Prostata und Harnblase
+  de: Prostata und Harnblase
   en: Prostate and Bladder Ultrasound
 views:
   praxis:
@@ -18,7 +18,7 @@ sections:
     eyebrow:
       de: Untersuchungen · Sonographie
     heading:
-      de: Sonographie der Prostata und Harnblase
+      de: Prostata und Harnblase
     lead:
       de: Ultraschall von Prostata und Harnblase — Größe, Restharn und Raumforderungen beurteilen.
     image: shopify-mirror://detail/sonographie-prostata-hero.jpg
@@ -40,3 +40,9 @@ sections:
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
+sanexio_source:
+  type: page
+  handle: sonographie-prostata
+  local_edits: true
+  local_label_source: '2026-04-30 — S55-Untersuchungen-Sweep (Dr. Stracke): deutsche Kurz-Begriffe'
+  original_label: 'Sonographie der Prostata und Harnblase'
