@@ -7,6 +7,8 @@ slugs:
 title:
   de: Schilddrüsen-Sonographie
   en: Thyroid Ultrasound
+  it: Ecografia della tiroide
+  pt-pt: Ecografia da tiroide
 
 views:
   praxis:
@@ -15,6 +17,8 @@ views:
     # doctolib_url: null  # Phase 3d: hier den Doctolib-Direktlink eintragen
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 
 wp:
   page_template: template-detail-page.php
@@ -24,10 +28,16 @@ sections:
   - type: hero
     eyebrow:
       de: Sonographie · Schilddrüse
+      it: Ecografia · Tiroide
+      pt-pt: Ecografia · Tiroide
     heading:
       de: Schilddrüsen-Sonographie
+      it: Ecografia della tiroide
+      pt-pt: Ecografia da tiroide
     lead:
       de: Ultraschall der Schilddrüse — Knoten, Zysten und Größenveränderungen sichtbar machen.
+      it: Ecografia della tiroide — rendere visibili noduli, cisti e variazioni di volume.
+      pt-pt: Ecografia da tiroide — tornar visíveis nódulos, quistos e alterações de volume.
     image: shopify-mirror://detail/sonographie-schilddruese-hero.jpg
 
   - type: body
@@ -40,10 +50,30 @@ sections:
         <p>Zunächst tasten wir Ihre Schilddrüse ab und im Anschluss wird die Ultraschalluntersuchung durchgeführt. Hierzu legen Sie sich auf eine Liege und überstrecken den Kopf leicht.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht. Bei auffälligen Knoten besprechen wir mit Ihnen das weitere Vorgehen — meist durch Verlaufskontrolle, in seltenen Fällen durch eine Feinnadelpunktion.</p>
+      it: |
+        <p>La tiroide — uno dei direttori d'orchestra del suo metabolismo: produce ormoni che regolano il consumo energetico e i processi metabolici. Un'iperfunzione può provocare nervosismo, tachicardia e perdita di peso, mentre un'ipofunzione causa stanchezza, aumento di peso e oscillazioni dell'umore. La tiroide è disposta come una farfalla attorno al collo. Trattandosi di un organo metabolicamente attivo, possono formarsi noduli non rilevabili in laboratorio ma ben valutabili all'ecografia. Se si sospettano alterazioni maligne i noduli interessati devono essere ulteriormente approfonditi.</p>
+
+        <h2>Come si svolge l'esame?</h2>
+
+        <p>Inizialmente palpiamo la sua tiroide e quindi eseguiamo l'esame ecografico. A questo scopo si distende sul lettino ed estende leggermente il capo all'indietro.</p>
+
+        <p>Al termine dell'esame riceve il suo referto personale. In presenza di noduli sospetti discutiamo con lei i passi successivi — di norma con controlli evolutivi e, raramente, con un agoaspirato.</p>
+      pt-pt: |
+        <p>A tiroide — um dos maestros do seu metabolismo: produz hormonas que regulam o consumo energético e o metabolismo. Um hipofunção pode causar fadiga, aumento de peso e oscilações de humor, enquanto um hiperfunção provoca nervosismo, taquicardia e perda de peso. A tiroide envolve o pescoço com a forma de uma borboleta. Como órgão metabolicamente activo, podem formar-se nódulos não detectáveis em laboratório, mas bem avaliáveis por ecografia. Em caso de suspeita de alterações malignas os nódulos em causa devem ser esclarecidos.</p>
+
+        <h2>Como é realizado o exame?</h2>
+
+        <p>Primeiro palpamos a sua tiroide e em seguida realizamos o exame ecográfico. Para tal, deita-se na maca e inclina ligeiramente a cabeça para trás.</p>
+
+        <p>No final do exame recebe o seu relatório pessoal. Em caso de nódulos suspeitos discutimos consigo os próximos passos — habitualmente com controlos evolutivos e, raramente, com punção aspirativa por agulha fina.</p>
 
   - type: cta-banner
     heading:
       de: Termin für die Schilddrüsen-Sonographie?
+      it: Vuole prenotare un'ecografia della tiroide?
+      pt-pt: Quer marcar uma ecografia da tiroide?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

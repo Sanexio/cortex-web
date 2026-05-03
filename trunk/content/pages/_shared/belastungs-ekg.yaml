@@ -6,12 +6,16 @@ slugs:
 title:
   de: Belastungs-EKG
   en: Exercise ECG
+  it: ECG da sforzo
+  pt-pt: ECG de esforço
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
   legacy_ids:
@@ -20,10 +24,16 @@ sections:
   - type: hero
     eyebrow:
       de: Diagnostik · Funktionell
+      it: Diagnostica · Funzionale
+      pt-pt: Diagnóstico · Funcional
     heading:
       de: Belastungs-EKG (Ergometrie)
+      it: ECG da sforzo (ergometria)
+      pt-pt: ECG de esforço (ergometria)
     lead:
       de: Belastungs-EKG — die Belastungsfähigkeit Ihres Herzens unter kontrollierten Bedingungen prüfen.
+      it: ECG da sforzo — valutare la capacità di adattamento del suo cuore in condizioni controllate.
+      pt-pt: ECG de esforço — avaliar a capacidade do seu coração sob esforço em condições controladas.
     image: shopify-mirror://detail/belastungs-ekg-hero.jpg
   - type: body
     body_html:
@@ -35,9 +45,29 @@ sections:
         <p>Sie fahren auf einem Ergometer (stationäres Fahrrad). Alle zwei Minuten erhöhen wir die Wattzahl. Während der gesamten Untersuchung schreiben wir ein EKG und überwachen Blutdruck und Sauerstoffsättigung. Über Telemonitoring wird das EKG durchgehend von einer Ärztin oder einem Arzt überwacht.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>L'ECG da sforzo (ergometria) valuta la capacità di adattamento del suo cuore. Durante l'esame il cuore può battere fino a tre volte al secondo e pompare il sangue lungo l'intero sistema vascolare, che misura circa 100.000 chilometri.</p>
+
+        <h2>Come si svolge l'esame?</h2>
+
+        <p>Lei pedala su un cicloergometro (bicicletta stazionaria). Ogni due minuti aumentiamo i watt. Per l'intera durata registriamo un ECG e monitoriamo pressione arteriosa e saturazione d'ossigeno. Tramite telemonitoraggio l'ECG viene seguito senza interruzione da un medico.</p>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>O ECG de esforço (ergometria) avalia a capacidade de adaptação do seu coração. Durante o exame o coração pode bater até três vezes por segundo e impulsionar o sangue por todo o sistema vascular, com cerca de 100.000 quilómetros de extensão.</p>
+
+        <h2>Como é realizado o exame?</h2>
+
+        <p>O paciente pedala num cicloergómetro (bicicleta estacionária). De dois em dois minutos aumentamos os watts. Durante todo o exame regista-se um ECG e monitorizam-se pressão arterial e saturação de oxigénio. Através de telemonitorização o ECG é acompanhado em permanência por um médico.</p>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für ein Belastungs-EKG?
+      it: Vuole prenotare un ECG da sforzo?
+      pt-pt: Quer marcar um ECG de esforço?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

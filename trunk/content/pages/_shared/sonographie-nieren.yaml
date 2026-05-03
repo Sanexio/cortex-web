@@ -5,22 +5,32 @@ slugs:
 title:
   de: Nieren und Harnwege
   en: Kidney and Urinary Tract Ultrasound
+  it: Reni e vie urinarie
+  pt-pt: Rins e vias urinárias
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Sonographie
+      it: Esami · Ecografia
+      pt-pt: Exames · Ecografia
     heading:
       de: Nieren und Harnwege
+      it: Reni e vie urinarie
+      pt-pt: Rins e vias urinárias
     lead:
       de: Ultraschall der Nieren und ableitenden Harnwege — Raumforderungen früh erkennen.
+      it: Ecografia dei reni e delle vie urinarie — riconoscere precocemente le lesioni occupanti spazio.
+      pt-pt: Ecografia dos rins e das vias urinárias — reconhecer precocemente lesões expansivas.
     image: shopify-mirror://detail/sonographie-nieren-hero.jpg
   - type: body
     body_html:
@@ -34,11 +44,35 @@ sections:
         <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Nieren und der ableitenden Harnwege durch. Es ist günstig, mit gefüllter Blase zur Untersuchung zu kommen.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>I reni sono l'unità filtrante del corpo. Ogni giorno filtrano circa 360 litri di sangue — l'intero volume sanguigno attraversa i reni circa 30 volte al giorno. Da questo eliminiamo fino a due litri di urina al giorno.</p>
+
+        <p>Con l'ecografia ricerchiamo in modo mirato alterazioni, cisti e lesioni occupanti spazio nei reni e nelle vie urinarie fino alla vescica.</p>
+
+        <h2>Come si svolge l'esame?</h2>
+
+        <p>Mentre lei riposa rilassato sul lettino, eseguiamo l'ecografia dei reni e delle vie urinarie. È preferibile presentarsi con la vescica piena.</p>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>Os rins são a unidade de filtragem do corpo. Por dia filtram cerca de 360 litros de sangue — o volume total de sangue atravessa os rins cerca de 30 vezes por dia. Daí eliminamos até dois litros de urina por dia.</p>
+
+        <p>No exame ecográfico procuramos de forma dirigida alterações, quistos e lesões expansivas nos rins e nas vias urinárias até à bexiga.</p>
+
+        <h2>Como é realizado o exame?</h2>
+
+        <p>Enquanto descansa relaxado na maca, realizamos a ecografia dos rins e das vias urinárias. É preferível comparecer com a bexiga cheia.</p>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Sonographie der Nieren und Harnwege?
+      it: Vuole prenotare un'ecografia di reni e vie urinarie?
+      pt-pt: Quer marcar uma ecografia dos rins e vias urinárias?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

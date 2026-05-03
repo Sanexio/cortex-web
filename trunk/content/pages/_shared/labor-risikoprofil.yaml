@@ -5,22 +5,32 @@ slugs:
 title:
   de: Risikoprofil
   en: Risk Profile
+  it: Profilo di rischio
+  pt-pt: Perfil de risco
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Labor · Risiko
+      it: Laboratorio · Rischio
+      pt-pt: Laboratório · Risco
     heading:
       de: Risikoprofil
+      it: Profilo di rischio
+      pt-pt: Perfil de risco
     lead:
       de: Risikoprofil — orientierender Laborüberblick zu Stoffwechsel, Leber und Niere.
+      it: Profilo di rischio — panoramica laboratoristica orientativa su metabolismo, fegato e reni.
+      pt-pt: Perfil de risco — visão laboratorial orientadora sobre metabolismo, fígado e rins.
     image: shopify-mirror://detail/labor-risikoprofil-hero.jpg
   - type: body
     body_html:
@@ -41,11 +51,49 @@ sections:
         <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
         <p>Wir nehmen Ihnen Blut ab und bestimmen die genannten Parameter im Labor. Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Con il profilo di laboratorio <strong>Profilo di rischio</strong> riceve, con un solo prelievo, una panoramica orientativa dei principali parametri metabolici e d'organo — indicazioni su alterazioni che nella vita quotidiana spesso non sono percepibili.</p>
+
+        <h2>Analizziamo i seguenti parametri:</h2>
+
+        <ul>
+        <li>Profilo lipidico: trigliceridi, colesterolo totale, LDL, HDL</li>
+        <li>HbA1c (glicemia a lungo termine)</li>
+        <li>Creatinina (funzione renale)</li>
+        <li>Enzimi epatici: GOT, GPT, gamma-GT</li>
+        <li>Acido urico</li>
+        <li>Emocromo con formula leucocitaria differenziale</li>
+        </ul>
+
+        <h2>Come si svolge l'esame?</h2>
+
+        <p>Le effettuiamo un prelievo di sangue e determiniamo in laboratorio i parametri elencati. Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>Com o perfil laboratorial <strong>Perfil de risco</strong> recebe, com uma única picada, uma visão orientadora dos principais parâmetros metabólicos e de órgãos — indicações de alterações que no dia-a-dia muitas vezes não se sentem.</p>
+
+        <h2>Analisamos os seguintes parâmetros:</h2>
+
+        <ul>
+        <li>Perfil lipídico: triglicéridos, colesterol total, LDL, HDL</li>
+        <li>HbA1c (glicémia a longo prazo)</li>
+        <li>Creatinina (função renal)</li>
+        <li>Enzimas hepáticas: GOT, GPT, gama-GT</li>
+        <li>Ácido úrico</li>
+        <li>Hemograma com fórmula leucocitária diferencial</li>
+        </ul>
+
+        <h2>Como é realizado o exame?</h2>
+
+        <p>Efectuamos uma colheita de sangue e determinamos em laboratório os parâmetros indicados. No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Risikoprofil?
+      it: Vuole prenotare un Profilo di rischio?
+      pt-pt: Quer marcar um Perfil de risco?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

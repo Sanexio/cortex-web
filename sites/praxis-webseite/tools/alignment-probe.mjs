@@ -19,11 +19,11 @@ const URL = process.env.PXZ_URL
   || 'https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/';
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
-// S54 (2026-04-29): .pxz-hero-ctas (S46) + .pxz-final-* (S54) entfernt.
-// Probe prüft jetzt nur noch das Hero-Subtitle und den Combined-Standorte-Container.
+// S55+ (2026-04-30): .pxz-loc-card--combined nicht mehr auf Home (Slider-Halbierung).
+// Probe prüft jetzt das Hero-Subtitle und den MFA-Karriere-Block (weiterhin auf Home).
 const CHECKS = [
   '.pxz-hero-sub',
-  '.pxz-loc-card--combined',
+  '.pxz-mfa-card',
 ];
 
 const browser = await puppeteer.launch({

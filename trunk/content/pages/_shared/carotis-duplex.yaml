@@ -6,12 +6,16 @@ slugs:
 title:
   de: Carotis-Duplex
   en: Carotid Duplex
+  it: Eco-Doppler delle carotidi
+  pt-pt: Eco-Doppler das carótidas
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
   legacy_ids:
@@ -20,10 +24,16 @@ sections:
   - type: hero
     eyebrow:
       de: Diagnostik · Gefäße
+      it: Diagnostica · Vascolare
+      pt-pt: Diagnóstico · Vascular
     heading:
       de: Carotis-Duplex-Sonographie
+      it: Eco-Doppler delle carotidi
+      pt-pt: Eco-Doppler das carótidas
     lead:
       de: Ultraschall der Halsschlagadern — Engstellen erkennen, bevor sie zum Schlaganfall führen.
+      it: Ecografia delle arterie carotidi — riconoscere le stenosi prima che diano luogo a un ictus.
+      pt-pt: Ecografia das artérias carótidas — reconhecer estenoses antes que conduzam a um AVC.
     image: shopify-mirror://detail/carotis-duplex-hero.jpg
   - type: body
     body_html:
@@ -37,11 +47,35 @@ sections:
         <p>Zunächst hören wir mit einem Stethoskop die Halsgefäße ab. Im Anschluss erfolgt die Ultraschalluntersuchung. Hierzu legen Sie sich auf eine Liege und überstrecken den Kopf leicht.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Il cervello umano costituisce circa il 2 percento del peso corporeo ma consuma circa il 20 percento dell'energia totale. 100 miliardi di neuroni e migliaia di miliardi di sinapsi creano fino a 200 milioni di connessioni al secondo. Dopo circa 5-10 minuti di interruzione dell'apporto di ossigeno il cervello subisce un danno irreversibile.</p>
+
+        <p>Con l'ecografia delle arterie carotidi (eco-Doppler) verifichiamo se l'afflusso di sangue al cervello è ridotto da stenosi o se a livello dei vasi sono già presenti alterazioni che possono aumentare il rischio di ictus.</p>
+
+        <h2>Come si svolge l'esame?</h2>
+
+        <p>Dapprima auscultiamo i vasi del collo con uno stetoscopio. Segue l'esame ecografico. A questo scopo si distende sul lettino ed estende leggermente il capo all'indietro.</p>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>O cérebro humano representa cerca de 2 por cento do peso corporal, mas consome cerca de 20 por cento de toda a energia. 100 mil milhões de neurónios e biliões de sinapses estabelecem por segundo até 200 milhões de ligações. Após cerca de 5 a 10 minutos de interrupção do fornecimento de oxigénio o cérebro sofre lesões irreversíveis.</p>
+
+        <p>Com a ecografia das artérias carótidas (eco-Doppler) verificamos se o fluxo de sangue para o cérebro está limitado por estenoses ou se nos vasos já existem alterações capazes de aumentar o risco de AVC.</p>
+
+        <h2>Como é realizado o exame?</h2>
+
+        <p>Primeiro auscultamos os vasos do pescoço com um estetoscópio. Segue-se o exame ecográfico. Para tal, deita-se na maca e inclina ligeiramente a cabeça para trás.</p>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für die Carotis-Duplex-Sonographie?
+      it: Vuole prenotare un eco-Doppler delle carotidi?
+      pt-pt: Quer marcar um eco-Doppler das carótidas?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

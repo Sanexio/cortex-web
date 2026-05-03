@@ -5,22 +5,32 @@ slugs:
 title:
   de: Stoffwechsel
   en: Metabolism
+  it: Metabolismo
+  pt-pt: Metabolismo
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Labor · Stoffwechsel
+      it: Laboratorio · Metabolismo
+      pt-pt: Laboratório · Metabolismo
     heading:
       de: Stoffwechsel
+      it: Metabolismo
+      pt-pt: Metabolismo
     lead:
       de: Stoffwechselprofil — Fett- und Zuckerstoffwechsel im Blick.
+      it: Profilo metabolico — metabolismo di lipidi e zuccheri sotto controllo.
+      pt-pt: Perfil metabólico — metabolismo de lípidos e açúcares em observação.
     image: shopify-mirror://detail/labor-stoffwechsel-hero.jpg
   - type: body
     body_html:
@@ -32,11 +42,31 @@ sections:
         <p>Wir nehmen Ihnen Blut ab und bestimmen folgende Werte: Fettwerte (Triglyzeride, Gesamt-Cholesterin, LDL, HDL), HbA1c (Langzeitblutzucker), Harnsäure.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Le alterazioni del metabolismo lipidico e glucidico sono tra i fattori di rischio cardiovascolare più importanti e modificabili. Con il profilo di laboratorio <strong>Metabolismo</strong> valutiamo la presenza di eventuali segni di alterazione del metabolismo di grassi o zuccheri e determiniamo in aggiunta un marcatore di rischio per la gotta.</p>
+
+        <h2>Come si svolge l'esame?</h2>
+
+        <p>Le effettuiamo un prelievo di sangue e determiniamo i seguenti valori: profilo lipidico (trigliceridi, colesterolo totale, LDL, HDL), HbA1c (glicemia a lungo termine), acido urico.</p>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>As alterações do metabolismo dos lípidos e dos açúcares estão entre os factores de risco cardiovascular mais importantes e modificáveis. Com o perfil laboratorial <strong>Metabolismo</strong> avaliamos a presença de eventuais sinais de alteração do metabolismo dos lípidos ou dos açúcares e determinamos adicionalmente um marcador de risco para a gota.</p>
+
+        <h2>Como é realizado o exame?</h2>
+
+        <p>Efectuamos uma colheita de sangue e determinamos os seguintes valores: perfil lipídico (triglicéridos, colesterol total, LDL, HDL), HbA1c (glicémia a longo prazo), ácido úrico.</p>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Stoffwechsel?
+      it: Vuole prenotare un profilo metabolico?
+      pt-pt: Quer marcar um perfil metabólico?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

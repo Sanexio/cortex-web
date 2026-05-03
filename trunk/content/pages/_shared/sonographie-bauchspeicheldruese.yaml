@@ -5,22 +5,32 @@ slugs:
 title:
   de: Bauchspeicheldrüse
   en: Pancreas Ultrasound
+  it: Pancreas
+  pt-pt: Pâncreas
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Sonographie
+      it: Esami · Ecografia
+      pt-pt: Exames · Ecografia
     heading:
       de: Bauchspeicheldrüse
+      it: Pancreas
+      pt-pt: Pâncreas
     lead:
       de: Ultraschall der Bauchspeicheldrüse — frühe Veränderungen erkennen.
+      it: Ecografia del pancreas — riconoscere precocemente le alterazioni.
+      pt-pt: Ecografia do pâncreas — reconhecer precocemente as alterações.
     image: shopify-mirror://detail/sonographie-bauchspeicheldruese-hero.jpg
   - type: body
     body_html:
@@ -34,11 +44,35 @@ sections:
         <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Bauchspeicheldrüse und der angrenzenden Organe durch. Es ist günstig, nüchtern zur Untersuchung zu kommen.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Pur pesando solo dai 70 ai 100 grammi, il pancreas è fondamentale per la digestione e il metabolismo glucidico. Si trova al centro dell'addome superiore ed è a stretto contatto con stomaco, fegato, intestino e milza.</p>
+
+        <p>Disfunzioni del pancreas possono causare diabete o disturbi digestivi con diarrea persistente. I tumori del pancreas in fase precoce sono spesso difficili da individuare — l'ecografia è un esame importante per la valutazione.</p>
+
+        <h2>Come si svolge l'esame?</h2>
+
+        <p>Mentre lei riposa rilassato sul lettino, eseguiamo l'ecografia del pancreas e degli organi limitrofi. È preferibile presentarsi a digiuno.</p>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>Embora pese apenas 70 a 100 gramas, o pâncreas é fundamental para a digestão e o metabolismo do açúcar. Localiza-se no centro do andar superior do abdómen e está em estreito contacto com o estômago, o fígado, o intestino e o baço.</p>
+
+        <p>Disfunções do pâncreas podem originar diabetes ou perturbações digestivas com diarreia persistente. Os tumores do pâncreas em fase inicial são frequentemente difíceis de detectar — a ecografia é um exame importante para a avaliação.</p>
+
+        <h2>Como é realizado o exame?</h2>
+
+        <p>Enquanto descansa relaxado na maca, realizamos a ecografia do pâncreas e dos órgãos vizinhos. É preferível comparecer em jejum.</p>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Sonographie der Bauchspeicheldrüse?
+      it: Vuole prenotare un'ecografia del pancreas?
+      pt-pt: Quer marcar uma ecografia do pâncreas?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

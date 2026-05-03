@@ -8,12 +8,16 @@ title:
   en: Laboratory
   fr: Laboratoire
   es: Laboratorio
+  it: Laboratorio
+  pt-pt: Laboratório
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
   juvantis:
     show_prices: true
 wp:
@@ -24,112 +28,187 @@ sections:
   - type: hero
     eyebrow:
       de: Labordiagnostik
+      it: Diagnostica di laboratorio
+      pt-pt: Diagnóstico laboratorial
     heading:
       de: Ihr Blut weiß mehr, als Sie denken.
+      it: Il suo sangue sa più di quanto immagini.
+      pt-pt: O seu sangue sabe mais do que pensa.
     lead:
       de: >-
         Eine Blutuntersuchung in unserer Praxis liefert einen fundierten Einblick in Ihre aktuelle
         Gesundheitssituation. Wir bieten strukturierte Bluttest-Profile, abgestimmt auf
         unterschiedliche Fragestellungen — von der orientierenden Standortbestimmung bis zur tiefen
         Risiko-Analyse.
+      it: >-
+        Un esame del sangue nella nostra pratica medica le offre una visione fondata della sua
+        situazione di salute attuale. Proponiamo profili strutturati di analisi ematochimiche,
+        calibrati su quesiti diversi — dall'inquadramento orientativo all'analisi approfondita
+        del rischio.
+      pt-pt: >-
+        Uma análise ao sangue no nosso consultório oferece-lhe uma visão fundamentada da sua
+        situação de saúde actual. Disponibilizamos perfis estruturados de análises, ajustados
+        a diferentes questões — da avaliação orientadora à análise de risco aprofundada.
   - type: bento-grid
     heading:
       de: Unsere Bluttest-Profile
+      it: I nostri profili di analisi del sangue
+      pt-pt: Os nossos perfis de análises ao sangue
     items:
       - id: status-baseline
         title:
           de: Status Baseline
+          it: Status Baseline
+          pt-pt: Status Baseline
         teaser:
           de: Der kompakte Einstieg — wichtigste Standardparameter auf einen Blick.
+          it: L'inizio compatto — i principali parametri standard a colpo d'occhio.
+          pt-pt: O ponto de partida compacto — os principais parâmetros padrão num relance.
         image: shopify-mirror://labor/labor-mini-check-up.png
         href: /labor/status-baseline/
       - id: status-advanced
         title:
           de: Status Advanced
+          it: Status Advanced
+          pt-pt: Status Advanced
         teaser:
           de: Erweiterter Check mit zusätzlichen Stoffwechsel- und Risikoparametern.
+          it: Check esteso con ulteriori parametri metabolici e di rischio.
+          pt-pt: Check alargado com parâmetros metabólicos e de risco adicionais.
         image: shopify-mirror://labor/labor-check-up-advanced.png
         href: /labor/status-advanced/
       - id: status-prevent
         title:
           de: Status Prevent
+          it: Status Prevent
+          pt-pt: Status Prevent
         teaser:
           de: Umfassendes Präventions-Profil für gezielte Früherkennung.
+          it: Profilo preventivo completo per una diagnosi precoce mirata.
+          pt-pt: Perfil preventivo abrangente para uma detecção precoce dirigida.
         image: shopify-mirror://labor/labor-pravention.png
         href: /labor/status-prevent/
       - id: system-immune
         title:
           de: System Immune
+          it: System Immune
+          pt-pt: System Immune
         teaser:
           de: Gezielte Beurteilung des Immunsystems und der Abwehrlage.
+          it: Valutazione mirata del sistema immunitario e dello stato delle difese.
+          pt-pt: Avaliação dirigida do sistema imunitário e do estado de defesa.
         image: shopify-mirror://labor/labor-immunsystem.jpg
         href: /labor/system-immune/
       - id: system-renal
         title:
           de: System Renal
+          it: System Renal
+          pt-pt: System Renal
         teaser:
           de: Nierenfunktion und Elektrolyte im Detail.
+          it: Funzione renale ed elettroliti nel dettaglio.
+          pt-pt: Função renal e electrólitos em detalhe.
         image: shopify-mirror://labor/labor-niere.jpg
         href: /labor/system-renal/
       - id: system-liver
         title:
           de: System Liver
+          it: System Liver
+          pt-pt: System Liver
         teaser:
           de: Leberwerte und Stoffwechselparameter strukturiert ausgewertet.
+          it: Valori epatici e parametri metabolici valutati in modo strutturato.
+          pt-pt: Valores hepáticos e parâmetros metabólicos avaliados de forma estruturada.
         image: shopify-mirror://labor/labor-leber.jpg
         href: /labor/system-liver/
       - id: stoffwechsel
         title:
           de: Stoffwechsel
+          it: Metabolismo
+          pt-pt: Metabolismo
         teaser:
           de: Glukose, Lipide, Schilddrüse — die Stoffwechsel-Achse im Überblick.
+          it: Glucosio, lipidi, tiroide — l'asse metabolico in sintesi.
+          pt-pt: Glicose, lípidos, tiroide — o eixo metabólico em síntese.
         image: shopify-mirror://labor/labor-stoffwechsel.jpg
         href: /labor/stoffwechsel/
       - id: biohack
         title:
           de: BioHack — Genetische Beratung
+          it: BioHack — Consulenza genetica
+          pt-pt: BioHack — Aconselhamento genético
         teaser:
           de: Genetisch fundierte Beratung für eine personalisierte Vorsorge-Strategie.
+          it: Consulenza basata sulla genetica per una strategia preventiva personalizzata.
+          pt-pt: Aconselhamento de base genética para uma estratégia preventiva personalizada.
         image: shopify-mirror://labor/labor-biohack.jpg
         href: /labor/biohack/
       - id: risikoprofil
         title:
           de: Risikoprofil
+          it: Profilo di rischio
+          pt-pt: Perfil de risco
         teaser:
           de: Strukturierte Risiko-Einschätzung für Herz-Kreislauf und Stoffwechsel.
+          it: Valutazione strutturata del rischio cardiovascolare e metabolico.
+          pt-pt: Avaliação estruturada do risco cardiovascular e metabólico.
         image: shopify-mirror://labor/labor-risikoprofil.jpg
         href: /labor/risikoprofil/
   - type: process-steps
     heading:
       de: So läuft Ihre Blutentnahme ab
+      it: Come si svolge il suo prelievo
+      pt-pt: Como decorre a sua colheita de sangue
     steps:
       - num: '1'
         title:
           de: Termin
+          it: Appuntamento
+          pt-pt: Marcação
         text:
           de: Termin online oder telefonisch vereinbaren — gerne nüchtern morgens.
+          it: Fissi l'appuntamento online o telefonicamente — preferibilmente a digiuno la mattina.
+          pt-pt: Marque a consulta online ou por telefone — de preferência em jejum, de manhã.
       - num: '2'
         title:
           de: Abnahme
+          it: Prelievo
+          pt-pt: Colheita
         text:
           de: Blutabnahme in unserer Praxis durch geschultes MFA-Team — etwa fünf Minuten.
+          it: Prelievo nella nostra struttura da parte di un team MFA qualificato — circa cinque minuti.
+          pt-pt: Colheita no nosso consultório por uma equipa MFA qualificada — cerca de cinco minutos.
       - num: '3'
         title:
           de: Analyse
+          it: Analisi
+          pt-pt: Análise
         text:
           de: Auswertung im akkreditierten Labor — meist innerhalb 24 bis 48 Stunden.
+          it: Elaborazione in laboratorio accreditato — di norma entro 24-48 ore.
+          pt-pt: Processamento em laboratório acreditado — geralmente em 24 a 48 horas.
       - num: '4'
         title:
           de: Befundbesprechung
+          it: Discussione del referto
+          pt-pt: Discussão do resultado
         text:
           de: Persönliches Gespräch mit ärztlicher Einordnung Ihrer Werte.
+          it: Colloquio personale con inquadramento medico dei suoi valori.
+          pt-pt: Conversa pessoal com avaliação médica dos seus valores.
   - type: cta-banner
     heading:
       de: Fragen zu Ihren Werten?
+      it: Domande sui suoi valori?
+      pt-pt: Dúvidas sobre os seus valores?
     sub:
       de: Wir besprechen Ihre Laborbefunde persönlich — keine reinen Werte-PDFs.
+      it: Discutiamo i suoi referti di persona — non solo PDF di numeri.
+      pt-pt: Discutimos os seus resultados pessoalmente — não apenas PDFs com números.
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

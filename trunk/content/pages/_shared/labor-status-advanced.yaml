@@ -5,22 +5,32 @@ slugs:
 title:
   de: Erweiterter Check
   en: Status Advanced
+  it: Status Advanced
+  pt-pt: Status Advanced
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Labor · Status
+      it: Laboratorio · Status
+      pt-pt: Laboratório · Status
     heading:
       de: Erweiterter Check
+      it: Status Advanced
+      pt-pt: Status Advanced
     lead:
       de: 'Erweiterter Check — erweiterter Bluttest mit detaillierter Beurteilung zentraler Körperfunktionen.'
+      it: 'Status Advanced — esame del sangue esteso con valutazione dettagliata delle principali funzioni corporee.'
+      pt-pt: 'Status Advanced — análise ao sangue alargada com avaliação detalhada das principais funções corporais.'
     image: shopify-mirror://detail/labor-status-advanced-hero.png
   - type: body
     body_html:
@@ -40,11 +50,47 @@ sections:
         </ul>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Il profilo di laboratorio <strong>Status Advanced</strong> amplia il profilo <em>Status Baseline</em> con una valutazione più dettagliata delle principali funzioni corporee. Riceve così una panoramica significativamente più approfondita su parametri centrali del metabolismo, di fegato, reni e sistema immunitario.</p>
+
+        <h2>Analizziamo i seguenti parametri:</h2>
+
+        <ul>
+        <li>Colesterolo totale, LDL, HDL, trigliceridi (profilo di rischio cardiovascolare)</li>
+        <li>HbA1c (glicemia a lungo termine)</li>
+        <li>Creatinina e urea (funzione renale)</li>
+        <li>GOT, GPT, GGT, bilirubina, colinesterasi (funzione epatica)</li>
+        <li>Emocromo per la rilevazione di alterazioni delle cellule del sangue</li>
+        <li>Formula leucocitaria differenziale per la distinzione dei globuli bianchi</li>
+        <li>Acido urico (indicazione di gotta iniziale)</li>
+        </ul>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>O perfil laboratorial <strong>Status Advanced</strong> alarga o perfil <em>Status Baseline</em> com uma avaliação mais detalhada das principais funções corporais. Recebe assim uma visão significativamente mais aprofundada de parâmetros centrais do metabolismo, do fígado, dos rins e do sistema imunitário.</p>
+
+        <h2>Analisamos os seguintes parâmetros:</h2>
+
+        <ul>
+        <li>Colesterol total, LDL, HDL, triglicéridos (perfil de risco cardiovascular)</li>
+        <li>HbA1c (glicémia a longo prazo)</li>
+        <li>Creatinina e ureia (função renal)</li>
+        <li>GOT, GPT, GGT, bilirrubina, colinesterase (função hepática)</li>
+        <li>Hemograma para detecção de alterações das células sanguíneas</li>
+        <li>Fórmula leucocitária diferencial para distinção dos glóbulos brancos</li>
+        <li>Ácido úrico (indicação de gota inicial)</li>
+        </ul>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Erweiterter Check?
+      it: Vuole prenotare uno Status Advanced?
+      pt-pt: Quer marcar um Status Advanced?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

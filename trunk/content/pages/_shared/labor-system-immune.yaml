@@ -5,22 +5,32 @@ slugs:
 title:
   de: Immunsystem
   en: System Immune
+  it: Sistema immunitario
+  pt-pt: Sistema imunitário
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Labor · System
+      it: Laboratorio · Sistema
+      pt-pt: Laboratório · Sistema
     heading:
       de: Immunsystem
+      it: Sistema immunitario
+      pt-pt: Sistema imunitário
     lead:
       de: 'Labor Immunsystem — Laborprofil zur Beurteilung des Immunsystems.'
+      it: 'Sistema immunitario — profilo di laboratorio per la valutazione del sistema immunitario.'
+      pt-pt: 'Sistema imunitário — perfil laboratorial para avaliação do sistema imunitário.'
     image: shopify-mirror://detail/labor-system-immune-hero.jpg
   - type: body
     body_html:
@@ -41,11 +51,49 @@ sections:
         </ul>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Con il profilo di laboratorio <strong>Sistema immunitario</strong> riceve una valutazione strutturata del suo sistema immunitario. Con un numero stimato di circa 10.000 leucociti per microlitro di sangue e un volume ematico di circa 7 litri, l'essere umano dispone solo nel sangue di circa 70 miliardi di globuli bianchi. Considerando l'intero sistema immunitario si arriva a circa 1,8 trilioni di cellule — nella pelle, nell'intestino, nel fegato, nella milza, nel midollo osseo.</p>
+
+        <h2>Analizziamo i seguenti parametri:</h2>
+
+        <ul>
+        <li>Ferro e transferrina</li>
+        <li>Immunoglobuline (IgA, IgG, IgM, IgE)</li>
+        <li>Elettroforesi proteica del siero</li>
+        <li>Sodio, magnesio, potassio, calcio</li>
+        <li>Conta dei reticolociti</li>
+        <li>Emocromo con formula leucocitaria differenziale</li>
+        <li>Formula leucocitaria differenziale specifica</li>
+        <li>Acido urico</li>
+        </ul>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>Com o perfil laboratorial <strong>Sistema imunitário</strong> recebe uma avaliação estruturada do seu sistema imunitário. Com um número estimado de cerca de 10.000 leucócitos por microlitro de sangue e um volume sanguíneo de aproximadamente 7 litros, o ser humano dispõe só no sangue de cerca de 70 mil milhões de glóbulos brancos. Considerando todo o sistema imunitário chega-se a cerca de 1,8 biliões de células — na pele, no intestino, no fígado, no baço, na medula óssea.</p>
+
+        <h2>Analisamos os seguintes parâmetros:</h2>
+
+        <ul>
+        <li>Ferro e transferrina</li>
+        <li>Imunoglobulinas (IgA, IgG, IgM, IgE)</li>
+        <li>Electroforese proteica no soro</li>
+        <li>Sódio, magnésio, potássio, cálcio</li>
+        <li>Contagem de reticulócitos</li>
+        <li>Hemograma com fórmula leucocitária diferencial</li>
+        <li>Fórmula leucocitária diferencial específica</li>
+        <li>Ácido úrico</li>
+        </ul>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Immunsystem?
+      it: Vuole prenotare un esame del sistema immunitario?
+      pt-pt: Quer marcar uma análise do sistema imunitário?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

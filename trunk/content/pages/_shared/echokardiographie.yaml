@@ -6,12 +6,16 @@ slugs:
 title:
   de: Echokardiographie
   en: Echocardiography
+  it: Ecocardiografia
+  pt-pt: Ecocardiografia
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
   legacy_ids:
@@ -20,10 +24,16 @@ sections:
   - type: hero
     eyebrow:
       de: Diagnostik · Apparativ
+      it: Diagnostica · Strumentale
+      pt-pt: Diagnóstico · Instrumental
     heading:
       de: Echokardiographie
+      it: Ecocardiografia
+      pt-pt: Ecocardiografia
     lead:
       de: Echokardiographie — das Herz in Echtzeit beim Pumpen sehen.
+      it: Ecocardiografia — osservare il cuore in tempo reale mentre pompa.
+      pt-pt: Ecocardiografia — observar o coração a bombear em tempo real.
     image: shopify-mirror://detail/echokardiographie-hero.jpg
   - type: body
     body_html:
@@ -37,11 +47,37 @@ sections:
         <p>Für diese Untersuchung legen Sie sich in Linksseitenlage. Wir führen die Untersuchung mit einem speziellen Ultraschallkopf durch. Eine Vorbereitung Ihrerseits ist nicht erforderlich.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Il cuore — una meraviglia biomeccanica fatta di impulsi elettrici, contrazioni muscolari e una raffinata meccanica valvolare. Ad ogni battito vengono pompati dal cuore circa 70 millilitri di sangue. Con circa 100.000 battiti al giorno il cuore muove in media 7.000 litri di sangue al giorno attraverso il corpo. La pressione arteriosa che ne deriva si attesta nell'adulto sano tra 100 e 140 mmHg e fa sì che il sangue raggiunga e percorra i vasi sanguigni, lunghi nel complesso circa 100.000 chilometri.</p>
+
+        <p>Con l'ecocardiografia possiamo osservare il cuore in tempo reale durante la sua attività. La metodica consente di riconoscere alterazioni della motilità parietale, vizi valvolari e altre modificazioni strutturali che nella vita quotidiana non sempre si manifestano con sintomi.</p>
+
+        <h2>Come si svolge l'esame?</h2>
+
+        <p>Per questo esame si distende sul fianco sinistro. Eseguiamo l'indagine con una sonda ecografica dedicata. Da parte sua non è necessaria alcuna preparazione.</p>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>O coração — uma maravilha biomecânica feita de impulsos eléctricos, contracções musculares e uma engenhosa técnica valvular. Em cada batimento são bombeados pelo coração cerca de 70 mililitros de sangue. Com cerca de 100.000 batimentos por dia, o coração movimenta em média 7.000 litros de sangue por dia através do corpo. A pressão arterial daí resultante situa-se, no adulto saudável, entre 100 e 140 mmHg e garante que o sangue chega e percorre os vasos sanguíneos, com cerca de 100.000 quilómetros de comprimento total.</p>
+
+        <p>Com a ecocardiografia podemos observar o coração em tempo real durante a sua actividade. O método permite reconhecer alterações da motilidade parietal, defeitos valvulares e outras modificações estruturais que nem sempre se acompanham de sintomas no dia-a-dia.</p>
+
+        <h2>Como é realizado o exame?</h2>
+
+        <p>Para este exame, deita-se em decúbito lateral esquerdo. Realizamos o estudo com uma sonda ecográfica específica. Não é necessária qualquer preparação da sua parte.</p>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für eine Echokardiographie?
+      it: Vuole prenotare un'ecocardiografia?
+      pt-pt: Quer marcar uma ecocardiografia?
     sub:
       de: Wir besprechen vor der Untersuchung, ob sie für Ihre Situation sinnvoll ist.
+      it: Prima dell'esame valutiamo insieme se sia indicato nel suo caso.
+      pt-pt: Antes do exame avaliamos consigo se faz sentido para a sua situação.
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

@@ -5,22 +5,32 @@ slugs:
 title:
   de: Leber und Gallenblase
   en: Liver and Gallbladder Ultrasound
+  it: Fegato e cistifellea
+  pt-pt: Fígado e vesícula
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Sonographie
+      it: Esami · Ecografia
+      pt-pt: Exames · Ecografia
     heading:
       de: Leber und Gallenblase
+      it: Fegato e cistifellea
+      pt-pt: Fígado e vesícula
     lead:
       de: Ultraschall der Leber und Gallenwege — Veränderungen früh sichtbar machen.
+      it: Ecografia di fegato e vie biliari — rendere visibili precocemente le alterazioni.
+      pt-pt: Ecografia do fígado e das vias biliares — tornar visíveis precocemente as alterações.
     image: shopify-mirror://detail/sonographie-leber-hero.jpg
   - type: body
     body_html:
@@ -34,11 +44,35 @@ sections:
         <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Leber und der Gallenwege durch. Es ist günstig, etwa vier Stunden vor der Untersuchung nichts zu essen und nur Wasser zu trinken.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Con i suoi circa 1,5 chilogrammi il fegato è il più grande organo metabolico interno. Anche dopo la perdita del 75 percento del tessuto può tornare alle dimensioni normali. È centrale per digestione, detossificazione, deposito di nutrienti e per il metabolismo di grassi, zuccheri e proteine, filtrando l'intero volume sanguigno fino a 30 volte al giorno.</p>
+
+        <p>Nonostante la sua elevata capacità rigenerativa, il fegato può essere danneggiato cronicamente da un'alimentazione sfavorevole, da alcuni farmaci o da un consumo eccessivo di alcol. Il grado di alterazione è ben valutabile all'ecografia — dalla steatosi epatica alle alterazioni strutturali avanzate, fino a lesioni occupanti spazio.</p>
+
+        <h2>Come si svolge l'esame?</h2>
+
+        <p>Mentre lei riposa rilassato sul lettino, eseguiamo l'ecografia del fegato e delle vie biliari. È preferibile non assumere alimenti per circa quattro ore prima dell'esame, bevendo solo acqua.</p>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>Com cerca de 1,5 quilogramas, o fígado é o maior órgão metabólico interno. Mesmo após a perda de até 75 por cento do seu tecido, pode regenerar-se até ao tamanho normal. É central para a digestão, a desintoxicação, o armazenamento de nutrientes e para o metabolismo de gorduras, açúcares e proteínas, filtrando o volume total de sangue até 30 vezes por dia.</p>
+
+        <p>Apesar da sua elevada capacidade de regeneração, o fígado pode ser danificado de forma crónica por uma alimentação desfavorável, certos medicamentos ou consumo excessivo de álcool. O grau de alteração é bem avaliável por ecografia — desde a esteatose hepática até alterações estruturais avançadas e lesões expansivas.</p>
+
+        <h2>Como é realizado o exame?</h2>
+
+        <p>Enquanto descansa relaxado na maca, realizamos a ecografia do fígado e das vias biliares. É preferível não comer durante cerca de quatro horas antes do exame, bebendo apenas água.</p>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Sonographie der Leber und Gallenblase?
+      it: Vuole prenotare un'ecografia di fegato e cistifellea?
+      pt-pt: Quer marcar uma ecografia de fígado e vesícula?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

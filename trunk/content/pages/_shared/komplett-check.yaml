@@ -5,22 +5,32 @@ slugs:
 title:
   de: Komplett-Check
   en: Complete Check
+  it: Check completo
+  pt-pt: Check completo
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Vorsorge
+      it: Esami · Prevenzione
+      pt-pt: Exames · Prevenção
     heading:
       de: Komplett-Check
+      it: Check completo
+      pt-pt: Check completo
     lead:
       de: Komplett-Check — ausführliche Vorsorgeuntersuchung in etwa zwei Stunden.
+      it: Check completo — visita preventiva approfondita in circa due ore.
+      pt-pt: Check completo — exame preventivo aprofundado em cerca de duas horas.
     image: shopify-mirror://detail/komplett-check-hero.jpg
   - type: body
     body_html:
@@ -50,11 +60,67 @@ sections:
 
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: >-
+        <p>Il Check completo riassume una visita preventiva approfondita. In circa due ore eseguiamo
+        una valutazione medica strutturata.</p>
+
+
+        <h2>Quali esami comprende il Check completo?</h2>
+
+
+        <ul>
+
+        <li>Ecografia della tiroide</li>
+
+        <li>Ecografia dei vasi del collo (eco-Doppler delle carotidi)</li>
+
+        <li>Ecocardiografia (ecografia cardiaca)</li>
+
+        <li>Ecografia dell'addome</li>
+
+        <li>ECG da sforzo (ergometria)</li>
+
+        <li>Spirometria (funzione respiratoria)</li>
+
+        </ul>
+
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: >-
+        <p>O Check completo reúne um exame preventivo aprofundado. Em cerca de duas horas
+        realizamos uma avaliação médica estruturada.</p>
+
+
+        <h2>Que exames inclui o Check completo?</h2>
+
+
+        <ul>
+
+        <li>Ecografia da tiroide</li>
+
+        <li>Ecografia dos vasos do pescoço (eco-Doppler das carótidas)</li>
+
+        <li>Ecocardiografia (ecografia cardíaca)</li>
+
+        <li>Ecografia abdominal</li>
+
+        <li>ECG de esforço (ergometria)</li>
+
+        <li>Espirometria (função pulmonar)</li>
+
+        </ul>
+
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Komplett-Check?
+      it: Vuole prenotare un Check completo?
+      pt-pt: Quer marcar um Check completo?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: product

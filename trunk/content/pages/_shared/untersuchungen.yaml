@@ -8,12 +8,16 @@ title:
   en: Examinations
   fr: Examens
   es: Exámenes
+  it: Esami
+  pt-pt: Exames
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
   juvantis:
     show_prices: true
 wp:
@@ -24,177 +28,293 @@ sections:
   - type: hero
     eyebrow:
       de: Apparative Untersuchungen
+      it: Esami strumentali
+      pt-pt: Exames instrumentais
     heading:
       de: Sie sind mehr als die Summe Ihrer Teile.
+      it: Lei è molto più della somma delle sue parti.
+      pt-pt: Você é mais do que a soma das suas partes.
     lead:
       de: >-
         Bei uns laufen Ultraschall, EKG, Lungenfunktion und Labor unter einem Dach zusammen.
         Apparative Untersuchung und ärztliche Einordnung in einer Hand — das spart Wege und gibt
         Ihnen schneller Klarheit.
+      it: >-
+        Da noi ecografia, ECG, prove di funzionalità respiratoria e analisi di laboratorio
+        confluiscono sotto lo stesso tetto. Esame strumentale e valutazione medica in un'unica
+        sede — meno percorsi, chiarezza più rapida.
+      pt-pt: >-
+        Connosco a ecografia, o ECG, a função pulmonar e o laboratório convergem sob o mesmo
+        tecto. Exame instrumental e avaliação médica na mesma mão — poupa deslocações e
+        traz-lhe clareza mais depressa.
   - type: usp-box
     variant: dark
     heading:
       de: Was uns auszeichnet
+      it: Ciò che ci distingue
+      pt-pt: O que nos distingue
     text:
       de: >-
         Acht Fachrichtungen, ein Haus, eine gemeinsame Patientenakte. Wenn der Befund Ihrer
         Schilddrüsen-Sonographie für die internistische Abklärung relevant ist, erfolgt die
         Abstimmung noch am selben Tag — direkt im selben Haus.
+      it: >-
+        Otto specializzazioni, un'unica sede, un'unica cartella clinica condivisa. Se il
+        referto della sua ecografia tiroidea è rilevante per l'inquadramento internistico,
+        il confronto avviene lo stesso giorno — direttamente nella stessa struttura.
+      pt-pt: >-
+        Oito especialidades, uma só casa, um processo clínico partilhado. Se o resultado
+        da sua ecografia tiroideia for relevante para a avaliação internista, a articulação
+        decorre no próprio dia — directamente na mesma casa.
   - type: bento-grid
     heading:
       de: Ultraschall
+      it: Ecografia
+      pt-pt: Ecografia
     items:
       - id: echokardiographie
         title:
           de: Echokardiographie
+          it: Ecocardiografia
+          pt-pt: Ecocardiografia
         teaser:
           de: Ultraschall des Herzens — Pumpfunktion, Klappen, Wandbewegungen.
+          it: Ecografia del cuore — funzione di pompa, valvole, motilità parietale.
+          pt-pt: Ecografia do coração — função de bomba, válvulas, motilidade das paredes.
         image: shopify-mirror://diagnostik/diag-echokardiographie.jpg
         href: /echokardiographie/
       - id: carotis
         title:
           de: Carotis-Duplex
+          it: Eco-Doppler delle carotidi
+          pt-pt: Eco-Doppler das carótidas
         teaser:
           de: Ultraschall der Halsschlagadern — frühe Hinweise auf Gefäßveränderungen.
+          it: Ecografia delle arterie carotidi — segnali precoci di alterazioni vascolari.
+          pt-pt: Ecografia das artérias carótidas — sinais precoces de alterações vasculares.
         image: shopify-mirror://diagnostik/diag-carotis.jpg
         href: /carotis-duplex/
       - id: schilddruese
         title:
           de: Schilddrüsen-Sonographie
+          it: Ecografia della tiroide
+          pt-pt: Ecografia da tiroide
         teaser:
           de: Knoten, Zysten und Größenveränderungen sichtbar machen.
+          it: Rendere visibili noduli, cisti e variazioni di volume.
+          pt-pt: Tornar visíveis nódulos, quistos e alterações de volume.
         image: shopify-mirror://diagnostik/diag-schilddruese.jpg
         href: /sonographie/schilddruese/
       - id: bauchorgane
         title:
           de: Sonographie der Bauchorgane
+          it: Ecografia degli organi addominali
+          pt-pt: Ecografia dos órgãos abdominais
         teaser:
           de: Leber, Galle, Pankreas, Milz, Nieren — strahlungsfreie Bildgebung.
+          it: Fegato, vie biliari, pancreas, milza, reni — diagnostica per immagini senza radiazioni.
+          pt-pt: Fígado, vesícula, pâncreas, baço, rins — imagiologia sem radiação.
         image: shopify-mirror://diagnostik/diag-sonographie.jpg
         href: /sonographie/
       - id: pankreas
         title:
           de: Bauchspeicheldrüse
+          it: Pancreas
+          pt-pt: Pâncreas
         teaser:
           de: Gezielter Ultraschall eines kleinen, aber zentralen Organs.
+          it: Ecografia mirata di un organo piccolo ma centrale.
+          pt-pt: Ecografia dirigida a um órgão pequeno mas central.
         image: shopify-mirror://diagnostik/diag-pankreas.jpg
         href: /sonographie/bauchspeicheldruese/
       - id: nieren
         title:
           de: Nieren und Harnwege
+          it: Reni e vie urinarie
+          pt-pt: Rins e vias urinárias
         teaser:
           de: Filtereinheiten Ihres Körpers im Blick.
+          it: Le unità filtranti del suo corpo, sotto controllo.
+          pt-pt: As unidades filtrantes do seu corpo em observação.
         image: shopify-mirror://diagnostik/diag-niere.jpg
         href: /sonographie/nieren/
       - id: prostata
         title:
           de: Prostata und Harnblase
+          it: Prostata e vescica
+          pt-pt: Próstata e bexiga
         teaser:
           de: Größe, Restharn, Auffälligkeiten.
+          it: Volume, residuo post-minzionale, eventuali anomalie.
+          pt-pt: Volume, resíduo pós-miccional, eventuais alterações.
         image: shopify-mirror://diagnostik/diag-prostata.jpg
         href: /sonographie/prostata/
       - id: leber
         title:
           de: Leber und Gallenblase
+          it: Fegato e cistifellea
+          pt-pt: Fígado e vesícula
         teaser:
           de: Funktion, Struktur und mögliche Schäden.
+          it: Funzione, struttura ed eventuali alterazioni.
+          pt-pt: Função, estrutura e eventuais lesões.
         image: shopify-mirror://diagnostik/diag-leber.jpg
         href: /sonographie/leber/
   - type: bento-grid
     heading:
       de: Funktion
+      it: Funzione
+      pt-pt: Função
     items:
       - id: belastungs-ekg
         title:
           de: Belastungs-EKG
+          it: ECG da sforzo
+          pt-pt: ECG de esforço
         teaser:
           de: Ergometrie auf dem Fahrrad — Herzkreislauf unter Belastung.
+          it: Ergometria al cicloergometro — sistema cardiocircolatorio sotto sforzo.
+          pt-pt: Ergometria em bicicleta — sistema cardiovascular sob esforço.
         image: shopify-mirror://diagnostik/diag-belastungs-ekg.jpg
         href: /belastungs-ekg/
       - id: lungenfunktion
         title:
           de: Lungenfunktion
+          it: Funzione respiratoria
+          pt-pt: Função pulmonar
         teaser:
           de: Spirometrie — Vitalkapazität, FEV1, Atemwegswiderstand.
+          it: Spirometria — capacità vitale, FEV1, resistenze delle vie aeree.
+          pt-pt: Espirometria — capacidade vital, FEV1, resistência das vias aéreas.
         image: shopify-mirror://diagnostik/diag-lungenfunktion.jpg
         href: /lungenfunktion/
       - id: eye-check
         title:
           de: Eye Check
+          it: Eye Check
+          pt-pt: Eye Check
         teaser:
           de: Reaktionszeit-Test — wie schnell verarbeiten Ihre Augen Information?
+          it: Test del tempo di reazione — quanto velocemente gli occhi elaborano le informazioni?
+          pt-pt: Teste do tempo de reacção — com que rapidez os olhos processam a informação?
         image: shopify-mirror://diagnostik/diag-eye-check.jpg
         href: /eye-check/
   - type: bento-grid
     heading:
       de: Check-Ups
+      it: Check-Up
+      pt-pt: Check-Up
     items:
       - id: body-check
         title:
           de: Body Check
+          it: Body Check
+          pt-pt: Body Check
         teaser:
           de: Klinische Untersuchung mit EKG und Urintest.
+          it: Esame clinico con ECG e analisi delle urine.
+          pt-pt: Exame clínico com ECG e análise de urina.
         image: shopify-mirror://leistungen/leistung-body-check.jpg
         href: /body-check/
       - id: sono-check
         title:
           de: Sono Check
+          it: Sono-Check
+          pt-pt: Sono-Check
         teaser:
           de: Umfassende Ultraschall-Vorsorge in einer Sitzung.
+          it: Prevenzione ecografica completa in un'unica seduta.
+          pt-pt: Prevenção ecográfica abrangente numa só sessão.
         image: shopify-mirror://diagnostik/diag-sono-check.jpg
         href: /sono-check/
       - id: komplett-check
         title:
           de: Komplett-Check
+          it: Check completo
+          pt-pt: Check completo
         teaser:
           de: Alle apparativen Untersuchungen in einem Termin.
+          it: Tutti gli esami strumentali in un'unica seduta.
+          pt-pt: Todos os exames instrumentais numa única consulta.
         image: shopify-mirror://leistungen/leistung-komplett-check.jpg
         href: /komplett-check/
       - id: kardio-check
         title:
           de: Kardio Check
+          it: Kardio-Check
+          pt-pt: Kardio-Check
         teaser:
           de: Strukturierte Herz-Kreislauf-Vorsorge.
+          it: Prevenzione cardiovascolare strutturata.
+          pt-pt: Prevenção cardiovascular estruturada.
         image: shopify-mirror://leistungen/leistung-kardio-check.jpg
         href: /kardio-check/
       - id: fit-for-diving
         title:
           de: Fit for Diving
+          it: Fit for Diving
+          pt-pt: Fit for Diving
         teaser:
           de: Tauchtauglichkeitsuntersuchung für Open Water und Advanced.
+          it: Visita di idoneità subacquea per Open Water e Advanced.
+          pt-pt: Avaliação de aptidão para mergulho — Open Water e Advanced.
         image: shopify-mirror://diagnostik/diag-fit-for-diving.jpg
         href: /fit-for-diving/
   - type: process-steps
     heading:
       de: So läuft Ihre Untersuchung ab
+      it: Come si svolge il suo esame
+      pt-pt: Como decorre o seu exame
     steps:
       - num: '1'
         title:
           de: Termin
+          it: Appuntamento
+          pt-pt: Marcação
         text:
           de: Telefonisch oder online — wir klären vorab, was sinnvoll ist.
+          it: Per telefono o online — chiariamo in anticipo ciò che è opportuno.
+          pt-pt: Por telefone ou online — esclarecemos antecipadamente o que faz sentido.
       - num: '2'
         title:
           de: Untersuchung
+          it: Esame
+          pt-pt: Exame
         text:
           de: In ruhiger Atmosphäre, individuell auf Sie abgestimmt.
+          it: In un'atmosfera tranquilla, personalizzata in base alle sue esigenze.
+          pt-pt: Num ambiente tranquilo, ajustado individualmente a si.
       - num: '3'
         title:
           de: Befund
+          it: Referto
+          pt-pt: Resultado
         text:
           de: Ärztliche Einordnung im persönlichen Gespräch — keine PDFs ohne Erklärung.
+          it: Inquadramento medico nel colloquio personale — nessun PDF senza spiegazione.
+          pt-pt: Avaliação médica em conversa pessoal — sem PDFs sem explicação.
       - num: '4'
         title:
           de: Weiteres Vorgehen
+          it: Passi successivi
+          pt-pt: Próximos passos
         text:
           de: Falls nötig, koordinieren wir die nächsten Schritte mit unseren Fachkollegen im Haus.
+          it: Se necessario, coordiniamo i passi successivi con i nostri specialisti nella stessa struttura.
+          pt-pt: Se necessário, coordenamos os próximos passos com os nossos colegas especialistas da casa.
   - type: cta-banner
     heading:
       de: Bereit für Ihre Untersuchung?
+      it: Pronto per il suo esame?
+      pt-pt: Pronto para o seu exame?
     sub:
       de: Wir nehmen uns Zeit für ein Gespräch, bevor wir messen.
+      it: Ci prendiamo il tempo per un colloquio prima di iniziare le misurazioni.
+      pt-pt: Reservamos tempo para uma conversa antes de iniciar as medições.
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

@@ -21,33 +21,17 @@ export const pages = [
     url: `${BASE}/`,
     viewports: [1440, 768, 430],
     expected: {
-      // S54 (2026-04-29): .pxz-loc-card--main + .pxz-loc-card--sec ersetzt
-      // durch .pxz-loc-card--combined (Padding +20%, S53). .pxz-final-card
-      // entfernt (S54).
+      // S55+ (2026-04-30): .pxz-loc-card--combined wurde im Slider-Halbierungs-Sweep
+      // nicht mehr auf der Home gerendert — Standorte-Container ersetzt durch
+      // pxz-home-Slider-Strip + verlinktem Standorte-Block. Showpiece reduziert
+      // auf .pxz-mfa-card (MFA-Karriere-Block, weiterhin auf Home).
       1440: {
-        ".pxz-loc-card--combined": {
-          paddingTop: "134px",
-          paddingLeft: "96px",
-          paddingRight: "96px",
-          paddingBottom: "115px",
-          position: "relative",
-        },
-        ".pxz-loc-card--combined .pxz-loc-badge": {
-          position: "static",
-        },
         ".pxz-mfa-card": {
           paddingTop: "112px",
           paddingLeft: "96px",
         },
       },
       768: {
-        ".pxz-loc-card--combined": {
-          paddingTop: "115px",
-          paddingLeft: "72px",
-        },
-        ".pxz-loc-card--combined .pxz-loc-badge": {
-          position: "static",
-        },
         ".pxz-mfa-card": {
           paddingTop: "96px",
           paddingLeft: "72px",
@@ -57,13 +41,6 @@ export const pages = [
         },
       },
       430: {
-        ".pxz-loc-card--combined": {
-          paddingTop: "87px",
-          paddingLeft: "40px",
-        },
-        ".pxz-loc-card--combined .pxz-loc-badge": {
-          position: "static",
-        },
         ".pxz-mfa-card": {
           paddingTop: "72px",
           paddingLeft: "40px",
@@ -120,11 +97,14 @@ export const pages = [
     viewports: [1440, 768, 430],
     expected: {},
     exists: [
-      ".pxz-standard",
-      ".pxz-standard-hero",
-      "h1.pxz-standard-title",
-      ".pxz-standard-content",
-      ".pxz-standard-cta",
+      // S58+ (2026-05-01): Praxis-Seite umstrukturiert auf pxz-pg-* (Page-Grundtyp,
+      // Praxisgemeinschaft-Refresh + Co-Brand). Alte .pxz-standard-*-Selektoren
+      // ersetzt durch dichteres Story-/Stats-/Coop-/Adv-Layout.
+      ".pxz-pg-hero",
+      ".pxz-pg-hero-inner",
+      ".pxz-pg-stats",
+      ".pxz-pg-coop",
+      ".pxz-pg-adv",
       'script[type="application/ld+json"]',
       'link[rel="canonical"]',
       'meta[name="description"]',

@@ -5,22 +5,32 @@ slugs:
 title:
   de: Vorsorge-Check
   en: Status Prevent
+  it: Status Prevent
+  pt-pt: Status Prevent
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Labor · Status
+      it: Laboratorio · Status
+      pt-pt: Laboratório · Status
     heading:
       de: Vorsorge-Check
+      it: Status Prevent
+      pt-pt: Status Prevent
     lead:
       de: 'Labor Vorsorge-Check — strukturierter Laborüberblick zur frühzeitigen Orientierung.'
+      it: 'Status Prevent — panoramica laboratoristica strutturata per un orientamento precoce.'
+      pt-pt: 'Status Prevent — panorama laboratorial estruturado para uma orientação precoce.'
     image: shopify-mirror://detail/labor-status-prevent-hero.png
   - type: body
     body_html:
@@ -41,11 +51,49 @@ sections:
         </ul>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Con il profilo di laboratorio <strong>Status Prevent</strong> riceve uno sguardo strutturato sui principali parametri metabolici e d'organo. Una panoramica utile per rendere precocemente visibili alterazioni — prima che si manifestino sintomi clinici.</p>
+
+        <h2>Analizziamo i seguenti parametri:</h2>
+
+        <ul>
+        <li>Profilo lipidico, glicemia a lungo termine e acido urico</li>
+        <li>Parametri renali con sodio e potassio</li>
+        <li>Parametri epatici con lipasi e LDH</li>
+        <li>Proteine totali con elettroforesi e immunoglobuline</li>
+        <li>Emocromo con formula differenziale dei globuli bianchi</li>
+        <li>Marcatori di scompenso cardiaco ed enzimi muscolari</li>
+        <li>TSH come parametro tiroideo</li>
+        <li>PCR come marcatore di flogosi</li>
+        </ul>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>Com o perfil laboratorial <strong>Status Prevent</strong> recebe uma visão estruturada dos principais parâmetros metabólicos e de órgãos. Uma panorâmica útil para tornar precocemente visíveis alterações — antes de surgirem sintomas clínicos.</p>
+
+        <h2>Analisamos os seguintes parâmetros:</h2>
+
+        <ul>
+        <li>Perfil lipídico, glicémia a longo prazo e ácido úrico</li>
+        <li>Parâmetros renais com sódio e potássio</li>
+        <li>Parâmetros hepáticos com lipase e LDH</li>
+        <li>Proteínas totais com electroforese e imunoglobulinas</li>
+        <li>Hemograma com fórmula leucocitária diferencial</li>
+        <li>Marcadores de insuficiência cardíaca e enzimas musculares</li>
+        <li>TSH como parâmetro tiroideu</li>
+        <li>PCR como marcador inflamatório</li>
+        </ul>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Vorsorge-Check?
+      it: Vuole prenotare uno Status Prevent?
+      pt-pt: Quer marcar um Status Prevent?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

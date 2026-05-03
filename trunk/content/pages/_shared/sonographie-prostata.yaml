@@ -5,22 +5,32 @@ slugs:
 title:
   de: Prostata und Harnblase
   en: Prostate and Bladder Ultrasound
+  it: Prostata e vescica
+  pt-pt: Próstata e bexiga
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Sonographie
+      it: Esami · Ecografia
+      pt-pt: Exames · Ecografia
     heading:
       de: Prostata und Harnblase
+      it: Prostata e vescica
+      pt-pt: Próstata e bexiga
     lead:
       de: Ultraschall von Prostata und Harnblase — Größe, Restharn und Raumforderungen beurteilen.
+      it: Ecografia di prostata e vescica — valutare volume, residuo post-minzionale e lesioni occupanti spazio.
+      pt-pt: Ecografia da próstata e da bexiga — avaliar volume, resíduo pós-miccional e lesões expansivas.
     image: shopify-mirror://detail/sonographie-prostata-hero.jpg
   - type: body
     body_html:
@@ -34,11 +44,35 @@ sections:
         <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Prostata und der Harnblase durch. Es ist günstig, mit gefüllter Blase zur Untersuchung zu kommen.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Negli uomini giovani la prostata ha all'incirca le dimensioni di una noce e pesa circa 20 grammi. Con l'avanzare dell'età la prostata può ingrandirsi, causando disturbi come pollachiuria, getto urinario debole o svuotamento vescicale incompleto. Il carcinoma prostatico è uno dei tumori più frequenti nell'uomo.</p>
+
+        <p>Durante l'esame misuriamo il volume della sua prostata, determiniamo il residuo post-minzionale e valutiamo vescica e prostata alla ricerca di alterazioni.</p>
+
+        <h2>Come si svolge l'esame?</h2>
+
+        <p>Mentre lei riposa rilassato sul lettino, eseguiamo l'ecografia di prostata e vescica. È preferibile presentarsi con la vescica piena.</p>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>Em homens jovens a próstata tem aproximadamente o tamanho de uma noz e pesa cerca de 20 gramas. Com o avançar da idade a próstata pode aumentar, originando queixas como urgência miccional frequente, jacto urinário fraco ou esvaziamento vesical incompleto. O cancro da próstata é um dos cancros mais frequentes no homem.</p>
+
+        <p>Durante o exame medimos o volume da sua próstata, determinamos o resíduo pós-miccional e avaliamos a bexiga e a próstata em busca de alterações.</p>
+
+        <h2>Como é realizado o exame?</h2>
+
+        <p>Enquanto descansa relaxado na maca, realizamos a ecografia da próstata e da bexiga. É preferível comparecer com a bexiga cheia.</p>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Sonographie der Prostata und Harnblase?
+      it: Vuole prenotare un'ecografia di prostata e vescica?
+      pt-pt: Quer marcar uma ecografia da próstata e bexiga?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

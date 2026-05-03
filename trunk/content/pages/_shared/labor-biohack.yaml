@@ -5,22 +5,32 @@ slugs:
 title:
   de: Genetik-Beratung
   en: BioHack — Genetic Consultation
+  it: Consulenza genetica
+  pt-pt: Aconselhamento genético
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Labor · Genetik
+      it: Laboratorio · Genetica
+      pt-pt: Laboratório · Genética
     heading:
       de: Genetik-Beratung
+      it: Consulenza genetica
+      pt-pt: Aconselhamento genético
     lead:
       de: Genetik-Beratung mit individueller Risiko-Einschätzung.
+      it: Consulenza genetica con valutazione individuale del rischio.
+      pt-pt: Aconselhamento genético com avaliação individual do risco.
     image: shopify-mirror://detail/labor-biohack-hero.png
   - type: body
     body_html:
@@ -28,11 +38,23 @@ sections:
         <p>Bei der genetischen Beratung sprechen wir mit Ihnen über die Möglichkeiten und Grenzen genetischer Tests, ordnen vorhandene Befunde ein und unterstützen Sie bei der Entscheidung, ob weiterführende Untersuchungen sinnvoll sind.</p>
 
         <p>Zum Abschluss der Beratung erhalten Sie eine schriftliche Zusammenfassung.</p>
+      it: |-
+        <p>Nella consulenza genetica parliamo con lei delle possibilità e dei limiti dei test genetici, contestualizziamo i referti esistenti e la sosteniamo nella decisione se siano utili approfondimenti.</p>
+
+        <p>Al termine del colloquio riceve un riassunto scritto.</p>
+      pt-pt: |-
+        <p>No aconselhamento genético conversamos consigo sobre as possibilidades e os limites dos testes genéticos, contextualizamos os resultados existentes e apoiamo-lo na decisão sobre se vale a pena aprofundar a investigação.</p>
+
+        <p>No final da conversa recebe um resumo escrito.</p>
   - type: cta-banner
     heading:
       de: Termin für Genetik-Beratung?
+      it: Vuole prenotare una consulenza genetica?
+      pt-pt: Quer marcar um aconselhamento genético?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: product

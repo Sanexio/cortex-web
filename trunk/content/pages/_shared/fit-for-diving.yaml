@@ -5,22 +5,32 @@ slugs:
 title:
   de: Tauchtauglichkeit
   en: Fit for Diving
+  it: Idoneità subacquea
+  pt-pt: Aptidão para mergulho
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Tauchtauglichkeit
+      it: Esami · Idoneità subacquea
+      pt-pt: Exames · Aptidão para mergulho
     heading:
       de: Tauchtauglichkeit
+      it: Idoneità subacquea
+      pt-pt: Aptidão para mergulho
     lead:
       de: Tauchtauglichkeitsuntersuchung — Bescheinigung für Open Water und Advanced Open Water.
+      it: Visita di idoneità subacquea — certificazione per Open Water e Advanced Open Water.
+      pt-pt: Avaliação de aptidão para mergulho — certificação para Open Water e Advanced Open Water.
     image: shopify-mirror://detail/fit-for-diving-hero.jpg
   - type: body
     body_html:
@@ -41,11 +51,48 @@ sections:
 
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: >-
+        <p>La visita di idoneità subacquea documenta la sua idoneità all'immersione sportiva.
+        Eseguiamo l'esame a sua scelta come Open Water Diver (profondità fino a 18 metri) oppure
+        come Advanced Open Water Diver (profondità fino a 30 metri, oltre a tutti i subacquei oltre
+        i 40 anni). Visite per Deep-Diver o immersione tecnica sono disponibili su richiesta.</p>
+
+
+        <h2>Come si svolge l'esame?</h2>
+
+
+        <p>Per gli Open Water Diver eseguiamo un esame clinico completo, comprensivo di otoscopia
+        (esame dell'orecchio) e di una spirometria. Per gli Advanced Open Water Diver l'esame è
+        integrato da un ECG da sforzo.</p>
+
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: >-
+        <p>A avaliação de aptidão para mergulho documenta a sua aptidão para o mergulho desportivo.
+        Realizamos o exame, à sua escolha, como Open Water Diver (profundidade até 18 metros) ou
+        como Advanced Open Water Diver (profundidade até 30 metros, bem como todos os mergulhadores
+        com mais de 40 anos). Exames para Deep-Diver ou mergulho técnico estão disponíveis a
+        pedido.</p>
+
+
+        <h2>Como é realizado o exame?</h2>
+
+
+        <p>Para Open Water Diver realizamos um exame clínico completo, incluindo otoscopia (exame
+        do ouvido) e uma espirometria. Para Advanced Open Water Diver acrescenta-se um ECG de
+        esforço.</p>
+
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Tauchtauglichkeit?
+      it: Vuole prenotare la visita di idoneità subacquea?
+      pt-pt: Quer marcar a avaliação de aptidão para mergulho?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: product

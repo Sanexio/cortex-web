@@ -5,22 +5,32 @@ slugs:
 title:
   de: Leber
   en: System Liver
+  it: Fegato
+  pt-pt: Fígado
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Labor · System
+      it: Laboratorio · Sistema
+      pt-pt: Laboratório · Sistema
     heading:
       de: Leber
+      it: Fegato
+      pt-pt: Fígado
     lead:
       de: 'Leber — Laborprofil zur Beurteilung der Leberfunktion.'
+      it: 'Fegato — profilo di laboratorio per la valutazione della funzione epatica.'
+      pt-pt: 'Fígado — perfil laboratorial para avaliação da função hepática.'
     image: shopify-mirror://detail/labor-system-liver-hero.jpg
   - type: body
     body_html:
@@ -40,11 +50,47 @@ sections:
         </ul>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Con il profilo di laboratorio <strong>Fegato</strong> riceve una valutazione strutturata della funzione epatica. Compiti centrali del fegato sono la detossificazione — ossia la degradazione e la trasformazione di sostanze endogene ed esterne come farmaci e alcol —, il deposito di nutrienti e la regolazione del metabolismo di grassi, zuccheri e proteine. Il fegato filtra l'intero volume ematico fino a 30 volte al giorno ed è strettamente coinvolto nella risposta immunitaria.</p>
+
+        <p>Un'alimentazione sfavorevole, alcuni farmaci o un consumo eccessivo di alcol possono portare ad alterazioni croniche del fegato — fino alla cirrosi epatica o a tumori del fegato.</p>
+
+        <h2>Analizziamo i seguenti parametri:</h2>
+
+        <ul>
+        <li>GOT, GPT, gamma-GT, bilirubina, colinesterasi come marcatori orientativi della funzione epatica</li>
+        <li>Creatinina e urea (funzione renale)</li>
+        <li>Sodio e potassio come marcatori indiretti</li>
+        <li>Proteine totali</li>
+        <li>Elettroforesi proteica</li>
+        </ul>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>Com o perfil laboratorial <strong>Fígado</strong> recebe uma avaliação estruturada da função hepática. Tarefas centrais do fígado são a desintoxicação — ou seja, a degradação e a transformação de substâncias endógenas e externas, como medicamentos e álcool —, o armazenamento de nutrientes e a regulação do metabolismo de gorduras, açúcares e proteínas. O fígado filtra o volume total de sangue até 30 vezes por dia e está estreitamente envolvido na defesa imunitária.</p>
+
+        <p>Uma alimentação desfavorável, certos medicamentos ou consumo excessivo de álcool podem levar a alterações crónicas do fígado — até cirrose hepática ou tumores hepáticos.</p>
+
+        <h2>Analisamos os seguintes parâmetros:</h2>
+
+        <ul>
+        <li>GOT, GPT, gama-GT, bilirrubina, colinesterase como marcadores orientativos da função hepática</li>
+        <li>Creatinina e ureia (função renal)</li>
+        <li>Sódio e potássio como marcadores indirectos</li>
+        <li>Proteínas totais</li>
+        <li>Electroforese proteica</li>
+        </ul>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Leber?
+      it: Vuole prenotare un esame della funzione epatica?
+      pt-pt: Quer marcar uma análise da função hepática?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

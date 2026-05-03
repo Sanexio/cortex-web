@@ -5,22 +5,32 @@ slugs:
 title:
   de: Nieren
   en: System Renal
+  it: Reni
+  pt-pt: Rins
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Labor · System
+      it: Laboratorio · Sistema
+      pt-pt: Laboratório · Sistema
     heading:
       de: Nieren
+      it: Reni
+      pt-pt: Rins
     lead:
       de: 'Nieren — Laborprofil zur Beurteilung der Nierenfunktion.'
+      it: 'Reni — profilo di laboratorio per la valutazione della funzione renale.'
+      pt-pt: 'Rins — perfil laboratorial para avaliação da função renal.'
     image: shopify-mirror://detail/labor-system-renal-hero.jpg
   - type: body
     body_html:
@@ -39,11 +49,45 @@ sections:
         </ul>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Con il profilo di laboratorio <strong>Reni</strong> riceve una valutazione strutturata della funzione renale. Un rene è composto da circa un milione di unità filtranti che ripuliscono continuamente il sangue dalle sostanze di scarto. I due reni insieme filtrano ogni giorno circa 360 litri di sangue — l'intero volume ematico del corpo attraversa i reni circa 30 volte al giorno. Da qui vengono eliminati fino a due litri di urina al giorno.</p>
+
+        <p>La velocità di filtrazione di un adulto sano si attesta tra circa 90 e 120 millilitri al minuto. In laboratorio la funzione renale può essere stimata indirettamente — eventuali riduzioni possono così essere rese visibili precocemente.</p>
+
+        <h2>Analizziamo i seguenti parametri:</h2>
+
+        <ul>
+        <li>Creatinina e urea (funzione renale)</li>
+        <li>Sodio e potassio come marcatori indiretti</li>
+        <li>Proteine totali</li>
+        <li>Elettroforesi proteica</li>
+        </ul>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>Com o perfil laboratorial <strong>Rins</strong> recebe uma avaliação estruturada da função renal. Um rim é composto por cerca de um milhão de unidades de filtragem que limpam continuamente o sangue dos resíduos. Os dois rins, em conjunto, filtram diariamente cerca de 360 litros de sangue — o volume total de sangue do corpo atravessa os rins cerca de 30 vezes por dia. Daí são eliminados até dois litros de urina por dia.</p>
+
+        <p>A velocidade de filtração num adulto saudável situa-se entre cerca de 90 e 120 mililitros por minuto. Em laboratório a função renal pode ser avaliada indirectamente — reduções podem assim tornar-se precocemente visíveis.</p>
+
+        <h2>Analisamos os seguintes parâmetros:</h2>
+
+        <ul>
+        <li>Creatinina e ureia (função renal)</li>
+        <li>Sódio e potássio como marcadores indirectos</li>
+        <li>Proteínas totais</li>
+        <li>Electroforese proteica</li>
+        </ul>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Nieren?
+      it: Vuole prenotare un esame della funzione renale?
+      pt-pt: Quer marcar uma análise da função renal?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page

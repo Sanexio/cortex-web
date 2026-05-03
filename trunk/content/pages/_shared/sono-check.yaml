@@ -5,22 +5,32 @@ slugs:
 title:
   de: Sono-Check
   en: Sono Check
+  it: Sono-Check
+  pt-pt: Sono-Check
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Vorsorge
+      it: Esami · Prevenzione
+      pt-pt: Exames · Prevenção
     heading:
       de: Sono-Check
+      it: Sono-Check
+      pt-pt: Sono-Check
     lead:
       de: Sono-Check — alle wichtigen Organe in einer Ultraschalluntersuchung.
+      it: Sono-Check — tutti gli organi principali in un'unica ecografia.
+      pt-pt: Sono-Check — todos os órgãos principais numa única ecografia.
     image: shopify-mirror://detail/sono-check-hero.jpg
   - type: body
     body_html:
@@ -69,11 +79,103 @@ sections:
 
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: >-
+        <p>Nel Sono-Check valutiamo in un unico esame tutti gli organi interni principali.
+        Verifichiamo, tra l'altro:</p>
+
+
+        <ul>
+
+        <li><strong>Tiroide</strong> — noduli e variazioni di volume</li>
+
+        <li><strong>Vasi del collo</strong> — segni di calcificazione</li>
+
+        <li><strong>Cuore</strong> — funzione di pompa e alterazioni strutturali</li>
+
+        <li><strong>Milza</strong> — volume e lesioni occupanti spazio</li>
+
+        <li><strong>Reni</strong> — idronefrosi, cisti o lesioni occupanti spazio</li>
+
+        <li><strong>Fegato</strong> — alterazioni grasse e strutturali</li>
+
+        <li><strong>Vie biliari</strong> — calcoli, ristagno</li>
+
+        <li><strong>Pancreas</strong> — cisti o lesioni occupanti spazio</li>
+
+        <li><strong>Intestino</strong> — segni di alterazioni infiammatorie</li>
+
+        <li><strong>Vescica</strong> — segni di polipi</li>
+
+        <li><strong>Prostata</strong> — volume e lesioni occupanti spazio</li>
+
+        <li><strong>Utero</strong> — miomi e altre alterazioni</li>
+
+        <li><strong>Vasi pelvici e degli arti inferiori</strong> — segni di calcificazione</li>
+
+        </ul>
+
+
+        <h2>Come si svolge l'esame?</h2>
+
+
+        <p>Mentre lei riposa rilassato sul lettino, eseguiamo l'ecografia degli organi. È preferibile
+        presentarsi a digiuno. L'esame dura circa 45 minuti.</p>
+
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: >-
+        <p>No Sono-Check avaliamos num único exame todos os órgãos internos principais. Verificamos,
+        entre outros:</p>
+
+
+        <ul>
+
+        <li><strong>Tiroide</strong> — nódulos e alterações de volume</li>
+
+        <li><strong>Vasos do pescoço</strong> — sinais de calcificação</li>
+
+        <li><strong>Coração</strong> — função de bomba e alterações estruturais</li>
+
+        <li><strong>Baço</strong> — volume e lesões expansivas</li>
+
+        <li><strong>Rins</strong> — hidronefrose, quistos ou lesões expansivas</li>
+
+        <li><strong>Fígado</strong> — alterações gordas e estruturais</li>
+
+        <li><strong>Vias biliares</strong> — cálculos, retenção</li>
+
+        <li><strong>Pâncreas</strong> — quistos ou lesões expansivas</li>
+
+        <li><strong>Intestino</strong> — sinais de alterações inflamatórias</li>
+
+        <li><strong>Bexiga</strong> — sinais de pólipos</li>
+
+        <li><strong>Próstata</strong> — volume e lesões expansivas</li>
+
+        <li><strong>Útero</strong> — miomas e outras alterações</li>
+
+        <li><strong>Vasos pélvicos e dos membros inferiores</strong> — sinais de calcificação</li>
+
+        </ul>
+
+
+        <h2>Como é realizado o exame?</h2>
+
+
+        <p>Enquanto descansa relaxado na maca, realizamos a ecografia dos órgãos. É preferível
+        comparecer em jejum. O exame dura cerca de 45 minutos.</p>
+
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Sono-Check?
+      it: Vuole prenotare un Sono-Check?
+      pt-pt: Quer marcar um Sono-Check?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: product

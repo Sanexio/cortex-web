@@ -69,10 +69,10 @@ const PROBE_SELECTORS = [
 ];
 
 // Alignment probe (PXZ-E-008): Showpiece-Elemente MUST be centered.
-// S54 (2026-04-29): .pxz-hero-ctas (S46) + .pxz-final-* (S54) entfernt.
+// S55+ (2026-04-30): .pxz-loc-card--combined nicht mehr auf Home (Slider-Halbierung).
 const ALIGNMENT_CHECKS = [
   '.pxz-hero-sub',
-  '.pxz-loc-card--combined',
+  '.pxz-mfa-card',
 ];
 
 const browser = await puppeteer.launch({

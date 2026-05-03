@@ -5,22 +5,32 @@ slugs:
 title:
   de: Kardio-Check
   en: Cardio Check
+  it: Kardio-Check
+  pt-pt: Kardio-Check
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Vorsorge
+      it: Esami · Prevenzione
+      pt-pt: Exames · Prevenção
     heading:
       de: Kardio-Check
+      it: Kardio-Check
+      pt-pt: Kardio-Check
     lead:
       de: Kardio-Check — strukturierte Beurteilung von Herz und Lunge in einer Untersuchung.
+      it: Kardio-Check — valutazione strutturata di cuore e polmoni in un unico esame.
+      pt-pt: Kardio-Check — avaliação estruturada de coração e pulmões num único exame.
     image: shopify-mirror://detail/kardio-check-hero.jpg
   - type: body
     body_html:
@@ -44,11 +54,55 @@ sections:
 
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: >-
+        <p>Il cuore batte in media circa 70 volte al minuto — oltre 100.000 volte al giorno e più
+        di 36 milioni di volte all'anno. Pompa circa cinque litri di sangue al minuto, vale a dire
+        oltre 7.000 litri al giorno. Sotto sforzo un cuore sano può pompare fino a 30 litri al
+        minuto.</p>
+
+
+        <p>Nel Kardio-Check valutiamo cuore e polmoni in un esame strutturato — sia a riposo sia
+        sotto sforzo controllato.</p>
+
+
+        <h2>Come si svolge l'esame?</h2>
+
+
+        <p>Iniziamo con un esame clinico — auscultazione di cuore e polmoni. Segue un'ecografia
+        cardiaca (ecocardiografia). Poi un ECG da sforzo (ergometria) e una spirometria (funzione
+        respiratoria).</p>
+
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: >-
+        <p>O coração bate em média cerca de 70 vezes por minuto — mais de 100.000 vezes por dia e
+        mais de 36 milhões de vezes por ano. Bombeia cerca de cinco litros de sangue por minuto,
+        ou seja, mais de 7.000 litros por dia. Sob esforço, um coração saudável pode bombear até
+        30 litros por minuto.</p>
+
+
+        <p>No Kardio-Check avaliamos coração e pulmões num exame estruturado — tanto em repouso
+        como sob esforço controlado.</p>
+
+
+        <h2>Como é realizado o exame?</h2>
+
+
+        <p>Começamos com um exame clínico — auscultação de coração e pulmões. Em seguida realizamos
+        uma ecografia cardíaca (ecocardiografia). Seguem-se um ECG de esforço (ergometria) e uma
+        espirometria (função pulmonar).</p>
+
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Kardio-Check?
+      it: Vuole prenotare un Kardio-Check?
+      pt-pt: Quer marcar um Kardio-Check?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: product

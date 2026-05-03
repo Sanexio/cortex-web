@@ -5,22 +5,32 @@ slugs:
 title:
   de: Augen-Check
   en: Eye Check
+  it: Eye Check
+  pt-pt: Eye Check
 views:
   praxis:
     show_prices: false
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
 wp:
   page_template: template-detail-page.php
 sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Reaktion
+      it: Esami · Reazione
+      pt-pt: Exames · Reacção
     heading:
       de: Augen-Check
+      it: Eye-Check
+      pt-pt: Eye-Check
     lead:
       de: Eye-Check — Beurteilung von Sehkraft und vorderem Augenabschnitt.
+      it: Eye-Check — valutazione di acuità visiva e segmento anteriore dell'occhio.
+      pt-pt: Eye-Check — avaliação da acuidade visual e do segmento anterior do olho.
     image: shopify-mirror://detail/eye-check-hero.jpg
   - type: body
     body_html:
@@ -28,11 +38,23 @@ sections:
         <p>Beim Eye-Check beurteilen wir Sehkraft, vorderen Augenabschnitt und Augeninnendruck. Auffälligkeiten besprechen wir gemeinsam und überweisen bei Bedarf gezielt zur Augenärztin oder zum Augenarzt.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      it: |-
+        <p>Nell'Eye-Check valutiamo l'acuità visiva, il segmento anteriore dell'occhio e la pressione intraoculare. Le eventuali anomalie vengono discusse insieme; se necessario indirizziamo in modo mirato a uno specialista oculista.</p>
+
+        <p>Al termine dell'esame riceve il suo referto personale.</p>
+      pt-pt: |-
+        <p>No Eye-Check avaliamos a acuidade visual, o segmento anterior do olho e a pressão intra-ocular. Discutimos consigo eventuais alterações e, se necessário, encaminhamos de forma dirigida para a oftalmologista ou o oftalmologista.</p>
+
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
       de: Termin für Augen-Check?
+      it: Vuole prenotare un Eye-Check?
+      pt-pt: Quer marcar um Eye-Check?
     cta_label:
       de: Termin vereinbaren
+      it: Fissa un appuntamento
+      pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
 sanexio_source:
   type: page
