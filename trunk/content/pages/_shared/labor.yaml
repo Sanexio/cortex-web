@@ -16,6 +16,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
   juvantis:
@@ -28,10 +31,16 @@ sections:
   - type: hero
     eyebrow:
       de: Labordiagnostik
+      en: Laboratory diagnostics
+      fr: Diagnostic de laboratoire
+      es: Diagnóstico de laboratorio
       it: Diagnostica di laboratorio
       pt-pt: Diagnóstico laboratorial
     heading:
       de: Ihr Blut weiß mehr, als Sie denken.
+      en: Your blood knows more than you think.
+      fr: Votre sang en sait plus que vous ne le pensez.
+      es: Su sangre sabe más de lo que cree.
       it: Il suo sangue sa più di quanto immagini.
       pt-pt: O seu sangue sabe mais do que pensa.
     lead:
@@ -40,6 +49,19 @@ sections:
         Gesundheitssituation. Wir bieten strukturierte Bluttest-Profile, abgestimmt auf
         unterschiedliche Fragestellungen — von der orientierenden Standortbestimmung bis zur tiefen
         Risiko-Analyse.
+      en: >-
+        A blood test at our practice gives you a well-founded view of your current health
+        situation. We offer structured blood test profiles tailored to different questions — from
+        an orienting baseline to a deep risk analysis.
+      fr: >-
+        Une analyse de sang dans notre cabinet vous donne un aperçu fondé de votre situation de
+        santé actuelle. Nous proposons des profils sanguins structurés adaptés à différentes
+        questions — du bilan d’orientation à l’analyse de risque approfondie.
+      es: >-
+        Un análisis de sangre en nuestra consulta le ofrece una visión fundamentada de su
+        situación de salud actual. Disponemos de perfiles estructurados de análisis, ajustados a
+        distintas cuestiones — desde la valoración orientadora hasta el análisis de riesgo en
+        profundidad.
       it: >-
         Un esame del sangue nella nostra pratica medica le offre una visione fondata della sua
         situazione di salute attuale. Proponiamo profili strutturati di analisi ematochimiche,
@@ -49,19 +71,289 @@ sections:
         Uma análise ao sangue no nosso consultório oferece-lhe uma visão fundamentada da sua
         situação de saúde actual. Disponibilizamos perfis estruturados de análises, ajustados
         a diferentes questões — da avaliação orientadora à análise de risco aprofundada.
+  - type: body
+    heading:
+      de: ''
+      en: ''
+      fr: ''
+      es: ''
+      it: ''
+      pt-pt: ''
+    body_html:
+      de: |-
+        <p>Ein großer Teil unserer internistischen Diagnostik stützt sich auf Laborwerte aus Blut, Urin oder Stuhl. Wir nehmen die Proben in der Praxis ab und senden sie je nach Fragestellung an die Laborgemeinschaft oder unser externes Fachlabor (Synlab). Ergebnisse besprechen wir in der Folgekonsultation.</p>
+
+        <h2>Welche Werte wir bestimmen</h2>
+
+        <ul>
+        <li>Kleines und großes Blutbild (Analyse der Blutzellen, reife/unreife Zellen)</li>
+        <li>Nierenfunktionswerte (Kreatinin, Harnstoff, eGFR)</li>
+        <li>Leberwerte und Gallenwerte</li>
+        <li>Bauchspeicheldrüse (Lipase, Amylase)</li>
+        <li>Schilddrüsenwerte (TSH, fT3, fT4, Antikörper bei Bedarf)</li>
+        <li>Herzenzyme (hochsensitives Troponin bei Bedarf)</li>
+        <li>Entzündungswerte (CRP, BSG, Leukozyten)</li>
+        <li>Blutgerinnung (Quick, INR, PTT)</li>
+        <li>Fettstoffwechsel — Gesamtcholesterin, HDL, LDL, Triglyzeride</li>
+        <li>Elektrolyte (Kalium, Natrium, Kalzium, Magnesium)</li>
+        <li>HbA1c (Langzeitzucker) und Nüchternglukose</li>
+        <li>Tumormarker als Verlaufsparameter</li>
+        <li>Borrelien nach Zeckenbiss, Chlamydien, Darmparasiten</li>
+        <li>Milchzucker- und Getreideunverträglichkeit</li>
+        <li>Rheumafaktoren und Autoimmun-Antikörper</li>
+        <li>Epstein-Barr-Virus (z. B. bei Pfeifferschem Drüsenfieber)</li>
+        <li>Antikörper zur Kontrolle des Impfstatus</li>
+        </ul>
+
+        <h2>Wie die Blutentnahme abläuft</h2>
+
+        <p>Die Blutentnahme ist bei der Diagnostik vieler Erkrankungen ein unverzichtbarer Baustein. Bei Abnahme, Lagerung und Transport ins Labor können jedoch Fehler auftreten, die das Ergebnis so stark beeinflussen, dass eine Interpretation nur eingeschränkt möglich ist. Wir achten auf standardisierte Abläufe: korrekte Abnahmereihenfolge der Röhrchen, sofortiger Transport bei temperatursensitiven Parametern, nüchtern-abgenommene Proben für Stoffwechsel-Werte.</p>
+
+        <p>Wenn Sie für einen Termin nüchtern sein sollen, geben wir Ihnen das bei der Terminvergabe ausdrücklich mit. Nüchtern heißt: mindestens 8 Stunden keine Nahrung, keine gezuckerten Getränke — Wasser und ungesüßter Tee sind in Ordnung.</p>
+
+        <h2>24-Stunden-Sammelurin und weitere Probenarten</h2>
+
+        <p>Für bestimmte Fragestellungen ist Ihre Mithilfe nötig. Beim 24-Stunden-Sammelurin sammeln Sie über einen vollständigen Tag sämtlichen Urin in einem Gefäß, das wir Ihnen in der Praxis ausgeben. Ähnliches gilt für Stuhlproben (z. B. bei Verdacht auf Darmparasiten). Wir erklären den Ablauf vor Ausgabe des Probengefäßes schriftlich und persönlich.</p>
+
+        <h2>Befundabruf und Besprechung</h2>
+
+        <p>Die meisten Werte liegen innerhalb von ein bis zwei Werktagen vor. Wir besprechen Ergebnisse in der Folgekonsultation oder — bei unauffälligen Routinebefunden und Ihrem Einverständnis — telefonisch. Auffällige Werte klären wir immer persönlich.</p>
+
+        <h2>Selbstzahler-Alternative</h2>
+
+        <p>Unser Partner Sanexio bietet mit dem <a href="/basic-check/">Basic-Check</a> einen kompakten Selbstzahler-Laborcheck mit 15 Parametern — auch direkt online buchbar, Abnahme bei uns in der Praxis.</p>
+      en: |-
+        <p>A large part of our internal-medicine diagnostics relies on laboratory values from blood, urine or stool. We take the samples at the practice and send them — depending on the question — to the laboratory cooperative or to our external specialist laboratory (Synlab). We discuss the results at the follow-up appointment.</p>
+
+        <h2>Which values we measure</h2>
+
+        <ul>
+        <li>Small and full blood count (analysis of blood cells, mature/immature cells)</li>
+        <li>Kidney function values (creatinine, urea, eGFR)</li>
+        <li>Liver and biliary values</li>
+        <li>Pancreas (lipase, amylase)</li>
+        <li>Thyroid values (TSH, fT3, fT4, antibodies when needed)</li>
+        <li>Cardiac enzymes (high-sensitivity troponin when needed)</li>
+        <li>Inflammation markers (CRP, ESR, leukocytes)</li>
+        <li>Coagulation (Quick, INR, PTT)</li>
+        <li>Lipid metabolism — total cholesterol, HDL, LDL, triglycerides</li>
+        <li>Electrolytes (potassium, sodium, calcium, magnesium)</li>
+        <li>HbA1c (long-term glucose) and fasting glucose</li>
+        <li>Tumour markers as follow-up parameters</li>
+        <li>Borrelia after a tick bite, chlamydia, intestinal parasites</li>
+        <li>Lactose and gluten intolerance</li>
+        <li>Rheumatic factors and autoimmune antibodies</li>
+        <li>Epstein-Barr virus (e.g. in glandular fever)</li>
+        <li>Antibodies to check vaccination status</li>
+        </ul>
+
+        <h2>How the blood draw works</h2>
+
+        <p>Blood sampling is an indispensable building block for the diagnostics of many conditions. However, errors can occur during collection, storage and transport to the laboratory which influence the result so strongly that interpretation is only partly possible. We follow standardised processes: correct order of tubes during collection, immediate transport for temperature-sensitive parameters, samples taken fasting for metabolic values.</p>
+
+        <p>If you need to be fasting for an appointment, we tell you so explicitly when scheduling. Fasting means: at least 8 hours without food, no sugary drinks — water and unsweetened tea are fine.</p>
+
+        <h2>24-hour urine collection and other sample types</h2>
+
+        <p>For certain questions your cooperation is required. For the 24-hour urine collection you collect all urine over a full day in a container we hand out at the practice. The same applies to stool samples (e.g. if intestinal parasites are suspected). We explain the procedure in writing and in person before handing out the container.</p>
+
+        <h2>Retrieving and discussing the results</h2>
+
+        <p>Most values are available within one to two working days. We discuss results at the follow-up appointment or — for unremarkable routine findings, and only with your consent — by phone. Notable values are always clarified in person.</p>
+
+        <h2>Self-pay alternative</h2>
+
+        <p>Our partner Sanexio offers the <a href="/basic-check/">Basic Check</a>, a compact self-pay lab check with 15 parameters — also bookable directly online, with sample collection at our practice.</p>
+      fr: |-
+        <p>Une grande partie de notre diagnostic en médecine interne repose sur des valeurs de laboratoire issues du sang, de l’urine ou des selles. Nous prélevons les échantillons au cabinet et les envoyons, selon la question posée, à la coopérative de laboratoires ou à notre laboratoire spécialisé externe (Synlab). Nous discutons les résultats lors de la consultation de suivi.</p>
+
+        <h2>Quels paramètres nous mesurons</h2>
+
+        <ul>
+        <li>Numération formule sanguine simple et complète (analyse des cellules sanguines, cellules matures/immatures)</li>
+        <li>Fonction rénale (créatinine, urée, DFGe)</li>
+        <li>Valeurs hépatiques et biliaires</li>
+        <li>Pancréas (lipase, amylase)</li>
+        <li>Thyroïde (TSH, fT3, fT4, anticorps si besoin)</li>
+        <li>Enzymes cardiaques (troponine ultra-sensible si besoin)</li>
+        <li>Marqueurs d’inflammation (CRP, VS, leucocytes)</li>
+        <li>Coagulation (Quick, INR, TCA)</li>
+        <li>Métabolisme lipidique — cholestérol total, HDL, LDL, triglycérides</li>
+        <li>Électrolytes (potassium, sodium, calcium, magnésium)</li>
+        <li>HbA1c (glycémie à long terme) et glycémie à jeun</li>
+        <li>Marqueurs tumoraux comme paramètres de suivi</li>
+        <li>Borrelia après morsure de tique, chlamydia, parasites intestinaux</li>
+        <li>Intolérance au lactose et au gluten</li>
+        <li>Facteurs rhumatoïdes et anticorps auto-immuns</li>
+        <li>Virus d’Epstein-Barr (par ex. en cas de mononucléose)</li>
+        <li>Anticorps pour contrôler le statut vaccinal</li>
+        </ul>
+
+        <h2>Comment se déroule la prise de sang</h2>
+
+        <p>La prise de sang est un élément incontournable du diagnostic de nombreuses pathologies. Des erreurs peuvent toutefois survenir lors du prélèvement, du stockage et du transport au laboratoire ; elles peuvent influencer le résultat au point que l’interprétation n’est plus que partielle. Nous suivons des procédures standardisées : ordre correct des tubes lors du prélèvement, transport immédiat des paramètres sensibles à la température, prélèvements à jeun pour les valeurs métaboliques.</p>
+
+        <p>Si vous devez être à jeun pour un rendez-vous, nous vous le précisons explicitement lors de la prise de rendez-vous. À jeun signifie : au moins 8 heures sans nourriture, pas de boissons sucrées — l’eau et le thé non sucré sont autorisés.</p>
+
+        <h2>Recueil d’urine sur 24 heures et autres types d’échantillons</h2>
+
+        <p>Pour certaines questions, votre coopération est nécessaire. Pour le recueil d’urine sur 24 heures, vous collectez sur une journée complète la totalité de vos urines dans un récipient que nous vous remettons au cabinet. Il en va de même pour les échantillons de selles (par ex. en cas de suspicion de parasites intestinaux). Nous expliquons la procédure par écrit et en personne avant la remise du récipient.</p>
+
+        <h2>Récupération et discussion des résultats</h2>
+
+        <p>La plupart des valeurs sont disponibles sous un à deux jours ouvrés. Nous discutons les résultats lors de la consultation de suivi ou — pour des bilans de routine sans particularité et avec votre accord — par téléphone. Les valeurs anormales sont toujours clarifiées en personne.</p>
+
+        <h2>Alternative en auto-paiement</h2>
+
+        <p>Notre partenaire Sanexio propose avec le <a href="/basic-check/">Basic Check</a> un bilan biologique compact en auto-paiement à 15 paramètres — réservable aussi en ligne, prélèvement au cabinet.</p>
+      es: |-
+        <p>Una gran parte de nuestro diagnóstico en medicina interna se basa en valores de laboratorio de sangre, orina o heces. Tomamos las muestras en la consulta y las enviamos, según la cuestión, a la cooperativa de laboratorios o a nuestro laboratorio especialista externo (Synlab). Comentamos los resultados en la consulta de seguimiento.</p>
+
+        <h2>Qué parámetros determinamos</h2>
+
+        <ul>
+        <li>Hemograma simple y completo (análisis de células sanguíneas, células maduras/inmaduras)</li>
+        <li>Función renal (creatinina, urea, FGe)</li>
+        <li>Valores hepáticos y biliares</li>
+        <li>Páncreas (lipasa, amilasa)</li>
+        <li>Tiroides (TSH, fT3, fT4, anticuerpos si procede)</li>
+        <li>Enzimas cardíacas (troponina de alta sensibilidad si procede)</li>
+        <li>Marcadores de inflamación (PCR, VSG, leucocitos)</li>
+        <li>Coagulación (Quick, INR, TTPA)</li>
+        <li>Metabolismo lipídico — colesterol total, HDL, LDL, triglicéridos</li>
+        <li>Electrolitos (potasio, sodio, calcio, magnesio)</li>
+        <li>HbA1c (glucemia a largo plazo) y glucemia en ayunas</li>
+        <li>Marcadores tumorales como parámetros de seguimiento</li>
+        <li>Borrelia tras mordedura de garrapata, clamidia, parásitos intestinales</li>
+        <li>Intolerancia a la lactosa y al gluten</li>
+        <li>Factores reumáticos y anticuerpos autoinmunes</li>
+        <li>Virus de Epstein-Barr (p. ej. mononucleosis)</li>
+        <li>Anticuerpos para verificar el estado de vacunación</li>
+        </ul>
+
+        <h2>Cómo se realiza la extracción de sangre</h2>
+
+        <p>La extracción de sangre es un componente imprescindible para el diagnóstico de muchas enfermedades. Sin embargo, durante la toma, almacenamiento y transporte al laboratorio pueden producirse errores que influyen tanto en el resultado que la interpretación queda limitada. Seguimos procedimientos estandarizados: orden correcto de los tubos al extraer, transporte inmediato para parámetros sensibles a la temperatura, muestras tomadas en ayunas para valores metabólicos.</p>
+
+        <p>Si necesita estar en ayunas para una cita, se lo indicamos expresamente al concertar el día. Ayuno significa: al menos 8 horas sin comida, sin bebidas azucaradas — agua y té sin azúcar están bien.</p>
+
+        <h2>Recogida de orina de 24 horas y otros tipos de muestras</h2>
+
+        <p>Para ciertas cuestiones es necesaria su colaboración. En la recogida de orina de 24 horas, recoge durante un día completo toda la orina en un recipiente que le entregamos en la consulta. Lo mismo se aplica a las muestras de heces (p. ej. si se sospechan parásitos intestinales). Le explicamos el procedimiento por escrito y en persona antes de entregar el recipiente.</p>
+
+        <h2>Consulta y discusión de los resultados</h2>
+
+        <p>La mayoría de los valores están disponibles en uno o dos días laborables. Comentamos los resultados en la consulta de seguimiento o — en caso de hallazgos rutinarios sin particularidades y con su consentimiento — por teléfono. Los valores llamativos los aclaramos siempre en persona.</p>
+
+        <h2>Alternativa en autopago</h2>
+
+        <p>Nuestro socio Sanexio ofrece con el <a href="/basic-check/">Basic Check</a> un análisis compacto de autopago con 15 parámetros — también reservable directamente en línea, con la extracción en nuestra consulta.</p>
+      it: |-
+        <p>Una parte importante della nostra diagnostica in medicina interna si basa su valori di laboratorio ottenuti da sangue, urina o feci. Eseguiamo i prelievi in studio e inviamo i campioni, a seconda del quesito, alla cooperativa di laboratori o al nostro laboratorio specialistico esterno (Synlab). I risultati vengono discussi alla visita di follow-up.</p>
+
+        <h2>Quali valori determiniamo</h2>
+
+        <ul>
+        <li>Emocromo standard ed esteso (analisi delle cellule del sangue, cellule mature/immature)</li>
+        <li>Funzione renale (creatinina, urea, eGFR)</li>
+        <li>Valori epatici e biliari</li>
+        <li>Pancreas (lipasi, amilasi)</li>
+        <li>Tiroide (TSH, fT3, fT4, anticorpi al bisogno)</li>
+        <li>Enzimi cardiaci (troponina ad alta sensibilità al bisogno)</li>
+        <li>Marcatori di flogosi (PCR, VES, leucociti)</li>
+        <li>Coagulazione (Quick, INR, PTT)</li>
+        <li>Metabolismo lipidico — colesterolo totale, HDL, LDL, trigliceridi</li>
+        <li>Elettroliti (potassio, sodio, calcio, magnesio)</li>
+        <li>HbA1c (glicemia a lungo termine) e glicemia a digiuno</li>
+        <li>Marcatori tumorali come parametri di follow-up</li>
+        <li>Borrelia dopo morso di zecca, clamidia, parassiti intestinali</li>
+        <li>Intolleranza al lattosio e al glutine</li>
+        <li>Fattori reumatoidi e autoanticorpi</li>
+        <li>Virus di Epstein-Barr (per esempio nella mononucleosi)</li>
+        <li>Anticorpi per il controllo dello stato vaccinale</li>
+        </ul>
+
+        <h2>Come si svolge il prelievo</h2>
+
+        <p>Il prelievo di sangue è un tassello imprescindibile per la diagnosi di molte malattie. Durante prelievo, conservazione e trasporto in laboratorio possono però verificarsi errori che influenzano il risultato a tal punto da rendere l'interpretazione possibile solo in parte. Seguiamo procedure standardizzate: corretta sequenza delle provette, trasporto immediato per parametri sensibili alla temperatura, campioni a digiuno per i valori metabolici.</p>
+
+        <p>Se per un appuntamento è richiesto il digiuno, lo indichiamo esplicitamente al momento della prenotazione. Digiuno significa: almeno 8 ore senza cibo, niente bevande zuccherate — acqua e tè non zuccherato sono ammessi.</p>
+
+        <h2>Raccolta delle urine delle 24 ore e altri tipi di campione</h2>
+
+        <p>Per alcune indagini è necessaria la sua collaborazione. Nella raccolta delle urine delle 24 ore lei raccoglie, lungo una giornata intera, tutte le urine in un contenitore che le consegniamo in studio. Lo stesso vale per i campioni di feci (per esempio in caso di sospetti parassiti intestinali). Spieghiamo la procedura per iscritto e di persona prima della consegna del contenitore.</p>
+
+        <h2>Refertazione e discussione</h2>
+
+        <p>La maggior parte dei valori è disponibile entro uno o due giorni lavorativi. Discutiamo i risultati alla visita di follow-up oppure — in caso di esami di routine senza alterazioni e con il suo consenso — telefonicamente. I valori alterati vengono sempre chiariti di persona.</p>
+
+        <h2>Alternativa in pagamento autonomo</h2>
+
+        <p>Il nostro partner Sanexio offre con il <a href="/basic-check/">Basic Check</a> un check di laboratorio compatto in pagamento autonomo con 15 parametri — prenotabile anche direttamente online, con prelievo presso il nostro studio.</p>
+      pt-pt: |-
+        <p>Uma grande parte do nosso diagnóstico em medicina interna apoia-se em valores laboratoriais obtidos do sangue, da urina ou das fezes. Efectuamos as colheitas no consultório e enviamos as amostras, conforme a questão, à cooperativa de laboratórios ou ao nosso laboratório especializado externo (Synlab). Discutimos os resultados na consulta de seguimento.</p>
+
+        <h2>Que valores determinamos</h2>
+
+        <ul>
+        <li>Hemograma simples e completo (análise das células sanguíneas, células maduras/imaturas)</li>
+        <li>Função renal (creatinina, ureia, TFGe)</li>
+        <li>Valores hepáticos e biliares</li>
+        <li>Pâncreas (lipase, amilase)</li>
+        <li>Tiroide (TSH, fT3, fT4, anticorpos quando necessário)</li>
+        <li>Enzimas cardíacas (troponina de alta sensibilidade quando necessário)</li>
+        <li>Marcadores inflamatórios (PCR, VS, leucócitos)</li>
+        <li>Coagulação (Quick, INR, TTPA)</li>
+        <li>Metabolismo lipídico — colesterol total, HDL, LDL, triglicéridos</li>
+        <li>Electrólitos (potássio, sódio, cálcio, magnésio)</li>
+        <li>HbA1c (glicémia a longo prazo) e glicémia em jejum</li>
+        <li>Marcadores tumorais como parâmetros de seguimento</li>
+        <li>Borrelia após picada de carraça, clamídia, parasitas intestinais</li>
+        <li>Intolerância à lactose e ao glúten</li>
+        <li>Factores reumáticos e auto-anticorpos</li>
+        <li>Vírus Epstein-Barr (por exemplo, mononucleose infecciosa)</li>
+        <li>Anticorpos para verificar o estado vacinal</li>
+        </ul>
+
+        <h2>Como decorre a colheita de sangue</h2>
+
+        <p>A colheita de sangue é um elemento indispensável no diagnóstico de muitas doenças. No entanto, durante a colheita, o armazenamento e o transporte para o laboratório podem ocorrer erros que influenciam o resultado a tal ponto que a interpretação fica limitada. Seguimos processos padronizados: ordem correcta dos tubos durante a colheita, transporte imediato de parâmetros sensíveis à temperatura, amostras em jejum para valores metabólicos.</p>
+
+        <p>Se tiver de estar em jejum para uma consulta, indicamos isso expressamente no momento da marcação. Jejum significa: pelo menos 8 horas sem alimentos, sem bebidas açucaradas — água e chá sem açúcar são permitidos.</p>
+
+        <h2>Recolha de urina de 24 horas e outros tipos de amostra</h2>
+
+        <p>Para certas questões é necessária a sua colaboração. Na recolha de urina de 24 horas recolhe, ao longo de um dia inteiro, toda a urina num recipiente que lhe entregamos no consultório. O mesmo se aplica a amostras de fezes (por exemplo, em caso de suspeita de parasitas intestinais). Explicamos o procedimento por escrito e pessoalmente antes da entrega do recipiente.</p>
+
+        <h2>Consulta e discussão dos resultados</h2>
+
+        <p>A maior parte dos valores está disponível em um a dois dias úteis. Discutimos os resultados na consulta de seguimento ou — em achados de rotina sem particularidades e com o seu consentimento — por telefone. Os valores alterados são sempre esclarecidos pessoalmente.</p>
+
+        <h2>Alternativa em auto-pagamento</h2>
+
+        <p>O nosso parceiro Sanexio oferece com o <a href="/basic-check/">Basic Check</a> uma análise laboratorial compacta em auto-pagamento com 15 parâmetros — também reservável directamente online, com colheita no nosso consultório.</p>
   - type: bento-grid
     heading:
       de: Unsere Bluttest-Profile
+      en: Our blood test profiles
+      fr: Nos profils de bilans sanguins
+      es: Nuestros perfiles de análisis
       it: I nostri profili di analisi del sangue
       pt-pt: Os nossos perfis de análises ao sangue
     items:
       - id: status-baseline
         title:
           de: Status Baseline
+          en: Status Baseline
+          fr: Status Baseline
+          es: Status Baseline
           it: Status Baseline
           pt-pt: Status Baseline
         teaser:
           de: Der kompakte Einstieg — wichtigste Standardparameter auf einen Blick.
+          en: The compact starting point — the most important standard parameters at a glance.
+          fr: L’entrée compacte — les principaux paramètres standards en un coup d’œil.
+          es: La entrada compacta — los parámetros estándar más importantes de un vistazo.
           it: L'inizio compatto — i principali parametri standard a colpo d'occhio.
           pt-pt: O ponto de partida compacto — os principais parâmetros padrão num relance.
         image: shopify-mirror://labor/labor-mini-check-up.png
@@ -69,10 +361,16 @@ sections:
       - id: status-advanced
         title:
           de: Status Advanced
+          en: Status Advanced
+          fr: Status Advanced
+          es: Status Advanced
           it: Status Advanced
           pt-pt: Status Advanced
         teaser:
           de: Erweiterter Check mit zusätzlichen Stoffwechsel- und Risikoparametern.
+          en: Extended check with additional metabolic and risk parameters.
+          fr: Bilan élargi avec des paramètres métaboliques et de risque supplémentaires.
+          es: Chequeo ampliado con parámetros metabólicos y de riesgo adicionales.
           it: Check esteso con ulteriori parametri metabolici e di rischio.
           pt-pt: Check alargado com parâmetros metabólicos e de risco adicionais.
         image: shopify-mirror://labor/labor-check-up-advanced.png
@@ -80,10 +378,16 @@ sections:
       - id: status-prevent
         title:
           de: Status Prevent
+          en: Status Prevent
+          fr: Status Prevent
+          es: Status Prevent
           it: Status Prevent
           pt-pt: Status Prevent
         teaser:
           de: Umfassendes Präventions-Profil für gezielte Früherkennung.
+          en: Comprehensive prevention profile for targeted early detection.
+          fr: Profil de prévention complet pour un dépistage précoce ciblé.
+          es: Perfil preventivo completo para una detección precoz dirigida.
           it: Profilo preventivo completo per una diagnosi precoce mirata.
           pt-pt: Perfil preventivo abrangente para uma detecção precoce dirigida.
         image: shopify-mirror://labor/labor-pravention.png
@@ -91,10 +395,16 @@ sections:
       - id: system-immune
         title:
           de: System Immune
+          en: System Immune
+          fr: System Immune
+          es: System Immune
           it: System Immune
           pt-pt: System Immune
         teaser:
           de: Gezielte Beurteilung des Immunsystems und der Abwehrlage.
+          en: Targeted assessment of the immune system and immune defences.
+          fr: Évaluation ciblée du système immunitaire et de l’état des défenses.
+          es: Valoración dirigida del sistema inmunitario y del estado defensivo.
           it: Valutazione mirata del sistema immunitario e dello stato delle difese.
           pt-pt: Avaliação dirigida do sistema imunitário e do estado de defesa.
         image: shopify-mirror://labor/labor-immunsystem.jpg
@@ -102,10 +412,16 @@ sections:
       - id: system-renal
         title:
           de: System Renal
+          en: System Renal
+          fr: System Renal
+          es: System Renal
           it: System Renal
           pt-pt: System Renal
         teaser:
           de: Nierenfunktion und Elektrolyte im Detail.
+          en: Kidney function and electrolytes in detail.
+          fr: Fonction rénale et électrolytes en détail.
+          es: Función renal y electrolitos en detalle.
           it: Funzione renale ed elettroliti nel dettaglio.
           pt-pt: Função renal e electrólitos em detalhe.
         image: shopify-mirror://labor/labor-niere.jpg
@@ -113,10 +429,16 @@ sections:
       - id: system-liver
         title:
           de: System Liver
+          en: System Liver
+          fr: System Liver
+          es: System Liver
           it: System Liver
           pt-pt: System Liver
         teaser:
           de: Leberwerte und Stoffwechselparameter strukturiert ausgewertet.
+          en: Liver values and metabolic parameters evaluated in a structured way.
+          fr: Valeurs hépatiques et paramètres métaboliques évalués de manière structurée.
+          es: Valores hepáticos y parámetros metabólicos evaluados de forma estructurada.
           it: Valori epatici e parametri metabolici valutati in modo strutturato.
           pt-pt: Valores hepáticos e parâmetros metabólicos avaliados de forma estruturada.
         image: shopify-mirror://labor/labor-leber.jpg
@@ -124,10 +446,16 @@ sections:
       - id: stoffwechsel
         title:
           de: Stoffwechsel
+          en: Metabolism
+          fr: Métabolisme
+          es: Metabolismo
           it: Metabolismo
           pt-pt: Metabolismo
         teaser:
           de: Glukose, Lipide, Schilddrüse — die Stoffwechsel-Achse im Überblick.
+          en: Glucose, lipids, thyroid — the metabolic axis at a glance.
+          fr: Glucose, lipides, thyroïde — l’axe métabolique en un coup d’œil.
+          es: Glucosa, lípidos, tiroides — el eje metabólico de un vistazo.
           it: Glucosio, lipidi, tiroide — l'asse metabolico in sintesi.
           pt-pt: Glicose, lípidos, tiroide — o eixo metabólico em síntese.
         image: shopify-mirror://labor/labor-stoffwechsel.jpg
@@ -135,10 +463,16 @@ sections:
       - id: biohack
         title:
           de: BioHack — Genetische Beratung
+          en: BioHack — Genetic Consultation
+          fr: BioHack — Consultation génétique
+          es: BioHack — Consulta genética
           it: BioHack — Consulenza genetica
           pt-pt: BioHack — Aconselhamento genético
         teaser:
           de: Genetisch fundierte Beratung für eine personalisierte Vorsorge-Strategie.
+          en: Genetically informed advice for a personalised prevention strategy.
+          fr: Conseil fondé sur la génétique pour une stratégie de prévention personnalisée.
+          es: Asesoramiento basado en genética para una estrategia preventiva personalizada.
           it: Consulenza basata sulla genetica per una strategia preventiva personalizzata.
           pt-pt: Aconselhamento de base genética para uma estratégia preventiva personalizada.
         image: shopify-mirror://labor/labor-biohack.jpg
@@ -146,10 +480,16 @@ sections:
       - id: risikoprofil
         title:
           de: Risikoprofil
+          en: Risk Profile
+          fr: Profil de risque
+          es: Perfil de riesgo
           it: Profilo di rischio
           pt-pt: Perfil de risco
         teaser:
           de: Strukturierte Risiko-Einschätzung für Herz-Kreislauf und Stoffwechsel.
+          en: Structured risk assessment for cardiovascular and metabolic health.
+          fr: Évaluation de risque structurée pour le cardiovasculaire et le métabolisme.
+          es: Evaluación de riesgo estructurada para el sistema cardiovascular y el metabolismo.
           it: Valutazione strutturata del rischio cardiovascolare e metabolico.
           pt-pt: Avaliação estruturada do risco cardiovascular e metabólico.
         image: shopify-mirror://labor/labor-risikoprofil.jpg
@@ -157,56 +497,92 @@ sections:
   - type: process-steps
     heading:
       de: So läuft Ihre Blutentnahme ab
+      en: How your blood draw works
+      fr: Comment se déroule votre prise de sang
+      es: Cómo se realiza su extracción de sangre
       it: Come si svolge il suo prelievo
       pt-pt: Como decorre a sua colheita de sangue
     steps:
       - num: '1'
         title:
           de: Termin
+          en: Appointment
+          fr: Rendez-vous
+          es: Cita
           it: Appuntamento
           pt-pt: Marcação
         text:
           de: Termin online oder telefonisch vereinbaren — gerne nüchtern morgens.
+          en: Book the appointment online or by phone — preferably fasting in the morning.
+          fr: Prenez rendez-vous en ligne ou par téléphone — de préférence à jeun le matin.
+          es: Concertar la cita en línea o por teléfono — preferentemente en ayunas por la mañana.
           it: Fissi l'appuntamento online o telefonicamente — preferibilmente a digiuno la mattina.
           pt-pt: Marque a consulta online ou por telefone — de preferência em jejum, de manhã.
       - num: '2'
         title:
           de: Abnahme
+          en: Sampling
+          fr: Prélèvement
+          es: Extracción
           it: Prelievo
           pt-pt: Colheita
         text:
           de: Blutabnahme in unserer Praxis durch geschultes MFA-Team — etwa fünf Minuten.
+          en: Blood draw at our practice by our trained medical assistant team — about five minutes.
+          fr: Prise de sang au cabinet par notre équipe d’assistant·e·s médical·e·s — environ cinq minutes.
+          es: Extracción en nuestra consulta por el equipo de auxiliares médicos formado — unos cinco minutos.
           it: Prelievo nella nostra struttura da parte di un team MFA qualificato — circa cinque minuti.
           pt-pt: Colheita no nosso consultório por uma equipa MFA qualificada — cerca de cinco minutos.
       - num: '3'
         title:
           de: Analyse
+          en: Analysis
+          fr: Analyse
+          es: Análisis
           it: Analisi
           pt-pt: Análise
         text:
           de: Auswertung im akkreditierten Labor — meist innerhalb 24 bis 48 Stunden.
+          en: Analysis at an accredited laboratory — usually within 24 to 48 hours.
+          fr: Analyse dans un laboratoire accrédité — généralement sous 24 à 48 heures.
+          es: Análisis en laboratorio acreditado — habitualmente en 24 a 48 horas.
           it: Elaborazione in laboratorio accreditato — di norma entro 24-48 ore.
           pt-pt: Processamento em laboratório acreditado — geralmente em 24 a 48 horas.
       - num: '4'
         title:
           de: Befundbesprechung
+          en: Result discussion
+          fr: Discussion des résultats
+          es: Discusión del resultado
           it: Discussione del referto
           pt-pt: Discussão do resultado
         text:
           de: Persönliches Gespräch mit ärztlicher Einordnung Ihrer Werte.
+          en: Personal conversation with medical interpretation of your values.
+          fr: Entretien personnel avec interprétation médicale de vos valeurs.
+          es: Conversación personal con interpretación médica de sus valores.
           it: Colloquio personale con inquadramento medico dei suoi valori.
           pt-pt: Conversa pessoal com avaliação médica dos seus valores.
   - type: cta-banner
     heading:
       de: Fragen zu Ihren Werten?
+      en: Questions about your values?
+      fr: Des questions sur vos valeurs ?
+      es: ¿Dudas sobre sus valores?
       it: Domande sui suoi valori?
       pt-pt: Dúvidas sobre os seus valores?
     sub:
       de: Wir besprechen Ihre Laborbefunde persönlich — keine reinen Werte-PDFs.
+      en: We discuss your lab results in person — no number-only PDFs.
+      fr: Nous discutons vos résultats en personne — pas de PDF de chiffres seuls.
+      es: Comentamos sus resultados en persona — no enviamos solo PDFs con números.
       it: Discutiamo i suoi referti di persona — non solo PDF di numeri.
       pt-pt: Discutimos os seus resultados pessoalmente — não apenas PDFs com números.
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

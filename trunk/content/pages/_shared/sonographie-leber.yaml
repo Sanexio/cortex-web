@@ -5,6 +5,8 @@ slugs:
 title:
   de: Leber und Gallenblase
   en: Liver and Gallbladder Ultrasound
+  fr: Foie et vésicule biliaire
+  es: Hígado y vesícula biliar
   it: Fegato e cistifellea
   pt-pt: Fígado e vesícula
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Sonographie
+      en: Examinations · Ultrasound
+      fr: Examens · Échographie
+      es: Exploraciones · Ecografía
       it: Esami · Ecografia
       pt-pt: Exames · Ecografia
     heading:
       de: Leber und Gallenblase
+      en: Liver and gallbladder
+      fr: Foie et vésicule biliaire
+      es: Hígado y vesícula biliar
       it: Fegato e cistifellea
       pt-pt: Fígado e vesícula
     lead:
       de: Ultraschall der Leber und Gallenwege — Veränderungen früh sichtbar machen.
+      en: Ultrasound of the liver and bile ducts — make changes visible early.
+      fr: Échographie du foie et des voies biliaires — rendre les modifications visibles précocement.
+      es: Ecografía del hígado y las vías biliares — hacer visibles las alteraciones precozmente.
       it: Ecografia di fegato e vie biliari — rendere visibili precocemente le alterazioni.
       pt-pt: Ecografia do fígado e das vias biliares — tornar visíveis precocemente as alterações.
     image: shopify-mirror://detail/sonographie-leber-hero.jpg
@@ -44,6 +58,36 @@ sections:
         <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Leber und der Gallenwege durch. Es ist günstig, etwa vier Stunden vor der Untersuchung nichts zu essen und nur Wasser zu trinken.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>Weighing about 1.5 kilograms, the liver is the largest internal metabolic organ. Even after losing up to 75 per cent of its tissue, it can grow back to its normal size. It is central to digestion, detoxification, the storage of nutrients and the metabolism of fats, sugars and proteins, and filters the entire blood volume up to 30 times a day.</p>
+
+        <p>Despite its high regenerative capacity, the liver can be chronically damaged by unfavourable nutrition, certain medications or excessive alcohol consumption. The degree of change can be well assessed by ultrasound — from fatty liver through advanced structural changes to space-occupying lesions.</p>
+
+        <h2>How is the examination carried out?</h2>
+
+        <p>While you rest comfortably on a couch, we perform the ultrasound of the liver and bile ducts. It is helpful to avoid food for about four hours before the examination and to drink only water.</p>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Avec environ 1,5 kilogramme, le foie est le plus grand organe métabolique interne. Même après une perte allant jusqu’à 75 pour cent de son tissu, il peut retrouver sa taille normale. Il est central pour la digestion, la détoxification, le stockage des nutriments et le métabolisme des graisses, des sucres et des protéines, et filtre l’ensemble du volume sanguin jusqu’à 30 fois par jour.</p>
+
+        <p>Malgré sa grande capacité de régénération, le foie peut être chroniquement endommagé par une alimentation défavorable, certains médicaments ou une consommation excessive d’alcool. Le degré d’atteinte peut être bien évalué à l’échographie — de la stéatose aux modifications structurelles avancées jusqu’aux lésions occupant de l’espace.</p>
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+        <p>Pendant que vous êtes confortablement allongé·e sur la table, nous réalisons l’échographie du foie et des voies biliaires. Il est conseillé de ne pas manger pendant environ quatre heures avant l’examen et de ne boire que de l’eau.</p>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>Con cerca de 1,5 kilogramos, el hígado es el mayor órgano metabólico interno. Incluso tras perder hasta el 75 por ciento de su tejido puede recuperar su tamaño normal. Es central para la digestión, la desintoxicación, el almacenamiento de nutrientes y el metabolismo de grasas, azúcares y proteínas, y filtra el volumen total de sangre hasta 30 veces al día.</p>
+
+        <p>A pesar de su gran capacidad de regeneración, el hígado puede dañarse de forma crónica por una alimentación desfavorable, ciertos medicamentos o un consumo excesivo de alcohol. El grado de afectación se evalúa bien por ecografía — desde el hígado graso hasta alteraciones estructurales avanzadas y lesiones ocupantes de espacio.</p>
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+        <p>Mientras descansa cómodamente en una camilla, realizamos la ecografía del hígado y las vías biliares. Es conveniente no comer durante unas cuatro horas antes de la exploración y beber solo agua.</p>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Con i suoi circa 1,5 chilogrammi il fegato è il più grande organo metabolico interno. Anche dopo la perdita del 75 percento del tessuto può tornare alle dimensioni normali. È centrale per digestione, detossificazione, deposito di nutrienti e per il metabolismo di grassi, zuccheri e proteine, filtrando l'intero volume sanguigno fino a 30 volte al giorno.</p>
 
@@ -67,10 +111,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Sonographie der Leber und Gallenblase?
+      en: Booking an ultrasound of liver and gallbladder?
+      fr: Un rendez-vous pour l’échographie du foie et de la vésicule ?
+      es: ¿Cita para una ecografía de hígado y vesícula?
       it: Vuole prenotare un'ecografia di fegato e cistifellea?
       pt-pt: Quer marcar uma ecografia de fígado e vesícula?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

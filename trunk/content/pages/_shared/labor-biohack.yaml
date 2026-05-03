@@ -5,6 +5,8 @@ slugs:
 title:
   de: Genetik-Beratung
   en: BioHack — Genetic Consultation
+  fr: BioHack — Consultation génétique
+  es: BioHack — Consulta genética
   it: Consulenza genetica
   pt-pt: Aconselhamento genético
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Labor · Genetik
+      en: Laboratory · Genetics
+      fr: Laboratoire · Génétique
+      es: Laboratorio · Genética
       it: Laboratorio · Genetica
       pt-pt: Laboratório · Genética
     heading:
       de: Genetik-Beratung
+      en: Genetic Consultation
+      fr: Consultation génétique
+      es: Consulta genética
       it: Consulenza genetica
       pt-pt: Aconselhamento genético
     lead:
       de: Genetik-Beratung mit individueller Risiko-Einschätzung.
+      en: Genetic consultation with individual risk assessment.
+      fr: Consultation génétique avec une évaluation individuelle du risque.
+      es: Consulta genética con valoración individual del riesgo.
       it: Consulenza genetica con valutazione individuale del rischio.
       pt-pt: Aconselhamento genético com avaliação individual do risco.
     image: shopify-mirror://detail/labor-biohack-hero.png
@@ -38,6 +52,18 @@ sections:
         <p>Bei der genetischen Beratung sprechen wir mit Ihnen über die Möglichkeiten und Grenzen genetischer Tests, ordnen vorhandene Befunde ein und unterstützen Sie bei der Entscheidung, ob weiterführende Untersuchungen sinnvoll sind.</p>
 
         <p>Zum Abschluss der Beratung erhalten Sie eine schriftliche Zusammenfassung.</p>
+      en: |-
+        <p>In the genetic consultation we talk with you about the possibilities and limits of genetic tests, put existing findings into context and support you in deciding whether further investigations make sense.</p>
+
+        <p>At the end of the consultation you receive a written summary.</p>
+      fr: |-
+        <p>Lors de la consultation génétique, nous discutons avec vous des possibilités et des limites des tests génétiques, contextualisons les résultats existants et vous soutenons dans la décision de réaliser ou non des examens complémentaires.</p>
+
+        <p>À la fin de la consultation, vous recevez un résumé écrit.</p>
+      es: |-
+        <p>En la consulta genética hablamos con usted sobre las posibilidades y los límites de las pruebas genéticas, contextualizamos los hallazgos existentes y le apoyamos en la decisión de si tienen sentido estudios adicionales.</p>
+
+        <p>Al finalizar la consulta recibe un resumen por escrito.</p>
       it: |-
         <p>Nella consulenza genetica parliamo con lei delle possibilità e dei limiti dei test genetici, contestualizziamo i referti esistenti e la sosteniamo nella decisione se siano utili approfondimenti.</p>
 
@@ -49,10 +75,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Genetik-Beratung?
+      en: Booking a genetic consultation?
+      fr: Un rendez-vous pour une consultation génétique ?
+      es: ¿Cita para una consulta genética?
       it: Vuole prenotare una consulenza genetica?
       pt-pt: Quer marcar um aconselhamento genético?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

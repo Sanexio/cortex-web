@@ -6,6 +6,8 @@ slugs:
 title:
   de: Echokardiographie
   en: Echocardiography
+  fr: Échocardiographie
+  es: Ecocardiografía
   it: Ecocardiografia
   pt-pt: Ecocardiografia
 views:
@@ -14,6 +16,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -24,14 +29,23 @@ sections:
   - type: hero
     eyebrow:
       de: Diagnostik · Apparativ
+      en: Diagnostics · Instrument-based
+      fr: Diagnostic · Instrumental
+      es: Diagnóstico · Instrumental
       it: Diagnostica · Strumentale
       pt-pt: Diagnóstico · Instrumental
     heading:
       de: Echokardiographie
+      en: Echocardiography
+      fr: Échocardiographie
+      es: Ecocardiografía
       it: Ecocardiografia
       pt-pt: Ecocardiografia
     lead:
       de: Echokardiographie — das Herz in Echtzeit beim Pumpen sehen.
+      en: Echocardiography — see the heart pumping in real time.
+      fr: Échocardiographie — voir le cœur pomper en temps réel.
+      es: Ecocardiografía — ver el corazón bombear en tiempo real.
       it: Ecocardiografia — osservare il cuore in tempo reale mentre pompa.
       pt-pt: Ecocardiografia — observar o coração a bombear em tempo real.
     image: shopify-mirror://detail/echokardiographie-hero.jpg
@@ -47,6 +61,36 @@ sections:
         <p>Für diese Untersuchung legen Sie sich in Linksseitenlage. Wir führen die Untersuchung mit einem speziellen Ultraschallkopf durch. Eine Vorbereitung Ihrerseits ist nicht erforderlich.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>The heart — a biomechanical marvel of electrical impulses, muscle contractions and refined valve technology. With each beat about 70 millilitres of blood are pumped out of the heart. With around 100,000 beats per day the heart moves an average of 7,000 litres of blood through the body daily. The resulting blood pressure in healthy adults is between 100 and 140 mmHg and ensures that the blood reaches and flows through the roughly 100,000 kilometres of blood vessels.</p>
+
+        <p>With echocardiography we can watch the heart at work in real time. The technique allows us to detect wall-motion abnormalities, valve defects and other structural changes that do not necessarily cause symptoms in everyday life.</p>
+
+        <h2>How is the examination carried out?</h2>
+
+        <p>For this examination you lie on your left side. We perform the examination with a special ultrasound probe. No preparation on your part is required.</p>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Le cœur — une merveille biomécanique d’impulsions électriques, de contractions musculaires et d’une mécanique valvulaire raffinée. À chaque battement, environ 70 millilitres de sang sont éjectés. Avec près de 100 000 battements par jour, le cœur déplace en moyenne 7 000 litres de sang par jour dans le corps. La pression artérielle qui en résulte est, chez l’adulte en bonne santé, de 100 à 140 mmHg et permet au sang d’atteindre et de parcourir les quelque 100 000 kilomètres de vaisseaux.</p>
+
+        <p>L’échocardiographie nous permet d’observer le cœur en temps réel pendant qu’il travaille. La méthode permet de détecter des troubles de la motilité pariétale, des défauts valvulaires et d’autres modifications structurelles qui ne s’accompagnent pas nécessairement de symptômes au quotidien.</p>
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+        <p>Pour cet examen, vous vous allongez sur le côté gauche. Nous réalisons l’examen avec une sonde échographique spécifique. Aucune préparation de votre part n’est nécessaire.</p>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>El corazón — una maravilla biomecánica de impulsos eléctricos, contracciones musculares y una sofisticada técnica valvular. En cada latido se bombean unos 70 mililitros de sangre. Con cerca de 100.000 latidos al día, el corazón mueve en promedio 7.000 litros de sangre al día por el cuerpo. La presión arterial resultante es, en adultos sanos, de 100 a 140 mmHg y hace que la sangre alcance y recorra los aproximadamente 100.000 kilómetros de vasos sanguíneos.</p>
+
+        <p>Con la ecocardiografía podemos observar el corazón en tiempo real durante su trabajo. La técnica permite detectar trastornos de la motilidad parietal, defectos valvulares y otras alteraciones estructurales que no siempre se acompañan de síntomas en la vida diaria.</p>
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+        <p>Para esta exploración usted se coloca en decúbito lateral izquierdo. Realizamos el estudio con una sonda ecográfica específica. No se requiere preparación por su parte.</p>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Il cuore — una meraviglia biomeccanica fatta di impulsi elettrici, contrazioni muscolari e una raffinata meccanica valvolare. Ad ogni battito vengono pompati dal cuore circa 70 millilitri di sangue. Con circa 100.000 battiti al giorno il cuore muove in media 7.000 litri di sangue al giorno attraverso il corpo. La pressione arteriosa che ne deriva si attesta nell'adulto sano tra 100 e 140 mmHg e fa sì che il sangue raggiunga e percorra i vasi sanguigni, lunghi nel complesso circa 100.000 chilometri.</p>
 
@@ -70,14 +114,23 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für eine Echokardiographie?
+      en: Booking an echocardiography?
+      fr: Un rendez-vous pour une échocardiographie ?
+      es: ¿Cita para una ecocardiografía?
       it: Vuole prenotare un'ecocardiografia?
       pt-pt: Quer marcar uma ecocardiografia?
     sub:
       de: Wir besprechen vor der Untersuchung, ob sie für Ihre Situation sinnvoll ist.
+      en: Before the examination we discuss whether it makes sense in your situation.
+      fr: Avant l’examen, nous discutons de sa pertinence dans votre situation.
+      es: Antes de la exploración hablamos sobre si tiene sentido en su caso.
       it: Prima dell'esame valutiamo insieme se sia indicato nel suo caso.
       pt-pt: Antes do exame avaliamos consigo se faz sentido para a sua situação.
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

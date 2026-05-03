@@ -5,6 +5,8 @@ slugs:
 title:
   de: Body-Check
   en: Body Check
+  fr: Body Check
+  es: Body Check
   it: Body-Check
   pt-pt: Body-Check
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Vorsorge
+      en: Examinations · Prevention
+      fr: Examens · Prévention
+      es: Exploraciones · Prevención
       it: Esami · Prevenzione
       pt-pt: Exames · Prevenção
     heading:
       de: Body-Check
+      en: Body-Check
+      fr: Body-Check
+      es: Body-Check
       it: Body-Check
       pt-pt: Body-Check
     lead:
       de: Body-Check — strukturierte ärztliche Bestandsaufnahme Ihres aktuellen Gesundheitszustandes.
+      en: Body-Check — structured medical inventory of your current state of health.
+      fr: Body-Check — bilan médical structuré de votre état de santé actuel.
+      es: Body-Check — balance médico estructurado de su estado de salud actual.
       it: Body-Check — bilancio medico strutturato del suo stato di salute attuale.
       pt-pt: Body-Check — balanço médico estruturado do seu estado de saúde actual.
     image: shopify-mirror://detail/body-check-hero.jpg
@@ -50,6 +64,50 @@ sections:
 
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: >-
+        <p>The Body-Check is a structured medical inventory of your current state of health. Suitable
+        both for sports-active patients and as a preventive check.</p>
+
+
+        <h2>How is the examination carried out?</h2>
+
+
+        <p>A doctor takes a thorough medical history (health interview) and performs a full clinical
+        examination. This includes a 12-lead ECG and a urine test. Please also bring your vaccination
+        card to this appointment — we check your vaccination status at the same time.</p>
+
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: >-
+        <p>Le Body-Check est un bilan médical structuré de votre état de santé actuel. Adapté aussi
+        bien aux patient·e·s actifs sur le plan sportif qu’à un bilan de prévention.</p>
+
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+
+        <p>Une médecin ou un médecin réalise une anamnèse approfondie (entretien médical) et un
+        examen clinique complet. Cela comprend un ECG à 12 dérivations ainsi qu’une analyse
+        d’urine. Apportez également votre carnet de vaccination — nous vérifions immédiatement
+        votre statut vaccinal.</p>
+
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: >-
+        <p>El Body-Check es un balance médico estructurado de su estado de salud actual. Adecuado
+        tanto para pacientes deportivamente activos como para un chequeo preventivo.</p>
+
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+
+        <p>Una médica o un médico realiza una anamnesis detallada (entrevista clínica) y una
+        exploración clínica completa. Incluye un ECG de 12 derivaciones y un análisis de orina.
+        Traiga también su cartilla de vacunación — comprobamos su estado vacunal en el mismo
+        momento.</p>
+
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: >-
         <p>Il Body-Check è un bilancio medico strutturato del suo stato di salute attuale. Adatto
         sia ai pazienti sportivamente attivi sia come strumento di prevenzione.</p>
@@ -82,10 +140,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Body-Check?
+      en: Booking a Body-Check?
+      fr: Un rendez-vous pour un Body-Check ?
+      es: ¿Cita para un Body-Check?
       it: Vuole prenotare un Body-Check?
       pt-pt: Quer marcar um Body-Check?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

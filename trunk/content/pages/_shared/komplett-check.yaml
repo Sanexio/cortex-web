@@ -5,6 +5,8 @@ slugs:
 title:
   de: Komplett-Check
   en: Complete Check
+  fr: Examen complet
+  es: Examen completo
   it: Check completo
   pt-pt: Check completo
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Vorsorge
+      en: Examinations · Prevention
+      fr: Examens · Prévention
+      es: Exploraciones · Prevención
       it: Esami · Prevenzione
       pt-pt: Exames · Prevenção
     heading:
       de: Komplett-Check
+      en: Complete Check
+      fr: Examen complet
+      es: Examen completo
       it: Check completo
       pt-pt: Check completo
     lead:
       de: Komplett-Check — ausführliche Vorsorgeuntersuchung in etwa zwei Stunden.
+      en: Complete Check — comprehensive preventive examination in about two hours.
+      fr: Examen complet — bilan préventif approfondi en environ deux heures.
+      es: Examen completo — chequeo preventivo exhaustivo en unas dos horas.
       it: Check completo — visita preventiva approfondita in circa due ore.
       pt-pt: Check completo — exame preventivo aprofundado em cerca de duas horas.
     image: shopify-mirror://detail/komplett-check-hero.jpg
@@ -60,6 +74,84 @@ sections:
 
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: >-
+        <p>The Complete Check brings together a comprehensive preventive examination. In about two
+        hours we carry out a structured medical assessment.</p>
+
+
+        <h2>Which examinations does the Complete Check include?</h2>
+
+
+        <ul>
+
+        <li>Thyroid ultrasound</li>
+
+        <li>Ultrasound of the neck vessels (carotid duplex)</li>
+
+        <li>Echocardiography (cardiac ultrasound)</li>
+
+        <li>Abdominal ultrasound</li>
+
+        <li>Exercise ECG (ergometry)</li>
+
+        <li>Lung function test (spirometry)</li>
+
+        </ul>
+
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: >-
+        <p>L’Examen complet réunit un bilan préventif approfondi. En environ deux heures, nous
+        effectuons une évaluation médicale structurée.</p>
+
+
+        <h2>Quels examens comprend l’Examen complet ?</h2>
+
+
+        <ul>
+
+        <li>Échographie thyroïdienne</li>
+
+        <li>Échographie des vaisseaux du cou (Doppler carotidien)</li>
+
+        <li>Échocardiographie (échographie cardiaque)</li>
+
+        <li>Échographie abdominale</li>
+
+        <li>ECG d’effort (ergométrie)</li>
+
+        <li>Spirométrie (fonction pulmonaire)</li>
+
+        </ul>
+
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: >-
+        <p>El Examen completo reúne un chequeo preventivo exhaustivo. En unas dos horas realizamos
+        una valoración médica estructurada.</p>
+
+
+        <h2>¿Qué exploraciones incluye el Examen completo?</h2>
+
+
+        <ul>
+
+        <li>Ecografía tiroidea</li>
+
+        <li>Ecografía de los vasos del cuello (dúplex carotídeo)</li>
+
+        <li>Ecocardiografía (ecografía cardíaca)</li>
+
+        <li>Ecografía abdominal</li>
+
+        <li>ECG de esfuerzo (ergometría)</li>
+
+        <li>Espirometría (función pulmonar)</li>
+
+        </ul>
+
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: >-
         <p>Il Check completo riassume una visita preventiva approfondita. In circa due ore eseguiamo
         una valutazione medica strutturata.</p>
@@ -115,10 +207,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Komplett-Check?
+      en: Booking a Complete Check?
+      fr: Un rendez-vous pour un Examen complet ?
+      es: ¿Cita para un Examen completo?
       it: Vuole prenotare un Check completo?
       pt-pt: Quer marcar um Check completo?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

@@ -5,6 +5,8 @@ slugs:
 title:
   de: Vorsorge-Check
   en: Status Prevent
+  fr: Status Prevent
+  es: Status Prevent
   it: Status Prevent
   pt-pt: Status Prevent
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Labor · Status
+      en: Laboratory · Status
+      fr: Laboratoire · Status
+      es: Laboratorio · Status
       it: Laboratorio · Status
       pt-pt: Laboratório · Status
     heading:
       de: Vorsorge-Check
+      en: Status Prevent
+      fr: Status Prevent
+      es: Status Prevent
       it: Status Prevent
       pt-pt: Status Prevent
     lead:
       de: 'Labor Vorsorge-Check — strukturierter Laborüberblick zur frühzeitigen Orientierung.'
+      en: 'Status Prevent — structured laboratory overview for early orientation.'
+      fr: 'Status Prevent — vue d’ensemble laboratoire structurée pour une orientation précoce.'
+      es: 'Status Prevent — visión laboratorial estructurada para una orientación temprana.'
       it: 'Status Prevent — panoramica laboratoristica strutturata per un orientamento precoce.'
       pt-pt: 'Status Prevent — panorama laboratorial estruturado para uma orientação precoce.'
     image: shopify-mirror://detail/labor-status-prevent-hero.png
@@ -51,6 +65,57 @@ sections:
         </ul>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>With the lab profile <strong>Status Prevent</strong> you receive a structured view of central metabolic and organ parameters. The overview can help to make changes visible early — before clinical complaints appear.</p>
+
+        <h2>We analyse the following parameters:</h2>
+
+        <ul>
+        <li>Lipid values, long-term glucose and uric acid</li>
+        <li>Kidney values with sodium and potassium</li>
+        <li>Liver values with lipase and LDH</li>
+        <li>Total protein with electrophoresis including immunoglobulins</li>
+        <li>Blood count with differentiation of white blood cells</li>
+        <li>Heart failure markers and muscle enzymes</li>
+        <li>TSH as thyroid value</li>
+        <li>CRP as inflammation marker</li>
+        </ul>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Avec le profil de laboratoire <strong>Status Prevent</strong>, vous obtenez une vue structurée des paramètres métaboliques et d’organes centraux. Cette vue d’ensemble peut aider à rendre des modifications visibles précocement — avant l’apparition de plaintes cliniques.</p>
+
+        <h2>Nous analysons les paramètres suivants :</h2>
+
+        <ul>
+        <li>Bilan lipidique, glycémie à long terme et acide urique</li>
+        <li>Paramètres rénaux avec sodium et potassium</li>
+        <li>Paramètres hépatiques avec lipase et LDH</li>
+        <li>Protéines totales avec électrophorèse, y compris immunoglobulines</li>
+        <li>Numération sanguine avec différenciation des leucocytes</li>
+        <li>Marqueurs d’insuffisance cardiaque et enzymes musculaires</li>
+        <li>TSH (paramètre thyroïdien)</li>
+        <li>CRP comme marqueur inflammatoire</li>
+        </ul>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>Con el perfil de laboratorio <strong>Status Prevent</strong> obtiene una visión estructurada de los parámetros metabólicos y de órganos centrales. Esta visión puede ayudar a hacer visibles cambios de forma temprana — antes de que aparezcan síntomas clínicos.</p>
+
+        <h2>Analizamos los siguientes parámetros:</h2>
+
+        <ul>
+        <li>Lípidos, glucemia a largo plazo y ácido úrico</li>
+        <li>Parámetros renales con sodio y potasio</li>
+        <li>Parámetros hepáticos con lipasa y LDH</li>
+        <li>Proteínas totales con electroforesis, incluyendo inmunoglobulinas</li>
+        <li>Hemograma con diferenciación de leucocitos</li>
+        <li>Marcadores de insuficiencia cardíaca y enzimas musculares</li>
+        <li>TSH (parámetro tiroideo)</li>
+        <li>PCR como marcador de inflamación</li>
+        </ul>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Con il profilo di laboratorio <strong>Status Prevent</strong> riceve uno sguardo strutturato sui principali parametri metabolici e d'organo. Una panoramica utile per rendere precocemente visibili alterazioni — prima che si manifestino sintomi clinici.</p>
 
@@ -88,10 +153,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Vorsorge-Check?
+      en: Booking a Status Prevent?
+      fr: Un rendez-vous pour un Status Prevent ?
+      es: ¿Cita para un Status Prevent?
       it: Vuole prenotare uno Status Prevent?
       pt-pt: Quer marcar um Status Prevent?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

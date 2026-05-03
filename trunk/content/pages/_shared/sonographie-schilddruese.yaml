@@ -7,6 +7,8 @@ slugs:
 title:
   de: Schilddrüsen-Sonographie
   en: Thyroid Ultrasound
+  fr: Échographie thyroïdienne
+  es: Ecografía tiroidea
   it: Ecografia della tiroide
   pt-pt: Ecografia da tiroide
 
@@ -17,6 +19,9 @@ views:
     # doctolib_url: null  # Phase 3d: hier den Doctolib-Direktlink eintragen
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 
@@ -28,14 +33,23 @@ sections:
   - type: hero
     eyebrow:
       de: Sonographie · Schilddrüse
+      en: Ultrasound · Thyroid
+      fr: Échographie · Thyroïde
+      es: Ecografía · Tiroides
       it: Ecografia · Tiroide
       pt-pt: Ecografia · Tiroide
     heading:
       de: Schilddrüsen-Sonographie
+      en: Thyroid ultrasound
+      fr: Échographie thyroïdienne
+      es: Ecografía tiroidea
       it: Ecografia della tiroide
       pt-pt: Ecografia da tiroide
     lead:
       de: Ultraschall der Schilddrüse — Knoten, Zysten und Größenveränderungen sichtbar machen.
+      en: Ultrasound of the thyroid — make nodules, cysts and size changes visible.
+      fr: Échographie de la thyroïde — rendre visibles nodules, kystes et variations de volume.
+      es: Ecografía de la tiroides — hacer visibles nódulos, quistes y variaciones de tamaño.
       it: Ecografia della tiroide — rendere visibili noduli, cisti e variazioni di volume.
       pt-pt: Ecografia da tiroide — tornar visíveis nódulos, quistos e alterações de volume.
     image: shopify-mirror://detail/sonographie-schilddruese-hero.jpg
@@ -50,6 +64,30 @@ sections:
         <p>Zunächst tasten wir Ihre Schilddrüse ab und im Anschluss wird die Ultraschalluntersuchung durchgeführt. Hierzu legen Sie sich auf eine Liege und überstrecken den Kopf leicht.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht. Bei auffälligen Knoten besprechen wir mit Ihnen das weitere Vorgehen — meist durch Verlaufskontrolle, in seltenen Fällen durch eine Feinnadelpunktion.</p>
+      en: |
+        <p>The thyroid — one of the conductors of your metabolism: it produces hormones that regulate energy consumption and metabolic processes. An underactive thyroid can lead to fatigue, weight gain and mood swings, while an overactive thyroid causes nervousness, palpitations and weight loss. The thyroid sits like a butterfly around your neck. As a metabolically active organ, nodules can form here that are not detectable in the lab but can be well assessed by ultrasound. If malignancy is suspected, the nodules concerned should be investigated further.</p>
+
+        <h2>How is the examination carried out?</h2>
+
+        <p>First we palpate your thyroid and then the ultrasound examination follows. For this you lie on a couch and gently extend your head backwards.</p>
+
+        <p>At the end of the examination you receive your personal findings report. For suspicious nodules we discuss the next steps with you — usually a follow-up control, in rare cases a fine-needle aspiration.</p>
+      fr: |
+        <p>La thyroïde — l’un des chefs d’orchestre de votre métabolisme : elle produit des hormones qui régulent la dépense énergétique et le métabolisme. Une hypofonction peut entraîner fatigue, prise de poids et fluctuations de l’humeur, alors qu’une hyperfonction provoque nervosité, palpitations et perte de poids. La thyroïde entoure votre cou comme un papillon. Organe métaboliquement actif, elle peut développer des nodules indétectables au laboratoire mais bien évaluables à l’échographie. En cas de suspicion de malignité, les nodules concernés doivent être explorés plus avant.</p>
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+        <p>Nous palpons d’abord votre thyroïde, puis l’examen échographique est réalisé. Pour cela, vous vous allongez sur la table et étendez légèrement la tête vers l’arrière.</p>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel. En cas de nodules suspects, nous discutons avec vous des étapes suivantes — habituellement par contrôle évolutif, rarement par cytoponction.</p>
+      es: |
+        <p>La tiroides — uno de los directores de su metabolismo: produce hormonas que regulan el gasto energético y el metabolismo. Un hipotiroidismo puede provocar fatiga, aumento de peso y oscilaciones del estado de ánimo, mientras que un hipertiroidismo causa nerviosismo, palpitaciones y pérdida de peso. La tiroides rodea su cuello como una mariposa. Como órgano metabólicamente activo, en ella pueden aparecer nódulos no detectables en el laboratorio pero bien valorables por ecografía. Si se sospecha malignidad, los nódulos en cuestión deben estudiarse con mayor detalle.</p>
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+        <p>Primero palpamos su tiroides y, a continuación, se realiza la ecografía. Para ello se tumba en una camilla y extiende ligeramente la cabeza hacia atrás.</p>
+
+        <p>Al finalizar recibe su informe personal. En caso de nódulos sospechosos hablamos con usted sobre los siguientes pasos — generalmente un control evolutivo, en raras ocasiones una punción aspirativa con aguja fina.</p>
       it: |
         <p>La tiroide — uno dei direttori d'orchestra del suo metabolismo: produce ormoni che regolano il consumo energetico e i processi metabolici. Un'iperfunzione può provocare nervosismo, tachicardia e perdita di peso, mentre un'ipofunzione causa stanchezza, aumento di peso e oscillazioni dell'umore. La tiroide è disposta come una farfalla attorno al collo. Trattandosi di un organo metabolicamente attivo, possono formarsi noduli non rilevabili in laboratorio ma ben valutabili all'ecografia. Se si sospettano alterazioni maligne i noduli interessati devono essere ulteriormente approfonditi.</p>
 
@@ -70,10 +108,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für die Schilddrüsen-Sonographie?
+      en: Booking a thyroid ultrasound?
+      fr: Un rendez-vous pour une échographie thyroïdienne ?
+      es: ¿Cita para una ecografía tiroidea?
       it: Vuole prenotare un'ecografia della tiroide?
       pt-pt: Quer marcar uma ecografia da tiroide?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

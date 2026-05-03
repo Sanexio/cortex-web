@@ -5,6 +5,8 @@ slugs:
 title:
   de: Immunsystem
   en: System Immune
+  fr: Système immunitaire
+  es: Sistema inmunitario
   it: Sistema immunitario
   pt-pt: Sistema imunitário
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Labor · System
+      en: Laboratory · System
+      fr: Laboratoire · Système
+      es: Laboratorio · Sistema
       it: Laboratorio · Sistema
       pt-pt: Laboratório · Sistema
     heading:
       de: Immunsystem
+      en: Immune system
+      fr: Système immunitaire
+      es: Sistema inmunitario
       it: Sistema immunitario
       pt-pt: Sistema imunitário
     lead:
       de: 'Labor Immunsystem — Laborprofil zur Beurteilung des Immunsystems.'
+      en: 'Immune system — laboratory profile for assessing the immune system.'
+      fr: 'Système immunitaire — profil de laboratoire pour l’évaluation du système immunitaire.'
+      es: 'Sistema inmunitario — perfil de laboratorio para evaluar el sistema inmunitario.'
       it: 'Sistema immunitario — profilo di laboratorio per la valutazione del sistema immunitario.'
       pt-pt: 'Sistema imunitário — perfil laboratorial para avaliação do sistema imunitário.'
     image: shopify-mirror://detail/labor-system-immune-hero.jpg
@@ -51,6 +65,57 @@ sections:
         </ul>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>With the lab profile <strong>Immune system</strong> you receive a structured assessment of your immune system. With an estimated count of about 10,000 leukocytes per microlitre of blood and a blood volume of around 7 litres, the human body has nearly 70 billion white blood cells in the blood alone. Including the entire immune system, the figure rises to about 1.8 trillion cells — in skin, gut, liver, spleen, bone marrow.</p>
+
+        <h2>We analyse the following parameters:</h2>
+
+        <ul>
+        <li>Iron and transferrin</li>
+        <li>Immunoglobulins (IgA, IgG, IgM, IgE)</li>
+        <li>Serum protein electrophoresis</li>
+        <li>Sodium, magnesium, potassium, calcium</li>
+        <li>Reticulocyte count</li>
+        <li>Blood count with differentiation of white blood cells</li>
+        <li>Special differential blood count</li>
+        <li>Uric acid</li>
+        </ul>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Avec le profil de laboratoire <strong>Système immunitaire</strong>, vous obtenez une évaluation structurée de votre système immunitaire. Avec un nombre estimé d’environ 10 000 leucocytes par microlitre de sang et un volume sanguin d’environ 7 litres, l’organisme humain dispose, rien que dans le sang, de près de 70 milliards de globules blancs. En incluant l’ensemble du système immunitaire, on arrive à environ 1,8 billion de cellules — dans la peau, l’intestin, le foie, la rate, la moelle osseuse.</p>
+
+        <h2>Nous analysons les paramètres suivants :</h2>
+
+        <ul>
+        <li>Fer et transferrine</li>
+        <li>Immunoglobulines (IgA, IgG, IgM, IgE)</li>
+        <li>Électrophorèse des protéines sériques</li>
+        <li>Sodium, magnésium, potassium, calcium</li>
+        <li>Numération des réticulocytes</li>
+        <li>Numération sanguine avec différenciation des leucocytes</li>
+        <li>Formule leucocytaire détaillée</li>
+        <li>Acide urique</li>
+        </ul>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>Con el perfil de laboratorio <strong>Sistema inmunitario</strong> obtiene una valoración estructurada de su sistema inmunitario. Con una cifra estimada de unos 10.000 leucocitos por microlitro de sangre y un volumen de sangre de unos 7 litros, el ser humano tiene en la sangre casi 70.000 millones de glóbulos blancos. Si se incluye todo el sistema inmunitario, se llega a unos 1,8 billones de células — en piel, intestino, hígado, bazo, médula ósea.</p>
+
+        <h2>Analizamos los siguientes parámetros:</h2>
+
+        <ul>
+        <li>Hierro y transferrina</li>
+        <li>Inmunoglobulinas (IgA, IgG, IgM, IgE)</li>
+        <li>Electroforesis de proteínas séricas</li>
+        <li>Sodio, magnesio, potasio, calcio</li>
+        <li>Recuento de reticulocitos</li>
+        <li>Hemograma con diferenciación de leucocitos</li>
+        <li>Fórmula leucocitaria diferencial específica</li>
+        <li>Ácido úrico</li>
+        </ul>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Con il profilo di laboratorio <strong>Sistema immunitario</strong> riceve una valutazione strutturata del suo sistema immunitario. Con un numero stimato di circa 10.000 leucociti per microlitro di sangue e un volume ematico di circa 7 litri, l'essere umano dispone solo nel sangue di circa 70 miliardi di globuli bianchi. Considerando l'intero sistema immunitario si arriva a circa 1,8 trilioni di cellule — nella pelle, nell'intestino, nel fegato, nella milza, nel midollo osseo.</p>
 
@@ -88,10 +153,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Immunsystem?
+      en: Booking an immune-system check?
+      fr: Un rendez-vous pour un bilan immunitaire ?
+      es: ¿Cita para un análisis del sistema inmunitario?
       it: Vuole prenotare un esame del sistema immunitario?
       pt-pt: Quer marcar uma análise do sistema imunitário?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

@@ -5,6 +5,8 @@ slugs:
 title:
   de: Erweiterter Check
   en: Status Advanced
+  fr: Status Advanced
+  es: Status Advanced
   it: Status Advanced
   pt-pt: Status Advanced
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Labor · Status
+      en: Laboratory · Status
+      fr: Laboratoire · Status
+      es: Laboratorio · Status
       it: Laboratorio · Status
       pt-pt: Laboratório · Status
     heading:
       de: Erweiterter Check
+      en: Status Advanced
+      fr: Status Advanced
+      es: Status Advanced
       it: Status Advanced
       pt-pt: Status Advanced
     lead:
       de: 'Erweiterter Check — erweiterter Bluttest mit detaillierter Beurteilung zentraler Körperfunktionen.'
+      en: 'Status Advanced — extended blood test with a detailed assessment of central body functions.'
+      fr: 'Status Advanced — bilan sanguin étendu avec une évaluation détaillée des fonctions corporelles principales.'
+      es: 'Status Advanced — análisis de sangre ampliado con una valoración detallada de las funciones corporales centrales.'
       it: 'Status Advanced — esame del sangue esteso con valutazione dettagliata delle principali funzioni corporee.'
       pt-pt: 'Status Advanced — análise ao sangue alargada com avaliação detalhada das principais funções corporais.'
     image: shopify-mirror://detail/labor-status-advanced-hero.png
@@ -50,6 +64,54 @@ sections:
         </ul>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>The lab profile <strong>Status Advanced</strong> extends the <em>Status Baseline</em> profile with a more detailed assessment of central body functions. You receive a much deeper overview of central metabolic, liver, kidney and immune parameters.</p>
+
+        <h2>We analyse the following parameters:</h2>
+
+        <ul>
+        <li>Total cholesterol, LDL, HDL, triglycerides (cardiovascular risk profile)</li>
+        <li>HbA1c (long-term glucose)</li>
+        <li>Creatinine and urea (kidney function)</li>
+        <li>AST (GOT), ALT (GPT), GGT, bilirubin, CHE (liver function)</li>
+        <li>Blood count to detect changes in blood cells</li>
+        <li>Special differential blood count for the breakdown of white blood cells</li>
+        <li>Uric acid (indication of early gout)</li>
+        </ul>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Le profil de laboratoire <strong>Status Advanced</strong> étend le profil <em>Status Baseline</em> avec une évaluation plus détaillée des fonctions corporelles principales. Vous obtenez ainsi une vision nettement plus approfondie des paramètres centraux du métabolisme, du foie, des reins et du système immunitaire.</p>
+
+        <h2>Nous analysons les paramètres suivants :</h2>
+
+        <ul>
+        <li>Cholestérol total, LDL, HDL, triglycérides (profil de risque cardiovasculaire)</li>
+        <li>HbA1c (glycémie à long terme)</li>
+        <li>Créatinine et urée (fonction rénale)</li>
+        <li>ASAT, ALAT, GGT, bilirubine, cholinestérase (fonction hépatique)</li>
+        <li>Numération sanguine pour détecter des modifications cellulaires</li>
+        <li>Formule leucocytaire détaillée</li>
+        <li>Acide urique (indice de goutte débutante)</li>
+        </ul>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>El perfil de laboratorio <strong>Status Advanced</strong> amplía el <em>Status Baseline</em> con una valoración más detallada de las funciones corporales centrales. Obtiene una visión claramente más profunda de los parámetros centrales del metabolismo, hígado, riñones y sistema inmunitario.</p>
+
+        <h2>Analizamos los siguientes parámetros:</h2>
+
+        <ul>
+        <li>Colesterol total, LDL, HDL, triglicéridos (perfil de riesgo cardiovascular)</li>
+        <li>HbA1c (glucemia a largo plazo)</li>
+        <li>Creatinina y urea (función renal)</li>
+        <li>GOT, GPT, GGT, bilirrubina, CHE (función hepática)</li>
+        <li>Hemograma para detectar alteraciones de las células sanguíneas</li>
+        <li>Fórmula leucocitaria diferencial</li>
+        <li>Ácido úrico (indicio de gota incipiente)</li>
+        </ul>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Il profilo di laboratorio <strong>Status Advanced</strong> amplia il profilo <em>Status Baseline</em> con una valutazione più dettagliata delle principali funzioni corporee. Riceve così una panoramica significativamente più approfondita su parametri centrali del metabolismo, di fegato, reni e sistema immunitario.</p>
 
@@ -85,10 +147,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Erweiterter Check?
+      en: Booking a Status Advanced?
+      fr: Un rendez-vous pour un Status Advanced ?
+      es: ¿Cita para un Status Advanced?
       it: Vuole prenotare uno Status Advanced?
       pt-pt: Quer marcar um Status Advanced?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

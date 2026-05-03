@@ -5,6 +5,8 @@ slugs:
 title:
   de: Prostata und Harnblase
   en: Prostate and Bladder Ultrasound
+  fr: Prostate et vessie
+  es: Próstata y vejiga
   it: Prostata e vescica
   pt-pt: Próstata e bexiga
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Sonographie
+      en: Examinations · Ultrasound
+      fr: Examens · Échographie
+      es: Exploraciones · Ecografía
       it: Esami · Ecografia
       pt-pt: Exames · Ecografia
     heading:
       de: Prostata und Harnblase
+      en: Prostate and bladder
+      fr: Prostate et vessie
+      es: Próstata y vejiga
       it: Prostata e vescica
       pt-pt: Próstata e bexiga
     lead:
       de: Ultraschall von Prostata und Harnblase — Größe, Restharn und Raumforderungen beurteilen.
+      en: Ultrasound of prostate and bladder — assess size, residual urine and space-occupying lesions.
+      fr: Échographie de la prostate et de la vessie — évaluer volume, résidu post-mictionnel et lésions occupant de l’espace.
+      es: Ecografía de próstata y vejiga — valorar volumen, residuo posmiccional y lesiones ocupantes de espacio.
       it: Ecografia di prostata e vescica — valutare volume, residuo post-minzionale e lesioni occupanti spazio.
       pt-pt: Ecografia da próstata e da bexiga — avaliar volume, resíduo pós-miccional e lesões expansivas.
     image: shopify-mirror://detail/sonographie-prostata-hero.jpg
@@ -44,6 +58,36 @@ sections:
         <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Prostata und der Harnblase durch. Es ist günstig, mit gefüllter Blase zur Untersuchung zu kommen.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>In young men the prostate is about the size of a walnut and weighs around 20 grams. With increasing age the prostate can enlarge, which may lead to complaints such as frequent urination, a weak stream or incomplete bladder emptying. Prostate cancer is one of the most common cancers in men.</p>
+
+        <p>During the examination we measure the size of your prostate, determine the residual urine volume and check bladder and prostate for abnormalities.</p>
+
+        <h2>How is the examination carried out?</h2>
+
+        <p>While you rest comfortably on a couch, we perform the ultrasound of the prostate and bladder. It is helpful to come to the examination with a full bladder.</p>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Chez les jeunes hommes, la prostate a environ la taille d’une noix et pèse près de 20 grammes. Avec l’âge, la prostate peut s’hypertrophier, ce qui peut entraîner des troubles comme une pollakiurie, un jet urinaire faible ou une vidange vésicale incomplète. Le cancer de la prostate est l’un des cancers les plus fréquents chez l’homme.</p>
+
+        <p>Lors de l’examen, nous mesurons le volume de votre prostate, déterminons le résidu post-mictionnel et examinons vessie et prostate à la recherche d’anomalies.</p>
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+        <p>Pendant que vous êtes confortablement allongé sur la table, nous réalisons l’échographie de la prostate et de la vessie. Il est préférable de venir à l’examen avec la vessie pleine.</p>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>En los hombres jóvenes la próstata tiene aproximadamente el tamaño de una nuez y pesa unos 20 gramos. Con la edad, la próstata puede aumentar de tamaño, lo que puede provocar molestias como urgencia urinaria frecuente, chorro miccional débil o vaciado incompleto de la vejiga. El cáncer de próstata es uno de los cánceres más frecuentes en el hombre.</p>
+
+        <p>Durante la exploración medimos el volumen de su próstata, determinamos el residuo posmiccional y valoramos la vejiga y la próstata en busca de alteraciones.</p>
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+        <p>Mientras descansa cómodamente en una camilla, realizamos la ecografía de próstata y vejiga. Es conveniente acudir con la vejiga llena.</p>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Negli uomini giovani la prostata ha all'incirca le dimensioni di una noce e pesa circa 20 grammi. Con l'avanzare dell'età la prostata può ingrandirsi, causando disturbi come pollachiuria, getto urinario debole o svuotamento vescicale incompleto. Il carcinoma prostatico è uno dei tumori più frequenti nell'uomo.</p>
 
@@ -67,10 +111,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Sonographie der Prostata und Harnblase?
+      en: Booking an ultrasound of prostate and bladder?
+      fr: Un rendez-vous pour l’échographie de la prostate et de la vessie ?
+      es: ¿Cita para una ecografía de próstata y vejiga?
       it: Vuole prenotare un'ecografia di prostata e vescica?
       pt-pt: Quer marcar uma ecografia da próstata e bexiga?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

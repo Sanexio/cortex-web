@@ -6,6 +6,8 @@ slugs:
 title:
   de: Lungenfunktion
   en: Lung function
+  fr: Fonction pulmonaire
+  es: Función pulmonar
   it: Funzione respiratoria
   pt-pt: Função pulmonar
 views:
@@ -14,6 +16,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -24,14 +29,23 @@ sections:
   - type: hero
     eyebrow:
       de: Diagnostik · Funktionell
+      en: Diagnostics · Functional
+      fr: Diagnostic · Fonctionnel
+      es: Diagnóstico · Funcional
       it: Diagnostica · Funzionale
       pt-pt: Diagnóstico · Funcional
     heading:
       de: Lungenfunktion (Spirometrie)
+      en: Lung function (spirometry)
+      fr: Fonction pulmonaire (spirométrie)
+      es: Función pulmonar (espirometría)
       it: Funzione respiratoria (spirometria)
       pt-pt: Função pulmonar (espirometria)
     lead:
       de: Lungenfunktion (Spirometrie) — schnelle Beurteilung Ihrer Atemwege und des Lungenvolumens.
+      en: Lung function (spirometry) — quick assessment of your airways and lung volume.
+      fr: Fonction pulmonaire (spirométrie) — évaluation rapide de vos voies respiratoires et de votre volume pulmonaire.
+      es: Función pulmonar (espirometría) — valoración rápida de sus vías respiratorias y del volumen pulmonar.
       it: Funzione respiratoria (spirometria) — valutazione rapida delle vie aeree e del volume polmonare.
       pt-pt: Função pulmonar (espirometria) — avaliação rápida das vias aéreas e do volume pulmonar.
     image: shopify-mirror://detail/lungenfunktion-hero.jpg
@@ -47,6 +61,36 @@ sections:
         <p>Wir setzen Ihnen zunächst eine Nasenklammer auf, da die Messung der Luftströme ausschließlich über den Mund erfolgt. Sie atmen anschließend nach Anleitung über ein Mundstück und führen vorgegebene Atemmanöver durch.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>With each breath we take about 0.5 litres of air into the lungs — around 10 litres per minute, 14,400 litres a day and over five million litres per year. The lungs are therefore the organ most directly in contact with the outside world. The lungs contain up to 500 million alveoli with a total surface area of around 70 square metres.</p>
+
+        <p>The lungs can be damaged by pollutants, congenital changes or infections. Spirometry allows lung function to be assessed easily and without pain.</p>
+
+        <h2>How is the examination carried out?</h2>
+
+        <p>First we put a nose clip on you, as the airflow measurement is taken only through the mouth. You then breathe through a mouthpiece following our instructions and carry out the specified breathing manoeuvres.</p>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>À chaque respiration, nous absorbons environ 0,5 litre d’air dans les poumons — soit près de 10 litres par minute, 14 400 litres par jour et plus de cinq millions de litres par an. Les poumons sont ainsi l’organe le plus directement en contact avec le monde extérieur. Les poumons contiennent jusqu’à 500 millions d’alvéoles avec une surface totale d’environ 70 mètres carrés.</p>
+
+        <p>Les poumons peuvent être endommagés par des polluants, des anomalies congénitales ou des infections. La spirométrie permet d’évaluer la fonction pulmonaire simplement et sans douleur.</p>
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+        <p>Nous vous mettons d’abord un pince-nez, car la mesure des flux d’air s’effectue uniquement par la bouche. Vous respirez ensuite, selon nos instructions, à travers un embout buccal et réalisez les manœuvres respiratoires demandées.</p>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>Con cada respiración inhalamos unos 0,5 litros de aire — unos 10 litros por minuto, 14.400 litros al día y más de cinco millones de litros al año. Por ello el pulmón es el órgano que está en contacto más directo con el mundo exterior. Los pulmones contienen hasta 500 millones de alvéolos, con una superficie total de unos 70 metros cuadrados.</p>
+
+        <p>El pulmón puede dañarse por sustancias nocivas, alteraciones congénitas o infecciones. La espirometría permite valorar la función pulmonar de forma sencilla e indolora.</p>
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+        <p>Primero le colocamos una pinza nasal, ya que la medición de los flujos de aire se realiza exclusivamente por la boca. A continuación respira siguiendo nuestras indicaciones a través de una boquilla y realiza las maniobras respiratorias indicadas.</p>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Con ogni respiro introduciamo nei polmoni circa 0,5 litri d'aria — circa 10 litri al minuto, 14.400 litri al giorno e oltre cinque milioni di litri all'anno. Il polmone è quindi l'organo che entra più direttamente in contatto con il mondo esterno. I polmoni contengono fino a 500 milioni di alveoli con una superficie complessiva di circa 70 metri quadrati.</p>
 
@@ -70,10 +114,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für die Lungenfunktion?
+      en: Booking a lung function test?
+      fr: Un rendez-vous pour une spirométrie ?
+      es: ¿Cita para una espirometría?
       it: Vuole prenotare una spirometria?
       pt-pt: Quer marcar uma espirometria?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

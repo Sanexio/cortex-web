@@ -5,6 +5,8 @@ slugs:
 title:
   de: Bauchspeicheldrüse
   en: Pancreas Ultrasound
+  fr: Pancréas
+  es: Páncreas
   it: Pancreas
   pt-pt: Pâncreas
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Sonographie
+      en: Examinations · Ultrasound
+      fr: Examens · Échographie
+      es: Exploraciones · Ecografía
       it: Esami · Ecografia
       pt-pt: Exames · Ecografia
     heading:
       de: Bauchspeicheldrüse
+      en: Pancreas
+      fr: Pancréas
+      es: Páncreas
       it: Pancreas
       pt-pt: Pâncreas
     lead:
       de: Ultraschall der Bauchspeicheldrüse — frühe Veränderungen erkennen.
+      en: Ultrasound of the pancreas — detect changes early.
+      fr: Échographie du pancréas — détecter précocement les modifications.
+      es: Ecografía del páncreas — detectar precozmente las alteraciones.
       it: Ecografia del pancreas — riconoscere precocemente le alterazioni.
       pt-pt: Ecografia do pâncreas — reconhecer precocemente as alterações.
     image: shopify-mirror://detail/sonographie-bauchspeicheldruese-hero.jpg
@@ -44,6 +58,36 @@ sections:
         <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Bauchspeicheldrüse und der angrenzenden Organe durch. Es ist günstig, nüchtern zur Untersuchung zu kommen.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>Although it weighs only 70 to 100 grams, the pancreas is important for digestion and glucose metabolism. It lies in the middle of the upper abdomen and is in close contact with stomach, liver, intestines and spleen.</p>
+
+        <p>Functional disorders can lead to diabetes or impaired digestion with persistent diarrhoea. Tumours of the pancreas are often difficult to detect at an early stage — ultrasound is an important examination for assessment.</p>
+
+        <h2>How is the examination carried out?</h2>
+
+        <p>While you rest comfortably on a couch, we perform the ultrasound of the pancreas and neighbouring organs. It is helpful to come fasting.</p>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Bien qu’il ne pèse que 70 à 100 grammes, le pancréas est important pour la digestion et le métabolisme du sucre. Il se situe au milieu du haut de l’abdomen et est en contact étroit avec l’estomac, le foie, l’intestin et la rate.</p>
+
+        <p>Les troubles fonctionnels peuvent conduire au diabète ou à une digestion perturbée avec diarrhée persistante. Les tumeurs du pancréas sont souvent difficiles à détecter au stade précoce — l’échographie est un examen important pour leur évaluation.</p>
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+        <p>Pendant que vous êtes confortablement allongé·e sur la table, nous réalisons l’échographie du pancréas et des organes voisins. Il est préférable de venir à jeun.</p>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>Aunque pesa solo entre 70 y 100 gramos, el páncreas es importante para la digestión y el metabolismo del azúcar. Se sitúa en el centro del abdomen superior y se relaciona estrechamente con el estómago, el hígado, el intestino y el bazo.</p>
+
+        <p>Las alteraciones funcionales pueden provocar diabetes o trastornos digestivos con diarrea persistente. Los tumores de páncreas a menudo son difíciles de detectar en estadio precoz — la ecografía es una exploración importante para su valoración.</p>
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+        <p>Mientras descansa cómodamente en una camilla, realizamos la ecografía del páncreas y los órganos vecinos. Es conveniente acudir en ayunas.</p>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Pur pesando solo dai 70 ai 100 grammi, il pancreas è fondamentale per la digestione e il metabolismo glucidico. Si trova al centro dell'addome superiore ed è a stretto contatto con stomaco, fegato, intestino e milza.</p>
 
@@ -67,10 +111,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Sonographie der Bauchspeicheldrüse?
+      en: Booking an ultrasound of the pancreas?
+      fr: Un rendez-vous pour l’échographie du pancréas ?
+      es: ¿Cita para una ecografía del páncreas?
       it: Vuole prenotare un'ecografia del pancreas?
       pt-pt: Quer marcar uma ecografia do pâncreas?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

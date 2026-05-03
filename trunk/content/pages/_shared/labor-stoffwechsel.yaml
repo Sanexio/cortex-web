@@ -5,6 +5,8 @@ slugs:
 title:
   de: Stoffwechsel
   en: Metabolism
+  fr: Métabolisme
+  es: Metabolismo
   it: Metabolismo
   pt-pt: Metabolismo
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Labor · Stoffwechsel
+      en: Laboratory · Metabolism
+      fr: Laboratoire · Métabolisme
+      es: Laboratorio · Metabolismo
       it: Laboratorio · Metabolismo
       pt-pt: Laboratório · Metabolismo
     heading:
       de: Stoffwechsel
+      en: Metabolism
+      fr: Métabolisme
+      es: Metabolismo
       it: Metabolismo
       pt-pt: Metabolismo
     lead:
       de: Stoffwechselprofil — Fett- und Zuckerstoffwechsel im Blick.
+      en: Metabolism profile — lipid and glucose metabolism at a glance.
+      fr: Profil métabolique — métabolisme des graisses et des sucres en un coup d’œil.
+      es: Perfil metabólico — metabolismo de grasas y azúcares en un vistazo.
       it: Profilo metabolico — metabolismo di lipidi e zuccheri sotto controllo.
       pt-pt: Perfil metabólico — metabolismo de lípidos e açúcares em observação.
     image: shopify-mirror://detail/labor-stoffwechsel-hero.jpg
@@ -42,6 +56,30 @@ sections:
         <p>Wir nehmen Ihnen Blut ab und bestimmen folgende Werte: Fettwerte (Triglyzeride, Gesamt-Cholesterin, LDL, HDL), HbA1c (Langzeitblutzucker), Harnsäure.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>Changes in fat and glucose metabolism are among the most important modifiable risk factors for cardiovascular diseases. With the lab profile <strong>Metabolism</strong> we assess whether there are signs of altered fat or glucose metabolism, and we additionally determine a marker for gout risk.</p>
+
+        <h2>How is the examination carried out?</h2>
+
+        <p>We take a blood sample and determine the following values: lipid values (triglycerides, total cholesterol, LDL, HDL), HbA1c (long-term glucose), uric acid.</p>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Les modifications du métabolisme des graisses et des sucres comptent parmi les facteurs de risque cardiovasculaire modifiables les plus importants. Avec le profil de laboratoire <strong>Métabolisme</strong>, nous évaluons s’il existe chez vous des indices de troubles du métabolisme lipidique ou glucidique, et nous déterminons en plus un marqueur du risque de goutte.</p>
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+        <p>Nous effectuons un prélèvement sanguin et déterminons les valeurs suivantes : bilan lipidique (triglycérides, cholestérol total, LDL, HDL), HbA1c (glycémie à long terme), acide urique.</p>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>Las alteraciones del metabolismo de grasas y azúcares se cuentan entre los factores de riesgo modificables más importantes para las enfermedades cardiovasculares. Con el perfil de laboratorio <strong>Metabolismo</strong> valoramos si existen indicios de alteraciones del metabolismo lipídico o glucídico y determinamos además un marcador del riesgo de gota.</p>
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+        <p>Le extraemos sangre y determinamos los siguientes valores: lípidos (triglicéridos, colesterol total, LDL, HDL), HbA1c (glucemia a largo plazo), ácido úrico.</p>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Le alterazioni del metabolismo lipidico e glucidico sono tra i fattori di rischio cardiovascolare più importanti e modificabili. Con il profilo di laboratorio <strong>Metabolismo</strong> valutiamo la presenza di eventuali segni di alterazione del metabolismo di grassi o zuccheri e determiniamo in aggiunta un marcatore di rischio per la gotta.</p>
 
@@ -61,10 +99,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Stoffwechsel?
+      en: Booking a metabolism panel?
+      fr: Un rendez-vous pour un profil métabolique ?
+      es: ¿Cita para un perfil metabólico?
       it: Vuole prenotare un profilo metabolico?
       pt-pt: Quer marcar um perfil metabólico?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

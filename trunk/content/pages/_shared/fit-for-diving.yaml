@@ -5,6 +5,8 @@ slugs:
 title:
   de: Tauchtauglichkeit
   en: Fit for Diving
+  fr: Aptitude à la plongée
+  es: Aptitud para el buceo
   it: Idoneità subacquea
   pt-pt: Aptidão para mergulho
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Tauchtauglichkeit
+      en: Examinations · Fitness to dive
+      fr: Examens · Aptitude à la plongée
+      es: Exploraciones · Aptitud para el buceo
       it: Esami · Idoneità subacquea
       pt-pt: Exames · Aptidão para mergulho
     heading:
       de: Tauchtauglichkeit
+      en: Fitness to dive
+      fr: Aptitude à la plongée
+      es: Aptitud para el buceo
       it: Idoneità subacquea
       pt-pt: Aptidão para mergulho
     lead:
       de: Tauchtauglichkeitsuntersuchung — Bescheinigung für Open Water und Advanced Open Water.
+      en: Fitness-to-dive examination — certification for Open Water and Advanced Open Water.
+      fr: Visite d’aptitude à la plongée — attestation pour Open Water et Advanced Open Water.
+      es: Reconocimiento de aptitud para buceo — certificación para Open Water y Advanced Open Water.
       it: Visita di idoneità subacquea — certificazione per Open Water e Advanced Open Water.
       pt-pt: Avaliação de aptidão para mergulho — certificação para Open Water e Advanced Open Water.
     image: shopify-mirror://detail/fit-for-diving-hero.jpg
@@ -51,6 +65,56 @@ sections:
 
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: >-
+        <p>The fitness-to-dive examination documents your suitability for recreational diving. We
+        offer the examination either as Open Water Diver (dive depth up to 18 metres) or as
+        Advanced Open Water Diver (dive depth up to 30 metres, also for all divers above 40 years
+        of age). Examinations for Deep-Divers or technical diving are available on request.</p>
+
+
+        <h2>How is the examination carried out?</h2>
+
+
+        <p>For Open Water Divers we perform a full clinical examination including otoscopy
+        (examination of the ear) and a lung function test. For Advanced Open Water Divers the
+        examination is supplemented with an exercise ECG.</p>
+
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: >-
+        <p>La visite d’aptitude à la plongée documente votre aptitude à la plongée sportive. Nous
+        vous examinons au choix en tant qu’Open Water Diver (profondeur jusqu’à 18 mètres) ou
+        Advanced Open Water Diver (profondeur jusqu’à 30 mètres, ainsi que pour tous les plongeurs
+        et plongeuses de plus de 40 ans). Les examens pour Deep-Divers ou la plongée technique
+        sont disponibles sur demande.</p>
+
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+
+        <p>Pour les Open Water Divers, nous réalisons un examen clinique complet incluant
+        otoscopie (examen de l’oreille) et une spirométrie. Pour les Advanced Open Water Divers,
+        l’examen est complété par un ECG d’effort.</p>
+
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: >-
+        <p>El reconocimiento de aptitud para el buceo documenta su capacidad para el buceo
+        deportivo. Le exploramos a su elección como Open Water Diver (profundidad hasta 18 metros)
+        o como Advanced Open Water Diver (profundidad hasta 30 metros, así como todas las personas
+        buceadoras mayores de 40 años). Los reconocimientos para Deep-Divers o buceo técnico están
+        disponibles bajo petición.</p>
+
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+
+        <p>Para Open Water Divers realizamos una exploración clínica completa incluyendo otoscopia
+        (exploración del oído) y una espirometría. Para Advanced Open Water Divers el
+        reconocimiento se complementa con un ECG de esfuerzo.</p>
+
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: >-
         <p>La visita di idoneità subacquea documenta la sua idoneità all'immersione sportiva.
         Eseguiamo l'esame a sua scelta come Open Water Diver (profondità fino a 18 metri) oppure
@@ -87,10 +151,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Tauchtauglichkeit?
+      en: Booking a fitness-to-dive examination?
+      fr: Un rendez-vous pour la visite de plongée ?
+      es: ¿Cita para el reconocimiento de buceo?
       it: Vuole prenotare la visita di idoneità subacquea?
       pt-pt: Quer marcar a avaliação de aptidão para mergulho?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

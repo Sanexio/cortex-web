@@ -5,6 +5,8 @@ slugs:
 title:
   de: Nieren
   en: System Renal
+  fr: Reins
+  es: Riñones
   it: Reni
   pt-pt: Rins
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Labor · System
+      en: Laboratory · System
+      fr: Laboratoire · Système
+      es: Laboratorio · Sistema
       it: Laboratorio · Sistema
       pt-pt: Laboratório · Sistema
     heading:
       de: Nieren
+      en: Kidneys
+      fr: Reins
+      es: Riñones
       it: Reni
       pt-pt: Rins
     lead:
       de: 'Nieren — Laborprofil zur Beurteilung der Nierenfunktion.'
+      en: 'Kidneys — laboratory profile for assessing kidney function.'
+      fr: 'Reins — profil de laboratoire pour l’évaluation de la fonction rénale.'
+      es: 'Riñones — perfil de laboratorio para evaluar la función renal.'
       it: 'Reni — profilo di laboratorio per la valutazione della funzione renale.'
       pt-pt: 'Rins — perfil laboratorial para avaliação da função renal.'
     image: shopify-mirror://detail/labor-system-renal-hero.jpg
@@ -49,6 +63,51 @@ sections:
         </ul>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>With the lab profile <strong>Kidneys</strong> you receive a structured assessment of kidney function. Each kidney consists of about one million filter units that continuously clean the blood of waste products. Together both kidneys filter around 360 litres of blood per day — the body's entire blood volume passes through the kidneys about 30 times a day. From this we excrete up to two litres of urine a day.</p>
+
+        <p>In a healthy adult the filtration rate is about 90–120 millilitres per minute. In the laboratory kidney function can be assessed indirectly — early signs of impairment can become visible.</p>
+
+        <h2>We analyse the following parameters:</h2>
+
+        <ul>
+        <li>Creatinine and urea (kidney function)</li>
+        <li>Sodium and potassium as indirect markers</li>
+        <li>Total protein</li>
+        <li>Protein electrophoresis</li>
+        </ul>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Avec le profil de laboratoire <strong>Reins</strong>, vous obtenez une évaluation structurée de la fonction rénale. Chaque rein est constitué d’environ un million d’unités de filtration qui débarrassent le sang de ses déchets en continu. Ensemble, les deux reins filtrent environ 360 litres de sang par jour — l’ensemble du volume sanguin traverse les reins environ 30 fois par jour. Nous éliminons ainsi jusqu’à deux litres d’urine par jour.</p>
+
+        <p>Chez un adulte en bonne santé, le débit de filtration est d’environ 90 à 120 millilitres par minute. Au laboratoire, la fonction rénale peut être appréciée indirectement — les signes d’une altération peuvent ainsi devenir visibles précocement.</p>
+
+        <h2>Nous analysons les paramètres suivants :</h2>
+
+        <ul>
+        <li>Créatinine et urée (fonction rénale)</li>
+        <li>Sodium et potassium comme marqueurs indirects</li>
+        <li>Protéines totales</li>
+        <li>Électrophorèse des protéines</li>
+        </ul>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>Con el perfil de laboratorio <strong>Riñones</strong> obtiene una valoración estructurada de la función renal. Un riñón consta de aproximadamente un millón de unidades de filtración que limpian continuamente la sangre de productos de desecho. Ambos riñones juntos filtran al día unos 360 litros de sangre — el volumen total de sangre del cuerpo atraviesa los riñones unas 30 veces al día. De ello eliminamos hasta dos litros de orina al día.</p>
+
+        <p>En un adulto sano la tasa de filtración es de unos 90 a 120 mililitros por minuto. En el laboratorio la función renal se valora de forma indirecta — así pueden hacerse visibles signos tempranos de deterioro.</p>
+
+        <h2>Analizamos los siguientes parámetros:</h2>
+
+        <ul>
+        <li>Creatinina y urea (función renal)</li>
+        <li>Sodio y potasio como marcadores indirectos</li>
+        <li>Proteínas totales</li>
+        <li>Electroforesis de proteínas</li>
+        </ul>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Con il profilo di laboratorio <strong>Reni</strong> riceve una valutazione strutturata della funzione renale. Un rene è composto da circa un milione di unità filtranti che ripuliscono continuamente il sangue dalle sostanze di scarto. I due reni insieme filtrano ogni giorno circa 360 litri di sangue — l'intero volume ematico del corpo attraversa i reni circa 30 volte al giorno. Da qui vengono eliminati fino a due litri di urina al giorno.</p>
 
@@ -82,10 +141,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Nieren?
+      en: Booking a kidney panel?
+      fr: Un rendez-vous pour un bilan rénal ?
+      es: ¿Cita para un análisis renal?
       it: Vuole prenotare un esame della funzione renale?
       pt-pt: Quer marcar uma análise da função renal?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

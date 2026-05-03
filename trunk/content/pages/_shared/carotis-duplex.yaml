@@ -6,6 +6,8 @@ slugs:
 title:
   de: Carotis-Duplex
   en: Carotid Duplex
+  fr: Doppler carotidien
+  es: Dúplex carotídeo
   it: Eco-Doppler delle carotidi
   pt-pt: Eco-Doppler das carótidas
 views:
@@ -14,6 +16,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -24,14 +29,23 @@ sections:
   - type: hero
     eyebrow:
       de: Diagnostik · Gefäße
+      en: Diagnostics · Vessels
+      fr: Diagnostic · Vaisseaux
+      es: Diagnóstico · Vascular
       it: Diagnostica · Vascolare
       pt-pt: Diagnóstico · Vascular
     heading:
       de: Carotis-Duplex-Sonographie
+      en: Carotid duplex ultrasound
+      fr: Échographie Doppler des carotides
+      es: Ecografía dúplex de las carótidas
       it: Eco-Doppler delle carotidi
       pt-pt: Eco-Doppler das carótidas
     lead:
       de: Ultraschall der Halsschlagadern — Engstellen erkennen, bevor sie zum Schlaganfall führen.
+      en: Ultrasound of the carotid arteries — detect narrowings before they lead to a stroke.
+      fr: Échographie des carotides — repérer les rétrécissements avant qu’ils ne provoquent un AVC.
+      es: Ecografía de las arterias carótidas — detectar estenosis antes de que provoquen un ictus.
       it: Ecografia delle arterie carotidi — riconoscere le stenosi prima che diano luogo a un ictus.
       pt-pt: Ecografia das artérias carótidas — reconhecer estenoses antes que conduzam a um AVC.
     image: shopify-mirror://detail/carotis-duplex-hero.jpg
@@ -47,6 +61,36 @@ sections:
         <p>Zunächst hören wir mit einem Stethoskop die Halsgefäße ab. Im Anschluss erfolgt die Ultraschalluntersuchung. Hierzu legen Sie sich auf eine Liege und überstrecken den Kopf leicht.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>The human brain makes up about 2 per cent of body weight but consumes around 20 per cent of total energy. 100 billion neurons and trillions of synapses form up to 200 million connections per second. After about 5 to 10 minutes without oxygen the brain suffers irreversible damage.</p>
+
+        <p>With ultrasound of the carotid arteries (carotid duplex) we check whether blood supply to the brain is limited by narrowings, or whether changes are already present in the vessels that may raise the risk of a stroke.</p>
+
+        <h2>How is the examination carried out?</h2>
+
+        <p>First we listen to the neck vessels with a stethoscope. The ultrasound examination follows. For this you lie on the couch and gently extend your head backwards.</p>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Le cerveau humain représente environ 2 pour cent du poids corporel mais consomme près de 20 pour cent de l’énergie totale. 100 milliards de neurones et des milliers de milliards de synapses créent jusqu’à 200 millions de connexions par seconde. Après environ 5 à 10 minutes sans oxygène, le cerveau subit des dommages irréversibles.</p>
+
+        <p>Avec l’échographie des carotides (Doppler carotidien), nous vérifions si l’apport sanguin au cerveau est limité par des rétrécissements, ou si des modifications sont déjà présentes dans les vaisseaux et peuvent augmenter le risque d’AVC.</p>
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+        <p>Nous auscultons d’abord les vaisseaux du cou avec un stéthoscope. Vient ensuite l’examen échographique. Pour cela, vous vous allongez sur la table et étendez légèrement la tête vers l’arrière.</p>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>El cerebro humano representa cerca del 2 por ciento del peso corporal, pero consume alrededor del 20 por ciento de la energía total. 100.000 millones de neuronas y billones de sinapsis establecen hasta 200 millones de conexiones por segundo. Tras unos 5 a 10 minutos sin oxígeno, el cerebro sufre daños irreversibles.</p>
+
+        <p>Con la ecografía de las arterias carótidas (dúplex carotídeo) comprobamos si el aporte de sangre al cerebro está limitado por estenosis o si en los vasos ya existen cambios que pueden aumentar el riesgo de ictus.</p>
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+        <p>Primero auscultamos los vasos del cuello con un fonendoscopio. A continuación se realiza la ecografía. Para ello se tumba en la camilla y extiende ligeramente la cabeza hacia atrás.</p>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Il cervello umano costituisce circa il 2 percento del peso corporeo ma consuma circa il 20 percento dell'energia totale. 100 miliardi di neuroni e migliaia di miliardi di sinapsi creano fino a 200 milioni di connessioni al secondo. Dopo circa 5-10 minuti di interruzione dell'apporto di ossigeno il cervello subisce un danno irreversibile.</p>
 
@@ -70,10 +114,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für die Carotis-Duplex-Sonographie?
+      en: Book a carotid duplex ultrasound?
+      fr: Prendre rendez-vous pour un Doppler carotidien ?
+      es: ¿Cita para una ecografía dúplex carotídea?
       it: Vuole prenotare un eco-Doppler delle carotidi?
       pt-pt: Quer marcar um eco-Doppler das carótidas?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

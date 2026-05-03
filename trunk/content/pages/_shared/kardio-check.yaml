@@ -5,6 +5,8 @@ slugs:
 title:
   de: Kardio-Check
   en: Cardio Check
+  fr: Cardio Check
+  es: Cardio Check
   it: Kardio-Check
   pt-pt: Kardio-Check
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Vorsorge
+      en: Examinations · Prevention
+      fr: Examens · Prévention
+      es: Exploraciones · Prevención
       it: Esami · Prevenzione
       pt-pt: Exames · Prevenção
     heading:
       de: Kardio-Check
+      en: Cardio Check
+      fr: Cardio Check
+      es: Cardio Check
       it: Kardio-Check
       pt-pt: Kardio-Check
     lead:
       de: Kardio-Check — strukturierte Beurteilung von Herz und Lunge in einer Untersuchung.
+      en: Cardio Check — structured assessment of heart and lungs in a single examination.
+      fr: Cardio Check — évaluation structurée du cœur et des poumons en un seul examen.
+      es: Cardio Check — valoración estructurada del corazón y los pulmones en una sola exploración.
       it: Kardio-Check — valutazione strutturata di cuore e polmoni in un unico esame.
       pt-pt: Kardio-Check — avaliação estruturada de coração e pulmões num único exame.
     image: shopify-mirror://detail/kardio-check-hero.jpg
@@ -54,6 +68,66 @@ sections:
 
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: >-
+        <p>The heart beats on average about 70 times per minute — over 100,000 times per day and
+        more than 36 million times per year. It pumps about five litres of blood per minute, which
+        amounts to more than 7,000 litres per day. Under load a healthy heart can pump up to 30
+        litres per minute.</p>
+
+
+        <p>In the Cardio Check we assess heart and lungs in a structured examination — both at rest
+        and under controlled load.</p>
+
+
+        <h2>How is the examination carried out?</h2>
+
+
+        <p>We start with a clinical examination — auscultation of heart and lungs. We then perform
+        a cardiac ultrasound (echocardiography). This is followed by an exercise ECG (ergometry)
+        and a lung function test (spirometry).</p>
+
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: >-
+        <p>Le cœur bat en moyenne environ 70 fois par minute — soit plus de 100 000 fois par jour
+        et plus de 36 millions de fois par an. Il pompe environ cinq litres de sang par minute,
+        soit plus de 7 000 litres par jour. À l’effort, un cœur sain peut pomper jusqu’à 30 litres
+        par minute.</p>
+
+
+        <p>Lors du Cardio Check, nous évaluons le cœur et les poumons lors d’un examen structuré —
+        au repos comme sous effort contrôlé.</p>
+
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+
+        <p>Nous commençons par un examen clinique — auscultation du cœur et des poumons. Nous
+        réalisons ensuite une échocardiographie. Suivent un ECG d’effort (ergométrie) et une
+        spirométrie (fonction pulmonaire).</p>
+
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: >-
+        <p>El corazón late en promedio unas 70 veces por minuto — más de 100.000 veces al día y
+        más de 36 millones de veces al año. Bombea unos cinco litros de sangre por minuto, lo que
+        supone más de 7.000 litros al día. Bajo esfuerzo, un corazón sano puede bombear hasta 30
+        litros por minuto.</p>
+
+
+        <p>En el Cardio Check valoramos el corazón y los pulmones en una exploración estructurada
+        — tanto en reposo como bajo esfuerzo controlado.</p>
+
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+
+        <p>Comenzamos con una exploración clínica — auscultación de corazón y pulmones. A
+        continuación realizamos una ecografía cardíaca (ecocardiografía). Le siguen un ECG de
+        esfuerzo (ergometría) y una espirometría (función pulmonar).</p>
+
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: >-
         <p>Il cuore batte in media circa 70 volte al minuto — oltre 100.000 volte al giorno e più
         di 36 milioni di volte all'anno. Pompa circa cinque litri di sangue al minuto, vale a dire
@@ -97,10 +171,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Kardio-Check?
+      en: Booking a Cardio Check?
+      fr: Un rendez-vous pour un Cardio Check ?
+      es: ¿Cita para un Cardio Check?
       it: Vuole prenotare un Kardio-Check?
       pt-pt: Quer marcar um Kardio-Check?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

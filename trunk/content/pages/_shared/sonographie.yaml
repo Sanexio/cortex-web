@@ -6,6 +6,8 @@ slugs:
 title:
   de: Sonographie
   en: Ultrasound
+  fr: Échographie
+  es: Ecografía
   it: Ecografia
   pt-pt: Ecografia
 views:
@@ -14,6 +16,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -24,20 +29,32 @@ sections:
   - type: hero
     eyebrow:
       de: Diagnostik · Sonographie
+      en: Diagnostics · Ultrasound
+      fr: Diagnostic · Échographie
+      es: Diagnóstico · Ecografía
       it: Diagnostica · Ecografia
       pt-pt: Diagnóstico · Ecografia
     heading:
       de: Sonographie
+      en: Ultrasound
+      fr: Échographie
+      es: Ecografía
       it: Ecografia
       pt-pt: Ecografia
     lead:
       de: Sonographie des Bauchraums — alle wichtigen Organe in einer Untersuchung.
+      en: Abdominal ultrasound — all the main organs in a single examination.
+      fr: Échographie abdominale — tous les organes importants en un seul examen.
+      es: Ecografía abdominal — todos los órganos importantes en una sola exploración.
       it: Ecografia dell'addome — tutti gli organi principali in un unico esame.
       pt-pt: Ecografia abdominal — todos os órgãos principais num só exame.
     image: shopify-mirror://detail/sonographie-hero.jpg
   - type: body
     heading:
       de: Sonographie der Bauchorgane
+      en: Ultrasound of the abdominal organs
+      fr: Échographie des organes abdominaux
+      es: Ecografía de los órganos abdominales
       it: Ecografia degli organi addominali
       pt-pt: Ecografia dos órgãos abdominais
     body_html:
@@ -60,6 +77,63 @@ sections:
         <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Organe durch. Es ist günstig, nüchtern zur Untersuchung zu kommen. Die Untersuchung dauert etwa 45 Minuten.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>In the abdominal ultrasound we assess all the important internal organs in a single examination — pain-free, radiation-free, in about 45 minutes.</p>
+
+        <p>What we look at:</p>
+
+        <ul>
+        <li><strong>Liver</strong> — an organ that can regenerate to its normal size within months even after losing 75 per cent of its substance.</li>
+        <li><strong>Kidneys</strong> — filter up to 55,000 litres of blood each year.</li>
+        <li><strong>Spleen</strong> — works like the body's oil filter; changes point to diseases of the blood or the lymphatic system.</li>
+        <li><strong>Pancreas</strong> — only 100 grams in weight but central for digestion and glucose metabolism.</li>
+        <li><strong>Intestines</strong> — about 7 metres long, with walls only a few millimetres thick and a rich microbiome.</li>
+        <li>Gallbladder and bile ducts, bladder, prostate or uterus, pelvic vessels and leg vessels.</li>
+        </ul>
+
+        <h2>How is the examination carried out?</h2>
+
+        <p>While you rest comfortably on the examination couch, we perform the ultrasound of the organs. It is helpful to come fasting. The examination takes about 45 minutes.</p>
+
+        <p>At the end you receive your personal findings report.</p>
+      fr: |-
+        <p>Lors de l’échographie abdominale, nous évaluons tous les organes internes importants en un seul examen — indolore, sans rayonnement, en environ 45 minutes.</p>
+
+        <p>Ce que nous examinons :</p>
+
+        <ul>
+        <li><strong>Foie</strong> — un organe capable de retrouver sa taille normale en quelques mois, même après avoir perdu 75 pour cent de sa substance.</li>
+        <li><strong>Reins</strong> — filtrent jusqu’à 55 000 litres de sang par an.</li>
+        <li><strong>Rate</strong> — fonctionne comme le filtre à huile de l’organisme ; ses altérations renvoient à des maladies du sang ou du système lymphatique.</li>
+        <li><strong>Pancréas</strong> — ne pèse que 100 grammes mais reste central pour la digestion et le métabolisme du sucre.</li>
+        <li><strong>Intestin</strong> — environ 7 mètres de long, des parois de quelques millimètres seulement et un microbiote très riche.</li>
+        <li>Vésicule et voies biliaires, vessie, prostate ou utérus, vaisseaux pelviens et des membres inférieurs.</li>
+        </ul>
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+        <p>Pendant que vous êtes confortablement allongé·e sur la table, nous réalisons l’échographie des organes. Il est préférable de venir à jeun. L’examen dure environ 45 minutes.</p>
+
+        <p>À la fin, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>En la ecografía abdominal evaluamos todos los órganos internos importantes en una sola exploración — indolora, sin radiación, en unos 45 minutos.</p>
+
+        <p>Qué revisamos:</p>
+
+        <ul>
+        <li><strong>Hígado</strong> — un órgano capaz de recuperar su tamaño normal en meses, incluso tras perder el 75 por ciento de su sustancia.</li>
+        <li><strong>Riñones</strong> — filtran hasta 55.000 litros de sangre al año.</li>
+        <li><strong>Bazo</strong> — funciona como el filtro de aceite del cuerpo; sus alteraciones apuntan a enfermedades de la sangre o del sistema linfático.</li>
+        <li><strong>Páncreas</strong> — pesa solo 100 gramos pero es central para la digestión y el metabolismo del azúcar.</li>
+        <li><strong>Intestino</strong> — unos 7 metros de longitud, paredes de pocos milímetros y un microbioma muy rico.</li>
+        <li>Vesícula biliar y vías biliares, vejiga, próstata o útero, vasos pélvicos y de las piernas.</li>
+        </ul>
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+        <p>Mientras descansa cómodamente en una camilla, realizamos la ecografía de los órganos. Es conveniente acudir en ayunas. La exploración dura unos 45 minutos.</p>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Nell'ecografia dell'addome valutiamo tutti gli organi interni principali in un unico esame — indolore, senza radiazioni, in circa 45 minuti.</p>
 
@@ -97,53 +171,56 @@ sections:
 
         <p>Enquanto descansa relaxado na maca, realizamos a ecografia dos órgãos. É preferível comparecer em jejum. O exame dura aproximadamente 45 minutos.</p>
 
-        <p>No final entregamos-lhe o seu relatório pessoal.</p>
+        <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: bento-grid
     heading:
       de: Weitere Sonographie-Untersuchungen
+      en: Other ultrasound examinations
+      fr: Autres examens échographiques
+      es: Otras exploraciones ecográficas
       it: Altri esami ecografici
       pt-pt: Outros exames ecográficos
     items:
       - id: schilddruese
-        title:
-          de: Schilddrüsen-Sonographie
-          it: Ecografia della tiroide
-          pt-pt: Ecografia da tiroide
+        title: { de: Schilddrüsen-Sonographie, en: Thyroid ultrasound, fr: Échographie thyroïdienne, es: Ecografía tiroidea, it: Ecografia della tiroide, pt-pt: Ecografia da tiroide }
         teaser:
           de: Knoten, Zysten und Größenveränderungen sichtbar machen.
+          en: Make nodules, cysts and size changes visible.
+          fr: Rendre visibles nodules, kystes et variations de volume.
+          es: Hacer visibles nódulos, quistes y variaciones de tamaño.
           it: Rendere visibili noduli, cisti e variazioni di volume.
           pt-pt: Tornar visíveis nódulos, quistos e alterações de volume.
         image: shopify-mirror://diagnostik/diag-schilddruese.jpg
         href: /sonographie/schilddruese/
       - id: beingefaesse
-        title:
-          de: Gefäß-Sonographie der Beine
-          it: Eco-Doppler degli arti inferiori
-          pt-pt: Eco-Doppler dos membros inferiores
+        title: { de: Gefäß-Sonographie der Beine, en: Ultrasound of the leg vessels, fr: Échographie des vaisseaux des jambes, es: Ecografía de los vasos de las piernas, it: Eco-Doppler degli arti inferiori, pt-pt: Eco-Doppler dos membros inferiores }
         teaser:
           de: Thrombosen, Krampfadern und arterielle Durchblutungsstörungen direkt sichtbar.
+          en: Thromboses, varicose veins and arterial perfusion problems directly visible.
+          fr: Thromboses, varices et troubles de la perfusion artérielle directement visibles.
+          es: Trombosis, varices y trastornos de la perfusión arterial directamente visibles.
           it: Trombosi, varici e alterazioni della circolazione arteriosa visibili direttamente.
           pt-pt: Tromboses, varizes e alterações da circulação arterial directamente visíveis.
         image: shopify-mirror://diagnostik/diag-belastungs-ekg.jpg
         href: /sonographie/beingefaesse/
       - id: echokardiographie
-        title:
-          de: Echokardiographie
-          it: Ecocardiografia
-          pt-pt: Ecocardiografia
+        title: { de: Echokardiographie, en: Echocardiography, fr: Échocardiographie, es: Ecocardiografía, it: Ecocardiografia, pt-pt: Ecocardiografia }
         teaser:
           de: Ultraschall des Herzens — Pumpfunktion, Klappen, Wandbewegungen.
+          en: Ultrasound of the heart — pump function, valves, wall motion.
+          fr: Échographie du cœur — fonction de pompe, valves, motilité pariétale.
+          es: Ecografía del corazón — función de bomba, válvulas, motilidad parietal.
           it: Ecografia del cuore — funzione di pompa, valvole, motilità parietale.
           pt-pt: Ecografia do coração — função de bomba, válvulas, motilidade das paredes.
         image: shopify-mirror://diagnostik/diag-echokardiographie.jpg
         href: /echokardiographie/
       - id: carotis
-        title:
-          de: Carotis-Duplex
-          it: Eco-Doppler delle carotidi
-          pt-pt: Eco-Doppler das carótidas
+        title: { de: Carotis-Duplex, en: Carotid Duplex, fr: Doppler carotidien, es: Dúplex carotídeo, it: Eco-Doppler delle carotidi, pt-pt: Eco-Doppler das carótidas }
         teaser:
           de: Halsschlagadern — frühe Hinweise auf Gefäßveränderungen.
+          en: Carotid arteries — early signs of vascular changes.
+          fr: Artères carotides — signaux précoces d’altérations vasculaires.
+          es: Arterias carótidas — signos tempranos de alteraciones vasculares.
           it: Arterie carotidi — segnali precoci di alterazioni vascolari.
           pt-pt: Artérias carótidas — sinais precoces de alterações vasculares.
         image: shopify-mirror://diagnostik/diag-carotis.jpg
@@ -151,14 +228,23 @@ sections:
   - type: cta-banner
     heading:
       de: Welche Sonographie passt zu Ihnen?
+      en: Which ultrasound suits you?
+      fr: Quelle échographie vous convient ?
+      es: ¿Qué ecografía se ajusta a usted?
       it: Quale ecografia fa al caso suo?
       pt-pt: Que ecografia se adequa a si?
     sub:
       de: Wir besprechen im Erstgespräch, was sinnvoll ist — und was nicht.
+      en: In the first consultation we discuss what makes sense — and what doesn't.
+      fr: Lors du premier entretien, nous discutons de ce qui est utile — et de ce qui ne l’est pas.
+      es: En la primera consulta hablamos sobre qué tiene sentido — y qué no.
       it: Nel colloquio iniziale chiariamo cosa è opportuno — e cosa no.
       pt-pt: Na primeira conversa esclarecemos o que faz sentido — e o que não.
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

@@ -5,6 +5,8 @@ slugs:
 title:
   de: Risikoprofil
   en: Risk Profile
+  fr: Profil de risque
+  es: Perfil de riesgo
   it: Profilo di rischio
   pt-pt: Perfil de risco
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Labor · Risiko
+      en: Laboratory · Risk
+      fr: Laboratoire · Risque
+      es: Laboratorio · Riesgo
       it: Laboratorio · Rischio
       pt-pt: Laboratório · Risco
     heading:
       de: Risikoprofil
+      en: Risk Profile
+      fr: Profil de risque
+      es: Perfil de riesgo
       it: Profilo di rischio
       pt-pt: Perfil de risco
     lead:
       de: Risikoprofil — orientierender Laborüberblick zu Stoffwechsel, Leber und Niere.
+      en: Risk profile — orienting laboratory overview of metabolism, liver and kidney.
+      fr: Profil de risque — vue laboratoire d’orientation sur métabolisme, foie et reins.
+      es: Perfil de riesgo — visión laboratorial orientadora sobre metabolismo, hígado y riñón.
       it: Profilo di rischio — panoramica laboratoristica orientativa su metabolismo, fegato e reni.
       pt-pt: Perfil de risco — visão laboratorial orientadora sobre metabolismo, fígado e rins.
     image: shopify-mirror://detail/labor-risikoprofil-hero.jpg
@@ -51,6 +65,57 @@ sections:
         <h2>Wie wird die Untersuchung durchgeführt?</h2>
 
         <p>Wir nehmen Ihnen Blut ab und bestimmen die genannten Parameter im Labor. Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>With the lab profile <strong>Risk profile</strong> you receive — with just a single pinprick — an orienting overview of central metabolic and organ parameters; signs of changes that are often not noticeable in everyday life.</p>
+
+        <h2>We analyse the following parameters:</h2>
+
+        <ul>
+        <li>Lipid values: triglycerides, total cholesterol, LDL, HDL</li>
+        <li>HbA1c (long-term glucose)</li>
+        <li>Creatinine (kidney function)</li>
+        <li>Liver enzymes: AST (GOT), ALT (GPT), gamma-GT</li>
+        <li>Uric acid</li>
+        <li>Blood count with differentiation of white blood cells</li>
+        </ul>
+
+        <h2>How is the examination carried out?</h2>
+
+        <p>We take a blood sample and determine the listed parameters in the laboratory. At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Avec le profil de laboratoire <strong>Profil de risque</strong>, vous obtenez en une seule piqûre une vue d’orientation sur les paramètres métaboliques et d’organes centraux — indices de modifications qui, au quotidien, ne sont souvent pas perceptibles.</p>
+
+        <h2>Nous analysons les paramètres suivants :</h2>
+
+        <ul>
+        <li>Bilan lipidique : triglycérides, cholestérol total, LDL, HDL</li>
+        <li>HbA1c (glycémie à long terme)</li>
+        <li>Créatinine (fonction rénale)</li>
+        <li>Enzymes hépatiques : ASAT, ALAT, gamma-GT</li>
+        <li>Acide urique</li>
+        <li>Numération sanguine avec différenciation des leucocytes</li>
+        </ul>
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+        <p>Nous effectuons un prélèvement sanguin et déterminons les paramètres mentionnés au laboratoire. À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>Con el perfil de laboratorio <strong>Perfil de riesgo</strong> obtiene con un solo pinchazo una visión orientadora de los parámetros metabólicos y de órganos centrales — indicios de cambios que en el día a día a menudo no son perceptibles.</p>
+
+        <h2>Analizamos los siguientes parámetros:</h2>
+
+        <ul>
+        <li>Lípidos: triglicéridos, colesterol total, LDL, HDL</li>
+        <li>HbA1c (glucemia a largo plazo)</li>
+        <li>Creatinina (función renal)</li>
+        <li>Enzimas hepáticas: GOT, GPT, gamma-GT</li>
+        <li>Ácido úrico</li>
+        <li>Hemograma con diferenciación de leucocitos</li>
+        </ul>
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+        <p>Le extraemos sangre y determinamos los parámetros indicados en el laboratorio. Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Con il profilo di laboratorio <strong>Profilo di rischio</strong> riceve, con un solo prelievo, una panoramica orientativa dei principali parametri metabolici e d'organo — indicazioni su alterazioni che nella vita quotidiana spesso non sono percepibili.</p>
 
@@ -88,10 +153,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Risikoprofil?
+      en: Booking a risk profile?
+      fr: Un rendez-vous pour un profil de risque ?
+      es: ¿Cita para un perfil de riesgo?
       it: Vuole prenotare un Profilo di rischio?
       pt-pt: Quer marcar um Perfil de risco?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

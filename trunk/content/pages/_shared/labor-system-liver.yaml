@@ -5,6 +5,8 @@ slugs:
 title:
   de: Leber
   en: System Liver
+  fr: Foie
+  es: Hígado
   it: Fegato
   pt-pt: Fígado
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Labor · System
+      en: Laboratory · System
+      fr: Laboratoire · Système
+      es: Laboratorio · Sistema
       it: Laboratorio · Sistema
       pt-pt: Laboratório · Sistema
     heading:
       de: Leber
+      en: Liver
+      fr: Foie
+      es: Hígado
       it: Fegato
       pt-pt: Fígado
     lead:
       de: 'Leber — Laborprofil zur Beurteilung der Leberfunktion.'
+      en: 'Liver — laboratory profile for assessing liver function.'
+      fr: 'Foie — profil de laboratoire pour l’évaluation de la fonction hépatique.'
+      es: 'Hígado — perfil de laboratorio para evaluar la función hepática.'
       it: 'Fegato — profilo di laboratorio per la valutazione della funzione epatica.'
       pt-pt: 'Fígado — perfil laboratorial para avaliação da função hepática.'
     image: shopify-mirror://detail/labor-system-liver-hero.jpg
@@ -50,6 +64,54 @@ sections:
         </ul>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>With the lab profile <strong>Liver</strong> you receive a structured assessment of liver function. Key tasks of the liver are detoxification — the breakdown and conversion of endogenous and external substances such as medications and alcohol —, the storage of nutrients and the regulation of fat, sugar and protein metabolism. The liver filters the entire blood volume up to 30 times a day and is closely involved in immune defence.</p>
+
+        <p>Unfavourable nutrition, certain medications or excessive alcohol consumption can lead to chronic changes in the liver — up to liver cirrhosis or liver tumours.</p>
+
+        <h2>We analyse the following parameters:</h2>
+
+        <ul>
+        <li>AST (GOT), ALT (GPT), gamma-GT, bilirubin, CHE as orienting markers of liver function</li>
+        <li>Creatinine and urea (kidney function)</li>
+        <li>Sodium and potassium as indirect markers</li>
+        <li>Total protein</li>
+        <li>Protein electrophoresis</li>
+        </ul>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Avec le profil de laboratoire <strong>Foie</strong>, vous obtenez une évaluation structurée de la fonction hépatique. Les missions centrales du foie sont la détoxication — c’est-à-dire la dégradation et la transformation de substances endogènes et exogènes telles que médicaments et alcool —, le stockage des nutriments et la régulation du métabolisme des graisses, des sucres et des protéines. Le foie filtre l’ensemble du volume sanguin jusqu’à 30 fois par jour et est étroitement impliqué dans la défense immunitaire.</p>
+
+        <p>Une alimentation défavorable, certains médicaments ou une consommation excessive d’alcool peuvent entraîner des modifications chroniques du foie — jusqu’à la cirrhose ou des tumeurs hépatiques.</p>
+
+        <h2>Nous analysons les paramètres suivants :</h2>
+
+        <ul>
+        <li>ASAT, ALAT, gamma-GT, bilirubine, cholinestérase comme marqueurs d’orientation de la fonction hépatique</li>
+        <li>Créatinine et urée (fonction rénale)</li>
+        <li>Sodium et potassium comme marqueurs indirects</li>
+        <li>Protéines totales</li>
+        <li>Électrophorèse des protéines</li>
+        </ul>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>Con el perfil de laboratorio <strong>Hígado</strong> obtiene una valoración estructurada de la función hepática. Las funciones centrales del hígado son la desintoxicación — es decir, la degradación y transformación de sustancias endógenas y externas como medicamentos y alcohol —, el almacenamiento de nutrientes y la regulación del metabolismo de grasas, azúcares y proteínas. El hígado filtra el volumen total de sangre hasta 30 veces al día y está estrechamente implicado en la defensa inmunitaria.</p>
+
+        <p>Una alimentación desfavorable, ciertos medicamentos o un consumo excesivo de alcohol pueden provocar alteraciones crónicas del hígado — hasta cirrosis hepática o tumores hepáticos.</p>
+
+        <h2>Analizamos los siguientes parámetros:</h2>
+
+        <ul>
+        <li>GOT, GPT, gamma-GT, bilirrubina, CHE como marcadores orientativos de la función hepática</li>
+        <li>Creatinina y urea (función renal)</li>
+        <li>Sodio y potasio como marcadores indirectos</li>
+        <li>Proteínas totales</li>
+        <li>Electroforesis de proteínas</li>
+        </ul>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Con il profilo di laboratorio <strong>Fegato</strong> riceve una valutazione strutturata della funzione epatica. Compiti centrali del fegato sono la detossificazione — ossia la degradazione e la trasformazione di sostanze endogene ed esterne come farmaci e alcol —, il deposito di nutrienti e la regolazione del metabolismo di grassi, zuccheri e proteine. Il fegato filtra l'intero volume ematico fino a 30 volte al giorno ed è strettamente coinvolto nella risposta immunitaria.</p>
 
@@ -85,10 +147,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Leber?
+      en: Booking a liver panel?
+      fr: Un rendez-vous pour un bilan hépatique ?
+      es: ¿Cita para un análisis hepático?
       it: Vuole prenotare un esame della funzione epatica?
       pt-pt: Quer marcar uma análise da função hepática?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

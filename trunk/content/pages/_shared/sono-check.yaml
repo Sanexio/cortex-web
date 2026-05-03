@@ -5,6 +5,8 @@ slugs:
 title:
   de: Sono-Check
   en: Sono Check
+  fr: Sono Check
+  es: Sono Check
   it: Sono-Check
   pt-pt: Sono-Check
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Vorsorge
+      en: Examinations · Prevention
+      fr: Examens · Prévention
+      es: Exploraciones · Prevención
       it: Esami · Prevenzione
       pt-pt: Exames · Prevenção
     heading:
       de: Sono-Check
+      en: Sono-Check
+      fr: Sono-Check
+      es: Sono-Check
       it: Sono-Check
       pt-pt: Sono-Check
     lead:
       de: Sono-Check — alle wichtigen Organe in einer Ultraschalluntersuchung.
+      en: Sono-Check — all the important organs in a single ultrasound examination.
+      fr: Sono-Check — tous les organes importants en une seule échographie.
+      es: Sono-Check — todos los órganos importantes en una sola ecografía.
       it: Sono-Check — tutti gli organi principali in un'unica ecografia.
       pt-pt: Sono-Check — todos os órgãos principais numa única ecografia.
     image: shopify-mirror://detail/sono-check-hero.jpg
@@ -79,6 +93,138 @@ sections:
 
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: >-
+        <p>In the Sono-Check we assess all the important internal organs in a single examination.
+        Among other things we check:</p>
+
+
+        <ul>
+
+        <li><strong>Thyroid</strong> — nodules and size changes</li>
+
+        <li><strong>Neck vessels</strong> — signs of calcification</li>
+
+        <li><strong>Heart</strong> — pump function and structural changes</li>
+
+        <li><strong>Spleen</strong> — size and space-occupying lesions</li>
+
+        <li><strong>Kidneys</strong> — urinary congestion, cysts or space-occupying lesions</li>
+
+        <li><strong>Liver</strong> — fatty and structural changes</li>
+
+        <li><strong>Bile ducts</strong> — gallstones, congestion</li>
+
+        <li><strong>Pancreas</strong> — cysts or space-occupying lesions</li>
+
+        <li><strong>Bowel</strong> — signs of inflammatory changes</li>
+
+        <li><strong>Bladder</strong> — signs of polyps</li>
+
+        <li><strong>Prostate</strong> — size and space-occupying lesions</li>
+
+        <li><strong>Uterus</strong> — fibroids and other changes</li>
+
+        <li><strong>Pelvic and leg vessels</strong> — signs of calcification</li>
+
+        </ul>
+
+
+        <h2>How is the examination carried out?</h2>
+
+
+        <p>While you rest comfortably on the couch, we perform the ultrasound of the organs. It is
+        advisable to come fasting. The examination takes about 45 minutes.</p>
+
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: >-
+        <p>Lors du Sono-Check, nous évaluons en un seul examen tous les organes internes importants.
+        Nous contrôlons entre autres :</p>
+
+
+        <ul>
+
+        <li><strong>Thyroïde</strong> — nodules et variations de taille</li>
+
+        <li><strong>Vaisseaux du cou</strong> — indices de calcifications</li>
+
+        <li><strong>Cœur</strong> — fonction de pompe et modifications structurelles</li>
+
+        <li><strong>Rate</strong> — taille et lésions occupant de l’espace</li>
+
+        <li><strong>Reins</strong> — stase urinaire, kystes ou lésions occupant de l’espace</li>
+
+        <li><strong>Foie</strong> — modifications graisseuses et structurelles</li>
+
+        <li><strong>Voies biliaires</strong> — calculs, stase</li>
+
+        <li><strong>Pancréas</strong> — kystes ou lésions occupant de l’espace</li>
+
+        <li><strong>Intestin</strong> — indices de modifications inflammatoires</li>
+
+        <li><strong>Vessie</strong> — indices de polypes</li>
+
+        <li><strong>Prostate</strong> — taille et lésions occupant de l’espace</li>
+
+        <li><strong>Utérus</strong> — myomes et autres modifications</li>
+
+        <li><strong>Vaisseaux pelviens et des membres inférieurs</strong> — indices de calcifications</li>
+
+        </ul>
+
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+
+        <p>Pendant que vous êtes confortablement allongé·e sur la table, nous réalisons l’échographie
+        des organes. Il est conseillé de venir à jeun. L’examen dure environ 45 minutes.</p>
+
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: >-
+        <p>En el Sono-Check evaluamos en una sola exploración todos los órganos internos
+        importantes. Entre otras cosas comprobamos:</p>
+
+
+        <ul>
+
+        <li><strong>Tiroides</strong> — nódulos y cambios de tamaño</li>
+
+        <li><strong>Vasos del cuello</strong> — signos de calcificación</li>
+
+        <li><strong>Corazón</strong> — función de bomba y alteraciones estructurales</li>
+
+        <li><strong>Bazo</strong> — tamaño y lesiones ocupantes de espacio</li>
+
+        <li><strong>Riñones</strong> — estasis urinaria, quistes o lesiones ocupantes de espacio</li>
+
+        <li><strong>Hígado</strong> — alteraciones grasas y estructurales</li>
+
+        <li><strong>Vías biliares</strong> — cálculos, estasis</li>
+
+        <li><strong>Páncreas</strong> — quistes o lesiones ocupantes de espacio</li>
+
+        <li><strong>Intestino</strong> — signos de alteraciones inflamatorias</li>
+
+        <li><strong>Vejiga</strong> — signos de pólipos</li>
+
+        <li><strong>Próstata</strong> — tamaño y lesiones ocupantes de espacio</li>
+
+        <li><strong>Útero</strong> — miomas y otras alteraciones</li>
+
+        <li><strong>Vasos pélvicos y de las piernas</strong> — signos de calcificación</li>
+
+        </ul>
+
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+
+        <p>Mientras descansa cómodamente en una camilla, realizamos la ecografía de los órganos. Es
+        conveniente acudir en ayunas. La exploración dura unos 45 minutos.</p>
+
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: >-
         <p>Nel Sono-Check valutiamo in un unico esame tutti gli organi interni principali.
         Verifichiamo, tra l'altro:</p>
@@ -170,10 +316,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Sono-Check?
+      en: Booking a Sono-Check?
+      fr: Un rendez-vous pour un Sono-Check ?
+      es: ¿Cita para un Sono-Check?
       it: Vuole prenotare un Sono-Check?
       pt-pt: Quer marcar um Sono-Check?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

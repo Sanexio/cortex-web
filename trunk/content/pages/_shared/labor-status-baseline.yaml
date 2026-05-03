@@ -5,6 +5,8 @@ slugs:
 title:
   de: Basis-Check
   en: Status Baseline
+  fr: Status Baseline
+  es: Status Baseline
   it: Status Baseline
   pt-pt: Status Baseline
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Labor · Status
+      en: Laboratory · Status
+      fr: Laboratoire · Status
+      es: Laboratorio · Status
       it: Laboratorio · Status
       pt-pt: Laboratório · Status
     heading:
       de: Basis-Check
+      en: Status Baseline
+      fr: Status Baseline
+      es: Status Baseline
       it: Status Baseline
       pt-pt: Status Baseline
     lead:
       de: 'Basis-Check — schneller Bluttest zur orientierenden Einschätzung zentraler Organfunktionen.'
+      en: 'Status Baseline — quick blood test for an initial overview of key organ functions.'
+      fr: 'Status Baseline — bilan sanguin rapide pour une orientation sur les principales fonctions d’organe.'
+      es: 'Status Baseline — análisis de sangre rápido para una valoración orientadora de las principales funciones de órgano.'
       it: 'Status Baseline — esame del sangue rapido per un orientamento iniziale sulle principali funzioni d''organo.'
       pt-pt: 'Status Baseline — análise ao sangue rápida para uma avaliação orientadora das principais funções dos órgãos.'
     image: shopify-mirror://detail/labor-status-baseline-hero.png
@@ -48,6 +62,48 @@ sections:
         </ul>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>The lab profile <strong>Status Baseline</strong> is a quick blood test for an orienting assessment of key organ functions as well as glucose and lipid metabolism. With a single pinprick you already get an initial overview of relevant lab values that can give early signs of strain on heart, vessels, liver and kidneys.</p>
+
+        <h2>We analyse the following parameters:</h2>
+
+        <ul>
+        <li>LDL cholesterol (cardiovascular risk profile)</li>
+        <li>HbA1c (long-term glucose)</li>
+        <li>Creatinine (kidney function)</li>
+        <li>Gamma-GT (liver function)</li>
+        <li>Blood count to detect changes in blood cells</li>
+        </ul>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Le profil de laboratoire <strong>Status Baseline</strong> est un bilan sanguin rapide pour une évaluation d’orientation des fonctions d’organe principales ainsi que du métabolisme glucidique et lipidique. D’une simple piqûre, vous obtenez déjà un aperçu de valeurs sanguines pertinentes pouvant indiquer précocement une sollicitation du cœur, des vaisseaux, du foie et des reins.</p>
+
+        <h2>Nous analysons les paramètres suivants :</h2>
+
+        <ul>
+        <li>Cholestérol LDL (profil de risque cardiovasculaire)</li>
+        <li>HbA1c (glycémie à long terme)</li>
+        <li>Créatinine (fonction rénale)</li>
+        <li>Gamma-GT (fonction hépatique)</li>
+        <li>Numération sanguine pour détecter les modifications des cellules</li>
+        </ul>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>El perfil de laboratorio <strong>Status Baseline</strong> es un análisis de sangre rápido para una valoración orientadora de las funciones de órgano centrales y del metabolismo glucídico y lipídico. Con un pequeño pinchazo recibe una primera estimación de valores relevantes que pueden indicar tempranamente sobrecarga del corazón, los vasos, el hígado y los riñones.</p>
+
+        <h2>Analizamos los siguientes parámetros:</h2>
+
+        <ul>
+        <li>Colesterol LDL (perfil de riesgo cardiovascular)</li>
+        <li>HbA1c (glucemia a largo plazo)</li>
+        <li>Creatinina (función renal)</li>
+        <li>Gamma-GT (función hepática)</li>
+        <li>Hemograma para detectar alteraciones de las células sanguíneas</li>
+        </ul>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>Il profilo di laboratorio <strong>Status Baseline</strong> è un esame del sangue rapido per un orientamento iniziale su importanti funzioni d'organo e sul metabolismo glucidico e lipidico. Già con un piccolo prelievo riceve una prima valutazione di valori rilevanti, capaci di segnalare precocemente sollecitazioni di cuore, vasi, fegato e reni.</p>
 
@@ -79,10 +135,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Basis-Check?
+      en: Booking a Status Baseline?
+      fr: Un rendez-vous pour un Status Baseline ?
+      es: ¿Cita para un Status Baseline?
       it: Vuole prenotare uno Status Baseline?
       pt-pt: Quer marcar um Status Baseline?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/

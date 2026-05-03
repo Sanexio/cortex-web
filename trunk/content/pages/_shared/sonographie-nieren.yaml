@@ -5,6 +5,8 @@ slugs:
 title:
   de: Nieren und Harnwege
   en: Kidney and Urinary Tract Ultrasound
+  fr: Reins et voies urinaires
+  es: Riñones y vías urinarias
   it: Reni e vie urinarie
   pt-pt: Rins e vias urinárias
 views:
@@ -13,6 +15,9 @@ views:
     cta_url: /service/terminanfrage/
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
 wp:
@@ -21,14 +26,23 @@ sections:
   - type: hero
     eyebrow:
       de: Untersuchungen · Sonographie
+      en: Examinations · Ultrasound
+      fr: Examens · Échographie
+      es: Exploraciones · Ecografía
       it: Esami · Ecografia
       pt-pt: Exames · Ecografia
     heading:
       de: Nieren und Harnwege
+      en: Kidneys and urinary tract
+      fr: Reins et voies urinaires
+      es: Riñones y vías urinarias
       it: Reni e vie urinarie
       pt-pt: Rins e vias urinárias
     lead:
       de: Ultraschall der Nieren und ableitenden Harnwege — Raumforderungen früh erkennen.
+      en: Ultrasound of the kidneys and lower urinary tract — detect space-occupying lesions early.
+      fr: Échographie des reins et des voies urinaires — détecter précocement les lésions occupant de l’espace.
+      es: Ecografía de los riñones y las vías urinarias — detectar precozmente lesiones ocupantes de espacio.
       it: Ecografia dei reni e delle vie urinarie — riconoscere precocemente le lesioni occupanti spazio.
       pt-pt: Ecografia dos rins e das vias urinárias — reconhecer precocemente lesões expansivas.
     image: shopify-mirror://detail/sonographie-nieren-hero.jpg
@@ -44,6 +58,36 @@ sections:
         <p>Während Sie entspannt auf einer Liege ruhen, führen wir die Sonographie der Nieren und der ableitenden Harnwege durch. Es ist günstig, mit gefüllter Blase zur Untersuchung zu kommen.</p>
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+      en: |-
+        <p>The kidneys are the body's filter unit. They filter about 360 litres of blood per day — the entire blood volume passes through the kidneys around 30 times daily. From this we excrete up to two litres of urine a day.</p>
+
+        <p>In the ultrasound examination we look specifically for changes, cysts and space-occupying lesions in the kidneys and the lower urinary tract down to the bladder.</p>
+
+        <h2>How is the examination carried out?</h2>
+
+        <p>While you rest comfortably on a couch, we perform the ultrasound of the kidneys and the lower urinary tract. It is helpful to come to the examination with a full bladder.</p>
+
+        <p>At the end of the examination you receive your personal findings report.</p>
+      fr: |-
+        <p>Les reins sont l’unité de filtration du corps. Ils filtrent chaque jour environ 360 litres de sang — l’ensemble du volume sanguin traverse les reins près de 30 fois par jour. Nous éliminons ainsi jusqu’à deux litres d’urine par jour.</p>
+
+        <p>Lors de l’examen échographique, nous recherchons spécifiquement modifications, kystes et lésions occupant de l’espace au niveau des reins et des voies urinaires jusqu’à la vessie.</p>
+
+        <h2>Comment se déroule l’examen ?</h2>
+
+        <p>Pendant que vous êtes confortablement allongé·e sur la table, nous réalisons l’échographie des reins et des voies urinaires. Il est préférable de venir à l’examen avec la vessie pleine.</p>
+
+        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+      es: |-
+        <p>Los riñones son la unidad de filtración del cuerpo. Al día filtran unos 360 litros de sangre — el volumen total de sangre pasa por los riñones unas 30 veces al día. De ahí eliminamos hasta dos litros de orina al día.</p>
+
+        <p>En la exploración ecográfica buscamos de forma dirigida cambios, quistes y lesiones ocupantes de espacio en los riñones y en las vías urinarias hasta la vejiga.</p>
+
+        <h2>¿Cómo se realiza la exploración?</h2>
+
+        <p>Mientras descansa cómodamente en una camilla, realizamos la ecografía de los riñones y las vías urinarias. Es conveniente acudir con la vejiga llena.</p>
+
+        <p>Al finalizar recibe su informe personal.</p>
       it: |-
         <p>I reni sono l'unità filtrante del corpo. Ogni giorno filtrano circa 360 litri di sangue — l'intero volume sanguigno attraversa i reni circa 30 volte al giorno. Da questo eliminiamo fino a due litri di urina al giorno.</p>
 
@@ -67,10 +111,16 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für Sonographie der Nieren und Harnwege?
+      en: Booking an ultrasound of kidneys and urinary tract?
+      fr: Un rendez-vous pour l’échographie des reins et voies urinaires ?
+      es: ¿Cita para una ecografía de riñones y vías urinarias?
       it: Vuole prenotare un'ecografia di reni e vie urinarie?
       pt-pt: Quer marcar uma ecografia dos rins e vias urinárias?
     cta_label:
       de: Termin vereinbaren
+      en: Book an appointment
+      fr: Prendre rendez-vous
+      es: Concertar una cita
       it: Fissa un appuntamento
       pt-pt: Marcar consulta
     cta_url: /service/terminanfrage/
