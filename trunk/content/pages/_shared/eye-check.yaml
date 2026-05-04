@@ -25,56 +25,68 @@ wp:
 sections:
   - type: hero
     eyebrow:
-      de: Untersuchungen · Reaktion
-      en: Examinations · Reaction
-      fr: Examens · Réaction
-      es: Exploraciones · Reacción
-      it: Esami · Reazione
-      pt-pt: Exames · Reacção
+      de: Untersuchungen · Augen
+      en: Examinations · Eyes
+      fr: Examens · Yeux
+      es: Exploraciones · Ojos
+      it: Esami · Occhi
+      pt-pt: Exames · Olhos
     heading:
-      de: Augen-Check
+      de: Eye-Check
       en: Eye-Check
       fr: Eye-Check
       es: Eye-Check
       it: Eye-Check
       pt-pt: Eye-Check
     lead:
-      de: Eye-Check — Beurteilung von Sehkraft und vorderem Augenabschnitt.
-      en: Eye-Check — assessment of visual acuity and the anterior segment of the eye.
-      fr: Eye-Check — évaluation de l’acuité visuelle et du segment antérieur de l’œil.
-      es: Eye-Check — valoración de la agudeza visual y del segmento anterior del ojo.
-      it: Eye-Check — valutazione di acuità visiva e segmento anteriore dell'occhio.
-      pt-pt: Eye-Check — avaliação da acuidade visual e do segmento anterior do olho.
+      de: Eye-Check — KI-gestütztes Netzhaut-Screening zur Früherkennung diabetischer und vaskulärer Veränderungen am Auge.
+      en: Eye-Check — AI-supported retinal screening for early detection of diabetic and vascular changes at the eye.
+      fr: Eye-Check — dépistage rétinien assisté par IA pour la détection précoce d’altérations diabétiques et vasculaires de l’œil.
+      es: Eye-Check — cribado retiniano asistido por IA para la detección precoz de alteraciones diabéticas y vasculares del ojo.
+      it: Eye-Check — screening retinico assistito da IA per il rilevamento precoce di alterazioni diabetiche e vascolari dell’occhio.
+      pt-pt: Eye-Check — rastreio retiniano assistido por IA para a deteção precoce de alterações diabéticas e vasculares do olho.
     image: shopify-mirror://detail/eye-check-hero.jpg
   - type: body
     body_html:
       de: |-
-        <p>Beim Eye-Check beurteilen wir Sehkraft, vorderen Augenabschnitt und Augeninnendruck. Auffälligkeiten besprechen wir gemeinsam und überweisen bei Bedarf gezielt zur Augenärztin oder zum Augenarzt.</p>
+        <p>Beim Eye-Check fertigen wir eine hochauflösende Aufnahme Ihrer Netzhaut an. Eine medizinisch zertifizierte KI-Plattform analysiert das Bild und erkennt frühe Hinweise auf diabetische Retinopathie — eine der häufigsten Ursachen für Sehverlust im Erwerbsalter, die sich über Jahre ohne Beschwerden entwickelt. Auch andere Veränderungen am Augenhintergrund, die auf systemische Erkrankungen hinweisen können, werden mit erfasst.</p>
 
-        <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
+        <p>Die Untersuchung dauert wenige Minuten, ist berührungslos und schmerzfrei. Pupillenerweiternde Tropfen sind in der Regel nicht erforderlich, sodass Sie unmittelbar nach dem Termin wieder uneingeschränkt sehen und am Verkehr teilnehmen können. Auffällige Befunde besprechen wir im persönlichen Gespräch und überweisen bei Bedarf gezielt zur Augenärztin oder zum Augenarzt zur weiterführenden Abklärung.</p>
+
+        <p>Besonders sinnvoll ist der Eye-Check bei Diabetes mellitus Typ 1 oder 2, dauerhaft erhöhtem Blutdruck oder familiärer Vorbelastung für Augenerkrankungen. Zum Abschluss erhalten Sie Ihren persönlichen Befundbericht.</p>
       en: |-
-        <p>In the Eye-Check we assess visual acuity, the anterior segment of the eye and intraocular pressure. We discuss any findings together and refer you in a targeted manner to an ophthalmologist if needed.</p>
+        <p>For the Eye-Check we take a high-resolution image of your retina. A medically certified AI platform analyses the image and detects early signs of diabetic retinopathy — one of the most common causes of vision loss in working age, which often develops for years without symptoms. Other changes at the back of the eye that may indicate systemic disease are also captured.</p>
 
-        <p>At the end of the examination you receive your personal findings report.</p>
+        <p>The examination takes only a few minutes, is contactless and painless. Pupil-dilating drops are generally not required, so you can see normally and drive again immediately after the appointment. We discuss any findings with you in person and, if needed, refer you in a targeted manner to an ophthalmologist for further work-up.</p>
+
+        <p>The Eye-Check is particularly useful in diabetes mellitus type 1 or 2, persistently elevated blood pressure or a family history of eye disease. At the end of the examination you receive your personal findings report.</p>
       fr: |-
-        <p>Lors de l’Eye-Check, nous évaluons l’acuité visuelle, le segment antérieur de l’œil et la pression intra-oculaire. Nous discutons ensemble des éventuelles anomalies et vous orientons, si nécessaire, vers un ophtalmologiste de manière ciblée.</p>
+        <p>Lors de l’Eye-Check, nous réalisons une image en haute résolution de votre rétine. Une plateforme d’IA certifiée à usage médical analyse l’image et détecte les signes précoces de rétinopathie diabétique — l’une des principales causes de perte de vision à l’âge actif, qui se développe souvent pendant des années sans symptômes. D’autres altérations du fond de l’œil pouvant évoquer une affection systémique sont également prises en compte.</p>
 
-        <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
+        <p>L’examen ne dure que quelques minutes, sans contact et indolore. Les gouttes pour dilater la pupille ne sont en règle générale pas nécessaires, ce qui vous permet de voir normalement et de reprendre la conduite immédiatement après le rendez-vous. Nous discutons des éventuelles anomalies lors d’un entretien personnel et, si nécessaire, vous orientons de manière ciblée vers un ophtalmologiste pour une exploration complémentaire.</p>
+
+        <p>L’Eye-Check est particulièrement utile en cas de diabète de type 1 ou 2, d’hypertension artérielle persistante ou d’antécédents familiaux d’affections oculaires. À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
       es: |-
-        <p>En el Eye-Check valoramos la agudeza visual, el segmento anterior del ojo y la presión intraocular. Comentamos cualquier hallazgo conjuntamente y, si procede, le derivamos de forma dirigida a oftalmología.</p>
+        <p>En el Eye-Check realizamos una imagen de alta resolución de su retina. Una plataforma de IA con certificación médica analiza la imagen y detecta signos tempranos de retinopatía diabética — una de las principales causas de pérdida de visión en edad laboral, que evoluciona durante años sin síntomas. También se registran otras alteraciones del fondo de ojo que pueden indicar enfermedades sistémicas.</p>
 
-        <p>Al finalizar recibe su informe personal.</p>
+        <p>La exploración dura unos minutos, es sin contacto e indolora. Por lo general no se requieren gotas para dilatar la pupila, de modo que puede ver con normalidad y conducir inmediatamente después de la cita. Comentamos los hallazgos en una conversación personal y, si procede, le derivamos de forma dirigida a oftalmología para una valoración adicional.</p>
+
+        <p>El Eye-Check resulta especialmente útil en caso de diabetes mellitus tipo 1 o 2, presión arterial persistentemente elevada o antecedentes familiares de enfermedad ocular. Al finalizar recibe su informe personal.</p>
       it: |-
-        <p>Nell'Eye-Check valutiamo l'acuità visiva, il segmento anteriore dell'occhio e la pressione intraoculare. Le eventuali anomalie vengono discusse insieme; se necessario indirizziamo in modo mirato a uno specialista oculista.</p>
+        <p>Nell’Eye-Check eseguiamo un’immagine ad alta risoluzione della sua retina. Una piattaforma di IA con certificazione medica analizza l’immagine e individua i segni precoci di retinopatia diabetica — una delle principali cause di perdita visiva in età lavorativa, che si sviluppa per anni senza sintomi. Vengono rilevate anche altre alterazioni del fondo oculare che possono indicare patologie sistemiche.</p>
 
-        <p>Al termine dell'esame riceve il suo referto personale.</p>
+        <p>L’esame dura pochi minuti, è senza contatto e indolore. In genere non sono necessarie gocce per dilatare la pupilla, così può vedere normalmente e guidare subito dopo l’appuntamento. Le eventuali anomalie vengono discusse insieme in un colloquio personale; se necessario indirizziamo in modo mirato a uno specialista oculista per ulteriori accertamenti.</p>
+
+        <p>L’Eye-Check è particolarmente utile in caso di diabete mellito di tipo 1 o 2, pressione arteriosa persistentemente elevata o anamnesi familiare per malattie oculari. Al termine dell’esame riceve il suo referto personale.</p>
       pt-pt: |-
-        <p>No Eye-Check avaliamos a acuidade visual, o segmento anterior do olho e a pressão intra-ocular. Discutimos consigo eventuais alterações e, se necessário, encaminhamos de forma dirigida para a oftalmologista ou o oftalmologista.</p>
+        <p>No Eye-Check realizamos uma imagem em alta resolução da sua retina. Uma plataforma de IA com certificação médica analisa a imagem e deteta sinais precoces de retinopatia diabética — uma das principais causas de perda de visão em idade activa, que evolui durante anos sem sintomas. São também registadas outras alterações do fundo do olho que possam indicar doenças sistémicas.</p>
 
-        <p>No final do exame recebe o seu relatório pessoal.</p>
+        <p>O exame demora poucos minutos, é sem contacto e indolor. Em regra, não são necessárias gotas para dilatação da pupila, pelo que pode ver normalmente e conduzir imediatamente após a consulta. Discutimos eventuais alterações em conversa pessoal e, se necessário, encaminhamos de forma dirigida para a oftalmologista ou o oftalmologista para investigação complementar.</p>
+
+        <p>O Eye-Check é particularmente útil em caso de diabetes mellitus tipo 1 ou 2, pressão arterial persistentemente elevada ou antecedentes familiares de doenças oculares. No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
-      de: Termin für Augen-Check?
+      de: Termin für den Eye-Check?
       en: Booking an Eye-Check?
       fr: Un rendez-vous pour un Eye-Check ?
       es: ¿Cita para un Eye-Check?
@@ -92,5 +104,5 @@ sanexio_source:
   type: page
   handle: eye-check
   local_edits: true
-  local_label_source: '2026-04-30 — S55-Untersuchungen-Sweep (Dr. Stracke): deutsche Kurz-Begriffe'
+  local_label_source: '2026-05-04 — CheckEye-Content-Adaption (Dr. Stracke): KI-Funduskamera-Screening (Quelle check-eye.com)'
   original_label: 'Eye Check'

@@ -254,12 +254,12 @@ sections:
       - id: eye-check
         title: { de: Eye Check, en: Eye Check, fr: Eye Check, es: Eye Check, it: Eye Check, pt-pt: Eye Check }
         teaser:
-          de: Reaktionszeit-Test — wie schnell verarbeiten Ihre Augen Information?
-          en: Reaction time test — how fast do your eyes process information?
-          fr: Test de temps de réaction — à quelle vitesse vos yeux traitent-ils l’information ?
-          es: Prueba de tiempo de reacción — ¿con qué rapidez procesan los ojos la información?
-          it: Test del tempo di reazione — quanto velocemente gli occhi elaborano le informazioni?
-          pt-pt: Teste do tempo de reacção — com que rapidez os olhos processam a informação?
+          de: KI-gestütztes Netzhaut-Screening — Früherkennung diabetischer und vaskulärer Veränderungen.
+          en: AI-supported retinal screening — early detection of diabetic and vascular changes.
+          fr: Dépistage rétinien assisté par IA — détection précoce d’altérations diabétiques et vasculaires.
+          es: Cribado retiniano asistido por IA — detección precoz de alteraciones diabéticas y vasculares.
+          it: Screening retinico assistito da IA — rilevamento precoce di alterazioni diabetiche e vascolari.
+          pt-pt: Rastreio retiniano assistido por IA — deteção precoce de alterações diabéticas e vasculares.
         image: shopify-mirror://diagnostik/diag-eye-check.jpg
         href: /eye-check/
   - type: bento-grid
