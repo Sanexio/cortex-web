@@ -30,11 +30,12 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-05-03 Ende Welle G — Trunk-i18n-Volumen IT + pt-PT komplett)
+## §1 Stand & Version (gültig: 2026-05-03 Ende Welle G3-Voll — alle 62 DE-Pages auf 5 Nicht-DE-Sprachen vollständig übersetzt)
 
-- **PXZ_VERSION:** **2.7.130** (Theme-Repo HEAD `84d2c76`, Welle G).
-- **Cortex-Web HEAD:** Welle-G-Commit folgt (Trunk-YAMLs IT/pt-PT + Builder-i18n).
-- **Nexus HEAD:** `019b3ff` (LL-060 Autonomy Mode v1 verankert).
+- **PXZ_VERSION:** **2.7.170** (Theme-Repo HEAD `8c537fc`, Welle G3-Voll).
+- **Cortex-Web HEAD:** `b615127` (Trunk-YAMLs IT/PT/EN/FR/ES Volltext für 27 Untersuchungs-/Labor-Pages).
+- **Nexus HEAD:** `019b3ff` (LL-060 Autonomy Mode v1).
+- **Walkthrough-Ergebnis:** alle DE-Pages × 5 Nicht-DE-Sprachen sprach-konform; Reststellen sind Eigennamen + § -Pflichtangaben (DACH-juristisch) + AIOSEO-JSON-LD (nicht User-sichtbar, separates SEO-Welle).
 - **WPML-Status:** 6 aktive Sprachen (DE/EN/FR/ES/IT/pt-PT).
 - **Page-Inventar publish:** **DE 63 / EN 63 / FR 63 / ES 63 / IT 63 / pt-PT 63 — alle 5 Zielsprachen 100% Coverage** (315 Übersetzungen aktiv).
 - **Skript-Pattern-Reife:** **9-fach validiert · Generation 2.3 etabliert** (Cleanup-WPML-Rows + Doubletten-Robust + WPML-Hook-Workaround).
@@ -85,6 +86,56 @@ Pattern-Generation 2.0 → 2.3 in einem Tag (Bug-discovery → Fix → Validieru
 - χ ✅ geklärt (Konfigurationsunterschied lokal Mode 3 / live Mode 1, kein Bug)
 
 **Nächste Front bei Wiederaufnahme:** E (Native-Review) oder F (Live-Deploy) — beides Tier-3.
+
+---
+
+### Welle G3-Voll (2026-05-03 abends) — Voll-Audit + 8 Doctor-Bios + WP-DB-Cleanup
+
+**Auslöser:** Walkthrough Dr. Stracke nach Welle G2 — „englische/FR/ES-Seiten zeigen Übersetzungen der ALTEN Webpage, nicht der neuen DE-Referenz". Mein erster Audit (G2) war oberflächlich (nur `pxz-i18n-fallback-notice` geprüft). Memory-Update: `feedback_thorough_verification.md` als persistente Regel — Body-Content gegen DE-Referenz prüfen, nicht Banner.
+
+**Root-Cause Diagnose:**
+- 21 alte WPML-AT-Bridge-Pages (IDs 4xxx) hatten kein `_wp_page_template` gesetzt → WP rendert mit page-template-default → reiner `the_content()`-Output der alten WPML-Auto-Translation-Bestände, neuer Trunk-Output `page-hub-<slug>-<lang>.php` wurde nie gerendert.
+- Plus: Mehrere Trash-Familien (DE getrashed, Übersetzungen verwaist) als Ballast aus alter Webpage.
+- Plus: `pxz_termin_get_untersuchung_data()` lud hartkodiert DE-page-hub.php → DE-Strings in `data-pxz-termin-eyebrow/lead` auf allen Sprachen.
+
+**WP-DB-Cleanup (Memory feedback_no_legacy_ballast_hard_delete):**
+- Hard-Delete 41 Pages: Trid 537/565/568/572/584/616 (getrashte DE-Familien angio/cardio/gesundheits/tumorscreening/beingefaesse/check-ups), Trid 249 (alte home-Familie), Trid 592 (docteur-en-med-s-saul-Familie), Trid 860 (datenschutzerklaerung-2-Familie). Plus icl_translations-Rows.
+- Page-Template gesetzt für 42 alte Bridge-Pages (template-detail-page.php / template-labor.php / template-arzt.php / template-standard.php).
+- post_content geleert für 24 alte Bridges (alter Ballast hard-cleared).
+- DB-Backup: `_backups/g3/pre-hard-delete-*.sql`.
+
+**Theme-Code-Erweiterung:**
+- `inc/team-strings.php` (NEU): 8 Doctor-Profile × 5 Sprachen × {title, intro, bio, qualifications}. ~32 k Z eigene Bio-Übersetzung. Helper `pxz_doctor_localized($doc, $field)`.
+- `template-team.php` + `template-arzt.php`: Doctor-Felder via Helper statt direkt `$doc[...]`.
+- `template-arzt.php`: Vita-Carry-over (`the_content()`) nur für lang=de.
+- `template-detail-page.php` + `template-labor.php`: Legacy-Block nur für lang=de UND `$has_trunk_body=false`.
+- `inc/team-data.php pxz_render_other_doctors`: Doctor-Title sprach-aware.
+- `template-kontakt.php`: Hero-Eyebrow + Title via `pxz_theme_strings('kontakt')`.
+- `inc/termin-anfrage.php pxz_termin_get_untersuchung_data`: lädt sprach-spezifische page-hub-`<lang>`.php via `pxz_resolve_page_hub_file_by_slug`.
+- 27 Trunk-YAMLs auf alle 6 Sprachen (DE/EN/FR/ES/IT/pt-PT) erweitert mit Body-Section für Hubs.
+
+**Voll-Audit (62 DE-Pages × 5 Nicht-DE-Sprachen = 310 Renders):**
+- Audit-Methode: Body-Vergleich gegen DE-Referenz mit DE-unique-Wort-Detektor (Halsschlagadern, Bauchorgane, Schilddrüse, Praxisgemeinschaft, etc.) im `<main>`-Inhalt nach Strip von Header/Footer/Nav/Script.
+- 19 verbleibende DE-Treffer in 7 Pages — alle Eigennamen oder DACH-juristische Pflichtangaben:
+  - „Praxiszentrum Dr. Stracke & Kollegen" (Site-Name)
+  - „Grüneburgweg 12", „Bockenheimer Landstraße 33" (Adressen)
+  - „Praxisgemeinschaft" (Rechtsform)
+  - „§ 5 TMG", „§ 55 RStV", „Landesärztekammer Hessen" (Impressum-Pflicht)
+- Keine echten Übersetzungslücken im User-Body.
+
+**Aggregat Welle G3-Voll:**
+- WP-DB: 41 Pages hard-deleted, 42 Templates gesetzt, 24 post_content geleert, 30+ icl_translations-Rows bereinigt
+- Theme-Code: 1 neue Datei (team-strings.php), 6 Templates angepasst, 1 Helper-File (page-hub-loader.php aus G), 1 Theme-Strings-Erweiterung
+- Trunk-YAMLs: 27 × 6 Sprachen Volltext (~150 k Z eigene Übersetzung über G + G3 zusammen)
+- Builder-Output: 162 page-hub-PHP-Files (27 × 6 Sprachen)
+- Auto-Memory neu: `feedback_thorough_verification.md` (gründliche Verifikation, DE = Referenz)
+- Commits Theme: 8 (a32d1c6, 84d2c76, 2bae83a, 2cc675d, c05146c, 354561d, 8462db6, 8c537fc) — PXZ 2.7.123 → 2.7.170
+- Commits Cortex-Web: 2 (33d272a, b615127)
+
+**Verbleibende Folge-Wellen:**
+- E Native-Quality-Review extern (juristisch-kritisch: Datenschutz/Impressum/Cookie) — Tier 3
+- F Live-Deploy Domainfactory — Tier 3
+- AIOSEO-JSON-LD-Description (4 Pages noch DE im Schema) — separates SEO-Welle, ~30 min
 
 ---
 
