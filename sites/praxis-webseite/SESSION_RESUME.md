@@ -137,8 +137,16 @@ Folgewelle nach H, autonomy-mode, ein Auftrag „akribisch auf Altbestände durc
 - Live-DOM /karriere/: `wpforms-form-`, `wpforms-field-name`, `-email`, `-phone`, `-file-upload`, `-checkbox` alle vorhanden
 - `verify.sh`: alle 5 Sektionen ✅ (§1, §2, §3 Computed-Style, §3b, §4 Alignment, §5 HWG 14/14) — **VERIFY OK**
 
-**Folge-Befund (separates Issue, nicht in F-1 gefixt):**
-- `template-kontakt.php` nutzt Marker `pxz_kontakt_form_v1`, aber **kein** create-Skript existiert — Welle H hat das Kontakt-Form gelöscht, Build-Tool wurde nie geschrieben. Fallback-Section in Template fängt das gracefully ab (kein Render-Bruch). Folgewelle: `tools/create_kontakt_form.php` analog MFA-Pattern bauen.
+**Folge-Befund (in F-1b nachgezogen):**
+- `template-kontakt.php` nutzt Marker `pxz_kontakt_form_v1`, aber **kein** create-Skript existierte — Welle H hat das Kontakt-Form gelöscht, Build-Tool wurde nie geschrieben. Fallback-Section in Template fing das gracefully ab (kein Render-Bruch).
+
+### Tagesblock 2026-05-05 — Welle F-1b (Kontakt-Form-Restore) ✅
+
+`tools/create_kontakt_form.php` analog zum MFA-Pattern angelegt (idempotent, Marker `pxz_kontakt_form_v1`). Form-Felder: Name (required), E-Mail (required), Telefon (optional), Anliegen-Dropdown (Allgemein/Termin/Rezept/Feedback/Sonstiges, required), Nachricht (textarea, required), Datenschutz-Checkbox (required). Notification an `praxis@westend-hausarzt.de` mit Anliegen im Subject.
+
+**DSGVO-Hinweis im Form-Description**: Pflicht-Hinweis vor Nachricht-Textarea „Bitte senden Sie keine Gesundheitsdaten, Symptome oder Diagnosen" — Art. 9 DSGVO erlaubt elektronische Erhebung besonderer Kategorien personenbezogener Daten nur mit besonderer Rechtsgrundlage, ein Standard-Kontaktformular trägt das nicht.
+
+`wp eval-file tools/create_kontakt_form.php` → Form-ID **10212** erzeugt. Live-Test `/contact-us/` (DE-Slug der Kontakt-Page) zeigt alle 6 Felder im DOM, kein Fallback. `verify.sh` ✅.
 
 **Lehre (für Cleanup-Schutz):**
 Welle-I-Cleanup hat `_backups/` pauschal als „Altbestand" markiert und mitgelöscht — auch frische H-Backups (gleicher Tag, kritische Rollback-Punkte). Cleanup-Pfade-Logik braucht eine **Whitelist-/Alter-Heuristik** (Backups <7 Tage = nicht löschen). Auto-Memory + Pattern in der Folge-Welle.
