@@ -175,7 +175,15 @@ Folgewelle nach H, autonomy-mode, ein Auftrag „akribisch auf Altbestände durc
 - HTTP-Smoke 6 Sprachen: de=302 (WPML-Default-Redirect), en/fr/es/it/pt-pt = 200
 - Forms: /karriere/ 10210 ✅ 1 match, /contact-us/ 10212 ✅ 1 match
 
-**Verbleibend:** F Live-Deploy · GR-Phase (parallel) · E Native-Quality-Review · B7-Klärungspunkte (Drafts/User/MU-Plugin/AIO-SEO-Notifications).
+**B7-Klärungen Dr. Stracke (gleiche Session):**
+- 4 Drafts hard-deleted (ID 368 Ärzte-Team trid 588, ID 472 Rund ums Impfen trid 625, ID 4206 Sonographie-Befundatlas trid 857, ID 5709 Corona trid 1017) inkl. WPML-icl_translations-Cascade
+- User `febert` (ID 1) bleibt als Admin (Vorgänger-Admin, weiter aktiv)
+- `mu-plugins/akeeba-backup-coreupdate.php` bleibt (Akeeba-Backup-Strategie auf Live geplant)
+- `wp_aioseo_notifications` truncated (54 Rows, ~1,6 MB; Plugin-Inbox für Versions-/Lizenz-Hinweise, regeneriert sich bei Bedarf von selbst)
+
+**Nächster Schritt — Welle F (Live-Deploy Domainfactory) — startet in NEUER Session.** Dr. Stracke 2026-05-05: „Welle F erst in einer neuen Session". Tier-3-Op, braucht ohnehin explizite Freigabe.
+
+**Verbleibend:** F Live-Deploy (neue Session) · GR-Phase (parallel) · E Native-Quality-Review.
 
 ### Tagesblock 2026-05-05 — Welle F-1b (Kontakt-Form-Restore) ✅
 
