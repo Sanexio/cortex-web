@@ -43,7 +43,10 @@ for (const vp of [
     { waitUntil: 'networkidle2', timeout: 30000 });
   console.log(`\n=== Viewport ${vp.label} ===`);
   const results = await page.evaluate((sels) => {
-    const vpCenter = window.innerWidth / 2;
+    // 2026-05-05: vpCenter aus documentElement.clientWidth statt window.innerWidth.
+    // Bei Mobile-Overflow weicht innerWidth (visual viewport inkl. Scroll) von
+    // clientWidth (Layout-Viewport) ab und triggert false-positive Center-Drift.
+    const vpCenter = document.documentElement.clientWidth / 2;
     return sels.map(s => {
       const el = document.querySelector(s);
       if (!el) return { sel: s, missing: true };
