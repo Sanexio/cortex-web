@@ -114,6 +114,37 @@ Folgewelle nach H, autonomy-mode, ein Auftrag „akribisch auf Altbestände durc
 
 **Verbleibend (unverändert seit Welle H):** F Live-Deploy · Sprint γ · GR-Phase (parallel) · E Native-Quality-Review · F-1 Forms-Strategie (probe-design.mjs cleanup folgt).
 
+### Tagesblock 2026-05-05 — Welle F-1 (WPForms-Restore + Sprint-γ-Shelf) ✅
+
+**Auslöser:** Verify rot nach Welle I — 21 Mismatches §3 Computed-Style auf `/karriere/`, alle WPForms-Selektoren. Hintergrund: Welle H hatte WPForms-Plugin + 11 wp_posts (post_type=wpforms) hard-deleted. Welle I hat dann `_backups/h/` (Plugin-FS-Tarball + DB-Pre-Snapshots) als „Altbestand" mitgelöscht — H-Backup nicht mehr verfügbar, Restore aus Backup unmöglich.
+
+**Strategie-Entscheidung Dr. Stracke 2026-05-05 (F-1-Auslöser):** WPML UND WPForms behalten — Sprint γ (WPML-Ablöse) wird zurückgestellt.
+
+**Phase 1 Verständnis:**
+- WPForms-Plugin-Ordner weg, alle 11 Form-Defs gelöscht, kein Backup verfügbar
+- `tools/create_mfa_form.php` ist intakt: idempotenter Form-Builder mit allen MFA-Feldern (name, email, phone, textarea, file-upload PDF≤10 MB×5, DSGVO-Checkbox), Marker `pxz_mfa_application_v1`
+- `template-karriere.php` resolvt Form-ID via Marker dynamisch — **keine hartkodierte Form-ID im Theme**
+- File-Upload ist Pro-Feature → Pro-Lizenz benötigt (Lite kann das nicht)
+
+**Phase 3 Umsetzung:**
+- WP-CLI-DB-Connect-Hürde: Homebrew-`wp` kommt nicht an LocalWP-MySQL (Auth-Mismatch). Lösung: ENV via LocalWP-Site-Shell-Wrapper (`/Library/Application Support/Local/ssh-entry/<site>.sh`) explizit setzen + LocalWP-eigenes WP-CLI nutzen.
+- `wp plugin install ~/Downloads/wpforms.zip --activate` → wpforms 1.10.0.4 aktiv
+- `wp option update wpforms_license_key '<32-char-key>'` → Pro-Lizenz registriert
+- `wp eval-file tools/create_mfa_form.php` → Form-ID **10210** erzeugt mit Marker `pxz_mfa_application_v1`
+- Sprint-γ-Spec `gamma_trunk-first-i18n-migration.md` Status auf **SHELVED** gesetzt; ursprünglicher Auftrag als Referenz erhalten
+
+**Phase 4 Selbstprüfung:**
+- Live-DOM /karriere/: `wpforms-form-`, `wpforms-field-name`, `-email`, `-phone`, `-file-upload`, `-checkbox` alle vorhanden
+- `verify.sh`: alle 5 Sektionen ✅ (§1, §2, §3 Computed-Style, §3b, §4 Alignment, §5 HWG 14/14) — **VERIFY OK**
+
+**Folge-Befund (separates Issue, nicht in F-1 gefixt):**
+- `template-kontakt.php` nutzt Marker `pxz_kontakt_form_v1`, aber **kein** create-Skript existiert — Welle H hat das Kontakt-Form gelöscht, Build-Tool wurde nie geschrieben. Fallback-Section in Template fängt das gracefully ab (kein Render-Bruch). Folgewelle: `tools/create_kontakt_form.php` analog MFA-Pattern bauen.
+
+**Lehre (für Cleanup-Schutz):**
+Welle-I-Cleanup hat `_backups/` pauschal als „Altbestand" markiert und mitgelöscht — auch frische H-Backups (gleicher Tag, kritische Rollback-Punkte). Cleanup-Pfade-Logik braucht eine **Whitelist-/Alter-Heuristik** (Backups <7 Tage = nicht löschen). Auto-Memory + Pattern in der Folge-Welle.
+
+**Verbleibend:** F Live-Deploy · GR-Phase (parallel) · E Native-Quality-Review · Kontakt-Form-Restore (analog MFA-Pattern). Sprint γ entfällt (shelved).
+
 ### Strategie-Entscheidung 2026-05-05 — Doppelpfad Übergang + Greenfield
 
 **Auslöser:** Dr. Stracke sah im WP-Admin-Menü Restbestand alter Plugins/Pages aus der Vorgänger-Seite. Frage: gereinigte Seite oder komplett neu? **Antwort:** Beides, sequenziell und parallel.

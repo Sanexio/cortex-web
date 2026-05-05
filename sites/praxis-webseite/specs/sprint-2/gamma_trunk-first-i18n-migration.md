@@ -1,13 +1,32 @@
 ---
 sprint: γ (Trunk-First-i18n-Migration)
-phase: 0 (Skizze, Detail-Spec folgt nach Welle F)
-status: angekündigt — Start nach Welle F
+phase: 0 (Skizze)
+status: SHELVED — 2026-05-05 zurückgestellt (Dr.-Stracke-Entscheidung WPML behalten)
 created: 2026-05-05
+shelved: 2026-05-05
 trigger: Dr.-Stracke-Entscheidung 2026-05-05 — WPML komplett ablösen
+shelf_reason: Dr.-Stracke-Entscheidung 2026-05-05 (Welle F-1) — WPML wird beibehalten. Sprint γ wird nicht weiter verfolgt; bei späterer Re-Aktivierung als neuer Sprint mit dieser Spec als Ausgangspunkt.
 predecessors: Welle G (Trunk-i18n κ Architektur, sD), Welle G3-Voll (62×5 Trunk-YAMLs ergänzt), Welle H (Cleanup), Welle F (Übergangs-Live)
 ---
 
-# Sprint γ — Trunk-First-i18n-Migration
+# Sprint γ — Trunk-First-i18n-Migration (SHELVED)
+
+> **STATUS 2026-05-05: Sprint zurückgestellt.** Dr. Stracke hat bei Welle F-1
+> entschieden, WPML als Übersetzungs-Plattform beizubehalten. Die folgende
+> Spec bleibt als Referenz erhalten, falls die Architektur-Entscheidung in
+> einer späteren Sprint-Welle erneut auf den Tisch kommt.
+>
+> **Konsequenz:**
+> - WPML bleibt aktive Plattform-Schicht (sitepress-multilingual-cms +
+>   wpml-import + wpml-media-translation + wpml-string-translation)
+> - 315 Übersetzungen leben weiter in `wp_posts` mit `wp_icl_translations.trid`
+> - Trunk bleibt Master für Theme + 27 Hubs, WP-DB bleibt Träger der
+>   Detail-Page-Übersetzungen
+> - Sprint γ-Phasen (γ.1–γ.8) werden NICHT umgesetzt
+
+---
+
+## Ursprünglicher Auftrag (historisch)
 
 > **Auftrag:** WPML als Plattform-Schicht entfernen. Alle 315 Übersetzungen
 > leben dann ausschließlich im Trunk (`trunk/content/pages/_shared/<slug>.yaml`),
