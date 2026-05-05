@@ -1,7 +1,0 @@
-=== HTTP-Status-Snapshot der 6 Cluster-checkups-Pages — 2026-04-22 ===
-  HTTP 200  bytes=99186  /check-ups/
-  HTTP 200  bytes=96645  /gesundheits-check-up/
-  HTTP 200  bytes=95805  /cardio-check-up/
-  HTTP 200  bytes=94340  /angio-check-up/
-  HTTP 200  bytes=92707  /tumorscreening/
-  HTTP 200  bytes=98554  /basic-check/

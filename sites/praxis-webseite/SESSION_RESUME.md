@@ -140,6 +140,43 @@ Folgewelle nach H, autonomy-mode, ein Auftrag „akribisch auf Altbestände durc
 **Folge-Befund (in F-1b nachgezogen):**
 - `template-kontakt.php` nutzt Marker `pxz_kontakt_form_v1`, aber **kein** create-Skript existierte — Welle H hat das Kontakt-Form gelöscht, Build-Tool wurde nie geschrieben. Fallback-Section in Template fing das gracefully ab (kein Render-Bruch).
 
+### Tagesblock 2026-05-05 — Welle F-2 (Deep-Clean vor Live-Deploy) ✅
+
+**Auslöser:** Dr. Stracke 2026-05-05 — „Bevor wir Welle F starten, möchte ich, dass du nochmal einen Deep Search machst, egal wie lang es dauert. Du gehst jede einzelne Datei durch und suchst nach Resten der alten Plattform, die wir nicht mehr benötigen und löschst diese. Pass dabei auf, dass die aktuelle Funktionsfähigkeit dabei nicht eingeschränkt wird."
+
+**Architekten-Modus 4 Phasen voll durchgezogen.** Phase 0 Backup-Snapshot (`_backups/f-deepclean/`: pre-deepclean.sql.gz 6,5 MB + plugins-pre.tgz 44 MB), Phase 1 Recon via 4 parallelen Sub-Agenten (DB, FS, Repo, Theme), Phase 2 konsolidierter Sweep-Plan mit Risikoklassifizierung, Phase 3 Sweeps Block B1–B6 sequentiell, Phase 4 verify.sh + HTTP 6 Sprachen + Forms-Render-Check.
+
+**Sweep-Bilanz (alle 7 Blöcke):**
+
+| Block | Inhalt | Volumen-Effekt |
+|---|---|---|
+| **B1** WP-DB Plugin-Reste | 94 wp_options gelöscht (santapress 25, cmplz 55, complianz 7, postman 3, akeebabackupwp 2, omapi 1, wmufs 1) + 18 Custom-Tabellen DROP (wp_ak_*, wp_cmplz_*, wp_post_smtp_logs 10,7 MB!, wp_monsterinsights_*, wp_userfeedback_*, wp_toolset_*) | ~11 MB DB |
+| **B2** WP-DB Hygiene | 663 Revisions, 188 Orphan-term_relationships, 223 Orphan-icl_translations (in 111 isolierten Trids), 268 Action-Scheduler-Actions >30 Tage, 28 Spam-Comments + Orphan-commentmeta | ~9 MB DB |
+| **B3** WP-FS Großbrocken | dup-installer/ 69 MB (Duplicator-Migrations-Reste), uploads/2020/ 24 MB (215 verwaiste Vorgänger-Bilder, 0 in DB-Attachments), installer-backup.php + local-xdebuginfo.php + license.txt + readme.html + wp-config-sample.php, wpforms/tmp/.jpg 1,9 MB, sanexio-imports/.bak-pre-s60l, post-smtp-migration.log 184 KB, debug.log, wmufs-temp/, uploads/generateblocks/, ai1wm-backups/ | ~96 MB FS |
+| **B4** Repo abgeschlossene Specs/Docs | 5 Top-Level-Docs (PHASE1_AUDIT/MVP_HANDOFF/SESSION_START/HANDOFF_PROMPT/THEME_POINTER), 25 abgeschlossene Specs S2.0–S52 + S63 + B-2_legacy-de-triage, S38_evidence/, S40_evidence/ 38 MB, evidence/ 4,5 MB, S2.3-D/, phase2/, tools/sA-content/ leer | ~43 MB |
+| **B5** Wellen-Pattern-Skripte | 11 Skripte (s65-s70 + sA/sB/sC + create_karriere_page + make-staff-presentation) → `tools/_archive/wellen-pattern-gen/` (Pattern-Referenz für Folge-Wellen) | ~370 KB |
+| **B6** Screenshots | 292 Verify-Baselines vor 2026-05-05 → `screenshots/claude/_archive/` (gitignored). 20 aktuelle Shots (Heute) bleiben aktiv. | ~400 MB tracked-removal |
+| **B7** Klärungspunkte | 4 Drafts (Corona, Rund ums Impfen, Ärzte-Team 2023, Sonographie 2021), User febert, mu-plugins/akeeba-backup-coreupdate.php, wp_aioseo_notifications | offen → Frage Dr. Stracke |
+
+**Final-Bilanz:**
+- DB-Tabellen: 88 → **74** (-14 inkl. Welle-H-Resten)
+- DB-Größe: ~63 MB → **52,4 MB**
+- wp_options: 414 → **382** (autoload=yes: 227)
+- Revisions: 663 → **0**
+- Repo tracked: ~570 MB → ~**168 MB** (157 Files)
+- WP-content/: ~558 MB → **462 MB**
+
+**WP-CLI-DB-Connect-Hürde (Folge-Erkenntnis aus F-1):** `wp db query` schlägt mit Socket-Error auf `/tmp/mysql.sock` fehl, auch mit Local-WP-CLI. Lösung: `wp eval` mit `$wpdb->query()` direkt — nutzt die bereits etablierte WP-DB-Verbindung. Pattern für künftige DB-Sweeps.
+
+**Welle-I-Lehre umgesetzt:** Backup-Snapshot in `_backups/f-deepclean/` wurde von keinem Sweep angefasst (alle Sub-Agenten bekamen explizite TABU-Anweisung).
+
+**Funktionsfähigkeit voll erhalten:**
+- verify.sh: alle 5 Sektionen ✅ (§1, §2, §3 Computed-Style, §3b, §4 Alignment, §5 HWG 14/14)
+- HTTP-Smoke 6 Sprachen: de=302 (WPML-Default-Redirect), en/fr/es/it/pt-pt = 200
+- Forms: /karriere/ 10210 ✅ 1 match, /contact-us/ 10212 ✅ 1 match
+
+**Verbleibend:** F Live-Deploy · GR-Phase (parallel) · E Native-Quality-Review · B7-Klärungspunkte (Drafts/User/MU-Plugin/AIO-SEO-Notifications).
+
 ### Tagesblock 2026-05-05 — Welle F-1b (Kontakt-Form-Restore) ✅
 
 `tools/create_kontakt_form.php` analog zum MFA-Pattern angelegt (idempotent, Marker `pxz_kontakt_form_v1`). Form-Felder: Name (required), E-Mail (required), Telefon (optional), Anliegen-Dropdown (Allgemein/Termin/Rezept/Feedback/Sonstiges, required), Nachricht (textarea, required), Datenschutz-Checkbox (required). Notification an `praxis@westend-hausarzt.de` mit Anliegen im Subject.

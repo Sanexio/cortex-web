@@ -1,8 +1,0 @@
-mysql: [Warning] Using a password on the command line interface can be insecure.
-post_status	n
-auto-draft	2
-draft	4
-inherit	2206
-private	260
-publish	382
-trash	6
