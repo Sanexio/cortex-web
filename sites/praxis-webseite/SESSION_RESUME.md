@@ -76,16 +76,41 @@ Identisches Pattern wie sB, Sprachcode `pt-pt`, formelles europäisches Portugie
 **Pattern-Reife-Sprung:**
 Pattern-Generation 2.0 → 2.3 in einem Tag (Bug-discovery → Fix → Validierung × 5 Sprints). Bulk-Welle pro Sprache (63 ops/Welle) ist effizienter als Cluster-Sweep (typisch 18 ops × 3 Sprachen / Welle).
 
-**Verbleibend (Folge-Wellen, optional):**
-- E Native-Quality-Review extern (juristisch-kritisch: Datenschutz/Impressum/Cookie)
-- F Live-Deploy Domainfactory (Tier-3, braucht Freigabe)
+**Verbleibend (Folge-Wellen):**
+- **H Cleanup vor Live-Deploy** (NEU 2026-05-05, Tier 1) — In-Place-Plugin-/Theme-/Legacy-Page-Purge. Voraussetzung für F. Strategie-Entscheidung Dr. Stracke 2026-05-05: Übergangsseite muss schlank vor Live gehen.
+- **F Live-Deploy Domainfactory** (Tier-3, braucht Freigabe) — nach H, als Übergangsseite
+- **GR-1 Bootstrap-Manifest + Bootstrap-Adapter** (NEU 2026-05-05, Tier 1) — schreibt Plugin-Liste, WPML-Config, Theme-Setup deklarativ. Spec: `specs/greenfield-reset/CONCEPT.md`
+- **GR-2 POC zweite Local-Instanz** (Tier 1) — Bootstrap + Content-Adapter, Visual-Diff gegen aktuelle Instanz
+- **E Native-Quality-Review extern** (juristisch-kritisch: Datenschutz/Impressum/Cookie, Tier-3)
+- **GR-3 Greenfield-Live-Bootstrap** (Tier-3) — auf neuer Test-Subdomain
+- **GR-Cutover DNS-Schwenk** (Tier-3) — Greenfield wird produktiv
 - λ ✅ gelöst (in sA mit Datenschutz-Trid-Doubletten-Cleanup)
 - ψ ✅ gelöst (in sA-Phase-2 mit Templates IT/pt-PT)
 - κ ✅ Architektur-Layer in sD; Volumen-Schicht in Welle G abgeschlossen
 - G ✅ Trunk-i18n-Volumen IT + pt-PT komplett (siehe Block unten)
 - χ ✅ geklärt (Konfigurationsunterschied lokal Mode 3 / live Mode 1, kein Bug)
 
-**Nächste Front bei Wiederaufnahme:** E (Native-Review) oder F (Live-Deploy) — beides Tier-3.
+**Nächste Front bei Wiederaufnahme:** **F (Live-Deploy Domainfactory)** — Übergangsseite live. Danach Sprint γ + GR-Phase.
+
+### Tagesblock 2026-05-05 — Welle H (Cleanup vor Live-Deploy) ✅
+
+Architekten-Modus voll durchgezogen, 4 Phasen in einer Session. Spec `specs/sprint-2/H_cleanup-vor-deploy.md` §0 listet die Delta-Tabelle. Wesentliche Ergebnisse: Plugins 24→7, Themes 7→3, Pages 402→363, wp_options 1,4 MB→477 KB. HTTP-Sweep 24/24 = 200 OK. Backups in `_backups/h/`. Ein Bug (WPML `_icl_cache` Type-Fehler durch `UPDATE … =""` statt `DELETE`) während Phase 4 entdeckt + binnen 30 s behoben — dokumentiert in `Nexus/Second Brain/30 Tutorials/WordPress/01-db-cleanup-fallstricke.md`.
+
+**Architektur-Entscheidung in derselben Session:** WPML wird durch Sprint γ (Trunk-First-i18n-Migration) abgelöst — Skizze `specs/sprint-2/gamma_trunk-first-i18n-migration.md`. WPML bleibt in Welle H KEEP, Greenfield-Pfad wird WPML-frei konzipiert. Nach Welle F: Sprint γ.
+
+**Neues Memory:** `feedback_problems_to_tutorial.md` (Pflicht: Probleme im passenden Tutorial festhalten) · `project_wpml_to_trunk_migration.md` (γ-Sprint).
+
+**Verbleibend:** F Live-Deploy · Sprint γ · GR-Phase (parallel) · E Native-Quality-Review.
+
+### Strategie-Entscheidung 2026-05-05 — Doppelpfad Übergang + Greenfield
+
+**Auslöser:** Dr. Stracke sah im WP-Admin-Menü Restbestand alter Plugins/Pages aus der Vorgänger-Seite. Frage: gereinigte Seite oder komplett neu? **Antwort:** Beides, sequenziell und parallel.
+
+- **Übergangs-Pfad (sofort):** Aktuelle Instanz wird per Welle H bereinigt (Plugin-Purge, Theme-Purge, Legacy-Page-Hard-Delete, wp_options-Sweep), dann via Welle F live (Übergangsseite). Verhindert Wartezeit-Frust, Substanz bleibt erhalten (315 Übersetzungen, 174 Page-IDs 10035–10208).
+- **Greenfield-Pfad (parallel, ohne Zeitdruck):** Neue WP-Instanz wird ausschließlich per Trunk + Theme + neuem Bootstrap-Adapter aufgebaut. Validierung via Visual-Diff-POC. Cutover erst, wenn POC grün.
+- **Architektur-Anker:** CW-001 (Trunk ist Master) wird durch Greenfield-Pfad zur validierten Architektur-Eigenschaft, statt nur Behauptung.
+
+Konzept-Spec: `specs/greenfield-reset/CONCEPT.md` (Phasen-Tabelle, Bootstrap-Manifest-Schema, POC-Plan, Risiken).
 
 ---
 
