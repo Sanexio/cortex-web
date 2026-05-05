@@ -287,6 +287,49 @@ Format je Eintrag:
 
 ---
 
+## PXZ-E-010 — Alignment-Probe maß gegen Visual-Viewport, hat Mobile-Header-Overflow als Element-Drift fehlinterpretiert
+
+- **Datum:** 2026-05-05, **beobachtet in v2.7.174**, **behoben in v2.7.175**.
+- **Beschreibung:** `tools/alignment-probe.mjs` meldete `.pxz-hero-sub` und
+  `.pxz-mfa-card` bei 430 px Mobile-Viewport mit `delta=-5px`. Cascade-Audit
+  sauber, `:where()`-Spezifitäts-Fix aus PXZ-E-008 in Kraft. Live-Inspection
+  zeigte: Elemente sind perfekt mittig auf 215 (430/2), aber die Probe nahm
+  `window.innerWidth/2 = 220` als Referenz, weil das Header-Trio
+  Logo + Sprachschalter + CTA + Burger den Viewport um 10 px überlief
+  (`scrollWidth=440, clientWidth=430`). Zwei Bugs in einem Symptom: ein
+  echter Mobile-Header-Overflow + eine semantisch falsche Probe-Metrik.
+- **Ursache:** `window.innerWidth` ist der Visual-Viewport — bei
+  horizontalem Overflow weicht er vom Layout-Viewport
+  (`document.documentElement.clientWidth`) ab. Die Probe maß gegen den
+  Visual-Viewport und sah die echten Layout-Center als „Drift". Plus:
+  `.pxz-nav-lang` (5-sprachiger Inline-Switcher, 145 px) + `.pxz-nav-cta`
+  (104 px) + `.pxz-nav-burger` (35 px inkl. margin) summierten 320 px in
+  318 px verfügbarem Header-Raum bei 430 px Viewport-Breite.
+- **Fehlerklasse:** **FK-3 Plausible Scheinlösung** (Probe-Output suggeriert
+  Cascade-Bug, weil PXZ-E-008-Diagnose-String mitgeliefert wird) +
+  **FK-5 Kontextverlust** (kein Code-Kommentar erklärte, warum `innerWidth`
+  bei Mobile-Probes irreführend ist).
+- **Regel:**
+  1. **In Headless-Probes Layout-Viewport messen, nicht Visual-Viewport:**
+     ```js
+     // Robust gegen Mobile-Overflow:
+     const vpCenter = document.documentElement.clientWidth / 2;
+     ```
+  2. **Diagnose-Reihenfolge bei roten Alignment-Probes:**
+     erst `clientWidth === scrollWidth` prüfen → bei Mismatch ist
+     Probe-Output ein Mess-Artefakt von Overflow, **nicht** Cascade.
+  3. **Header-Inhalts-Disziplin auf schmalen Mobile-Viewports:**
+     mehrteilige Inline-Sprachschalter gehören in den Burger-Drawer
+     (≤540 px), sonst sprengen sie den Header-Raum bei iPhone-Class-Geräten.
+- **Prüfpunkt (Pre-Flight):**
+  - `tools/alignment-probe.mjs` enthält ab v2.7.175 die `clientWidth`-Variante
+    samt erklärendem Kommentar.
+  - Künftig: in `verify.sh` einen 1-Zeilen-Overflow-Check ergänzen, der
+    `body.scrollWidth > documentElement.clientWidth` als eigene Probe
+    (vor §4 Alignment) flaggt.
+
+---
+
 ## Template für neue Einträge
 
 ```

@@ -102,6 +102,18 @@ Architekten-Modus voll durchgezogen, 4 Phasen in einer Session. Spec `specs/spri
 
 **Verbleibend:** F Live-Deploy · Sprint γ · GR-Phase (parallel) · E Native-Quality-Review.
 
+### Tagesblock 2026-05-05 — Welle I (File-System-Cleanup + Mobile-Header-Fix) ✅
+
+Folgewelle nach H, autonomy-mode, ein Auftrag „akribisch auf Altbestände durchgehen und löschen + Funktionalität testen". Drei verkettete Resultate:
+
+**1. Cleanup-Pass (-700 MB).** 9 Cluster verifizierte Altbestand-Kategorien aggressiv entfernt: `_backups/` (392 MB Sprint-DB-Snapshots g3+s65–sC, gitignore'd) · `_media-source/_inbox/media-root/` (240 MB unverarbeitete Raw-Assets) · `_backup/` (60 KB) · `legacy-juvantis-praxis-web/` (1,1 MB) · `DESIGN_GUIDELINES.v2.3.md` (21 KB Vorgängerversion) · `_archive/santapress-2026-04-19/` (21 MB) · `_content-archive/legacy/` (1,2 MB Quellen für 9 S42-Stub-Pages, im Theme schon übernommen) · 3 Probe-Tools `tools/probe-{1365,mid-range,design}.mjs` (7 KB) · `tools/migrations/` (3,4 MB DB-Mig-Dumps S2.3-Zwischenstände). Repo: 2,3 GB → 1,6 GB. Commit `6fbd3db` (231 Files, 34 323 deletions). Trust-but-verify-Lehre: Sub-Agent hatte `tools/migrations/` mit 65 MB überschätzt (real 3,4 MB) und einen nicht-existenten Pfad behauptet — Stichproben-Verifikation vor Löschung hat falsche Empfehlungen entschärft.
+
+**2. PXZ-E-010 entdeckt + gefixt.** Verify-Probe hatte rot gemeldet (§4 Alignment, 2 FAIL @ 430 px) — vermeintlich Cascade-Regression auf PXZ-E-008. Live-Inspection enttarnte zwei Bugs in einem Symptom: ein **echter Mobile-Header-Overflow** (10 px) und eine **semantisch falsche Probe-Metrik**. Header-Trio Logo+Sprachschalter+CTA+Burger summierte 320 px in 318 px verfügbarem Header-Raum bei 430 px iPhone-Class. `alignment-probe.mjs` maß `vpCenter = window.innerWidth/2 = 220` (Visual-Viewport inkl. Overflow), während die Elemente korrekt auf 215 (Layout-Mitte) zentriert waren. Fix: `documentElement.clientWidth/2` für Probe + `media (max-width: 540px) { .pxz-nav-lang { display: none } }` für Header (Sprachschalter ist im Drawer weiterhin erreichbar). Theme-Commit `bc345df` (PXZ 2.7.175). Cortex-Web-Commit `401e7b6` (Probe-Fix + restore probe-design.mjs, das im Cleanup versehentlich miterfasst war). Pattern `Nexus/_memory/patterns/probe-layout-viewport-vs-visual-viewport.md`. FEHLERPROTOKOLL-Eintrag PXZ-E-010.
+
+**3. Funktionalitäts-Tests post-cleanup.** validate.sh ✅ · smoke-http.sh 5/5 ✅ · alignment-probe ✅ · §5 HWG 14/14 ✅. Bekannter Drift: §3 Computed-Style 21 mismatches sind alle WPForms-Selektoren auf `/karriere/` — WPForms wurde in Welle H deinstalliert, Probe ist seitdem stale, gehört zu Block F-1 Forms-Strategie (separater Issue, nicht in dieser Session).
+
+**Verbleibend (unverändert seit Welle H):** F Live-Deploy · Sprint γ · GR-Phase (parallel) · E Native-Quality-Review · F-1 Forms-Strategie (probe-design.mjs cleanup folgt).
+
 ### Strategie-Entscheidung 2026-05-05 — Doppelpfad Übergang + Greenfield
 
 **Auslöser:** Dr. Stracke sah im WP-Admin-Menü Restbestand alter Plugins/Pages aus der Vorgänger-Seite. Frage: gereinigte Seite oder komplett neu? **Antwort:** Beides, sequenziell und parallel.

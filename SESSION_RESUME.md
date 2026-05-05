@@ -84,7 +84,8 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 
 ## §1 Stand & Version
 
-- **Version:** `0.9.11` — Praxis-Sprint hat seit S51 vier Polish-Sessions gefahren: **S52 (Untersuchungen-Submenu in 3 Gruppen + Doctolib-Probe, PXZ 2.7.76), S53 (Standorte-Container vereint, PXZ 2.7.77), S54 (FINAL CTA entfernt, PXZ 2.7.78), S55 (Slider-Halbierung + Labor-Begriffe DE + Labor-Mega-Menu + Untersuchungen-Sweep, PXZ 2.7.79–2.7.85, uncommitted).** Cortex-Web-HEAD `5e6f15c`. Praxis-Theme-HEAD `e49b187`. **Detail-Chronik in `sites/praxis-webseite/SESSION_RESUME.md` §1** (Single-Source LL-053d — Cortex-Web-Resume bleibt Dach-Niveau).
+- **Version:** `0.9.12` — Stand 2026-05-05 nach **Welle H (DB-Cleanup, PXZ 2.7.169)** + **Welle G3-Voll (6-Sprachen-Roundtrip)** + **heutiger Aufräum-Welle (File-System-Cleanup -700 MB + Mobile-Header-Overflow-Fix PXZ 2.7.175)**. Cortex-Web-HEAD `401e7b6`. Praxis-Theme-HEAD `bc345df`. **Detail-Chronik in `sites/praxis-webseite/SESSION_RESUME.md` §1** (Single-Source LL-053d — Cortex-Web-Resume bleibt Dach-Niveau).
+- **Heutige Welle I (2026-05-05):** 9 Cluster Altbestand entfernt (Repo 2,3 GB → 1,6 GB) · PXZ-E-010 entdeckt + behoben (Probe-Bug `innerWidth → clientWidth` + Mobile-Header-Overflow ≤540 px durch Sprachschalter-Hide im Drawer). Pattern `probe-layout-viewport-vs-visual-viewport.md`. Commits: Cortex-Web `6fbd3db` (-700 MB) + `401e7b6` (probe-fix). Theme `bc345df` (PXZ 2.7.175).
 - **Vorheriger Stand (S50, zur Orientierung):** Sanexio-Detail-Page-Mirror, 25 Detail-Pages mit Sanexio-Produktseiten-Layout, PXZ 2.7.73.
 
 ### §1.0 Sessions S43–S54 — Index (Hot-Layer, Details cold)
