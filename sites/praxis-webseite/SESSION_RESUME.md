@@ -69,9 +69,22 @@
 - Deploy-Source lokal: `_deploy/welle-F-phase-A/2026-05-06/` (index.html, .htaccess [orphan])
 - HTTP-Status: `https://westend-hausarzt.de/` 500 → **200** ✅
 
-**Verbleibend (Phase B):** Vollständige WP-Übergangsseite (Theme-Tarball + DB-Dump-Migration + WPML-Mode-Anpassung + DocRoot-Re-Konfiguration ggf.) — separate Welle, aufwendig, eigene Spec nötig (`specs/sprint-2/F_phase-B_live-deploy.md` anzulegen). Für die Übergangs-Phase reicht die Wartungsseite.
+**Phase A+ (gleicher Tag, Folge-Welle):** Wartungsseite passwortgeschützt.
 
-**Pattern-Reife:** Apache-vhost-DocRoot-Discovery via Probe-File-Pflanzung in 5 Pfade — robust, agnostisch zu cPanel-API-Sichtbarkeit. Pattern-Datei: `Nexus/_memory/patterns/apache-docroot-discovery-via-probe-files.md` (anzulegen).
+- `htpasswd -B` mit User `praxis` + Passwort `Sanexio` (bcrypt $2y$05) generiert.
+- `.htpasswd` (69 B) deployed nach `/home/e88c2b3jxfrg/.htpasswds/westend-de-preview/passwd` (außerhalb DocRoot, sichere Praxis).
+- `/public_html/.htaccess` erweitert mit Apache-`<If>`-Block, der Basic-Auth **nur** für `HTTP_HOST == westend-hausarzt.de` aktiviert. Erste Variante hatte unbeschränkten Auth-Block, daraufhin erbte `staging.westend-hausarzt.com` (gleiches Parent-DocRoot) den 401 → Hostname-Scope korrigiert.
+- Realm: „Praxiszentrum Westend - Vorschau".
+- Verify-Matrix:
+  - `https://westend-hausarzt.de/` ohne Auth → **401** ✅
+  - `https://westend-hausarzt.de/` mit `praxis:Sanexio` → **200** ✅
+  - `https://westend-hausarzt.de/` mit falschem Pass → **401** ✅
+  - `https://staging.westend-hausarzt.com/` → **403** (zurück auf vorherigen Stand, kein Auth-Block) ✅
+  - `https://westend-hausarzt.com/` → **200** (unverändert) ✅
+
+**Verbleibend (Phase B, eigene Welle):** Vollständige WP-Übergangsseite (Theme-Tarball + DB-Dump-Migration + WPML-Mode-Anpassung + DocRoot-Re-Konfiguration ggf.) — Spec `specs/sprint-2/F_phase-B_live-deploy.md` anzulegen.
+
+**Pattern-Reife:** Apache-vhost-DocRoot-Discovery via Probe-File-Pflanzung in 5 Pfade — robust, agnostisch zu cPanel-API-Sichtbarkeit. Pattern-Datei: `Nexus/_memory/patterns/apache-docroot-discovery-via-probe-files.md` ✅. Apache-`<If>`-Hostname-Scoping als Reflex bei `.htaccess` in shared `public_html/`-DocRoots.
 
 ### Tagesblock 2026-05-06 — Welle S71 (Walkthrough-Fixes nach Live-Audit Dr. Stracke) ✅
 
