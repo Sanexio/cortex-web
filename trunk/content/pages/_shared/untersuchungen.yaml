@@ -45,84 +45,23 @@ sections:
       pt-pt: Você é mais do que a soma das suas partes.
     lead:
       de: >-
-        Bei uns laufen Ultraschall, EKG, Lungenfunktion und Labor unter einem Dach zusammen.
-        Apparative Untersuchung und ärztliche Einordnung in einer Hand — das spart Wege und gibt
-        Ihnen schneller Klarheit.
+        Bei uns werden Sie als Ganzes betreut: Ein interdisziplinäres Team kümmert sich gemeinsam
+        um Diagnostik und Therapie — alles an einem Ort.
       en: >-
-        At our practice, ultrasound, ECG, lung function and laboratory tests come together under
-        one roof. Instrument-based examination and medical interpretation in one hand — saving you
-        routes and giving you faster clarity.
+        With us you are cared for as a whole: an interdisciplinary team looks after diagnostics
+        and therapy together — all in one place.
       fr: >-
-        Chez nous, échographie, ECG, exploration de la fonction respiratoire et laboratoire se
-        rejoignent sous le même toit. Examen instrumental et appréciation médicale dans la même
-        main — moins de trajets, plus de clarté plus vite.
+        Chez nous, vous êtes pris en charge dans votre globalité : une équipe interdisciplinaire
+        s’occupe ensemble du diagnostic et du traitement — le tout en un seul lieu.
       es: >-
-        En nuestra consulta confluyen ecografía, ECG, función pulmonar y laboratorio bajo un
-        mismo techo. Exploración instrumental y valoración médica en una sola mano — menos
-        desplazamientos y claridad más rápida.
+        Con nosotros se le atiende de forma integral: un equipo interdisciplinar se ocupa
+        conjuntamente del diagnóstico y la terapia — todo en un único lugar.
       it: >-
-        Da noi ecografia, ECG, prove di funzionalità respiratoria e analisi di laboratorio
-        confluiscono sotto lo stesso tetto. Esame strumentale e valutazione medica in un'unica
-        sede — meno percorsi, chiarezza più rapida.
+        Da noi viene seguito nella sua interezza: un’équipe interdisciplinare si occupa insieme
+        della diagnostica e della terapia — il tutto in un unico luogo.
       pt-pt: >-
-        Connosco a ecografia, o ECG, a função pulmonar e o laboratório convergem sob o mesmo
-        tecto. Exame instrumental e avaliação médica na mesma mão — poupa deslocações e
-        traz-lhe clareza mais depressa.
-  - type: body
-    heading:
-      de: ''
-      en: ''
-      fr: ''
-      es: ''
-      it: ''
-      pt-pt: ''
-    body_html:
-      de: |-
-        <p>Wir führen die wichtigsten apparativen Untersuchungen direkt in der Praxis durch — ohne Überweisungskette, ohne Wartezeit auf ein externes Institut. Befunde besprechen wir in der gleichen oder einer zeitnahen Folgekonsultation.</p>
-      en: |-
-        <p>We carry out the most important instrument-based examinations directly at the practice — without referral chains, without waiting for an external institute. We discuss the findings in the same consultation or shortly afterwards.</p>
-      fr: |-
-        <p>Nous réalisons les principaux examens instrumentaux directement au cabinet — sans chaîne de transferts, sans attendre un institut externe. Les résultats sont discutés lors de la même consultation ou peu après.</p>
-      es: |-
-        <p>Realizamos las principales exploraciones instrumentales directamente en la consulta — sin cadenas de derivaciones ni esperas en un instituto externo. Comentamos los resultados en la misma consulta o poco después.</p>
-      it: |-
-        <p>Eseguiamo i principali esami strumentali direttamente in studio — senza catene di trasferimenti, senza tempi di attesa presso un istituto esterno. Discutiamo i referti nella stessa consultazione o in una a breve distanza.</p>
-      pt-pt: |-
-        <p>Realizamos os principais exames instrumentais directamente no consultório — sem cadeias de referenciação e sem esperas num instituto externo. Discutimos os resultados na mesma consulta ou pouco depois.</p>
-  - type: usp-box
-    variant: dark
-    heading:
-      de: Was uns auszeichnet
-      en: What sets us apart
-      fr: Ce qui nous distingue
-      es: Lo que nos distingue
-      it: Ciò che ci distingue
-      pt-pt: O que nos distingue
-    text:
-      de: >-
-        Acht Fachrichtungen, ein Haus, eine gemeinsame Patientenakte. Wenn der Befund Ihrer
-        Schilddrüsen-Sonographie für die internistische Abklärung relevant ist, erfolgt die
-        Abstimmung noch am selben Tag — direkt im selben Haus.
-      en: >-
-        Eight specialties, one house, one shared patient record. When the findings of your
-        thyroid ultrasound are relevant for the internal-medicine work-up, the discussion happens
-        the same day — directly in the same building.
-      fr: >-
-        Huit spécialités, une seule maison, un dossier patient partagé. Lorsque le résultat de
-        votre échographie thyroïdienne est pertinent pour l’évaluation en médecine interne, la
-        concertation a lieu le jour même — directement dans la même maison.
-      es: >-
-        Ocho especialidades, una sola casa, una historia clínica compartida. Cuando el resultado
-        de su ecografía tiroidea es relevante para el abordaje internista, la consulta entre
-        especialistas tiene lugar el mismo día — directamente en la misma sede.
-      it: >-
-        Otto specializzazioni, un'unica sede, un'unica cartella clinica condivisa. Se il
-        referto della sua ecografia tiroidea è rilevante per l'inquadramento internistico,
-        il confronto avviene lo stesso giorno — direttamente nella stessa struttura.
-      pt-pt: >-
-        Oito especialidades, uma só casa, um processo clínico partilhado. Se o resultado
-        da sua ecografia tiroideia for relevante para a avaliação internista, a articulação
-        decorre no próprio dia — directamente na mesma casa.
+        Connosco é cuidado no seu todo: uma equipa interdisciplinar acompanha em conjunto o
+        diagnóstico e a terapia — tudo num único local.
   - type: bento-grid
     heading:
       de: Ultraschall
