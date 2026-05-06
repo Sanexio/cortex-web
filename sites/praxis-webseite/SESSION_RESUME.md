@@ -30,17 +30,45 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-05-03 Ende Welle G3-Voll — alle 62 DE-Pages auf 5 Nicht-DE-Sprachen vollständig übersetzt)
+## §1 Stand & Version (gültig: 2026-05-06 Ende Welle S71-Walkthrough-Fixes)
 
-- **PXZ_VERSION:** **2.7.170** (Theme-Repo HEAD `8c537fc`, Welle G3-Voll).
-- **Cortex-Web HEAD:** `b615127` (Trunk-YAMLs IT/PT/EN/FR/ES Volltext für 27 Untersuchungs-/Labor-Pages).
-- **Nexus HEAD:** `019b3ff` (LL-060 Autonomy Mode v1).
+- **PXZ_VERSION:** **2.7.176** (Theme-Repo HEAD `0ca1ddc`, Welle S71-Walkthrough-Fixes).
+- **Cortex-Web HEAD:** `c15803a` (untersuchungen.yaml: neuer Hero-Lead, body+usp-box raus).
+- **Nexus HEAD:** `be91f8c` (Sprint-F2-Reorg).
 - **Walkthrough-Ergebnis:** alle DE-Pages × 5 Nicht-DE-Sprachen sprach-konform; Reststellen sind Eigennamen + § -Pflichtangaben (DACH-juristisch) + AIOSEO-JSON-LD (nicht User-sichtbar, separates SEO-Welle).
 - **WPML-Status:** 6 aktive Sprachen (DE/EN/FR/ES/IT/pt-PT).
 - **Page-Inventar publish:** **DE 63 / EN 63 / FR 63 / ES 63 / IT 63 / pt-PT 63 — alle 5 Zielsprachen 100% Coverage** (315 Übersetzungen aktiv).
 - **Skript-Pattern-Reife:** **9-fach validiert · Generation 2.3 etabliert** (Cleanup-WPML-Rows + Doubletten-Robust + WPML-Hook-Workaround).
 - **Neue Architektur-Regel:** LL-060 Autonomy Mode v1 — Default Pull-Strategie, Debrief am Welle-Ende, Strategie-Stops nur bei Architektur/Geld/Drittsystem/Live-Deploy/destruktiven Ops. OpenClaw-Vorbild.
 - **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` auf SPRINT-ENDSPURT-Stand.
+
+### Tagesblock 2026-05-06 — Welle S71 (Walkthrough-Fixes nach Live-Audit Dr. Stracke) ✅
+
+**Auslöser:** Live-Audit Dr. Stracke vor Welle F (Live-Deploy) — sechs konkrete Befunde aus realer Browser-Inspektion auf de/en/fr/es/it/pt-pt-Pages.
+
+**Sechs Fixes in einer Session, alle 6 Sprachen, autonomy-mode (LL-062):**
+
+1. **/karriere/ Bewerbungsformular Vorname/Nachname-Layout** — `karriere.css` hatte `gap: 16px` auf `.wpforms-field-row`, aber WPForms-Default `display: flex` greift im pxz-kar-Container nicht durch (Dark-Theme-Override-Cascade). Fix: explizit `display: flex` + `flex: 1 1 0` auf `.wpforms-field-row-block`, mobiler Stack-Breakpoint 540 px. WPForms-Form-ID 10210 unverändert; nur CSS-Layer.
+
+2. **Partner-Profile-Seiten IT/pt-PT zeigen Initialen statt Foto** — `template-arzt.php` benutzt `get_post()->post_name` als Doctor-Slug-Lookup. WPML hängt bei IT/pt-PT-Übersetzungen Suffix `-2` an post_name (Slug-Konflikt-Eindeutigkeit), z.B. `docteur-saul` → `docteur-saul-2`. `pxz_doctor_by_slug('docteur-saul-2')` schlägt fehl → Fallback ohne `image_id` → Initialen. Fix: WPML-Trid-Lookup → DE-`element_id` → DE-post_name als kanonischer Slug. Identisches Pattern wie sD-`pxz_resolve_page_hub_data_file()`. Pattern-Datei: `Nexus/_memory/patterns/wpml-canonical-slug-resolution.md`.
+
+3. **/team/ drei Strings nicht/inkonsistent übersetzt** — Eyebrow „Praxisgemeinschaft", Grid-Title „Unsere Partner der Praxisgemeinschaft", CTA „Werden Sie Teil des Teams" + Sub + Link, Card-CTA „Profil ansehen" + ARIA-Labels alle in `template-team.php` hartkodiert auf DE. Fix: 7 neue Keys in `inc/theme-strings.php` `'team'`-Block über alle 6 Sprachen + Template-Render auf `pxz_theme_strings()` umgestellt. post_meta `pxz_team_eyebrow` bleibt als Override-Pfad erhalten, Default kommt aus theme-strings.
+
+4. **/standorte/ IT+PT inhaltlich abweichend von DE** — DE-Vorlage hat 8-Räume-Bilder-Galerie + Anfahrts-Block (~6700 Z.), IT/pt-PT hatten Custom-Adresse-Block (~2800 Z.). Fix: DE-Vorlage 1:1 in IT + pt-PT übersetzt (gleiche `media-text`-Struktur, gleiche `wp-image-XXXX`-Refs, übersetzte H3 + Paragraph-Strings). post_content-Update via `wp post update`.
+
+5. **/untersuchungen/ Intro-Text + Container-Cleanup** — Hero-Lead ersetzt: „Bei uns laufen Ultraschall, EKG, Lungenfunktion und Labor unter einem Dach zusammen…" → „Bei uns werden Sie als Ganzes betreut: Ein interdisziplinäres Team kümmert sich gemeinsam um Diagnostik und Therapie — alles an einem Ort." `body`-Section („Wir führen die wichtigsten apparativen Untersuchungen…") und `usp-box` „Was uns auszeichnet" mit „gemeinsame Patientenakte" komplett raus (letztere widerspricht `project_praxis_rechtsform_praxisgemeinschaft`-Memory: keine gemeinsame Patientenakte erlaubt). Quelle: `trunk/content/pages/_shared/untersuchungen.yaml`. Builder regeneriert 6 Sprachen, post_content der 6 Pages geleert. CTA-Buttons + Bento-Grids + Process-Steps unverändert.
+
+6. **/faq/-Subpages inkonsistent** — `/service/arbeitsunfaehigkeit/`-Translations: EN/FR/ES `post_content=0` (komplett leer), IT/pt-PT inhaltlich vom DE-Original abweichend (freie Adaption). Fix: DE-Vorlage (3 Para + 2 H2 + 2 Para) 1:1 in alle 5 Nicht-DE-Sprachen übersetzt. Nebenfund: `/service/einweisungen/` IT-Version hatte fr/it-Mix-h2 „Bon d'hospitalisation / Bono di ricovero ospedaliero" → korrigiert auf „Ricovero ospedaliero".
+
+**Aggregat:**
+- Files geändert (Theme): 5 Funktional + 6 Builder-Output (untersuchungen Sprachen-Files); 156 weitere page-hub-*.php-Files mit nur Timestamp-Diff revertiert
+- DB-Updates: 7 Pages × bis zu 5 Sprachen post_content = ~25 wp-Updates (standorte 2, untersuchungen 6 cleared, AU 5, einweisungen IT 1, plus interne)
+- Commits: Theme `0ca1ddc`, Cortex-Web `c15803a` — Nexus untouched
+- PXZ_VERSION 2.7.175 → 2.7.176
+
+**Pattern-Reife:** WPML-Slug-Suffix-Resolution-Pattern (zum dritten Mal angewendet, jetzt als Memory-Pattern festgehalten). Theme-Strings-First für i18n als systemisches Anti-Hardcoded-DE-Antidot etabliert.
+
+**Verbleibend (unverändert):** F Live-Deploy · GR-Phase (parallel) · E Native-Quality-Review.
 
 ### Tagesblock 2026-05-03 — SPRINT-ENDSPURT (S70 + sA + sB + sC + sD)
 
