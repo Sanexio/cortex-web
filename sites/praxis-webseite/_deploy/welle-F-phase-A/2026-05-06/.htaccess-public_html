@@ -1,0 +1,17 @@
+# /public_html/.htaccess — Welle F Phase A+ (2026-05-06)
+# Wartungsseite mit Basic-Auth-Schutz für westend-hausarzt.de
+# .htpasswd liegt außerhalb des DocRoots in /home/e88c2b3jxfrg/.htpasswds/westend-de-preview/
+
+DirectoryIndex index.html index.php
+Options -MultiViews -Indexes
+AddDefaultCharset UTF-8
+
+# Basic-Auth nur für westend-hausarzt.de aktiv.
+# /public_html/ ist Default-DocRoot mehrerer Aliases (auch staging.westend-hausarzt.com),
+# daher per <If> auf den Hostname einschränken — sonst greift Auth auch dort.
+<If "%{HTTP_HOST} == 'westend-hausarzt.de' || %{HTTP_HOST} == 'www.westend-hausarzt.de'">
+    AuthType Basic
+    AuthName "Praxiszentrum Westend - Vorschau"
+    AuthUserFile /home/e88c2b3jxfrg/.htpasswds/westend-de-preview/passwd
+    Require valid-user
+</If>
