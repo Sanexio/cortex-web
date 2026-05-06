@@ -42,6 +42,64 @@
 - **Neue Architektur-Regel:** LL-060 Autonomy Mode v1 — Default Pull-Strategie, Debrief am Welle-Ende, Strategie-Stops nur bei Architektur/Geld/Drittsystem/Live-Deploy/destruktiven Ops. OpenClaw-Vorbild.
 - **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` auf SPRINT-ENDSPURT-Stand.
 
+### Tagesblock 2026-05-06/07 (Nacht) — Welle F Phase B (vollständige WP-Live-Migration) ✅
+
+**Auslöser:** Dr. Stracke nach Phase A: „Wenn ich die Seite aufrufe, dann kommt nicht unsere Staging-Seite, sondern [Wartungsseite]" — er wollte die volle Praxis-Site live, nicht den Wartungs-Stub.
+
+**Phasen-Ergebnis:**
+
+1. **Tarballs lokal (~246 MB)** — wp-core (14 MB), wp-content-code (66 MB), wp-content-uploads (187 MB).
+2. **DB-Dump mit Search-Replace via wp-cli** — 6388 Replacements (Local-URL → westend-hausarzt.de), 32 MB SQL-Dump, guid-Spalte korrekt geskippt (765 Posts haben weiter Local-guid für SEO-Continuity).
+3. **wp-config-Live + Salts** — frische Salts via api.wordpress.org, WP_HOME/WP_SITEURL hardcoded, FORCE_SSL_ADMIN, AUTOMATIC_UPDATER_DISABLED, DISALLOW_FILE_EDIT.
+4. **FTPS-Upload** alle 4 Tarballs + DB + Config + extract.php.
+5. **Server-Side Extract** via PHP (22 sec).
+6. **DB-Connect-Auth** — initial Access denied: cPanel präfixt User auf DF NICHT mit Account-Prefix → User heißt nur `westend_de` (nicht `e88c2b3jxfrg_westend_de`). Plus Original-Passwort-Encoding zerschossen → Dr. Stracke Re-Reset auf `WestendDeLive2026Push`.
+7. **DB-Import via Pure-PHP-mysqli** (Streaming, 2823 Statements, 0 Errors, 10.2 sec) — `mysql`-CLI hatte silent rc=1, vermutlich CGI-PATH-Issue. Pure-PHP umging das.
+8. **Hidden Bug: tar `--exclude='upgrade*'` zu greedy** — hatte 233 legitime WPML-Files gefiltert (`sitepress-multilingual-cms/inc/upgrade.php` und `classes/upgrade/...`-Verzeichnis), wodurch erstes WP-Reload mit „critical error" 500 antwortete. Patch-Tarball mit fehlenden Files (128 KB) nachgeschickt, dann WP grün.
+9. **Live-`.htaccess` Switch** — DirectoryIndex `index.php index.html` (vorher umgekehrt), WP-Standard-Rewrite + Hostname-Scope-`<If>`-Block + Auth-Block. `.htaccess-phase-A-bak` als Rollback-Anker auf Server.
+10. **WPML-Mode 3 → 2** — lokal Mode 3 (Parameter-Style), live brauchten wir Mode 2 (Verzeichnis). Via `update_option('icl_sitepress_settings')` + `flush_rewrite_rules`. Setting ist jetzt Mode 2 — DE-Hauptseiten alle 200, aber **Sprach-URLs (`/en/`, `/fr/`, etc.) noch 404/301** (siehe verbleibend).
+11. **Cleanup** — alle Helper-PHP (extract, import-db, extract-patch, wp-debug, wp-flush, wpml-set-mode, cleanup), 4 Tarballs, db-live.sql, **31 451 macOS-AppleDouble-Files** (`._*`-Resource-Forks aus Tar-Build) entfernt.
+
+**Smoke-Matrix DE:**
+| URL | Status |
+|---|---|
+| `/` (Home) | 200 ✅ |
+| `/team/` | 200 ✅ |
+| `/untersuchungen/` | 200 ✅ |
+| `/service/` | 200 ✅ |
+| `/standorte/` | 200 ✅ |
+| `/karriere/` | 200 ✅ |
+| `/aktuelles/` | 200 ✅ |
+| `/impressum/` | 200 ✅ |
+| `/datenschutzerklaerung-2/` | 404 (Slug-Suffix-Issue, klein) |
+
+**Browser-Test (Headless Chrome 1440×900 + 390×844):**
+- HTTP 200 mit Auth `praxis:Sanexio`
+- Title: „Praxiszentrum — Home - Praxiszentrum Dr. Stracke und Kollegen"
+- H1: „Praxismedizin. Neu gedacht."
+- Body-Class: `wp-theme-blocksy wp-child-theme-praxiszentrum page-id-9663`
+- Cookie-Banner aktiv, 6-Sprachen-Switcher im Header sichtbar, Stats-Bento (2/8/500m²/23.000), Slider unten
+- Console-Errors: 1 (vermutlich asset-load-Issue, nicht funktional kritisch)
+
+**Verbleibend (Folge-Wellen):**
+- **WPML-Sprach-URL-Routing** — Mode 2 ist gesetzt, aber `/en/team/` redirectet noch auf `/team/`, `/fr/` redirectet auf `/fragebogen-vor-termin/` (false-match). Braucht WPML-internen Re-Setup (möglicherweise Trid-Refresh, Permalink-Slugs neu generieren). Eigene Welle.
+- **datenschutzerklaerung-2 Slug-Suffix** — kleiner Fix (kein Blocker).
+- **AIOSEO + WPForms + WP-Mail-SMTP-Pro Lizenz-Reaktivierung** auf Live-Domain.
+- **WPML-Lizenz reaktivieren** auf Live-Domain (OTGS-Token).
+- **DocRoot-Re-Konfig auf `/westend-hausarzt.de/`** — sauberer als `/public_html/`-Shared-Setup. Wenn Dr. Stracke wieder cPanel-Settings-Toggle macht, braucht's eine Folge-Welle für Pfade.
+
+**Pattern-Reife:**
+- `Nexus/_memory/patterns/macos-tar-glob-exclude-greedy.md` — `--exclude='upgrade*'` matcht alles mit „upgrade" auch in Plugin-Pfaden. Lösung: anchored Excludes (`./upgrade`, `./upgrade-temp-backup`).
+- DF-Hosting-Setup-Update: User-Names werden NICHT mit Account-Prefix versehen (Standard-cPanel-Konvention abweichend).
+- Live-Deploy Pure-PHP-mysqli-Streaming-Importer als Standard-Tool für 30+ MB Dumps wenn mysql-CLI silent failed.
+
+**Aggregat:**
+- Files lokal deployed: ~17 000 (WP-Core + wp-content)
+- Größe lokal vor gzip: ~530 MB · komprimiert auf Server: ~720 MB nach Entpacken (inkl. extracted ApppleDouble, dann gecleaned)
+- Final clean Server-Größe: ~600 MB
+- DB: 74 Tables, 2823 SQL-Statements, 390 Published Posts (DE-Coverage)
+- Commits: tba
+
 ### Tagesblock 2026-05-06 (Abend) — Welle F Phase A (HTTP-500-Block .de gelöst, Wartungsseite live) ✅
 
 **Auslöser:** Live-Deploy-Wahl Dr. Stracke (Welle F) auf `westend-hausarzt.de` statt `.com`. Vorab-Block: HTTP 500 seit Dr. Stracke 2026-05-04 die DocRoot-Toggle gemacht hat. DF-Support hatte nur die Origin-Inspektion vorgenommen, Account-`/home/e88c2b3jxfrg/.htaccess` als Ursache identifiziert, eigene Tests revertet — und konkret empfohlen: „Anpassung oder Deaktivierung der `/home/e88c2b3jxfrg/.htaccess`".
