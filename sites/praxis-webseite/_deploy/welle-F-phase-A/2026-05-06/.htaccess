@@ -1,0 +1,17 @@
+# westend-hausarzt.de — Domain-spezifische .htaccess (Welle F Phase A, 2026-05-06)
+# Zweck: Account-Level /home/e88c2b3jxfrg/.htaccess hat einen
+# Rewrite-Loop, der HTTP 500 auf der leeren .de-Domain auslöst.
+# Diese Domain-.htaccess deaktiviert die geerbten Rewrites domain-lokal.
+
+# Override inherited rewrite rules from /home/e88c2b3jxfrg/.htaccess
+# via [END]-flag (Apache 2.4+). Stops rewrite processing globally,
+# even for parent-inherited RewriteRule directives.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^ - [END]
+</IfModule>
+
+DirectoryIndex index.html index.php
+Options -MultiViews -Indexes
+AddDefaultCharset UTF-8

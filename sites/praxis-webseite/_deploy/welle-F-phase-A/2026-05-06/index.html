@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Praxiszentrum Westend — Dr. Stracke &amp; Kollegen</title>
+    <style>
+        :root {
+            --teal-700: #028090;
+            --teal-500: #00A896;
+            --teal-300: #02C39A;
+            --ink: #1a1a1a;
+            --paper: #ffffff;
+            --paper-soft: #f7f9fa;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--ink);
+            background: var(--paper-soft);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .brand {
+            font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+            font-weight: 700;
+            color: var(--teal-700);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+        .lead {
+            font-size: clamp(1rem, 1.6vw, 1.15rem);
+            color: var(--ink);
+            margin-bottom: 2rem;
+            opacity: 0.85;
+        }
+        h1 {
+            font-size: clamp(1.5rem, 2.4vw, 1.875rem);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--ink);
+        }
+        p { margin-bottom: 1rem; }
+        .card {
+            background: var(--paper);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 24px rgba(2, 128, 144, 0.08);
+            margin-bottom: 1.5rem;
+        }
+        .card h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--teal-700);
+        }
+        .card p { margin-bottom: 0.5rem; }
+        .card a {
+            color: var(--teal-500);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .card a:hover { text-decoration: underline; }
+        footer {
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--ink);
+            opacity: 0.5;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <p class="brand">Praxiszentrum Westend</p>
+        <p class="lead">Dr. med. Stracke &amp; Kollegen — Frankfurt am Main</p>
+
+        <h1>Diese Seite wird gerade aufgesetzt.</h1>
+        <p>Wir arbeiten an unserem neuen Internetauftritt. In Kürze finden Sie hier alle Informationen rund um unsere Praxis.</p>
+
+        <div class="card">
+            <h2>Termine &amp; Kontakt</h2>
+            <p><strong>Telefon:</strong> <a href="tel:+4969747171">069 / 74 71 71</a></p>
+            <p><strong>E-Mail:</strong> <a href="mailto:info@westend-hausarzt.de">info@westend-hausarzt.de</a></p>
+            <p><strong>Online-Terminbuchung:</strong> <a href="https://www.doctolib.de/" rel="noopener">Doctolib</a></p>
+        </div>
+
+        <div class="card">
+            <h2>Anschrift Hauptpraxis</h2>
+            <p>Grüneburgweg 6, 60322 Frankfurt am Main</p>
+        </div>
+    </main>
+    <footer>
+        © Praxiszentrum Westend Dr. Stracke &amp; Kollegen
+    </footer>
+</body>
+</html>

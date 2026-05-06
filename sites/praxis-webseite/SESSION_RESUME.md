@@ -42,6 +42,37 @@
 - **Neue Architektur-Regel:** LL-060 Autonomy Mode v1 — Default Pull-Strategie, Debrief am Welle-Ende, Strategie-Stops nur bei Architektur/Geld/Drittsystem/Live-Deploy/destruktiven Ops. OpenClaw-Vorbild.
 - **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` auf SPRINT-ENDSPURT-Stand.
 
+### Tagesblock 2026-05-06 (Abend) — Welle F Phase A (HTTP-500-Block .de gelöst, Wartungsseite live) ✅
+
+**Auslöser:** Live-Deploy-Wahl Dr. Stracke (Welle F) auf `westend-hausarzt.de` statt `.com`. Vorab-Block: HTTP 500 seit Dr. Stracke 2026-05-04 die DocRoot-Toggle gemacht hat. DF-Support hatte nur die Origin-Inspektion vorgenommen, Account-`/home/e88c2b3jxfrg/.htaccess` als Ursache identifiziert, eigene Tests revertet — und konkret empfohlen: „Anpassung oder Deaktivierung der `/home/e88c2b3jxfrg/.htaccess`".
+
+**Diagnose-Findings:**
+
+1. **Account-`.htaccess` (`/home/e88c2b3jxfrg/.htaccess`, 874 B, von 2020)** war ein altes Web-App-Vermächtnis (`RewriteEngine on` + `RewriteRule . index.php` ins Leere). Andere Production-Domains (Juvantis, Medzpoint, Check4Fun) haben **eigene** DocRoot-`.htaccess` und nutzen die globale nicht — sie war effektiv nur für die leere `.de`-Domain noch wirksam.
+2. **Domain-spezifische `.htaccess` mit `RewriteEngine off` greift NICHT** durch die Account-Vererbung (Apache-Verhalten: vererbte `RewriteRule` wirkt auch bei lokalem `off`). Auch `[END]`-Flag (Apache 2.4+) bleibt wirkungslos. → Globale `.htaccess` muss neutralisiert werden, sub-direktive Overrides reichen nicht.
+3. **vhost-DocRoot der `.de` zeigt aktuell auf `/public_html/`** (cPanel-Default nach Support-Revert), nicht auf `/redirects/westend-hausarzt.de/` (alter Stand) und nicht auf `/westend-hausarzt.de/` (Dr. Strackes Setup, vom Support revertet). Ermittelt via 5-Pfad-Probe-File-Discovery.
+4. **`westend-hausarzt.com` läuft auf eigenem DocRoot** (probe-Files nicht sichtbar) — keine Cross-Contamination zwischen `.com`- und `.de`-DocRoot.
+5. Andere Aliase (`westendhausarzt.de`, `westend-docs.de`, `arzt-westend.de`) haben eigene 301-Redirector-DocRoots; `lime.westend-hausarzt.de` ist eine eigenständige Subdomain. `/public_html/` ist effektiv nur Default-Ziel der `.de`-Hauptdomain.
+
+**Fixes (in Reihenfolge der Wirksamkeit):**
+
+1. **Backup** der Account-`.htaccess` als `_archive/welle-F-htaccess-diag/2026-05-06/account-htaccess.original.txt` (lokal) — vor jeder Änderung.
+2. **Rename** `/home/e88c2b3jxfrg/.htaccess` → `.htaccess.disabled.2026-05-06` (reversibel, nicht-destruktiv). Effekt: HTTP 500 → 403 (vhost zeigt auf leeres DocRoot).
+3. **Wartungs-`index.html`** (3.6 KB, mit Brand-Farbschema Teal #028090, Praxisgemeinschaft-konform, `noindex,nofollow`) nach `/public_html/index.html` deployed. Effekt: 403 → 200 ✅.
+4. **Cleanup**: alle 5 Discovery-Probe-Files entfernt (`/redirects/.../probe-A.txt`, `/westend-hausarzt.de/probe-B.txt`, `/public_html/probe-C.txt`, `/public_html/staging.../probe-D.txt`, `/probe-E.txt`).
+5. **Regression-Check**: `westend-hausarzt.com` (200), `juvantis.de` (200 mit GET), `medzpoint.de` (301 redirect, normal), `staging.westend-hausarzt.com` (403, eigenes DocRoot mit `Options -Indexes`, normal). Alle anderen Domains unbeeinflusst.
+
+**Aggregat:**
+- Files deployed (live): `/public_html/index.html` (3.606 B, Wartungsseite)
+- Files renamed (live): `/.htaccess` → `.htaccess.disabled.2026-05-06`
+- Backups lokal: `_archive/welle-F-htaccess-diag/2026-05-06/` (account-htaccess.original.txt, redirect-htaccess.original.txt, root-full-listing.txt, cpanel-state-snapshot/)
+- Deploy-Source lokal: `_deploy/welle-F-phase-A/2026-05-06/` (index.html, .htaccess [orphan])
+- HTTP-Status: `https://westend-hausarzt.de/` 500 → **200** ✅
+
+**Verbleibend (Phase B):** Vollständige WP-Übergangsseite (Theme-Tarball + DB-Dump-Migration + WPML-Mode-Anpassung + DocRoot-Re-Konfiguration ggf.) — separate Welle, aufwendig, eigene Spec nötig (`specs/sprint-2/F_phase-B_live-deploy.md` anzulegen). Für die Übergangs-Phase reicht die Wartungsseite.
+
+**Pattern-Reife:** Apache-vhost-DocRoot-Discovery via Probe-File-Pflanzung in 5 Pfade — robust, agnostisch zu cPanel-API-Sichtbarkeit. Pattern-Datei: `Nexus/_memory/patterns/apache-docroot-discovery-via-probe-files.md` (anzulegen).
+
 ### Tagesblock 2026-05-06 — Welle S71 (Walkthrough-Fixes nach Live-Audit Dr. Stracke) ✅
 
 **Auslöser:** Live-Audit Dr. Stracke vor Welle F (Live-Deploy) — sechs konkrete Befunde aus realer Browser-Inspektion auf de/en/fr/es/it/pt-pt-Pages.
