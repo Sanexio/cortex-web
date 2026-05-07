@@ -52,3 +52,12 @@ sites/*/_backups/
 # Drift-Sync — Drift-Reports sind zeitstempel-spezifisch, nicht git-trackbar wertvoll.
 # Spec: specs/drift-sync/SPEC.md
 tools/drift-sync/reports/
+
+# Welle F Phase B — Build-Artefakte (nicht ins Repo: DB-Dumps, Tarballs, Live-Credentials)
+sites/praxis-webseite/_deploy/welle-F-phase-B/*/db-*.sql
+sites/praxis-webseite/_deploy/welle-F-phase-B/*/wp-config-live.php
+sites/praxis-webseite/_deploy/welle-F-phase-B/*/*.tar.gz
+sites/praxis-webseite/_deploy/welle-F-phase-B/*/extract.php
+sites/praxis-webseite/_deploy/welle-F-phase-B/*/import-db.php
+sites/praxis-webseite/_deploy/welle-F-phase-B/*/wp-salts.txt
+sites/praxis-webseite/_deploy/welle-F-phase-A/*/.htpasswd
