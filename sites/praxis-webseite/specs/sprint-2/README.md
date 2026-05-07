@@ -91,3 +91,21 @@ Gegen `DESIGN_GUIDELINES.md` §13–§16 und Anti-Patterns §15. Nur reine Desig
 | 4 | Wird Terminbuchung (Doctolib o.ä.) in Sprechstunden-Seite eingebettet? | S2.3 Batch G |
 
 Diese werden in der nächsten Session vor Beginn von S2.1 geklärt.
+
+---
+
+## Welle-Specs in diesem Sprint (parallel zu S2.x)
+
+Während Sprint 2 lief, sind übergreifende Wellen entstanden, die ihre eigenen Spec-Dokumente in diesem Verzeichnis haben. Index zur Übersicht:
+
+| Welle | Datei | Status | Inhalt |
+|---|---|---|---|
+| **F** | [`F_phase-B_live-deploy.md`](F_phase-B_live-deploy.md) | ✅ abgeschlossen 2026-05-06 | WP-Live-Migration auf `westend-hausarzt.de` (Staging mit Basic-Auth) |
+| **γ (gamma)** | [`gamma_trunk-first-i18n-migration.md`](gamma_trunk-first-i18n-migration.md) | 📋 geshelved bis nach Welle F | WPML-Ablösung durch Trunk-i18n (315 Übersetzungen) |
+| **H** | [`H_cleanup-vor-deploy.md`](H_cleanup-vor-deploy.md) | ✅ abgeschlossen 2026-05-05 | DB-/Plugin-/Theme-/Page-Cleanup vor Live-Deploy |
+| **J** | [`J_pre-launch-security-hardening.md`](J_pre-launch-security-hardening.md) | ✅ abgeschlossen 2026-05-07 | Pre-Launch-Hardening (`.git/`, `error_log`, `.htaccess` schließen) — Verify-Suite 21/21 grün |
+| **K** | _(noch nicht spezifiziert)_ | ⏳ entblockt | `.com`-Go-Live: Domain-Cutover von `.de`-Staging auf `westend-hausarzt.com` |
+
+**Page-Inventar:** [`page-inventory.md`](page-inventory.md) — Source-of-Truth für Page-Bestand und Sprache-Map.
+
+**Reihenfolge der Wellen (zeitlich):** H (Cleanup) → F-1/F-2/F-Phase-A/F-Phase-B (Live-Migration) → I (PXZ-E-010-Polish, ohne Spec, nur in Commits) → J (Hardening, jetzt) → K (Go-Live). γ läuft erst nach K als eigene Welle.

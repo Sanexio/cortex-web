@@ -1,0 +1,48 @@
+# /public_html/.htaccess — Welle J Pre-Launch-Hardening (2026-05-07 v3)
+# WordPress live für westend-hausarzt.de mit Basic-Auth + Pretty-Lang-URLs.
+# Auth-Block via <If> (Hostname-scoped), Rewrites via RewriteCond HTTP_HOST.
+# Security: mod_rewrite-basierte Deny-Rules (überschreibt Auth-Granted via [F]).
+# Grund: <FilesMatch>+Require deny wird in Apache 2.4 von <If>+Require valid-user
+# via implizitem RequireAny aufgehoben. mod_rewrite [F] ist absolut.
+
+DirectoryIndex index.php index.html
+Options -MultiViews -Indexes
+AddDefaultCharset UTF-8
+
+# Basic-Auth NUR für westend-hausarzt.de (staging.com unbeeinflusst)
+<If "%{HTTP_HOST} == 'westend-hausarzt.de' || %{HTTP_HOST} == 'www.westend-hausarzt.de'">
+    AuthType Basic
+    AuthName "Praxiszentrum Westend - Vorschau"
+    AuthUserFile /home/e88c2b3jxfrg/.htpasswds/westend-de-preview/passwd
+    Require valid-user
+</If>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # === Welle J Block: Recon-Targets per [F]=403 absolut blocken ===
+    # File-Extensions, die nie öffentlich sein dürfen
+    RewriteRule "\.(htaccess|htpasswd|gitignore|gitattributes|editorconfig|md|log|bak|swp|sql|tar\.gz|env)$" - [F,L,NC]
+
+    # Spezifische Files (file basename match via REQUEST_URI)
+    RewriteRule "(?:^|/)(error_log|composer\.(json|lock)|package(-lock)?\.json|wp-config\.php|xmlrpc\.php)$" - [F,L,NC]
+
+    # Verzeichnis-Pfade (defense-in-depth, .git etc. sollten ohnehin nicht im DocRoot sein)
+    RewriteRule "(?:^|/)(\.git|\.svn|node_modules|_archive|_backups|specs)(?:/|$)" - [F,L]
+    # === /Welle J Block ===
+
+    # Pretty-Lang-URLs → 302-Redirect zu WPML-Mode-3-Parameter
+    RewriteCond %{HTTP_HOST} ^(www\.)?westend-hausarzt\.de$ [NC]
+    RewriteRule ^(en|fr|es|it|pt-pt)/?$ /?lang=$1 [QSA,R=302,L]
+
+    RewriteCond %{HTTP_HOST} ^(www\.)?westend-hausarzt\.de$ [NC]
+    RewriteRule ^(en|fr|es|it|pt-pt)/(.+?)/?$ /$2/?lang=$1 [QSA,R=302,L]
+
+    # Standard-WP
+    RewriteRule ^index\.php$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.php [L]
+</IfModule>
