@@ -104,7 +104,7 @@ Während Sprint 2 lief, sind übergreifende Wellen entstanden, die ihre eigenen 
 | **γ (gamma)** | [`gamma_trunk-first-i18n-migration.md`](gamma_trunk-first-i18n-migration.md) | 📋 geshelved bis nach Welle F | WPML-Ablösung durch Trunk-i18n (315 Übersetzungen) |
 | **H** | [`H_cleanup-vor-deploy.md`](H_cleanup-vor-deploy.md) | ✅ abgeschlossen 2026-05-05 | DB-/Plugin-/Theme-/Page-Cleanup vor Live-Deploy |
 | **J** | [`J_pre-launch-security-hardening.md`](J_pre-launch-security-hardening.md) | ✅ abgeschlossen 2026-05-07 | Pre-Launch-Hardening (`.git/`, `error_log`, `.htaccess` schließen) — Verify-Suite 21/21 grün |
-| **K** | _(noch nicht spezifiziert)_ | ⏳ entblockt | `.com`-Go-Live: Domain-Cutover von `.de`-Staging auf `westend-hausarzt.com` |
+| **K** | [`K_com-go-live.md`](K_com-go-live.md) | 🟡 spec-only (kein Datum) | `.com`-Go-Live als Local→`.com`-Push (Modell A, Local=Master). Eigener `.com`-DocRoot, kein DNS-Switch nötig. Blocker: Polish-Phase + `SFTP_COM_*`-Credentials + L-1/L-2. Verify-Suite via `tools/pre-launch-verify.sh --target=com`. |
 
 **Page-Inventar:** [`page-inventory.md`](page-inventory.md) — Source-of-Truth für Page-Bestand und Sprache-Map.
 

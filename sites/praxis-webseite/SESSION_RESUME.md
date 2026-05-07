@@ -37,13 +37,31 @@
 - **Nexus HEAD:** `1353922` (patterns: htaccess-rewrite-deny + php-tar-extract-perms).
 - **Staging-Live-Status:** `westend-hausarzt.de` mit Basic-Auth `praxis:Sanexio` — vollständig deckungsgleich mit Local (Diskrepanz-Scan 2026-05-07: Theme 1471=1471 Files byte-identisch, Uploads modulo runtime-caches, alle 343 Asset-Refs auf 6 Schlüsselseiten 200, Permission-Bugs 0).
 - **Pre-Launch-Hardening:** Welle J abgeschlossen — `.git/` aus Theme-DocRoot entfernt, `error_log` weg, `.htaccess`-Recon-Block via mod_rewrite [F]. Verify-Suite `tools/pre-launch-verify.sh` 21/21 grün.
-- **Welle K (`.com`-Go-Live):** entblockt (kein Spec, kein Datum).
+- **Welle K (`.com`-Go-Live):** Spec angelegt 2026-05-07 (`specs/sprint-2/K_com-go-live.md`). Modell **A** (Local = Master) gewählt: Polish auf Local → `.de`-Verify → Welle K pusht Local nach `.com` (eigener DocRoot, kein DNS-Switch — `.com` zeigt schon auf gleichen Server, läuft aktuell Theme `freesia-empire`). Phasen K0a–K11, Tier-3-Phasen (K0a/K0b/K5/K6/K7/K10) mit Approval-Gate. Polish-Sync-Skript `tools/sync-local-to-de.sh` als Tier-1-Tool für Iterationen. Bleibende Blocker: Polish-Phase + `SFTP_COM_*`-Credentials + L-1/L-2 (Legal-Review).
 - **Walkthrough-Ergebnis:** alle DE-Pages × 5 Nicht-DE-Sprachen sprach-konform; Reststellen sind Eigennamen + § -Pflichtangaben (DACH-juristisch) + AIOSEO-JSON-LD (nicht User-sichtbar, separates SEO-Welle).
 - **WPML-Status:** 6 aktive Sprachen (DE/EN/FR/ES/IT/pt-PT).
 - **Page-Inventar publish:** **DE 63 / EN 63 / FR 63 / ES 63 / IT 63 / pt-PT 63 — alle 5 Zielsprachen 100% Coverage** (315 Übersetzungen aktiv).
 - **Skript-Pattern-Reife:** **9-fach validiert · Generation 2.3 etabliert**.
 - **Architektur-Regel:** LL-060 Autonomy Mode v1 + LL-062 Mode-System (Safe/Autonomy).
 - **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` auf SPRINT-ENDSPURT-Stand.
+
+### Tagesblock 2026-05-07 (Spät) — Welle K Spec + Modell-A-Entscheidung + Polish-Sync-Skript ✅
+
+**Auslöser:** Dr. Stracke: „Inhalte und Design müssen teilweise nachgeschärft werden, bevor die Seite endgültig auf die `.com` gezogen wird. Wie verfahren wir mit den Änderungen?"
+
+**Architektur-Entscheidung Modell A (Local = Master):** Polish-Edits laufen auf Local-by-Flywheel (Theme via Git, Page-Content via WP-Admin). `.de` ist Verify-Stage, `.com` wird Production. Kein direkter `.de`-Edit → keine Drift, kein einseitiger DB-Pull-Job am Schluss. Modelle B (.de=Master) und C (Hybrid) verworfen wegen Drift-Risiko + Multi-Device-Sync-Problem.
+
+**`.com`-Ist-Zustand-Probe:** DNS A-Record `92.204.31.125` (gleiche IP wie `.de` → gleiches cPanel-Konto). HTTP 200 mit altem Theme `freesia-empire`, WPML aktiv (en/fr/de). Vermuteter DocRoot `/Praxis/` oder `/Praxis2/` (laut `_archive/welle-F-htaccess-diag/2026-05-06/root-full-listing.txt`). **Kein DNS-Switch nötig**, nur DocRoot-Inhalt austauschen.
+
+**Welle K Spec (`specs/sprint-2/K_com-go-live.md`):** 11 Phasen K0a–K11. Tier-3 markiert: K0a (Credentials), K0b (Backup alte `.com`-Site), K5 (FTPS-Upload), K6 (Switch-Phase), K7 (WPML-Mode + rewrite flush), K10 (WPML-Lizenz). Tier-1 für K1–K4 (Tarballs/DB-Dump/wp-config/.htaccess Local-Build) und K8/K9/K11 (Verify+Smoke+Debrief). `.htaccess`-Template mit Welle-J-Hardening 1:1 übernommen, Hostname-Scope `westend-hausarzt.com`, **kein Auth**. Search-Replace-Map analog Welle F (Local-URL → `.com`). Verify via `tools/pre-launch-verify.sh --target=com` (21/21).
+
+**Polish-Sync-Skript `tools/sync-local-to-de.sh`:** Inkrementelles `lftp mirror -R --only-newer` mit Welle-J-Tarball-Exclusions (`.git`, `node_modules`, `_archive`, `_backups`, `specs`, `*.log`, `.DS_Store`). Args `--theme`/`--verify`/`--db <patch.sql>`/`--dry-run`. Default = theme + verify. Liest `.env.sprint1.local` für `SFTP_DE_*`. Passwort-Echo durch grep-Filter unterdrückt. **Test-Run:** Dry-Run + Verify-only Run beide grün (21/21 pass auf `.de`). DB-Patch-Auto-Apply ist v2-Stub (manuell via phpMyAdmin oder `import-db.php` aus Welle-F-Tooling).
+
+**Spec-2-README:** Welle-K-Eintrag aktualisiert von „noch nicht spezifiziert" zu Spec-Link mit Modell-A-Hinweis.
+
+**Strategische Wahl:** Welle K bleibt Spec-only (nicht ausgeführt). Trigger sind extern: (1) Polish-Phase abgeschlossen (Sessions S55+ bis Dr.-Stracke-Freigabe), (2) `SFTP_COM_*`-Credentials gesetzt (aktuell Platzhalter in `.env.sprint1.local`), (3) L-1/L-2 (Impressum/Datenschutz Legal-Review) extern erledigt.
+
+**Commits offen (Session-Ende):** `specs/sprint-2/K_com-go-live.md` (neu), `specs/sprint-2/README.md` (Welle-K-Eintrag), `tools/sync-local-to-de.sh` (neu), `SESSION_RESUME.md` (Tagesblock).
 
 ### Tagesblock 2026-05-07 — Welle J (Pre-Launch-Security-Hardening + Logo-404-Fix + Diskrepanz-Scan) ✅
 
