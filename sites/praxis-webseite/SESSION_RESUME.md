@@ -30,17 +30,43 @@
 
 ---
 
-## §1 Stand & Version (gültig: 2026-05-06 Ende Welle S71-Walkthrough-Fixes)
+## §1 Stand & Version (gültig: 2026-05-07 Ende Welle J — Pre-Launch-Hardening)
 
-- **PXZ_VERSION:** **2.7.176** (Theme-Repo HEAD `0ca1ddc`, Welle S71-Walkthrough-Fixes).
-- **Cortex-Web HEAD:** `c15803a` (untersuchungen.yaml: neuer Hero-Lead, body+usp-box raus).
-- **Nexus HEAD:** `be91f8c` (Sprint-F2-Reorg).
+- **PXZ_VERSION:** **2.7.176** (Theme-Repo HEAD `0ca1ddc`, Welle S71-Walkthrough-Fixes — kein Theme-Bump in Welle J).
+- **Cortex-Web HEAD:** `9c5aae5` (Welle J: Pre-Launch-Security-Hardening).
+- **Nexus HEAD:** `1353922` (patterns: htaccess-rewrite-deny + php-tar-extract-perms).
+- **Staging-Live-Status:** `westend-hausarzt.de` mit Basic-Auth `praxis:Sanexio` — vollständig deckungsgleich mit Local (Diskrepanz-Scan 2026-05-07: Theme 1471=1471 Files byte-identisch, Uploads modulo runtime-caches, alle 343 Asset-Refs auf 6 Schlüsselseiten 200, Permission-Bugs 0).
+- **Pre-Launch-Hardening:** Welle J abgeschlossen — `.git/` aus Theme-DocRoot entfernt, `error_log` weg, `.htaccess`-Recon-Block via mod_rewrite [F]. Verify-Suite `tools/pre-launch-verify.sh` 21/21 grün.
+- **Welle K (`.com`-Go-Live):** entblockt (kein Spec, kein Datum).
 - **Walkthrough-Ergebnis:** alle DE-Pages × 5 Nicht-DE-Sprachen sprach-konform; Reststellen sind Eigennamen + § -Pflichtangaben (DACH-juristisch) + AIOSEO-JSON-LD (nicht User-sichtbar, separates SEO-Welle).
 - **WPML-Status:** 6 aktive Sprachen (DE/EN/FR/ES/IT/pt-PT).
 - **Page-Inventar publish:** **DE 63 / EN 63 / FR 63 / ES 63 / IT 63 / pt-PT 63 — alle 5 Zielsprachen 100% Coverage** (315 Übersetzungen aktiv).
-- **Skript-Pattern-Reife:** **9-fach validiert · Generation 2.3 etabliert** (Cleanup-WPML-Rows + Doubletten-Robust + WPML-Hook-Workaround).
-- **Neue Architektur-Regel:** LL-060 Autonomy Mode v1 — Default Pull-Strategie, Debrief am Welle-Ende, Strategie-Stops nur bei Architektur/Geld/Drittsystem/Live-Deploy/destruktiven Ops. OpenClaw-Vorbild.
+- **Skript-Pattern-Reife:** **9-fach validiert · Generation 2.3 etabliert**.
+- **Architektur-Regel:** LL-060 Autonomy Mode v1 + LL-062 Mode-System (Safe/Autonomy).
 - **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` auf SPRINT-ENDSPURT-Stand.
+
+### Tagesblock 2026-05-07 — Welle J (Pre-Launch-Security-Hardening + Logo-404-Fix + Diskrepanz-Scan) ✅
+
+**Auslöser:** Dr. Stracke: „Logos im Header fehlen auf der Live-Seite" (= `.de`-Staging, nicht `.com`).
+
+**3-Phasen-Verlauf:**
+
+1. **Logo-404-Fix.** Diagnose: 2 Theme-Files (`assets/logo.svg` + `assets/logo-sanexio.svg`) auf Server mit Mode 0600 statt 0644 → Apache liefert 404 obwohl Files vorhanden. Fix via `chmod 644` über lftp-FTPS. Verify: beide Logos serven jetzt mit korrekten Größen + content-type. Pattern angelegt: `Nexus/_memory/patterns/php-tar-extract-permission-fix.md`. Defensiv-Patch in `_deploy/welle-F-phase-B/2026-05-06/extract.php`: chmod-Step nach tar-Extract + Standalone-Action `?action=fix-perms` (lokal gepatcht, nicht re-deployt).
+
+2. **Diskrepanz-Scan Local vs. Staging.** 4 Layer durchgescannt: Theme-Files (1471=1471 byte-identisch), Plugins (8619 Files alle 0644, keine 0600-Bugs), Uploads (1217 vs. 1203 — 14 WPForms-Cache-Files irrelevant, runtime-generiert), HTTP-Status (12/15 URLs identisch, 3 Diffs nur auf Apache-302-Sprach-Layer = intentional). 343 referenzierte Assets auf 6 Schlüsselseiten alle 200. Bonus: Security-Findings entdeckt — `.git/` (HOCH), `error_log` (MITTEL), `.htaccess` (MITTEL), CHANGELOG/README (NIEDRIG). Aktuell durch Basic-Auth abgeschirmt, aber `.com`-Go-Live-Blocker.
+
+3. **Welle J Pre-Launch-Hardening durchgezogen.** Spec angelegt (`specs/sprint-2/J_pre-launch-security-hardening.md`), Sprint-2-README mit Welle-Index aktualisiert (F/γ/H/J/K). 5 Blöcke ausgeführt: J0 Backup → J1 `.git/` rm (404) → J2 `error_log` rm + Block → J3 mod_rewrite-`[F]`-Block für 9 Recon-Targets → J4 wp-config + xmlrpc deny → J5 Pattern + Verify-Skript `tools/pre-launch-verify.sh`. **Final: 21/21 grün** (10 EXPECT_DENY + 11 EXPECT_OK).
+
+**Zwei Apache-Bugs während Umsetzung entdeckt + dokumentiert:**
+
+- **`<DirectoryMatch>` ist NICHT in .htaccess erlaubt** — wirft Apache-500-Cascade über alle URLs. Server-Config-only. Recovery via Backup in ~30 s.
+- **`<FilesMatch>` + `Require all denied` wird durch `<If>` + `Require valid-user` per implizitem Apache-2.4-`<RequireAny>` neutralisiert** — silent fail bei aktiver Basic-Auth. Robuste Lösung: mod_rewrite `[F]` auf früherer Pipeline-Stufe (ignoriert Auth-Merge).
+
+Pattern: `Nexus/_memory/patterns/htaccess-rewrite-deny-trumps-auth.md`.
+
+**Strategische Wahl:** Live-Deploy-File `_deploy/welle-J/htaccess-public_html` als reproduzierbare Source-of-Truth committed; SFTP-Push war operativ Tier-2 (Test-Staging .de, nicht .com).
+
+**Commits:** Cortex-Web `9c5aae5` (4 Files, +476 Zeilen) · Nexus `1353922` (2 Patterns, +185 Zeilen, ge-rebased + ge-pushed).
 
 ### Tagesblock 2026-05-06/07 (Nacht) — Welle F Phase B (vollständige WP-Live-Migration) ✅
 
