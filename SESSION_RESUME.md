@@ -84,8 +84,9 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 
 ## §1 Stand & Version
 
-- **Version:** `0.9.12` — Stand 2026-05-05 nach **Welle H (DB-Cleanup, PXZ 2.7.169)** + **Welle G3-Voll (6-Sprachen-Roundtrip)** + **heutiger Aufräum-Welle (File-System-Cleanup -700 MB + Mobile-Header-Overflow-Fix PXZ 2.7.175)**. Cortex-Web-HEAD `401e7b6`. Praxis-Theme-HEAD `bc345df`. **Detail-Chronik in `sites/praxis-webseite/SESSION_RESUME.md` §1** (Single-Source LL-053d — Cortex-Web-Resume bleibt Dach-Niveau).
-- **Heutige Welle I (2026-05-05):** 9 Cluster Altbestand entfernt (Repo 2,3 GB → 1,6 GB) · PXZ-E-010 entdeckt + behoben (Probe-Bug `innerWidth → clientWidth` + Mobile-Header-Overflow ≤540 px durch Sprachschalter-Hide im Drawer). Pattern `probe-layout-viewport-vs-visual-viewport.md`. Commits: Cortex-Web `6fbd3db` (-700 MB) + `401e7b6` (probe-fix). Theme `bc345df` (PXZ 2.7.175).
+- **Version:** `0.9.13` — Stand 2026-05-07 nach **Welle J (Pre-Launch-Security-Hardening auf .de-Staging)**. Cortex-Web-HEAD `9c5aae5`. Praxis-Theme-HEAD `0ca1ddc` (PXZ 2.7.176, kein Bump in Welle J). **Detail-Chronik in `sites/praxis-webseite/SESSION_RESUME.md` §1** (Single-Source LL-053d).
+- **Welle J (2026-05-07):** Logo-404-Fix (Permission-Bug 0600→0644 für 2 Theme-Files) · Diskrepanz-Scan Local↔Staging (Theme byte-identisch, 343 Asset-Refs alle 200) · Pre-Launch-Hardening (`.git/` rm, `error_log` rm, mod_rewrite-`[F]`-Block für Recon-Targets, Verify-Suite 21/21). 2 neue Patterns: `php-tar-extract-permission-fix.md` + `htaccess-rewrite-deny-trumps-auth.md`. Welle K (`.com`-Go-Live) entblockt. Cortex-Web `9c5aae5` · Nexus `1353922`.
+- **Vorherige Welle I (2026-05-05):** 9 Cluster Altbestand entfernt (Repo 2,3 GB → 1,6 GB) · PXZ-E-010 (Probe-Bug + Mobile-Header-Overflow ≤540 px). Pattern `probe-layout-viewport-vs-visual-viewport.md`. Commits `6fbd3db` + `401e7b6`. Theme `bc345df` (PXZ 2.7.175).
 - **Vorheriger Stand (S50, zur Orientierung):** Sanexio-Detail-Page-Mirror, 25 Detail-Pages mit Sanexio-Produktseiten-Layout, PXZ 2.7.73.
 
 ### §1.0 Sessions S43–S54 — Index (Hot-Layer, Details cold)
