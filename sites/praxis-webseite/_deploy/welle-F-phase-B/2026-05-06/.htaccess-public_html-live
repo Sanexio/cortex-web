@@ -1,0 +1,36 @@
+# /public_html/.htaccess — Welle F Phase B (2026-05-07 hybrid)
+# WordPress live für westend-hausarzt.de mit Basic-Auth + Pretty-Lang-URLs.
+# Auth-Block via <If> (Hostname-scoped), Rewrites via RewriteCond HTTP_HOST (robuster).
+
+DirectoryIndex index.php index.html
+Options -MultiViews -Indexes
+AddDefaultCharset UTF-8
+
+# Basic-Auth NUR für westend-hausarzt.de (staging.com unbeeinflusst)
+<If "%{HTTP_HOST} == 'westend-hausarzt.de' || %{HTTP_HOST} == 'www.westend-hausarzt.de'">
+    AuthType Basic
+    AuthName "Praxiszentrum Westend - Vorschau"
+    AuthUserFile /home/e88c2b3jxfrg/.htpasswds/westend-de-preview/passwd
+    Require valid-user
+</If>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Pretty-Lang-URLs → 302-Redirect zu WPML-Mode-3-Parameter (sichtbar im Browser)
+    # Internal-Rewrite [L] greift nicht wegen WP-Canonical-Loop. 302 ist Staging-tauglich.
+    # Für Production-Live: WPML auf Mode 2 setzen (eigene Folge-Welle).
+    RewriteCond %{HTTP_HOST} ^(www\.)?westend-hausarzt\.de$ [NC]
+    RewriteRule ^(en|fr|es|it|pt-pt)/?$ /?lang=$1 [QSA,R=302,L]
+
+    RewriteCond %{HTTP_HOST} ^(www\.)?westend-hausarzt\.de$ [NC]
+    RewriteRule ^(en|fr|es|it|pt-pt)/(.+?)/?$ /$2/?lang=$1 [QSA,R=302,L]
+
+    # Standard-WP
+    RewriteRule ^index\.php$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.php [L]
+</IfModule>

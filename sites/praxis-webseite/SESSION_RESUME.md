@@ -81,8 +81,17 @@
 - Cookie-Banner aktiv, 6-Sprachen-Switcher im Header sichtbar, Stats-Bento (2/8/500m²/23.000), Slider unten
 - Console-Errors: 1 (vermutlich asset-load-Issue, nicht funktional kritisch)
 
+**Phase-B-Folge — Sprach-URLs gefixt (gleicher Tagesblock, 2026-05-07 Nacht):**
+
+- **WPML-Setup-Marker erkannt:** `wpml_setup_complete=NO`, `icl_native_languages_setup=no` → WPML hing im Setup-Mode trotz aktiver Site. Auf `1` gesetzt + `setup_complete`-Flag.
+- **Mode 3 wiederhergestellt** (lokal-konsistent) — Mode 2 erforderte WPML-Setup-Wizard-Lauf, der ohne Admin-UI im PHP-Skript nicht initialisierbar war (init-, set_active_languages-Methoden fehlen oder werfen Fatal).
+- **Apache-Rewrite-Layer für Pretty-Lang-URLs:** `/en/`, `/fr/`, `/es/`, `/it/`, `/pt-pt/` → 302-Redirect zu `?lang=xx`. Internal-Rewrite `[L]` schied aus wegen WP-Canonical-Loop (`/index.php?lang=en` → 301 → `/?lang=en`). 302 sichtbar im Browser, aber Funktion ✅.
+- **`<If>`-Block + mod_rewrite-Limitation entdeckt:** Apache evaluiert `RewriteRule` innerhalb `<If "HTTP_HOST=...">` unzuverlässig. Lösung: Rewrites außerhalb `<If>` mit `RewriteCond %{HTTP_HOST}` als Hostname-Scope.
+- **Final-Smoke 12 URLs × 6 Sprachen → alle 200 mit korrektem `<html lang>`-Tag** (de-DE, en-US, fr-FR, es-ES, it-IT, pt-pt). 6 Helper-PHP-Files (wpml-diag, wpml-rules, wpml-state, wpml-mode3, wpml-reactivate, wpml-reset) cleaned up.
+
+**Production-Live-TODO:** Echtes WPML-Mode 2 setzen (Pretty-URLs ohne Redirect) — über WPML-Admin-Setup-Wizard. Aktuelle Lösung ist Staging-tauglich.
+
 **Verbleibend (Folge-Wellen):**
-- **WPML-Sprach-URL-Routing** — Mode 2 ist gesetzt, aber `/en/team/` redirectet noch auf `/team/`, `/fr/` redirectet auf `/fragebogen-vor-termin/` (false-match). Braucht WPML-internen Re-Setup (möglicherweise Trid-Refresh, Permalink-Slugs neu generieren). Eigene Welle.
 - **datenschutzerklaerung-2 Slug-Suffix** — kleiner Fix (kein Blocker).
 - **AIOSEO + WPForms + WP-Mail-SMTP-Pro Lizenz-Reaktivierung** auf Live-Domain.
 - **WPML-Lizenz reaktivieren** auf Live-Domain (OTGS-Token).
