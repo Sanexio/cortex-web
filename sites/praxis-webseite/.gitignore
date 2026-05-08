@@ -6,6 +6,9 @@ node_modules/
 # aber werden nicht versioniert — sonst 88 MB pro Baseline)
 screenshots/_archive/
 screenshots/claude/_archive/
+# Responsive-Audit-Output (S55d): regenerierbar via tools/responsive-audit.mjs,
+# 60 PNGs pro Run × 5 Viewports — gehoert nicht ins Repo.
+screenshots/responsive-audit-*/
 
 # Credentials — never commit
 .env
