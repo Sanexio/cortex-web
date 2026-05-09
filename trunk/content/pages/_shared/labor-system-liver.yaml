@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: labor/system-liver
 title:
-  de: Leber
+  de: Leberwerte
   en: System Liver
   fr: Foie
   es: Hígado
@@ -32,7 +32,7 @@ sections:
       it: Laboratorio · Sistema
       pt-pt: Laboratório · Sistema
     heading:
-      de: Leber
+      de: Leberwerte
       en: Liver
       fr: Foie
       es: Hígado
@@ -146,7 +146,7 @@ sections:
         <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
-      de: Termin für Leber?
+      de: Termin für die Leberwerte?
       en: Booking a liver panel?
       fr: Un rendez-vous pour un bilan hépatique ?
       es: ¿Cita para un análisis hepático?

@@ -342,12 +342,12 @@ sections:
     items:
       - id: status-baseline
         title:
-          de: Status Baseline
-          en: Status Baseline
-          fr: Status Baseline
-          es: Status Baseline
-          it: Status Baseline
-          pt-pt: Status Baseline
+          de: Basis-Check
+          en: Basis-Check
+          fr: Basis-Check
+          es: Basis-Check
+          it: Basis-Check
+          pt-pt: Basis-Check
         teaser:
           de: Orientierende Standardparameter zu Stoffwechsel und Organfunktion.
           en: The compact starting point — the most important standard parameters at a glance.
@@ -359,12 +359,12 @@ sections:
         href: /labor/status-baseline/
       - id: status-advanced
         title:
-          de: Status Advanced
-          en: Status Advanced
-          fr: Status Advanced
-          es: Status Advanced
-          it: Status Advanced
-          pt-pt: Status Advanced
+          de: Erweiterter Check
+          en: Erweiterter Check
+          fr: Erweiterter Check
+          es: Erweiterter Check
+          it: Erweiterter Check
+          pt-pt: Erweiterter Check
         teaser:
           de: Erweiterter Check mit zusätzlichen Stoffwechsel- und Risikoparametern.
           en: Extended check with additional metabolic and risk parameters.
@@ -376,12 +376,12 @@ sections:
         href: /labor/status-advanced/
       - id: status-prevent
         title:
-          de: Status Prevent
-          en: Status Prevent
-          fr: Status Prevent
-          es: Status Prevent
-          it: Status Prevent
-          pt-pt: Status Prevent
+          de: Vorsorge-Check
+          en: Vorsorge-Check
+          fr: Vorsorge-Check
+          es: Vorsorge-Check
+          it: Vorsorge-Check
+          pt-pt: Vorsorge-Check
         teaser:
           de: Erweitertes Laborprofil mit zusätzlichen Stoffwechsel- und Entzündungsparametern.
           en: Comprehensive prevention profile for targeted early detection.
@@ -393,12 +393,12 @@ sections:
         href: /labor/status-prevent/
       - id: system-immune
         title:
-          de: System Immune
-          en: System Immune
-          fr: System Immune
-          es: System Immune
-          it: System Immune
-          pt-pt: System Immune
+          de: Immunsystem-Profil
+          en: Immunsystem-Profil
+          fr: Immunsystem-Profil
+          es: Immunsystem-Profil
+          it: Immunsystem-Profil
+          pt-pt: Immunsystem-Profil
         teaser:
           de: Laborprofil zur Beurteilung des Immunsystems.
           en: Targeted assessment of the immune system and immune defences.
@@ -410,12 +410,12 @@ sections:
         href: /labor/system-immune/
       - id: system-renal
         title:
-          de: System Renal
-          en: System Renal
-          fr: System Renal
-          es: System Renal
-          it: System Renal
-          pt-pt: System Renal
+          de: Nierenwerte
+          en: Nierenwerte
+          fr: Nierenwerte
+          es: Nierenwerte
+          it: Nierenwerte
+          pt-pt: Nierenwerte
         teaser:
           de: Nierenfunktion und Elektrolyte im Detail.
           en: Kidney function and electrolytes in detail.
@@ -427,12 +427,12 @@ sections:
         href: /labor/system-renal/
       - id: system-liver
         title:
-          de: System Liver
-          en: System Liver
-          fr: System Liver
-          es: System Liver
-          it: System Liver
-          pt-pt: System Liver
+          de: Leberwerte
+          en: Leberwerte
+          fr: Leberwerte
+          es: Leberwerte
+          it: Leberwerte
+          pt-pt: Leberwerte
         teaser:
           de: Leberwerte und Stoffwechselparameter strukturiert ausgewertet.
           en: Liver values and metabolic parameters evaluated in a structured way.
@@ -444,12 +444,12 @@ sections:
         href: /labor/system-liver/
       - id: stoffwechsel
         title:
-          de: Stoffwechsel
-          en: Metabolism
-          fr: Métabolisme
-          es: Metabolismo
-          it: Metabolismo
-          pt-pt: Metabolismo
+          de: Stoffwechsel-Werte
+          en: Stoffwechsel-Werte
+          fr: Stoffwechsel-Werte
+          es: Stoffwechsel-Werte
+          it: Stoffwechsel-Werte
+          pt-pt: Stoffwechsel-Werte
         teaser:
           de: Laborprofil zu Fett- und Zuckerstoffwechsel.
           en: Glucose, lipids, thyroid — the metabolic axis at a glance.
@@ -461,12 +461,12 @@ sections:
         href: /labor/stoffwechsel/
       - id: biohack
         title:
-          de: BioHack — Genetische Beratung
-          en: BioHack — Genetic Consultation
-          fr: BioHack — Consultation génétique
-          es: BioHack — Consulta genética
-          it: BioHack — Consulenza genetica
-          pt-pt: BioHack — Aconselhamento genético
+          de: Genetik-Beratung
+          en: Genetik-Beratung
+          fr: Genetik-Beratung
+          es: Genetik-Beratung
+          it: Genetik-Beratung
+          pt-pt: Genetik-Beratung
         teaser:
           de: Beratung zu Möglichkeiten und Grenzen genetischer Untersuchungen.
           en: Genetically informed advice for a personalised prevention strategy.

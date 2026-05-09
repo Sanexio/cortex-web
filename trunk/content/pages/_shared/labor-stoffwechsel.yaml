@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: labor/stoffwechsel
 title:
-  de: Stoffwechsel
+  de: Stoffwechsel-Werte
   en: Metabolism
   fr: Métabolisme
   es: Metabolismo
@@ -32,7 +32,7 @@ sections:
       it: Laboratorio · Metabolismo
       pt-pt: Laboratório · Metabolismo
     heading:
-      de: Stoffwechsel
+      de: Stoffwechsel-Werte
       en: Metabolism
       fr: Métabolisme
       es: Metabolismo
@@ -98,7 +98,7 @@ sections:
         <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
-      de: Termin für Stoffwechsel?
+      de: Termin für die Stoffwechsel-Werte?
       en: Booking a metabolism panel?
       fr: Un rendez-vous pour un profil métabolique ?
       es: ¿Cita para un perfil metabólico?

@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: labor/system-renal
 title:
-  de: Nieren
+  de: Nierenwerte
   en: System Renal
   fr: Reins
   es: Riñones
@@ -32,7 +32,7 @@ sections:
       it: Laboratorio · Sistema
       pt-pt: Laboratório · Sistema
     heading:
-      de: Nieren
+      de: Nierenwerte
       en: Kidneys
       fr: Reins
       es: Riñones
@@ -140,7 +140,7 @@ sections:
         <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
-      de: Termin für Nieren?
+      de: Termin für die Nierenwerte?
       en: Booking a kidney panel?
       fr: Un rendez-vous pour un bilan rénal ?
       es: ¿Cita para un análisis renal?

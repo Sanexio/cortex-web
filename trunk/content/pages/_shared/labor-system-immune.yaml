@@ -3,7 +3,7 @@ site: shared
 slugs:
   praxis: labor/system-immune
 title:
-  de: Immunsystem
+  de: Immunsystem-Profil
   en: System Immune
   fr: Système immunitaire
   es: Sistema inmunitario
@@ -32,7 +32,7 @@ sections:
       it: Laboratorio · Sistema
       pt-pt: Laboratório · Sistema
     heading:
-      de: Immunsystem
+      de: Immunsystem-Profil
       en: Immune system
       fr: Système immunitaire
       es: Sistema inmunitario
@@ -152,7 +152,7 @@ sections:
         <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: cta-banner
     heading:
-      de: Termin für Immunsystem?
+      de: Termin für ein Immunsystem-Profil?
       en: Booking an immune-system check?
       fr: Un rendez-vous pour un bilan immunitaire ?
       es: ¿Cita para un análisis del sistema inmunitario?
