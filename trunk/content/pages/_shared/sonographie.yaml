@@ -195,7 +195,7 @@ sections:
       - id: beingefaesse
         title: { de: Gefäß-Sonographie der Beine, en: Ultrasound of the leg vessels, fr: Échographie des vaisseaux des jambes, es: Ecografía de los vasos de las piernas, it: Eco-Doppler degli arti inferiori, pt-pt: Eco-Doppler dos membros inferiores }
         teaser:
-          de: Thrombosen, Krampfadern und arterielle Durchblutungsstörungen direkt sichtbar.
+          de: Beurteilung der venösen und arteriellen Beingefäße.
           en: Thromboses, varicose veins and arterial perfusion problems directly visible.
           fr: Thromboses, varices et troubles de la perfusion artérielle directement visibles.
           es: Trombosis, varices y trastornos de la perfusión arterial directamente visibles.
@@ -217,7 +217,7 @@ sections:
       - id: carotis
         title: { de: Carotis-Duplex, en: Carotid Duplex, fr: Doppler carotidien, es: Dúplex carotídeo, it: Eco-Doppler delle carotidi, pt-pt: Eco-Doppler das carótidas }
         teaser:
-          de: Halsschlagadern — frühe Hinweise auf Gefäßveränderungen.
+          de: Halsschlagadern — Beurteilung von Gefäßwand und Durchfluss.
           en: Carotid arteries — early signs of vascular changes.
           fr: Artères carotides — signaux précoces d’altérations vasculaires.
           es: Arterias carótidas — signos tempranos de alteraciones vasculares.

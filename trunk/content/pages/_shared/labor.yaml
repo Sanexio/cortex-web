@@ -37,7 +37,7 @@ sections:
       it: Diagnostica di laboratorio
       pt-pt: Diagnóstico laboratorial
     heading:
-      de: Ihr Blut weiß mehr, als Sie denken.
+      de: Labordiagnostik in der Praxis.
       en: Your blood knows more than you think.
       fr: Votre sang en sait plus que vous ne le pensez.
       es: Su sangre sabe más de lo que cree.
@@ -45,10 +45,9 @@ sections:
       pt-pt: O seu sangue sabe mais do que pensa.
     lead:
       de: >-
-        Eine Blutuntersuchung in unserer Praxis liefert einen fundierten Einblick in Ihre aktuelle
-        Gesundheitssituation. Wir bieten strukturierte Bluttest-Profile, abgestimmt auf
-        unterschiedliche Fragestellungen — von der orientierenden Standortbestimmung bis zur tiefen
-        Risiko-Analyse.
+        Laborwerte aus Blut, Urin oder Stuhl sind ein zentraler Bestandteil unserer internistischen
+        Diagnostik. Je nach Fragestellung kommen unterschiedliche Laborprofile zum Einsatz —
+        von einer orientierenden Bestandsaufnahme bis zu spezifischen Organ- und Risikoparametern.
       en: >-
         A blood test at our practice gives you a well-founded view of your current health
         situation. We offer structured blood test profiles tailored to different questions — from
@@ -119,9 +118,9 @@ sections:
 
         <p>Die meisten Werte liegen innerhalb von ein bis zwei Werktagen vor. Wir besprechen Ergebnisse in der Folgekonsultation oder — bei unauffälligen Routinebefunden und Ihrem Einverständnis — telefonisch. Auffällige Werte klären wir immer persönlich.</p>
 
-        <h2>Selbstzahler-Alternative</h2>
+        <h2>Selbstzahler-Leistungen</h2>
 
-        <p>Unser Partner Sanexio bietet mit dem <a href="/basic-check/">Basic-Check</a> einen kompakten Selbstzahler-Laborcheck mit 15 Parametern — auch direkt online buchbar, Abnahme bei uns in der Praxis.</p>
+        <p>Über die GKV-Regelversorgung hinaus können bestimmte Laborparameter als individuelle Gesundheitsleistung (IGeL) durchgeführt werden. Die einzelnen Profile und ihre Inhalte sind weiter unten aufgeführt; die Indikation wird in jedem Einzelfall ärztlich besprochen.</p>
       en: |-
         <p>A large part of our internal-medicine diagnostics relies on laboratory values from blood, urine or stool. We take the samples at the practice and send them — depending on the question — to the laboratory cooperative or to our external specialist laboratory (Synlab). We discuss the results at the follow-up appointment.</p>
 
@@ -350,7 +349,7 @@ sections:
           it: Status Baseline
           pt-pt: Status Baseline
         teaser:
-          de: Der kompakte Einstieg — wichtigste Standardparameter auf einen Blick.
+          de: Orientierende Standardparameter zu Stoffwechsel und Organfunktion.
           en: The compact starting point — the most important standard parameters at a glance.
           fr: L’entrée compacte — les principaux paramètres standards en un coup d’œil.
           es: La entrada compacta — los parámetros estándar más importantes de un vistazo.
@@ -384,7 +383,7 @@ sections:
           it: Status Prevent
           pt-pt: Status Prevent
         teaser:
-          de: Umfassendes Präventions-Profil für gezielte Früherkennung.
+          de: Erweitertes Laborprofil mit zusätzlichen Stoffwechsel- und Entzündungsparametern.
           en: Comprehensive prevention profile for targeted early detection.
           fr: Profil de prévention complet pour un dépistage précoce ciblé.
           es: Perfil preventivo completo para una detección precoz dirigida.
@@ -401,7 +400,7 @@ sections:
           it: System Immune
           pt-pt: System Immune
         teaser:
-          de: Gezielte Beurteilung des Immunsystems und der Abwehrlage.
+          de: Laborprofil zur Beurteilung des Immunsystems.
           en: Targeted assessment of the immune system and immune defences.
           fr: Évaluation ciblée du système immunitaire et de l’état des défenses.
           es: Valoración dirigida del sistema inmunitario y del estado defensivo.
@@ -452,7 +451,7 @@ sections:
           it: Metabolismo
           pt-pt: Metabolismo
         teaser:
-          de: Glukose, Lipide, Schilddrüse — die Stoffwechsel-Achse im Überblick.
+          de: Laborprofil zu Fett- und Zuckerstoffwechsel.
           en: Glucose, lipids, thyroid — the metabolic axis at a glance.
           fr: Glucose, lipides, thyroïde — l’axe métabolique en un coup d’œil.
           es: Glucosa, lípidos, tiroides — el eje metabólico de un vistazo.
@@ -469,7 +468,7 @@ sections:
           it: BioHack — Consulenza genetica
           pt-pt: BioHack — Aconselhamento genético
         teaser:
-          de: Genetisch fundierte Beratung für eine personalisierte Vorsorge-Strategie.
+          de: Beratung zu Möglichkeiten und Grenzen genetischer Untersuchungen.
           en: Genetically informed advice for a personalised prevention strategy.
           fr: Conseil fondé sur la génétique pour une stratégie de prévention personnalisée.
           es: Asesoramiento basado en genética para una estrategia preventiva personalizada.
@@ -486,7 +485,7 @@ sections:
           it: Profilo di rischio
           pt-pt: Perfil de risco
         teaser:
-          de: Strukturierte Risiko-Einschätzung für Herz-Kreislauf und Stoffwechsel.
+          de: Laborparameter zu Herz-Kreislauf- und Stoffwechselrisiko.
           en: Structured risk assessment for cardiovascular and metabolic health.
           fr: Évaluation de risque structurée pour le cardiovasculaire et le métabolisme.
           es: Evaluación de riesgo estructurada para el sistema cardiovascular y el metabolismo.

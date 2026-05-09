@@ -37,7 +37,7 @@ sections:
       it: Esami strumentali
       pt-pt: Exames instrumentais
     heading:
-      de: Sie sind mehr als die Summe Ihrer Teile.
+      de: Apparative Diagnostik in unserer Praxis.
       en: You are more than the sum of your parts.
       fr: Vous êtes plus que la somme de vos parties.
       es: Usted es más que la suma de sus partes.
@@ -45,8 +45,8 @@ sections:
       pt-pt: Você é mais do que a soma das suas partes.
     lead:
       de: >-
-        Bei uns werden Sie als Ganzes betreut: Ein interdisziplinäres Team kümmert sich gemeinsam
-        um Diagnostik und Therapie — alles an einem Ort.
+        Übersicht der apparativen Untersuchungen, die in der Praxis verfügbar sind. Das Team
+        koordiniert Diagnostik und gegebenenfalls erforderliche weitere Schritte gemeinsam.
       en: >-
         With us you are cared for as a whole: an interdisciplinary team looks after diagnostics
         and therapy together — all in one place.
@@ -129,7 +129,7 @@ sections:
       - id: nieren
         title: { de: Nieren und Harnwege, en: Kidneys and urinary tract, fr: Reins et voies urinaires, es: Riñones y vías urinarias, it: Reni e vie urinarie, pt-pt: Rins e vias urinárias }
         teaser:
-          de: Filtereinheiten Ihres Körpers im Blick.
+          de: Beurteilung von Nieren und ableitenden Harnwegen.
           en: Your body’s filter units, on screen.
           fr: Les unités de filtration de votre corps sous contrôle.
           es: Las unidades de filtración de su cuerpo bajo observación.
@@ -224,7 +224,7 @@ sections:
       - id: sono-check
         title: { de: Sono Check, en: Sono Check, fr: Sono Check, es: Sono Check, it: Sono-Check, pt-pt: Sono-Check }
         teaser:
-          de: Umfassende Ultraschall-Vorsorge in einer Sitzung.
+          de: Sonographische Untersuchung mehrerer Organsysteme in einer Sitzung.
           en: Comprehensive ultrasound prevention in one session.
           fr: Bilan échographique complet en une seule séance.
           es: Prevención ecográfica completa en una sola sesión.
@@ -246,7 +246,7 @@ sections:
       - id: kardio-check
         title: { de: Kardio Check, en: Cardio Check, fr: Cardio Check, es: Cardio Check, it: Kardio-Check, pt-pt: Kardio-Check }
         teaser:
-          de: Strukturierte Herz-Kreislauf-Vorsorge.
+          de: Strukturierte Beurteilung von Herz und Lunge.
           en: Structured cardiovascular prevention.
           fr: Prévention cardiovasculaire structurée.
           es: Prevención cardiovascular estructurada.
@@ -312,14 +312,14 @@ sections:
           pt-pt: Se necessário, coordenamos os próximos passos com os nossos colegas especialistas da casa.
   - type: cta-banner
     heading:
-      de: Bereit für Ihre Untersuchung?
+      de: Termin für eine Untersuchung?
       en: Ready for your examination?
       fr: Prêt·e pour votre examen ?
       es: ¿Listo para su exploración?
       it: Pronto per il suo esame?
       pt-pt: Pronto para o seu exame?
     sub:
-      de: Wir nehmen uns Zeit für ein Gespräch, bevor wir messen.
+      de: Im Erstgespräch klären wir gemeinsam, welche Untersuchung in Ihrer Situation angezeigt ist.
       en: We take time for a conversation before we measure.
       fr: Nous prenons le temps d’un entretien avant de mesurer.
       es: Nos tomamos tiempo para una conversación antes de medir.

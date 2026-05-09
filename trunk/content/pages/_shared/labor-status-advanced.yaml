@@ -39,7 +39,7 @@ sections:
       it: Status Advanced
       pt-pt: Status Advanced
     lead:
-      de: 'Erweiterter Check — erweiterter Bluttest mit detaillierter Beurteilung zentraler Körperfunktionen.'
+      de: 'Erweiterter Check — Bluttest mit vertiefter Beurteilung zentraler Körperfunktionen.'
       en: 'Status Advanced — extended blood test with a detailed assessment of central body functions.'
       fr: 'Status Advanced — bilan sanguin étendu avec une évaluation détaillée des fonctions corporelles principales.'
       es: 'Status Advanced — análisis de sangre ampliado con una valoración detallada de las funciones corporales centrales.'
@@ -49,7 +49,7 @@ sections:
   - type: body
     body_html:
       de: |-
-        <p>Das Laborprofil <strong>Erweiterter Check</strong> erweitert das Profil <em>Basis-Check</em> um eine detailliertere Beurteilung zentraler Körperfunktionen. Sie erhalten damit einen deutlich vertieften Überblick über zentrale Stoffwechsel-, Leber-, Nieren- und Immunparameter.</p>
+        <p>Das Laborprofil <strong>Erweiterter Check</strong> erweitert das Profil <em>Basis-Check</em> um eine vertiefte Beurteilung zentraler Körperfunktionen. Es umfasst zusätzliche Stoffwechsel-, Leber-, Nieren- und Immunparameter.</p>
 
         <h2>Wir analysieren folgende Parameter:</h2>
 

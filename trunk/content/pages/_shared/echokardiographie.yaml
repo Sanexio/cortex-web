@@ -42,7 +42,7 @@ sections:
       it: Ecocardiografia
       pt-pt: Ecocardiografia
     lead:
-      de: Echokardiographie — das Herz in Echtzeit beim Pumpen sehen.
+      de: Echokardiographie — Ultraschalluntersuchung von Herzfunktion und Klappen in Echtzeit.
       en: Echocardiography — see the heart pumping in real time.
       fr: Échocardiographie — voir le cœur pomper en temps réel.
       es: Ecocardiografía — ver el corazón bombear en tiempo real.
@@ -52,9 +52,9 @@ sections:
   - type: body
     body_html:
       de: |-
-        <p>Das Herz — ein biomechanisches Wunder aus elektrischen Impulsen, Muskelkontraktionen und einer ausgefeilten Ventiltechnik. Bei jedem Herzschlag werden etwa 70 Milliliter Blut aus dem Herzen gepumpt. Mit rund 100.000 Schlägen pro Tag bewegt das Herz durchschnittlich etwa 7.000 Liter Blut täglich durch den Körper. Der dabei erzeugte Blutdruck liegt bei gesunden Erwachsenen zwischen 100 und 140 mmHg und sorgt dafür, dass das Blut die etwa 100.000 Kilometer langen Blutgefäße erreicht und durchströmt.</p>
+        <p>Das Herz koordiniert über elektrische Impulse, Muskelkontraktionen und vier Herzklappen den Blutkreislauf. Bei jedem Herzschlag werden etwa 70 Milliliter Blut aus dem Herzen gepumpt. Mit rund 100.000 Schlägen pro Tag bewegt das Herz durchschnittlich etwa 7.000 Liter Blut täglich durch den Körper. Der dabei erzeugte Blutdruck liegt bei gesunden Erwachsenen zwischen 100 und 140 mmHg und treibt das Blut durch die etwa 100.000 Kilometer langen Blutgefäße.</p>
 
-        <p>Mit der Echokardiographie können wir das Herz in Echtzeit bei seiner Arbeit beobachten. Das Verfahren ermöglicht die Erkennung von Wandbewegungsstörungen, Klappenfehlern und anderen strukturellen Veränderungen, die im Alltag nicht zwingend mit Beschwerden einhergehen müssen.</p>
+        <p>Mit der Echokardiographie wird das Herz in Echtzeit dargestellt. Das Verfahren erlaubt die Beurteilung von Wandbewegungsstörungen, Klappenveränderungen und strukturellen Auffälligkeiten, die im Alltag nicht zwingend mit Beschwerden einhergehen müssen.</p>
 
         <h2>Wie wird die Untersuchung durchgeführt?</h2>
 

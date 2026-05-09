@@ -39,7 +39,7 @@ sections:
       it: Status Prevent
       pt-pt: Status Prevent
     lead:
-      de: 'Labor Vorsorge-Check — strukturierter Laborüberblick zur frühzeitigen Orientierung.'
+      de: 'Vorsorge-Check — strukturiertes Laborprofil zu Stoffwechsel-, Organ- und Entzündungsparametern.'
       en: 'Status Prevent — structured laboratory overview for early orientation.'
       fr: 'Status Prevent — vue d’ensemble laboratoire structurée pour une orientation précoce.'
       es: 'Status Prevent — visión laboratorial estructurada para una orientación temprana.'
@@ -49,7 +49,7 @@ sections:
   - type: body
     body_html:
       de: |-
-        <p>Mit dem Laborprofil <strong>Vorsorge-Check</strong> erhalten Sie einen strukturierten Einblick in zentrale Stoffwechsel- und Organparameter. Der Überblick kann hilfreich sein, um Veränderungen früh sichtbar zu machen — bevor sich klinische Beschwerden zeigen.</p>
+        <p>Das Laborprofil <strong>Vorsorge-Check</strong> umfasst eine strukturierte Auswahl an Stoffwechsel-, Organ- und Entzündungsparametern. Auf dieser Grundlage lassen sich Abweichungen ärztlich einordnen.</p>
 
         <h2>Wir analysieren folgende Parameter:</h2>
 

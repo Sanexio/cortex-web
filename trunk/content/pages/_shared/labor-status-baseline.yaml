@@ -39,7 +39,7 @@ sections:
       it: Status Baseline
       pt-pt: Status Baseline
     lead:
-      de: 'Basis-Check — schneller Bluttest zur orientierenden Einschätzung zentraler Organfunktionen.'
+      de: 'Basis-Check — Bluttest zur orientierenden Einschätzung zentraler Organfunktionen.'
       en: 'Status Baseline — quick blood test for an initial overview of key organ functions.'
       fr: 'Status Baseline — bilan sanguin rapide pour une orientation sur les principales fonctions d’organe.'
       es: 'Status Baseline — análisis de sangre rápido para una valoración orientadora de las principales funciones de órgano.'
@@ -49,7 +49,7 @@ sections:
   - type: body
     body_html:
       de: |-
-        <p>Das Laborprofil <strong>Basis-Check</strong> ist ein schneller Bluttest zur orientierenden Einschätzung zentraler Organfunktionen sowie des Zucker- und Fettstoffwechsels. Bereits mit einem kleinen Piks erhalten Sie eine erste Einschätzung relevanter Laborwerte, die frühzeitig Hinweise auf Belastungen von Herz, Gefäßen, Leber und Nieren geben können.</p>
+        <p>Das Laborprofil <strong>Basis-Check</strong> dient der orientierenden Einschätzung zentraler Organfunktionen sowie des Zucker- und Fettstoffwechsels. Bestimmt werden Laborwerte, die Hinweise auf Belastungen von Herz, Gefäßen, Leber und Nieren geben können.</p>
 
         <h2>Wir analysieren folgende Parameter:</h2>
 
