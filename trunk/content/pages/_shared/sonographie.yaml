@@ -78,7 +78,7 @@ sections:
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
       en: |-
-        <p>In the abdominal ultrasound we assess all the important internal organs in a single examination — pain-free, radiation-free, in about 45 minutes.</p>
+        <p>In the abdominal ultrasound we assess all the important internal organs in a single examination — pain-free, radiation-free, in about 20 minutes.</p>
 
         <p>What we look at:</p>
 
@@ -93,11 +93,11 @@ sections:
 
         <h2>How is the examination carried out?</h2>
 
-        <p>While you rest comfortably on the examination couch, we perform the ultrasound of the organs. It is helpful to come fasting. The examination takes about 45 minutes.</p>
+        <p>While you rest comfortably on the examination couch, we perform the ultrasound of the organs. It is helpful to come fasting. The examination takes about 20 minutes.</p>
 
         <p>At the end you receive your personal findings report.</p>
       fr: |-
-        <p>Lors de l’échographie abdominale, nous évaluons tous les organes internes importants en un seul examen — indolore, sans rayonnement, en environ 45 minutes.</p>
+        <p>Lors de l’échographie abdominale, nous évaluons tous les organes internes importants en un seul examen — indolore, sans rayonnement, en environ 20 minutes.</p>
 
         <p>Ce que nous examinons :</p>
 
@@ -112,11 +112,11 @@ sections:
 
         <h2>Comment se déroule l’examen ?</h2>
 
-        <p>Pendant que vous êtes confortablement allongé·e sur la table, nous réalisons l’échographie des organes. Il est préférable de venir à jeun. L’examen dure environ 45 minutes.</p>
+        <p>Pendant que vous êtes confortablement allongé·e sur la table, nous réalisons l’échographie des organes. Il est préférable de venir à jeun. L’examen dure environ 20 minutes.</p>
 
         <p>À la fin, vous recevez votre compte rendu personnel.</p>
       es: |-
-        <p>En la ecografía abdominal evaluamos todos los órganos internos importantes en una sola exploración — indolora, sin radiación, en unos 45 minutos.</p>
+        <p>En la ecografía abdominal evaluamos todos los órganos internos importantes en una sola exploración — indolora, sin radiación, en unos 20 minutos.</p>
 
         <p>Qué revisamos:</p>
 
@@ -131,11 +131,11 @@ sections:
 
         <h2>¿Cómo se realiza la exploración?</h2>
 
-        <p>Mientras descansa cómodamente en una camilla, realizamos la ecografía de los órganos. Es conveniente acudir en ayunas. La exploración dura unos 45 minutos.</p>
+        <p>Mientras descansa cómodamente en una camilla, realizamos la ecografía de los órganos. Es conveniente acudir en ayunas. La exploración dura unos 20 minutos.</p>
 
         <p>Al finalizar recibe su informe personal.</p>
       it: |-
-        <p>Nell'ecografia dell'addome valutiamo tutti gli organi interni principali in un unico esame — indolore, senza radiazioni, in circa 45 minuti.</p>
+        <p>Nell'ecografia dell'addome valutiamo tutti gli organi interni principali in un unico esame — indolore, senza radiazioni, in circa 20 minuti.</p>
 
         <p>Cosa osserviamo:</p>
 
@@ -150,11 +150,11 @@ sections:
 
         <h2>Come si svolge l'esame?</h2>
 
-        <p>Mentre lei riposa rilassato sul lettino, eseguiamo l'ecografia degli organi. È preferibile presentarsi a digiuno. L'esame dura circa 45 minuti.</p>
+        <p>Mentre lei riposa rilassato sul lettino, eseguiamo l'ecografia degli organi. È preferibile presentarsi a digiuno. L'esame dura circa 20 minuti.</p>
 
         <p>Al termine le consegniamo il suo referto personale.</p>
       pt-pt: |-
-        <p>Na ecografia abdominal avaliamos todos os principais órgãos internos num único exame — indolor, sem radiação, em cerca de 45 minutos.</p>
+        <p>Na ecografia abdominal avaliamos todos os principais órgãos internos num único exame — indolor, sem radiação, em cerca de 20 minutos.</p>
 
         <p>O que observamos:</p>
 
@@ -169,7 +169,7 @@ sections:
 
         <h2>Como é realizado o exame?</h2>
 
-        <p>Enquanto descansa relaxado na maca, realizamos a ecografia dos órgãos. É preferível comparecer em jejum. O exame dura aproximadamente 45 minutos.</p>
+        <p>Enquanto descansa relaxado na maca, realizamos a ecografia dos órgãos. É preferível comparecer em jejum. O exame dura aproximadamente 20 minutos.</p>
 
         <p>No final do exame recebe o seu relatório pessoal.</p>
   - type: bento-grid
@@ -196,11 +196,11 @@ sections:
         title: { de: Gefäß-Sonographie der Beine, en: Ultrasound of the leg vessels, fr: Échographie des vaisseaux des jambes, es: Ecografía de los vasos de las piernas, it: Eco-Doppler degli arti inferiori, pt-pt: Eco-Doppler dos membros inferiores }
         teaser:
           de: Beurteilung der venösen und arteriellen Beingefäße.
-          en: Thromboses, varicose veins and arterial perfusion problems directly visible.
-          fr: Thromboses, varices et troubles de la perfusion artérielle directement visibles.
-          es: Trombosis, varices y trastornos de la perfusión arterial directamente visibles.
-          it: Trombosi, varici e alterazioni della circolazione arteriosa visibili direttamente.
-          pt-pt: Tromboses, varizes e alterações da circulação arterial directamente visíveis.
+          en: Assessment of venous and arterial leg vessels.
+          fr: Évaluation des vaisseaux veineux et artériels des jambes.
+          es: Valoración de los vasos venosos y arteriales de las piernas.
+          it: Valutazione dei vasi venosi e arteriosi degli arti inferiori.
+          pt-pt: Avaliação dos vasos venosos e arteriais dos membros inferiores.
         image: shopify-mirror://diagnostik/diag-belastungs-ekg.jpg
         href: /sonographie/beingefaesse/
       - id: echokardiographie
@@ -218,28 +218,28 @@ sections:
         title: { de: Carotis-Duplex, en: Carotid Duplex, fr: Doppler carotidien, es: Dúplex carotídeo, it: Eco-Doppler delle carotidi, pt-pt: Eco-Doppler das carótidas }
         teaser:
           de: Halsschlagadern — Beurteilung von Gefäßwand und Durchfluss.
-          en: Carotid arteries — early signs of vascular changes.
-          fr: Artères carotides — signaux précoces d’altérations vasculaires.
-          es: Arterias carótidas — signos tempranos de alteraciones vasculares.
-          it: Arterie carotidi — segnali precoci di alterazioni vascolari.
-          pt-pt: Artérias carótidas — sinais precoces de alterações vasculares.
+          en: Carotid arteries — assessment of vessel wall and flow.
+          fr: Artères carotides — évaluation de la paroi vasculaire et du flux.
+          es: Arterias carótidas — valoración de la pared vascular y del flujo.
+          it: Arterie carotidi — valutazione della parete vasale e del flusso.
+          pt-pt: Artérias carótidas — avaliação da parede vascular e do fluxo.
         image: shopify-mirror://diagnostik/diag-carotis.jpg
         href: /carotis-duplex/
   - type: cta-banner
     heading:
       de: Termin für eine Sonographie?
-      en: Which ultrasound suits you?
-      fr: Quelle échographie vous convient ?
-      es: ¿Qué ecografía se ajusta a usted?
-      it: Quale ecografia fa al caso suo?
-      pt-pt: Que ecografia se adequa a si?
+      en: Booking an ultrasound?
+      fr: Un rendez-vous pour une échographie ?
+      es: ¿Cita para una ecografía?
+      it: Vuole prenotare un'ecografia?
+      pt-pt: Quer marcar uma ecografia?
     sub:
       de: Im Erstgespräch klären wir gemeinsam, welche Untersuchung in Ihrer Situation angezeigt ist.
-      en: In the first consultation we discuss what makes sense — and what doesn't.
-      fr: Lors du premier entretien, nous discutons de ce qui est utile — et de ce qui ne l’est pas.
-      es: En la primera consulta hablamos sobre qué tiene sentido — y qué no.
-      it: Nel colloquio iniziale chiariamo cosa è opportuno — e cosa no.
-      pt-pt: Na primeira conversa esclarecemos o que faz sentido — e o que não.
+      en: In the first consultation we clarify together which examination is indicated in your situation.
+      fr: Lors du premier entretien, nous clarifions ensemble quel examen est indiqué dans votre situation.
+      es: En la primera consulta aclaramos juntos qué exploración es la indicada en su caso.
+      it: Nel colloquio iniziale chiariamo insieme quale esame è indicato nella sua situazione.
+      pt-pt: Na primeira conversa esclarecemos em conjunto qual o exame indicado na sua situação.
     cta_label:
       de: Termin vereinbaren
       en: Book an appointment

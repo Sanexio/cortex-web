@@ -40,11 +40,11 @@ sections:
       pt-pt: Status Advanced
     lead:
       de: 'Erweiterter Check — Bluttest mit vertiefter Beurteilung zentraler Körperfunktionen.'
-      en: 'Status Advanced — extended blood test with a detailed assessment of central body functions.'
-      fr: 'Status Advanced — bilan sanguin étendu avec une évaluation détaillée des fonctions corporelles principales.'
-      es: 'Status Advanced — análisis de sangre ampliado con una valoración detallada de las funciones corporales centrales.'
-      it: 'Status Advanced — esame del sangue esteso con valutazione dettagliata delle principali funzioni corporee.'
-      pt-pt: 'Status Advanced — análise ao sangue alargada com avaliação detalhada das principais funções corporais.'
+      en: 'Erweiterter Check — blood test with in-depth assessment of central body functions.'
+      fr: 'Erweiterter Check — bilan sanguin avec évaluation approfondie des principales fonctions corporelles.'
+      es: 'Erweiterter Check — análisis de sangre con valoración profunda de las funciones corporales centrales.'
+      it: 'Erweiterter Check — esame del sangue con valutazione approfondita delle principali funzioni corporee.'
+      pt-pt: 'Erweiterter Check — análise ao sangue com avaliação aprofundada das principais funções corporais.'
     image: shopify-mirror://detail/labor-status-advanced-hero.png
   - type: body
     body_html:
@@ -65,7 +65,7 @@ sections:
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
       en: |-
-        <p>The lab profile <strong>Status Advanced</strong> extends the <em>Status Baseline</em> profile with a more detailed assessment of central body functions. You receive a much deeper overview of central metabolic, liver, kidney and immune parameters.</p>
+        <p>The lab profile <strong>Erweiterter Check</strong> extends the <em>Basis-Check</em> profile with an in-depth assessment of central body functions. It includes additional metabolic, liver, kidney and immune parameters.</p>
 
         <h2>We analyse the following parameters:</h2>
 
@@ -81,7 +81,7 @@ sections:
 
         <p>At the end of the examination you receive your personal findings report.</p>
       fr: |-
-        <p>Le profil de laboratoire <strong>Status Advanced</strong> étend le profil <em>Status Baseline</em> avec une évaluation plus détaillée des fonctions corporelles principales. Vous obtenez ainsi une vision nettement plus approfondie des paramètres centraux du métabolisme, du foie, des reins et du système immunitaire.</p>
+        <p>Le profil de laboratoire <strong>Erweiterter Check</strong> étend le profil <em>Basis-Check</em> avec une évaluation approfondie des fonctions corporelles principales. Il comprend des paramètres supplémentaires du métabolisme, du foie, des reins et du système immunitaire.</p>
 
         <h2>Nous analysons les paramètres suivants :</h2>
 
@@ -97,7 +97,7 @@ sections:
 
         <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
       es: |-
-        <p>El perfil de laboratorio <strong>Status Advanced</strong> amplía el <em>Status Baseline</em> con una valoración más detallada de las funciones corporales centrales. Obtiene una visión claramente más profunda de los parámetros centrales del metabolismo, hígado, riñones y sistema inmunitario.</p>
+        <p>El perfil de laboratorio <strong>Erweiterter Check</strong> amplía el perfil <em>Basis-Check</em> con una valoración profunda de las funciones corporales centrales. Incluye parámetros adicionales de metabolismo, hígado, riñones y sistema inmunitario.</p>
 
         <h2>Analizamos los siguientes parámetros:</h2>
 
@@ -113,7 +113,7 @@ sections:
 
         <p>Al finalizar recibe su informe personal.</p>
       it: |-
-        <p>Il profilo di laboratorio <strong>Status Advanced</strong> amplia il profilo <em>Status Baseline</em> con una valutazione più dettagliata delle principali funzioni corporee. Riceve così una panoramica significativamente più approfondita su parametri centrali del metabolismo, di fegato, reni e sistema immunitario.</p>
+        <p>Il profilo di laboratorio <strong>Erweiterter Check</strong> amplia il profilo <em>Basis-Check</em> con una valutazione approfondita delle principali funzioni corporee. Include parametri aggiuntivi di metabolismo, fegato, reni e sistema immunitario.</p>
 
         <h2>Analizziamo i seguenti parametri:</h2>
 
@@ -129,7 +129,7 @@ sections:
 
         <p>Al termine dell'esame riceve il suo referto personale.</p>
       pt-pt: |-
-        <p>O perfil laboratorial <strong>Status Advanced</strong> alarga o perfil <em>Status Baseline</em> com uma avaliação mais detalhada das principais funções corporais. Recebe assim uma visão significativamente mais aprofundada de parâmetros centrais do metabolismo, do fígado, dos rins e do sistema imunitário.</p>
+        <p>O perfil laboratorial <strong>Erweiterter Check</strong> alarga o perfil <em>Basis-Check</em> com uma avaliação aprofundada das principais funções corporais. Inclui parâmetros adicionais de metabolismo, fígado, rins e sistema imunitário.</p>
 
         <h2>Analisamos os seguintes parâmetros:</h2>
 
@@ -147,11 +147,11 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für einen Erweiterten Check?
-      en: Booking a Status Advanced?
-      fr: Un rendez-vous pour un Status Advanced ?
-      es: ¿Cita para un Status Advanced?
-      it: Vuole prenotare uno Status Advanced?
-      pt-pt: Quer marcar um Status Advanced?
+      en: Booking an Erweiterter Check?
+      fr: Un rendez-vous pour un Erweiterter Check ?
+      es: ¿Cita para un Erweiterter Check?
+      it: Vuole prenotare un Erweiterter Check?
+      pt-pt: Quer marcar um Erweiterter Check?
     cta_label:
       de: Termin vereinbaren
       en: Book an appointment

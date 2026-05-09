@@ -4,11 +4,11 @@ slugs:
   praxis: labor/stoffwechsel
 title:
   de: Stoffwechsel-Werte
-  en: Metabolism
-  fr: Métabolisme
-  es: Metabolismo
-  it: Metabolismo
-  pt-pt: Metabolismo
+  en: Stoffwechsel-Werte
+  fr: Stoffwechsel-Werte
+  es: Stoffwechsel-Werte
+  it: Stoffwechsel-Werte
+  pt-pt: Stoffwechsel-Werte
 views:
   praxis:
     show_prices: false
@@ -33,11 +33,11 @@ sections:
       pt-pt: Laboratório · Metabolismo
     heading:
       de: Stoffwechsel-Werte
-      en: Metabolism
-      fr: Métabolisme
-      es: Metabolismo
-      it: Metabolismo
-      pt-pt: Metabolismo
+      en: Stoffwechsel-Werte
+      fr: Stoffwechsel-Werte
+      es: Stoffwechsel-Werte
+      it: Stoffwechsel-Werte
+      pt-pt: Stoffwechsel-Werte
     lead:
       de: Stoffwechselprofil — Fett- und Zuckerstoffwechsel im Blick.
       en: Metabolism profile — lipid and glucose metabolism at a glance.
@@ -99,11 +99,11 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für die Stoffwechsel-Werte?
-      en: Booking a metabolism panel?
-      fr: Un rendez-vous pour un profil métabolique ?
-      es: ¿Cita para un perfil metabólico?
-      it: Vuole prenotare un profilo metabolico?
-      pt-pt: Quer marcar um perfil metabólico?
+      en: Booking the Stoffwechsel-Werte?
+      fr: Un rendez-vous pour les Stoffwechsel-Werte ?
+      es: ¿Cita para los Stoffwechsel-Werte?
+      it: Vuole prenotare gli Stoffwechsel-Werte?
+      pt-pt: Quer marcar os Stoffwechsel-Werte?
     cta_label:
       de: Termin vereinbaren
       en: Book an appointment

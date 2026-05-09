@@ -4,11 +4,11 @@ slugs:
   praxis: labor/system-liver
 title:
   de: Leberwerte
-  en: System Liver
-  fr: Foie
-  es: Hígado
-  it: Fegato
-  pt-pt: Fígado
+  en: Leberwerte
+  fr: Leberwerte
+  es: Leberwerte
+  it: Leberwerte
+  pt-pt: Leberwerte
 views:
   praxis:
     show_prices: false
@@ -33,11 +33,11 @@ sections:
       pt-pt: Laboratório · Sistema
     heading:
       de: Leberwerte
-      en: Liver
-      fr: Foie
-      es: Hígado
-      it: Fegato
-      pt-pt: Fígado
+      en: Leberwerte
+      fr: Leberwerte
+      es: Leberwerte
+      it: Leberwerte
+      pt-pt: Leberwerte
     lead:
       de: 'Leber — Laborprofil zur Beurteilung der Leberfunktion.'
       en: 'Liver — laboratory profile for assessing liver function.'
@@ -147,11 +147,11 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für die Leberwerte?
-      en: Booking a liver panel?
-      fr: Un rendez-vous pour un bilan hépatique ?
-      es: ¿Cita para un análisis hepático?
-      it: Vuole prenotare un esame della funzione epatica?
-      pt-pt: Quer marcar uma análise da função hepática?
+      en: Booking the Leberwerte?
+      fr: Un rendez-vous pour les Leberwerte ?
+      es: ¿Cita para los Leberwerte?
+      it: Vuole prenotare i Leberwerte?
+      pt-pt: Quer marcar os Leberwerte?
     cta_label:
       de: Termin vereinbaren
       en: Book an appointment

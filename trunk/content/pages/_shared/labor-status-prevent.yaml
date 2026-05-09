@@ -40,11 +40,11 @@ sections:
       pt-pt: Status Prevent
     lead:
       de: 'Vorsorge-Check — strukturiertes Laborprofil zu Stoffwechsel-, Organ- und Entzündungsparametern.'
-      en: 'Status Prevent — structured laboratory overview for early orientation.'
-      fr: 'Status Prevent — vue d’ensemble laboratoire structurée pour une orientation précoce.'
-      es: 'Status Prevent — visión laboratorial estructurada para una orientación temprana.'
-      it: 'Status Prevent — panoramica laboratoristica strutturata per un orientamento precoce.'
-      pt-pt: 'Status Prevent — panorama laboratorial estruturado para uma orientação precoce.'
+      en: 'Vorsorge-Check — structured lab profile on metabolic, organ and inflammation parameters.'
+      fr: 'Vorsorge-Check — profil de laboratoire structuré sur les paramètres métaboliques, d''organe et inflammatoires.'
+      es: 'Vorsorge-Check — perfil de laboratorio estructurado de parámetros metabólicos, de órgano y de inflamación.'
+      it: 'Vorsorge-Check — profilo di laboratorio strutturato su parametri metabolici, d''organo e di flogosi.'
+      pt-pt: 'Vorsorge-Check — perfil laboratorial estruturado de parâmetros metabólicos, de órgão e inflamatórios.'
     image: shopify-mirror://detail/labor-status-prevent-hero.png
   - type: body
     body_html:
@@ -66,7 +66,7 @@ sections:
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
       en: |-
-        <p>With the lab profile <strong>Status Prevent</strong> you receive a structured view of central metabolic and organ parameters. The overview can help to make changes visible early — before clinical complaints appear.</p>
+        <p>The lab profile <strong>Vorsorge-Check</strong> covers a structured selection of metabolic, organ and inflammation parameters. On this basis, deviations can be interpreted medically.</p>
 
         <h2>We analyse the following parameters:</h2>
 
@@ -83,7 +83,7 @@ sections:
 
         <p>At the end of the examination you receive your personal findings report.</p>
       fr: |-
-        <p>Avec le profil de laboratoire <strong>Status Prevent</strong>, vous obtenez une vue structurée des paramètres métaboliques et d’organes centraux. Cette vue d’ensemble peut aider à rendre des modifications visibles précocement — avant l’apparition de plaintes cliniques.</p>
+        <p>Le profil de laboratoire <strong>Vorsorge-Check</strong> couvre une sélection structurée de paramètres métaboliques, d’organe et inflammatoires. Sur cette base, les écarts peuvent être interprétés médicalement.</p>
 
         <h2>Nous analysons les paramètres suivants :</h2>
 
@@ -100,7 +100,7 @@ sections:
 
         <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
       es: |-
-        <p>Con el perfil de laboratorio <strong>Status Prevent</strong> obtiene una visión estructurada de los parámetros metabólicos y de órganos centrales. Esta visión puede ayudar a hacer visibles cambios de forma temprana — antes de que aparezcan síntomas clínicos.</p>
+        <p>El perfil de laboratorio <strong>Vorsorge-Check</strong> abarca una selección estructurada de parámetros metabólicos, de órgano y de inflamación. Sobre esa base, las desviaciones pueden interpretarse médicamente.</p>
 
         <h2>Analizamos los siguientes parámetros:</h2>
 
@@ -117,7 +117,7 @@ sections:
 
         <p>Al finalizar recibe su informe personal.</p>
       it: |-
-        <p>Con il profilo di laboratorio <strong>Status Prevent</strong> riceve uno sguardo strutturato sui principali parametri metabolici e d'organo. Una panoramica utile per rendere precocemente visibili alterazioni — prima che si manifestino sintomi clinici.</p>
+        <p>Il profilo di laboratorio <strong>Vorsorge-Check</strong> comprende una selezione strutturata di parametri metabolici, d'organo e di flogosi. Su questa base le deviazioni possono essere interpretate medicalmente.</p>
 
         <h2>Analizziamo i seguenti parametri:</h2>
 
@@ -134,7 +134,7 @@ sections:
 
         <p>Al termine dell'esame riceve il suo referto personale.</p>
       pt-pt: |-
-        <p>Com o perfil laboratorial <strong>Status Prevent</strong> recebe uma visão estruturada dos principais parâmetros metabólicos e de órgãos. Uma panorâmica útil para tornar precocemente visíveis alterações — antes de surgirem sintomas clínicos.</p>
+        <p>O perfil laboratorial <strong>Vorsorge-Check</strong> abrange uma selecção estruturada de parâmetros metabólicos, de órgão e inflamatórios. Nessa base, os desvios podem ser interpretados clinicamente.</p>
 
         <h2>Analisamos os seguintes parâmetros:</h2>
 
@@ -153,11 +153,11 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für einen Vorsorge-Check?
-      en: Booking a Status Prevent?
-      fr: Un rendez-vous pour un Status Prevent ?
-      es: ¿Cita para un Status Prevent?
-      it: Vuole prenotare uno Status Prevent?
-      pt-pt: Quer marcar um Status Prevent?
+      en: Booking a Vorsorge-Check?
+      fr: Un rendez-vous pour un Vorsorge-Check ?
+      es: ¿Cita para un Vorsorge-Check?
+      it: Vuole prenotare un Vorsorge-Check?
+      pt-pt: Quer marcar um Vorsorge-Check?
     cta_label:
       de: Termin vereinbaren
       en: Book an appointment

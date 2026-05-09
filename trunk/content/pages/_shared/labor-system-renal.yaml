@@ -4,11 +4,11 @@ slugs:
   praxis: labor/system-renal
 title:
   de: Nierenwerte
-  en: System Renal
-  fr: Reins
-  es: Riñones
-  it: Reni
-  pt-pt: Rins
+  en: Nierenwerte
+  fr: Nierenwerte
+  es: Nierenwerte
+  it: Nierenwerte
+  pt-pt: Nierenwerte
 views:
   praxis:
     show_prices: false
@@ -33,11 +33,11 @@ sections:
       pt-pt: Laboratório · Sistema
     heading:
       de: Nierenwerte
-      en: Kidneys
-      fr: Reins
-      es: Riñones
-      it: Reni
-      pt-pt: Rins
+      en: Nierenwerte
+      fr: Nierenwerte
+      es: Nierenwerte
+      it: Nierenwerte
+      pt-pt: Nierenwerte
     lead:
       de: 'Nieren — Laborprofil zur Beurteilung der Nierenfunktion.'
       en: 'Kidneys — laboratory profile for assessing kidney function.'
@@ -141,11 +141,11 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für die Nierenwerte?
-      en: Booking a kidney panel?
-      fr: Un rendez-vous pour un bilan rénal ?
-      es: ¿Cita para un análisis renal?
-      it: Vuole prenotare un esame della funzione renale?
-      pt-pt: Quer marcar uma análise da função renal?
+      en: Booking the Nierenwerte?
+      fr: Un rendez-vous pour les Nierenwerte ?
+      es: ¿Cita para los Nierenwerte?
+      it: Vuole prenotare i Nierenwerte?
+      pt-pt: Quer marcar os Nierenwerte?
     cta_label:
       de: Termin vereinbaren
       en: Book an appointment

@@ -40,11 +40,11 @@ sections:
       pt-pt: Status Baseline
     lead:
       de: 'Basis-Check — Bluttest zur orientierenden Einschätzung zentraler Organfunktionen.'
-      en: 'Status Baseline — quick blood test for an initial overview of key organ functions.'
-      fr: 'Status Baseline — bilan sanguin rapide pour une orientation sur les principales fonctions d’organe.'
-      es: 'Status Baseline — análisis de sangre rápido para una valoración orientadora de las principales funciones de órgano.'
-      it: 'Status Baseline — esame del sangue rapido per un orientamento iniziale sulle principali funzioni d''organo.'
-      pt-pt: 'Status Baseline — análise ao sangue rápida para uma avaliação orientadora das principais funções dos órgãos.'
+      en: 'Basis-Check — blood test for an orienting assessment of central organ functions.'
+      fr: 'Basis-Check — bilan sanguin pour une évaluation d''orientation des principales fonctions d''organe.'
+      es: 'Basis-Check — análisis de sangre para una valoración orientadora de las funciones de órgano centrales.'
+      it: 'Basis-Check — esame del sangue per una valutazione orientativa delle principali funzioni d''organo.'
+      pt-pt: 'Basis-Check — análise ao sangue para uma avaliação orientadora das principais funções de órgão.'
     image: shopify-mirror://detail/labor-status-baseline-hero.png
   - type: body
     body_html:
@@ -63,7 +63,7 @@ sections:
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
       en: |-
-        <p>The lab profile <strong>Status Baseline</strong> is a quick blood test for an orienting assessment of key organ functions as well as glucose and lipid metabolism. With a single pinprick you already get an initial overview of relevant lab values that can give early signs of strain on heart, vessels, liver and kidneys.</p>
+        <p>The lab profile <strong>Basis-Check</strong> serves as an orienting assessment of central organ functions and of glucose and lipid metabolism. The values determined can give early signs of strain on heart, vessels, liver and kidneys.</p>
 
         <h2>We analyse the following parameters:</h2>
 
@@ -77,7 +77,7 @@ sections:
 
         <p>At the end of the examination you receive your personal findings report.</p>
       fr: |-
-        <p>Le profil de laboratoire <strong>Status Baseline</strong> est un bilan sanguin rapide pour une évaluation d’orientation des fonctions d’organe principales ainsi que du métabolisme glucidique et lipidique. D’une simple piqûre, vous obtenez déjà un aperçu de valeurs sanguines pertinentes pouvant indiquer précocement une sollicitation du cœur, des vaisseaux, du foie et des reins.</p>
+        <p>Le profil de laboratoire <strong>Basis-Check</strong> sert d’évaluation d’orientation des principales fonctions d’organe ainsi que du métabolisme glucidique et lipidique. Les valeurs déterminées peuvent indiquer précocement une sollicitation du cœur, des vaisseaux, du foie et des reins.</p>
 
         <h2>Nous analysons les paramètres suivants :</h2>
 
@@ -91,7 +91,7 @@ sections:
 
         <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
       es: |-
-        <p>El perfil de laboratorio <strong>Status Baseline</strong> es un análisis de sangre rápido para una valoración orientadora de las funciones de órgano centrales y del metabolismo glucídico y lipídico. Con un pequeño pinchazo recibe una primera estimación de valores relevantes que pueden indicar tempranamente sobrecarga del corazón, los vasos, el hígado y los riñones.</p>
+        <p>El perfil de laboratorio <strong>Basis-Check</strong> sirve como valoración orientadora de las funciones de órgano centrales y del metabolismo glucídico y lipídico. Los valores determinados pueden indicar tempranamente sobrecarga del corazón, los vasos, el hígado y los riñones.</p>
 
         <h2>Analizamos los siguientes parámetros:</h2>
 
@@ -105,7 +105,7 @@ sections:
 
         <p>Al finalizar recibe su informe personal.</p>
       it: |-
-        <p>Il profilo di laboratorio <strong>Status Baseline</strong> è un esame del sangue rapido per un orientamento iniziale su importanti funzioni d'organo e sul metabolismo glucidico e lipidico. Già con un piccolo prelievo riceve una prima valutazione di valori rilevanti, capaci di segnalare precocemente sollecitazioni di cuore, vasi, fegato e reni.</p>
+        <p>Il profilo di laboratorio <strong>Basis-Check</strong> serve come valutazione orientativa delle principali funzioni d'organo e del metabolismo glucidico e lipidico. I valori determinati possono segnalare precocemente sollecitazioni di cuore, vasi, fegato e reni.</p>
 
         <h2>Analizziamo i seguenti parametri:</h2>
 
@@ -119,7 +119,7 @@ sections:
 
         <p>Al termine dell'esame riceve il suo referto personale.</p>
       pt-pt: |-
-        <p>O perfil laboratorial <strong>Status Baseline</strong> é uma análise ao sangue rápida para uma avaliação orientadora de funções centrais de órgãos e do metabolismo do açúcar e das gorduras. Já com uma pequena picada recebe uma primeira leitura de valores relevantes, capazes de sinalizar precocemente sobrecargas do coração, dos vasos, do fígado e dos rins.</p>
+        <p>O perfil laboratorial <strong>Basis-Check</strong> serve como avaliação orientadora das principais funções de órgão e do metabolismo do açúcar e das gorduras. Os valores determinados podem sinalizar precocemente sobrecargas do coração, dos vasos, do fígado e dos rins.</p>
 
         <h2>Analisamos os seguintes parâmetros:</h2>
 
@@ -135,11 +135,11 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für einen Basis-Check?
-      en: Booking a Status Baseline?
-      fr: Un rendez-vous pour un Status Baseline ?
-      es: ¿Cita para un Status Baseline?
-      it: Vuole prenotare uno Status Baseline?
-      pt-pt: Quer marcar um Status Baseline?
+      en: Booking a Basis-Check?
+      fr: Un rendez-vous pour un Basis-Check ?
+      es: ¿Cita para un Basis-Check?
+      it: Vuole prenotare un Basis-Check?
+      pt-pt: Quer marcar um Basis-Check?
     cta_label:
       de: Termin vereinbaren
       en: Book an appointment

@@ -43,11 +43,11 @@ sections:
       pt-pt: Eco-Doppler das carótidas
     lead:
       de: Ultraschall der Halsschlagadern — Beurteilung von Engstellen und Wandveränderungen.
-      en: Ultrasound of the carotid arteries — detect narrowings before they lead to a stroke.
-      fr: Échographie des carotides — repérer les rétrécissements avant qu’ils ne provoquent un AVC.
-      es: Ecografía de las arterias carótidas — detectar estenosis antes de que provoquen un ictus.
-      it: Ecografia delle arterie carotidi — riconoscere le stenosi prima che diano luogo a un ictus.
-      pt-pt: Ecografia das artérias carótidas — reconhecer estenoses antes que conduzam a um AVC.
+      en: Ultrasound of the carotid arteries — assessment of narrowings and wall changes.
+      fr: Échographie des carotides — évaluation des rétrécissements et des modifications de la paroi.
+      es: Ecografía de las arterias carótidas — valoración de estenosis y alteraciones de la pared.
+      it: Ecografia delle arterie carotidi — valutazione di stenosi e alterazioni della parete.
+      pt-pt: Ecografia das artérias carótidas — avaliação de estenoses e alterações da parede.
     image: shopify-mirror://detail/carotis-duplex-hero.jpg
   - type: body
     body_html:

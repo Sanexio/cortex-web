@@ -43,11 +43,11 @@ sections:
       pt-pt: Ecocardiografia
     lead:
       de: Echokardiographie — das Herz in Echtzeit pumpen sehen.
-      en: Echocardiography — see the heart pumping in real time.
+      en: Echocardiography — watch the heart pumping in real time.
       fr: Échocardiographie — voir le cœur pomper en temps réel.
-      es: Ecocardiografía — ver el corazón bombear en tiempo real.
-      it: Ecocardiografia — osservare il cuore in tempo reale mentre pompa.
-      pt-pt: Ecocardiografia — observar o coração a bombear em tempo real.
+      es: Ecocardiografía — ver el corazón bombeando en tiempo real.
+      it: Ecocardiografia — vedere il cuore pompare in tempo reale.
+      pt-pt: Ecocardiografia — ver o coração a bombear em tempo real.
     image: shopify-mirror://detail/echokardiographie-hero.jpg
   - type: body
     body_html:
@@ -62,9 +62,9 @@ sections:
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
       en: |-
-        <p>The heart — a biomechanical marvel of electrical impulses, muscle contractions and refined valve technology. With each beat about 70 millilitres of blood are pumped out of the heart. With around 100,000 beats per day the heart moves an average of 7,000 litres of blood through the body daily. The resulting blood pressure in healthy adults is between 100 and 140 mmHg and ensures that the blood reaches and flows through the roughly 100,000 kilometres of blood vessels.</p>
+        <p>The heart coordinates the bloodstream through electrical impulses, muscle contractions and four heart valves. With each beat about 70 millilitres of blood are pumped out of the heart. With around 100,000 beats per day the heart moves an average of 7,000 litres of blood through the body daily. In healthy adults the resulting blood pressure lies between 100 and 140 mmHg and drives the blood through the roughly 100,000 kilometres of blood vessels.</p>
 
-        <p>With echocardiography we can watch the heart at work in real time. The technique allows us to detect wall-motion abnormalities, valve defects and other structural changes that do not necessarily cause symptoms in everyday life.</p>
+        <p>With echocardiography the heart is visualised in real time. The technique allows assessment of wall-motion abnormalities, valve changes and structural findings that do not necessarily cause symptoms in everyday life.</p>
 
         <h2>How is the examination carried out?</h2>
 
@@ -72,9 +72,9 @@ sections:
 
         <p>At the end of the examination you receive your personal findings report.</p>
       fr: |-
-        <p>Le cœur — une merveille biomécanique d’impulsions électriques, de contractions musculaires et d’une mécanique valvulaire raffinée. À chaque battement, environ 70 millilitres de sang sont éjectés. Avec près de 100 000 battements par jour, le cœur déplace en moyenne 7 000 litres de sang par jour dans le corps. La pression artérielle qui en résulte est, chez l’adulte en bonne santé, de 100 à 140 mmHg et permet au sang d’atteindre et de parcourir les quelque 100 000 kilomètres de vaisseaux.</p>
+        <p>Le cœur coordonne la circulation sanguine par des impulsions électriques, des contractions musculaires et quatre valves cardiaques. À chaque battement, environ 70 millilitres de sang sont éjectés. Avec près de 100 000 battements par jour, le cœur déplace en moyenne 7 000 litres de sang par jour dans le corps. Chez l’adulte en bonne santé, la pression artérielle qui en résulte se situe entre 100 et 140 mmHg et propulse le sang à travers les quelque 100 000 kilomètres de vaisseaux.</p>
 
-        <p>L’échocardiographie nous permet d’observer le cœur en temps réel pendant qu’il travaille. La méthode permet de détecter des troubles de la motilité pariétale, des défauts valvulaires et d’autres modifications structurelles qui ne s’accompagnent pas nécessairement de symptômes au quotidien.</p>
+        <p>Avec l’échocardiographie, le cœur est visualisé en temps réel. La méthode permet d’évaluer les troubles de la motilité pariétale, les modifications valvulaires et d’autres altérations structurelles qui ne s’accompagnent pas nécessairement de symptômes au quotidien.</p>
 
         <h2>Comment se déroule l’examen ?</h2>
 
@@ -82,9 +82,9 @@ sections:
 
         <p>À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
       es: |-
-        <p>El corazón — una maravilla biomecánica de impulsos eléctricos, contracciones musculares y una sofisticada técnica valvular. En cada latido se bombean unos 70 mililitros de sangre. Con cerca de 100.000 latidos al día, el corazón mueve en promedio 7.000 litros de sangre al día por el cuerpo. La presión arterial resultante es, en adultos sanos, de 100 a 140 mmHg y hace que la sangre alcance y recorra los aproximadamente 100.000 kilómetros de vasos sanguíneos.</p>
+        <p>El corazón coordina la circulación sanguínea mediante impulsos eléctricos, contracciones musculares y cuatro válvulas cardíacas. En cada latido se bombean unos 70 mililitros de sangre. Con cerca de 100.000 latidos al día, el corazón mueve en promedio 7.000 litros de sangre al día por el cuerpo. En adultos sanos la presión arterial resultante se sitúa entre 100 y 140 mmHg y impulsa la sangre a través de los aproximadamente 100.000 kilómetros de vasos sanguíneos.</p>
 
-        <p>Con la ecocardiografía podemos observar el corazón en tiempo real durante su trabajo. La técnica permite detectar trastornos de la motilidad parietal, defectos valvulares y otras alteraciones estructurales que no siempre se acompañan de síntomas en la vida diaria.</p>
+        <p>Con la ecocardiografía el corazón se visualiza en tiempo real. La técnica permite valorar trastornos de la motilidad parietal, alteraciones valvulares y otras alteraciones estructurales que no siempre se acompañan de síntomas en la vida diaria.</p>
 
         <h2>¿Cómo se realiza la exploración?</h2>
 
@@ -92,9 +92,9 @@ sections:
 
         <p>Al finalizar recibe su informe personal.</p>
       it: |-
-        <p>Il cuore — una meraviglia biomeccanica fatta di impulsi elettrici, contrazioni muscolari e una raffinata meccanica valvolare. Ad ogni battito vengono pompati dal cuore circa 70 millilitri di sangue. Con circa 100.000 battiti al giorno il cuore muove in media 7.000 litri di sangue al giorno attraverso il corpo. La pressione arteriosa che ne deriva si attesta nell'adulto sano tra 100 e 140 mmHg e fa sì che il sangue raggiunga e percorra i vasi sanguigni, lunghi nel complesso circa 100.000 chilometri.</p>
+        <p>Il cuore coordina la circolazione sanguigna attraverso impulsi elettrici, contrazioni muscolari e quattro valvole cardiache. Ad ogni battito vengono pompati dal cuore circa 70 millilitri di sangue. Con circa 100.000 battiti al giorno il cuore muove in media 7.000 litri di sangue al giorno attraverso il corpo. Nell'adulto sano la pressione arteriosa che ne deriva si attesta tra 100 e 140 mmHg e spinge il sangue lungo i vasi sanguigni, lunghi nel complesso circa 100.000 chilometri.</p>
 
-        <p>Con l'ecocardiografia possiamo osservare il cuore in tempo reale durante la sua attività. La metodica consente di riconoscere alterazioni della motilità parietale, vizi valvolari e altre modificazioni strutturali che nella vita quotidiana non sempre si manifestano con sintomi.</p>
+        <p>Con l'ecocardiografia il cuore viene visualizzato in tempo reale. La metodica consente di valutare alterazioni della motilità parietale, alterazioni valvolari e altre modificazioni strutturali che nella vita quotidiana non sempre si manifestano con sintomi.</p>
 
         <h2>Come si svolge l'esame?</h2>
 
@@ -102,9 +102,9 @@ sections:
 
         <p>Al termine dell'esame riceve il suo referto personale.</p>
       pt-pt: |-
-        <p>O coração — uma maravilha biomecânica feita de impulsos eléctricos, contracções musculares e uma engenhosa técnica valvular. Em cada batimento são bombeados pelo coração cerca de 70 mililitros de sangue. Com cerca de 100.000 batimentos por dia, o coração movimenta em média 7.000 litros de sangue por dia através do corpo. A pressão arterial daí resultante situa-se, no adulto saudável, entre 100 e 140 mmHg e garante que o sangue chega e percorre os vasos sanguíneos, com cerca de 100.000 quilómetros de comprimento total.</p>
+        <p>O coração coordena a circulação sanguínea através de impulsos eléctricos, contracções musculares e quatro válvulas cardíacas. Em cada batimento são bombeados pelo coração cerca de 70 mililitros de sangue. Com cerca de 100.000 batimentos por dia, o coração movimenta em média 7.000 litros de sangue por dia através do corpo. No adulto saudável a pressão arterial daí resultante situa-se entre 100 e 140 mmHg e impulsiona o sangue pelos vasos sanguíneos, com cerca de 100.000 quilómetros de comprimento total.</p>
 
-        <p>Com a ecocardiografia podemos observar o coração em tempo real durante a sua actividade. O método permite reconhecer alterações da motilidade parietal, defeitos valvulares e outras modificações estruturais que nem sempre se acompanham de sintomas no dia-a-dia.</p>
+        <p>Com a ecocardiografia o coração é visualizado em tempo real. O método permite avaliar alterações da motilidade parietal, alterações valvulares e outras modificações estruturais que nem sempre se acompanham de sintomas no dia-a-dia.</p>
 
         <h2>Como é realizado o exame?</h2>
 

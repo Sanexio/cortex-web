@@ -4,11 +4,11 @@ slugs:
   praxis: labor/system-immune
 title:
   de: Immunsystem-Profil
-  en: System Immune
-  fr: Système immunitaire
-  es: Sistema inmunitario
-  it: Sistema immunitario
-  pt-pt: Sistema imunitário
+  en: Immunsystem-Profil
+  fr: Immunsystem-Profil
+  es: Immunsystem-Profil
+  it: Immunsystem-Profil
+  pt-pt: Immunsystem-Profil
 views:
   praxis:
     show_prices: false
@@ -33,11 +33,11 @@ sections:
       pt-pt: Laboratório · Sistema
     heading:
       de: Immunsystem-Profil
-      en: Immune system
-      fr: Système immunitaire
-      es: Sistema inmunitario
-      it: Sistema immunitario
-      pt-pt: Sistema imunitário
+      en: Immunsystem-Profil
+      fr: Immunsystem-Profil
+      es: Immunsystem-Profil
+      it: Immunsystem-Profil
+      pt-pt: Immunsystem-Profil
     lead:
       de: 'Labor Immunsystem — Laborprofil zur Beurteilung des Immunsystems.'
       en: 'Immune system — laboratory profile for assessing the immune system.'
@@ -153,11 +153,11 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für ein Immunsystem-Profil?
-      en: Booking an immune-system check?
-      fr: Un rendez-vous pour un bilan immunitaire ?
-      es: ¿Cita para un análisis del sistema inmunitario?
-      it: Vuole prenotare un esame del sistema immunitario?
-      pt-pt: Quer marcar uma análise do sistema imunitário?
+      en: Booking an Immunsystem-Profil?
+      fr: Un rendez-vous pour un Immunsystem-Profil ?
+      es: ¿Cita para un Immunsystem-Profil?
+      it: Vuole prenotare un Immunsystem-Profil?
+      pt-pt: Quer marcar um Immunsystem-Profil?
     cta_label:
       de: Termin vereinbaren
       en: Book an appointment

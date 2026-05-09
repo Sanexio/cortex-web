@@ -38,38 +38,39 @@ sections:
       pt-pt: Diagnóstico laboratorial
     heading:
       de: Labordiagnostik in der Praxis.
-      en: Your blood knows more than you think.
-      fr: Votre sang en sait plus que vous ne le pensez.
-      es: Su sangre sabe más de lo que cree.
-      it: Il suo sangue sa più di quanto immagini.
-      pt-pt: O seu sangue sabe mais do que pensa.
+      en: Laboratory diagnostics at the practice.
+      fr: Diagnostic de laboratoire au cabinet.
+      es: Diagnóstico de laboratorio en la consulta.
+      it: Diagnostica di laboratorio nello studio.
+      pt-pt: Diagnóstico laboratorial no consultório.
     lead:
       de: >-
         Laborwerte aus Blut, Urin oder Stuhl sind ein zentraler Bestandteil unserer internistischen
         Diagnostik. Je nach Fragestellung kommen unterschiedliche Laborprofile zum Einsatz —
         von einer orientierenden Bestandsaufnahme bis zu spezifischen Organ- und Risikoparametern.
       en: >-
-        A blood test at our practice gives you a well-founded view of your current health
-        situation. We offer structured blood test profiles tailored to different questions — from
-        an orienting baseline to a deep risk analysis.
+        Laboratory values from blood, urine or stool are a central part of our internal-medicine
+        diagnostics. Different lab profiles are used depending on the question — from an
+        orienting baseline to specific organ and risk parameters.
       fr: >-
-        Une analyse de sang dans notre cabinet vous donne un aperçu fondé de votre situation de
-        santé actuelle. Nous proposons des profils sanguins structurés adaptés à différentes
-        questions — du bilan d’orientation à l’analyse de risque approfondie.
+        Les valeurs de laboratoire issues du sang, des urines ou des selles constituent un
+        élément central de notre diagnostic de médecine interne. Selon la question, différents
+        profils de laboratoire sont utilisés — du bilan d'orientation à des paramètres
+        spécifiques d'organe et de risque.
       es: >-
-        Un análisis de sangre en nuestra consulta le ofrece una visión fundamentada de su
-        situación de salud actual. Disponemos de perfiles estructurados de análisis, ajustados a
-        distintas cuestiones — desde la valoración orientadora hasta el análisis de riesgo en
-        profundidad.
+        Los valores de laboratorio de sangre, orina o heces son una parte central de nuestro
+        diagnóstico en medicina interna. Según la cuestión se emplean distintos perfiles de
+        laboratorio — desde una valoración orientadora hasta parámetros específicos de órgano
+        y de riesgo.
       it: >-
-        Un esame del sangue nella nostra pratica medica le offre una visione fondata della sua
-        situazione di salute attuale. Proponiamo profili strutturati di analisi ematochimiche,
-        calibrati su quesiti diversi — dall'inquadramento orientativo all'analisi approfondita
-        del rischio.
+        I valori di laboratorio da sangue, urine o feci sono una componente centrale della nostra
+        diagnostica internistica. A seconda del quesito vengono impiegati diversi profili di
+        laboratorio — dall'inquadramento orientativo a parametri specifici d'organo e di rischio.
       pt-pt: >-
-        Uma análise ao sangue no nosso consultório oferece-lhe uma visão fundamentada da sua
-        situação de saúde actual. Disponibilizamos perfis estruturados de análises, ajustados
-        a diferentes questões — da avaliação orientadora à análise de risco aprofundada.
+        Os valores laboratoriais de sangue, urina ou fezes são uma componente central do nosso
+        diagnóstico em medicina interna. Conforme a questão são utilizados diferentes perfis
+        laboratoriais — desde uma avaliação orientadora a parâmetros específicos de órgãos e
+        de risco.
   - type: body
     heading:
       de: ''
@@ -160,9 +161,9 @@ sections:
 
         <p>Most values are available within one to two working days. We discuss results at the follow-up appointment or — for unremarkable routine findings, and only with your consent — by phone. Notable values are always clarified in person.</p>
 
-        <h2>Self-pay alternative</h2>
+        <h2>Self-pay services</h2>
 
-        <p>Our partner Sanexio offers the <a href="/basic-check/">Basic Check</a>, a compact self-pay lab check with 15 parameters — also bookable directly online, with sample collection at our practice.</p>
+        <p>Beyond the statutory health-insurance scheme, certain laboratory parameters can be performed as an individual health service (IGeL). The available profiles and their contents are listed below; the indication is discussed individually with you.</p>
       fr: |-
         <p>Une grande partie de notre diagnostic en médecine interne repose sur des valeurs de laboratoire issues du sang, de l’urine ou des selles. Nous prélevons les échantillons au cabinet et les envoyons, selon la question posée, à la coopérative de laboratoires ou à notre laboratoire spécialisé externe (Synlab). Nous discutons les résultats lors de la consultation de suivi.</p>
 
@@ -202,9 +203,9 @@ sections:
 
         <p>La plupart des valeurs sont disponibles sous un à deux jours ouvrés. Nous discutons les résultats lors de la consultation de suivi ou — pour des bilans de routine sans particularité et avec votre accord — par téléphone. Les valeurs anormales sont toujours clarifiées en personne.</p>
 
-        <h2>Alternative en auto-paiement</h2>
+        <h2>Prestations en auto-paiement</h2>
 
-        <p>Notre partenaire Sanexio propose avec le <a href="/basic-check/">Basic Check</a> un bilan biologique compact en auto-paiement à 15 paramètres — réservable aussi en ligne, prélèvement au cabinet.</p>
+        <p>Au-delà de la prise en charge par l'assurance maladie obligatoire, certains paramètres de laboratoire peuvent être réalisés en tant que prestation individuelle de santé (IGeL). Les profils disponibles et leurs contenus sont listés ci-dessous ; l'indication est discutée individuellement avec vous.</p>
       es: |-
         <p>Una gran parte de nuestro diagnóstico en medicina interna se basa en valores de laboratorio de sangre, orina o heces. Tomamos las muestras en la consulta y las enviamos, según la cuestión, a la cooperativa de laboratorios o a nuestro laboratorio especialista externo (Synlab). Comentamos los resultados en la consulta de seguimiento.</p>
 
@@ -244,9 +245,9 @@ sections:
 
         <p>La mayoría de los valores están disponibles en uno o dos días laborables. Comentamos los resultados en la consulta de seguimiento o — en caso de hallazgos rutinarios sin particularidades y con su consentimiento — por teléfono. Los valores llamativos los aclaramos siempre en persona.</p>
 
-        <h2>Alternativa en autopago</h2>
+        <h2>Prestaciones en autopago</h2>
 
-        <p>Nuestro socio Sanexio ofrece con el <a href="/basic-check/">Basic Check</a> un análisis compacto de autopago con 15 parámetros — también reservable directamente en línea, con la extracción en nuestra consulta.</p>
+        <p>Más allá de la cobertura del seguro público de salud, determinados parámetros de laboratorio pueden realizarse como prestación individual de salud (IGeL). Los perfiles disponibles y sus contenidos se enumeran más abajo; la indicación se comenta individualmente con usted.</p>
       it: |-
         <p>Una parte importante della nostra diagnostica in medicina interna si basa su valori di laboratorio ottenuti da sangue, urina o feci. Eseguiamo i prelievi in studio e inviamo i campioni, a seconda del quesito, alla cooperativa di laboratori o al nostro laboratorio specialistico esterno (Synlab). I risultati vengono discussi alla visita di follow-up.</p>
 
@@ -286,9 +287,9 @@ sections:
 
         <p>La maggior parte dei valori è disponibile entro uno o due giorni lavorativi. Discutiamo i risultati alla visita di follow-up oppure — in caso di esami di routine senza alterazioni e con il suo consenso — telefonicamente. I valori alterati vengono sempre chiariti di persona.</p>
 
-        <h2>Alternativa in pagamento autonomo</h2>
+        <h2>Prestazioni a pagamento autonomo</h2>
 
-        <p>Il nostro partner Sanexio offre con il <a href="/basic-check/">Basic Check</a> un check di laboratorio compatto in pagamento autonomo con 15 parametri — prenotabile anche direttamente online, con prelievo presso il nostro studio.</p>
+        <p>Oltre alle prestazioni coperte dall'assicurazione sanitaria obbligatoria, determinati parametri di laboratorio possono essere eseguiti come prestazione sanitaria individuale (IGeL). I profili disponibili e i relativi contenuti sono elencati qui sotto; l'indicazione viene discussa individualmente con lei.</p>
       pt-pt: |-
         <p>Uma grande parte do nosso diagnóstico em medicina interna apoia-se em valores laboratoriais obtidos do sangue, da urina ou das fezes. Efectuamos as colheitas no consultório e enviamos as amostras, conforme a questão, à cooperativa de laboratórios ou ao nosso laboratório especializado externo (Synlab). Discutimos os resultados na consulta de seguimento.</p>
 
@@ -328,9 +329,9 @@ sections:
 
         <p>A maior parte dos valores está disponível em um a dois dias úteis. Discutimos os resultados na consulta de seguimento ou — em achados de rotina sem particularidades e com o seu consentimento — por telefone. Os valores alterados são sempre esclarecidos pessoalmente.</p>
 
-        <h2>Alternativa em auto-pagamento</h2>
+        <h2>Prestações em auto-pagamento</h2>
 
-        <p>O nosso parceiro Sanexio oferece com o <a href="/basic-check/">Basic Check</a> uma análise laboratorial compacta em auto-pagamento com 15 parâmetros — também reservável directamente online, com colheita no nosso consultório.</p>
+        <p>Para além da cobertura do seguro público de saúde, determinados parâmetros laboratoriais podem ser realizados como prestação individual de saúde (IGeL). Os perfis disponíveis e os respectivos conteúdos estão listados abaixo; a indicação é discutida individualmente consigo.</p>
   - type: bento-grid
     heading:
       de: Unsere Bluttest-Profile
@@ -350,11 +351,11 @@ sections:
           pt-pt: Basis-Check
         teaser:
           de: Orientierende Standardparameter zu Stoffwechsel und Organfunktion.
-          en: The compact starting point — the most important standard parameters at a glance.
-          fr: L’entrée compacte — les principaux paramètres standards en un coup d’œil.
-          es: La entrada compacta — los parámetros estándar más importantes de un vistazo.
-          it: L'inizio compatto — i principali parametri standard a colpo d'occhio.
-          pt-pt: O ponto de partida compacto — os principais parâmetros padrão num relance.
+          en: Orienting standard parameters on metabolism and organ function.
+          fr: Paramètres standard d'orientation sur le métabolisme et la fonction d'organe.
+          es: Parámetros estándar orientadores de metabolismo y función de órgano.
+          it: Parametri standard orientativi su metabolismo e funzione d'organo.
+          pt-pt: Parâmetros padrão orientadores sobre metabolismo e função de órgão.
         image: shopify-mirror://labor/labor-mini-check-up.png
         href: /labor/status-baseline/
       - id: status-advanced
@@ -384,11 +385,11 @@ sections:
           pt-pt: Vorsorge-Check
         teaser:
           de: Erweitertes Laborprofil mit zusätzlichen Stoffwechsel- und Entzündungsparametern.
-          en: Comprehensive prevention profile for targeted early detection.
-          fr: Profil de prévention complet pour un dépistage précoce ciblé.
-          es: Perfil preventivo completo para una detección precoz dirigida.
-          it: Profilo preventivo completo per una diagnosi precoce mirata.
-          pt-pt: Perfil preventivo abrangente para uma detecção precoce dirigida.
+          en: Extended laboratory profile with additional metabolic and inflammation parameters.
+          fr: Profil de laboratoire étendu avec des paramètres métaboliques et inflammatoires supplémentaires.
+          es: Perfil de laboratorio ampliado con parámetros metabólicos y de inflamación adicionales.
+          it: Profilo di laboratorio esteso con ulteriori parametri metabolici e di flogosi.
+          pt-pt: Perfil laboratorial alargado com parâmetros metabólicos e inflamatórios adicionais.
         image: shopify-mirror://labor/labor-pravention.png
         href: /labor/status-prevent/
       - id: system-immune
@@ -401,11 +402,11 @@ sections:
           pt-pt: Immunsystem-Profil
         teaser:
           de: Laborprofil zur Beurteilung des Immunsystems.
-          en: Targeted assessment of the immune system and immune defences.
-          fr: Évaluation ciblée du système immunitaire et de l’état des défenses.
-          es: Valoración dirigida del sistema inmunitario y del estado defensivo.
-          it: Valutazione mirata del sistema immunitario e dello stato delle difese.
-          pt-pt: Avaliação dirigida do sistema imunitário e do estado de defesa.
+          en: Laboratory profile for assessment of the immune system.
+          fr: Profil de laboratoire pour l'évaluation du système immunitaire.
+          es: Perfil de laboratorio para la valoración del sistema inmunitario.
+          it: Profilo di laboratorio per la valutazione del sistema immunitario.
+          pt-pt: Perfil laboratorial para avaliação do sistema imunitário.
         image: shopify-mirror://labor/labor-immunsystem.jpg
         href: /labor/system-immune/
       - id: system-renal
@@ -452,11 +453,11 @@ sections:
           pt-pt: Stoffwechsel-Werte
         teaser:
           de: Laborprofil zu Fett- und Zuckerstoffwechsel.
-          en: Glucose, lipids, thyroid — the metabolic axis at a glance.
-          fr: Glucose, lipides, thyroïde — l’axe métabolique en un coup d’œil.
-          es: Glucosa, lípidos, tiroides — el eje metabólico de un vistazo.
-          it: Glucosio, lipidi, tiroide — l'asse metabolico in sintesi.
-          pt-pt: Glicose, lípidos, tiroide — o eixo metabólico em síntese.
+          en: Laboratory profile on lipid and glucose metabolism.
+          fr: Profil de laboratoire sur le métabolisme lipidique et glucidique.
+          es: Perfil de laboratorio del metabolismo lipídico y glucídico.
+          it: Profilo di laboratorio sul metabolismo lipidico e glucidico.
+          pt-pt: Perfil laboratorial do metabolismo lipídico e glicídico.
         image: shopify-mirror://labor/labor-stoffwechsel.jpg
         href: /labor/stoffwechsel/
       - id: biohack
@@ -469,11 +470,11 @@ sections:
           pt-pt: Genetik-Beratung
         teaser:
           de: Beratung zu Möglichkeiten und Grenzen genetischer Untersuchungen.
-          en: Genetically informed advice for a personalised prevention strategy.
-          fr: Conseil fondé sur la génétique pour une stratégie de prévention personnalisée.
-          es: Asesoramiento basado en genética para una estrategia preventiva personalizada.
-          it: Consulenza basata sulla genetica per una strategia preventiva personalizzata.
-          pt-pt: Aconselhamento de base genética para uma estratégia preventiva personalizada.
+          en: Consultation on the possibilities and limits of genetic testing.
+          fr: Consultation sur les possibilités et les limites des tests génétiques.
+          es: Asesoramiento sobre las posibilidades y los límites de las pruebas genéticas.
+          it: Consulenza sulle possibilità e i limiti dei test genetici.
+          pt-pt: Aconselhamento sobre as possibilidades e os limites dos testes genéticos.
         image: shopify-mirror://labor/labor-biohack.jpg
         href: /labor/biohack/
       - id: risikoprofil
@@ -486,11 +487,11 @@ sections:
           pt-pt: Perfil de risco
         teaser:
           de: Laborparameter zu Herz-Kreislauf- und Stoffwechselrisiko.
-          en: Structured risk assessment for cardiovascular and metabolic health.
-          fr: Évaluation de risque structurée pour le cardiovasculaire et le métabolisme.
-          es: Evaluación de riesgo estructurada para el sistema cardiovascular y el metabolismo.
-          it: Valutazione strutturata del rischio cardiovascolare e metabolico.
-          pt-pt: Avaliação estruturada do risco cardiovascular e metabólico.
+          en: Laboratory parameters for cardiovascular and metabolic risk.
+          fr: Paramètres de laboratoire pour le risque cardiovasculaire et métabolique.
+          es: Parámetros de laboratorio para el riesgo cardiovascular y metabólico.
+          it: Parametri di laboratorio per il rischio cardiovascolare e metabolico.
+          pt-pt: Parâmetros laboratoriais para o risco cardiovascular e metabólico.
         image: shopify-mirror://labor/labor-risikoprofil.jpg
         href: /labor/risikoprofil/
   - type: process-steps

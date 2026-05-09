@@ -66,7 +66,7 @@ sections:
 
         <p>Wir nehmen Ihnen Blut ab und bestimmen die genannten Parameter im Labor. Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht.</p>
       en: |-
-        <p>With the lab profile <strong>Risk profile</strong> you receive — with just a single pinprick — an orienting overview of central metabolic and organ parameters; signs of changes that are often not noticeable in everyday life.</p>
+        <p>The lab profile <strong>Risikoprofil</strong> covers a selection of central metabolic and organ parameters that can give early signs of changes which are often not noticeable in everyday life.</p>
 
         <h2>We analyse the following parameters:</h2>
 
@@ -83,7 +83,7 @@ sections:
 
         <p>We take a blood sample and determine the listed parameters in the laboratory. At the end of the examination you receive your personal findings report.</p>
       fr: |-
-        <p>Avec le profil de laboratoire <strong>Profil de risque</strong>, vous obtenez en une seule piqûre une vue d’orientation sur les paramètres métaboliques et d’organes centraux — indices de modifications qui, au quotidien, ne sont souvent pas perceptibles.</p>
+        <p>Le profil de laboratoire <strong>Risikoprofil</strong> couvre une sélection de paramètres métaboliques et d’organe centraux pouvant indiquer précocement des modifications souvent non perceptibles au quotidien.</p>
 
         <h2>Nous analysons les paramètres suivants :</h2>
 
@@ -100,7 +100,7 @@ sections:
 
         <p>Nous effectuons un prélèvement sanguin et déterminons les paramètres mentionnés au laboratoire. À la fin de l’examen, vous recevez votre compte rendu personnel.</p>
       es: |-
-        <p>Con el perfil de laboratorio <strong>Perfil de riesgo</strong> obtiene con un solo pinchazo una visión orientadora de los parámetros metabólicos y de órganos centrales — indicios de cambios que en el día a día a menudo no son perceptibles.</p>
+        <p>El perfil de laboratorio <strong>Risikoprofil</strong> abarca una selección de parámetros metabólicos y de órgano centrales que pueden señalar precozmente alteraciones a menudo no perceptibles en el día a día.</p>
 
         <h2>Analizamos los siguientes parámetros:</h2>
 
@@ -117,7 +117,7 @@ sections:
 
         <p>Le extraemos sangre y determinamos los parámetros indicados en el laboratorio. Al finalizar recibe su informe personal.</p>
       it: |-
-        <p>Con il profilo di laboratorio <strong>Profilo di rischio</strong> riceve, con un solo prelievo, una panoramica orientativa dei principali parametri metabolici e d'organo — indicazioni su alterazioni che nella vita quotidiana spesso non sono percepibili.</p>
+        <p>Il profilo di laboratorio <strong>Risikoprofil</strong> comprende una selezione di parametri metabolici e d'organo centrali capaci di segnalare precocemente alterazioni spesso non percepibili nella vita quotidiana.</p>
 
         <h2>Analizziamo i seguenti parametri:</h2>
 
@@ -134,7 +134,7 @@ sections:
 
         <p>Le effettuiamo un prelievo di sangue e determiniamo in laboratorio i parametri elencati. Al termine dell'esame riceve il suo referto personale.</p>
       pt-pt: |-
-        <p>Com o perfil laboratorial <strong>Perfil de risco</strong> recebe, com uma única picada, uma visão orientadora dos principais parâmetros metabólicos e de órgãos — indicações de alterações que no dia-a-dia muitas vezes não se sentem.</p>
+        <p>O perfil laboratorial <strong>Risikoprofil</strong> abrange uma selecção de parâmetros metabólicos e de órgão centrais que podem sinalizar precocemente alterações muitas vezes não perceptíveis no dia-a-dia.</p>
 
         <h2>Analisamos os seguintes parâmetros:</h2>
 
@@ -153,11 +153,11 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für die Bestimmung des Risikoprofils?
-      en: Booking a risk profile?
-      fr: Un rendez-vous pour un profil de risque ?
-      es: ¿Cita para un perfil de riesgo?
-      it: Vuole prenotare un Profilo di rischio?
-      pt-pt: Quer marcar um Perfil de risco?
+      en: Booking the determination of the Risikoprofil?
+      fr: Un rendez-vous pour la détermination du Risikoprofil ?
+      es: ¿Cita para la determinación del Risikoprofil?
+      it: Vuole prenotare la determinazione del Risikoprofil?
+      pt-pt: Quer marcar a determinação do Risikoprofil?
     cta_label:
       de: Termin vereinbaren
       en: Book an appointment

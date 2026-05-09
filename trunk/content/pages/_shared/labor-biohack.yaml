@@ -40,11 +40,11 @@ sections:
       pt-pt: Aconselhamento genético
     lead:
       de: Ärztliche Beratung zu Möglichkeiten und Grenzen genetischer Untersuchungen.
-      en: Genetic consultation with individual risk assessment.
-      fr: Consultation génétique avec une évaluation individuelle du risque.
-      es: Consulta genética con valoración individual del riesgo.
-      it: Consulenza genetica con valutazione individuale del rischio.
-      pt-pt: Aconselhamento genético com avaliação individual do risco.
+      en: Medical consultation on the possibilities and limits of genetic testing.
+      fr: Consultation médicale sur les possibilités et les limites des tests génétiques.
+      es: Asesoramiento médico sobre las posibilidades y los límites de las pruebas genéticas.
+      it: Consulenza medica sulle possibilità e i limiti dei test genetici.
+      pt-pt: Aconselhamento médico sobre as possibilidades e os limites dos testes genéticos.
     image: shopify-mirror://detail/labor-biohack-hero.png
   - type: body
     body_html:
@@ -75,11 +75,11 @@ sections:
   - type: cta-banner
     heading:
       de: Termin für die Genetik-Beratung?
-      en: Booking a genetic consultation?
-      fr: Un rendez-vous pour une consultation génétique ?
-      es: ¿Cita para una consulta genética?
-      it: Vuole prenotare una consulenza genetica?
-      pt-pt: Quer marcar um aconselhamento genético?
+      en: Booking the Genetik-Beratung?
+      fr: Un rendez-vous pour la Genetik-Beratung ?
+      es: ¿Cita para la Genetik-Beratung?
+      it: Vuole prenotare la Genetik-Beratung?
+      pt-pt: Quer marcar o Genetik-Beratung?
     cta_label:
       de: Termin vereinbaren
       en: Book an appointment

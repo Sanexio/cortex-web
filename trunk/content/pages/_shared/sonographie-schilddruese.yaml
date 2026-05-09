@@ -47,11 +47,11 @@ sections:
       pt-pt: Ecografia da tiroide
     lead:
       de: Früherkennung von Knoten und Gewebeveränderungen der Schilddrüse.
-      en: Ultrasound of the thyroid — make nodules, cysts and size changes visible.
-      fr: Échographie de la thyroïde — rendre visibles nodules, kystes et variations de volume.
-      es: Ecografía de la tiroides — hacer visibles nódulos, quistes y variaciones de tamaño.
-      it: Ecografia della tiroide — rendere visibili noduli, cisti e variazioni di volume.
-      pt-pt: Ecografia da tiroide — tornar visíveis nódulos, quistos e alterações de volume.
+      en: Early detection of nodules and tissue changes of the thyroid.
+      fr: Détection précoce de nodules et de modifications tissulaires de la thyroïde.
+      es: Detección precoz de nódulos y alteraciones tisulares de la tiroides.
+      it: Diagnosi precoce di noduli e alterazioni tissutali della tiroide.
+      pt-pt: Detecção precoce de nódulos e alterações tecidulares da tiroide.
     image: shopify-mirror://detail/sonographie-schilddruese-hero.jpg
 
   - type: body
@@ -65,7 +65,7 @@ sections:
 
         <p>Zum Abschluss der Untersuchung erhalten Sie Ihren persönlichen Befundbericht. Bei auffälligen Knoten besprechen wir mit Ihnen das weitere Vorgehen — meist durch Verlaufskontrolle, in seltenen Fällen durch eine Feinnadelpunktion.</p>
       en: |
-        <p>The thyroid — one of the conductors of your metabolism: it produces hormones that regulate energy consumption and metabolic processes. An underactive thyroid can lead to fatigue, weight gain and mood swings, while an overactive thyroid causes nervousness, palpitations and weight loss. The thyroid sits like a butterfly around your neck. As a metabolically active organ, nodules can form here that are not detectable in the lab but can be well assessed by ultrasound. If malignancy is suspected, the nodules concerned should be investigated further.</p>
+        <p>The thyroid produces hormones that regulate energy consumption and metabolism. An underactive thyroid can lead to fatigue, weight gain and mood swings, while an overactive thyroid causes nervousness, palpitations and weight loss. The thyroid lies in a butterfly shape adjacent to the larynx. As a metabolically active organ, nodules can form that are not detectable in the lab but can be well assessed by ultrasound. If malignancy is suspected, the nodules concerned should be investigated further.</p>
 
         <h2>How is the examination carried out?</h2>
 
@@ -73,7 +73,7 @@ sections:
 
         <p>At the end of the examination you receive your personal findings report. For suspicious nodules we discuss the next steps with you — usually a follow-up control, in rare cases a fine-needle aspiration.</p>
       fr: |
-        <p>La thyroïde — l’un des chefs d’orchestre de votre métabolisme : elle produit des hormones qui régulent la dépense énergétique et le métabolisme. Une hypofonction peut entraîner fatigue, prise de poids et fluctuations de l’humeur, alors qu’une hyperfonction provoque nervosité, palpitations et perte de poids. La thyroïde entoure votre cou comme un papillon. Organe métaboliquement actif, elle peut développer des nodules indétectables au laboratoire mais bien évaluables à l’échographie. En cas de suspicion de malignité, les nodules concernés doivent être explorés plus avant.</p>
+        <p>La thyroïde produit des hormones qui régulent la dépense énergétique et le métabolisme. Une hypofonction peut entraîner fatigue, prise de poids et fluctuations de l’humeur, alors qu’une hyperfonction provoque nervosité, palpitations et perte de poids. La thyroïde est disposée en forme de papillon contre le larynx. Organe métaboliquement actif, elle peut développer des nodules indétectables au laboratoire mais bien évaluables à l’échographie. En cas de suspicion de malignité, les nodules concernés doivent être explorés plus avant.</p>
 
         <h2>Comment se déroule l’examen ?</h2>
 
@@ -81,7 +81,7 @@ sections:
 
         <p>À la fin de l’examen, vous recevez votre compte rendu personnel. En cas de nodules suspects, nous discutons avec vous des étapes suivantes — habituellement par contrôle évolutif, rarement par cytoponction.</p>
       es: |
-        <p>La tiroides — uno de los directores de su metabolismo: produce hormonas que regulan el gasto energético y el metabolismo. Un hipotiroidismo puede provocar fatiga, aumento de peso y oscilaciones del estado de ánimo, mientras que un hipertiroidismo causa nerviosismo, palpitaciones y pérdida de peso. La tiroides rodea su cuello como una mariposa. Como órgano metabólicamente activo, en ella pueden aparecer nódulos no detectables en el laboratorio pero bien valorables por ecografía. Si se sospecha malignidad, los nódulos en cuestión deben estudiarse con mayor detalle.</p>
+        <p>La tiroides produce hormonas que regulan el gasto energético y el metabolismo. Un hipotiroidismo puede provocar fatiga, aumento de peso y oscilaciones del estado de ánimo, mientras que un hipertiroidismo causa nerviosismo, palpitaciones y pérdida de peso. La tiroides se dispone en forma de mariposa adosada a la laringe. Como órgano metabólicamente activo, pueden aparecer nódulos no detectables en el laboratorio pero bien valorables por ecografía. Si se sospecha malignidad, los nódulos en cuestión deben estudiarse con mayor detalle.</p>
 
         <h2>¿Cómo se realiza la exploración?</h2>
 
@@ -89,7 +89,7 @@ sections:
 
         <p>Al finalizar recibe su informe personal. En caso de nódulos sospechosos hablamos con usted sobre los siguientes pasos — generalmente un control evolutivo, en raras ocasiones una punción aspirativa con aguja fina.</p>
       it: |
-        <p>La tiroide — uno dei direttori d'orchestra del suo metabolismo: produce ormoni che regolano il consumo energetico e i processi metabolici. Un'iperfunzione può provocare nervosismo, tachicardia e perdita di peso, mentre un'ipofunzione causa stanchezza, aumento di peso e oscillazioni dell'umore. La tiroide è disposta come una farfalla attorno al collo. Trattandosi di un organo metabolicamente attivo, possono formarsi noduli non rilevabili in laboratorio ma ben valutabili all'ecografia. Se si sospettano alterazioni maligne i noduli interessati devono essere ulteriormente approfonditi.</p>
+        <p>La tiroide produce ormoni che regolano il consumo energetico e il metabolismo. Un'iperfunzione può provocare nervosismo, tachicardia e perdita di peso, mentre un'ipofunzione causa stanchezza, aumento di peso e oscillazioni dell'umore. La tiroide è disposta a forma di farfalla addossata alla laringe. Trattandosi di un organo metabolicamente attivo, possono formarsi noduli non rilevabili in laboratorio ma ben valutabili all'ecografia. Se si sospettano alterazioni maligne i noduli interessati devono essere ulteriormente approfonditi.</p>
 
         <h2>Come si svolge l'esame?</h2>
 
@@ -97,7 +97,7 @@ sections:
 
         <p>Al termine dell'esame riceve il suo referto personale. In presenza di noduli sospetti discutiamo con lei i passi successivi — di norma con controlli evolutivi e, raramente, con un agoaspirato.</p>
       pt-pt: |
-        <p>A tiroide — um dos maestros do seu metabolismo: produz hormonas que regulam o consumo energético e o metabolismo. Um hipofunção pode causar fadiga, aumento de peso e oscilações de humor, enquanto um hiperfunção provoca nervosismo, taquicardia e perda de peso. A tiroide envolve o pescoço com a forma de uma borboleta. Como órgão metabolicamente activo, podem formar-se nódulos não detectáveis em laboratório, mas bem avaliáveis por ecografia. Em caso de suspeita de alterações malignas os nódulos em causa devem ser esclarecidos.</p>
+        <p>A tiroide produz hormonas que regulam o consumo energético e o metabolismo. Um hipofunção pode causar fadiga, aumento de peso e oscilações de humor, enquanto um hiperfunção provoca nervosismo, taquicardia e perda de peso. A tiroide tem a forma de uma borboleta adossada à laringe. Como órgão metabolicamente activo, podem formar-se nódulos não detectáveis em laboratório, mas bem avaliáveis por ecografia. Em caso de suspeita de alterações malignas os nódulos em causa devem ser esclarecidos.</p>
 
         <h2>Como é realizado o exame?</h2>
 
