@@ -101,7 +101,7 @@
         "handle": { "type": "string", "pattern": "^[a-z0-9-]+$" },
         "collection": { "type": "string", "pattern": "^[a-z0-9-]+$" },
         "resource_id": { "type": "integer", "minimum": 1 },
-        "scope": { "type": "string", "enum": ["labor", "untersuchungen", "body-checks", "pages-shared"] },
+        "scope": { "type": "string", "enum": ["labor", "untersuchungen", "body-checks", "pages-shared", "ultraschall", "funktion", "check-up"] },
         "last_synced_at": { "type": "string", "format": "date-time" },
         "last_synced_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
         "drift_strategy": { "type": "string", "enum": ["auto-curate", "manual", "frozen"], "default": "auto-curate" },
