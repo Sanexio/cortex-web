@@ -42,7 +42,7 @@
       "minItems": 1,
       "items": {
         "type": "string",
-        "enum": ["de", "en", "fr", "es"]
+        "enum": ["de", "en", "fr", "es", "ru", "it", "pt-pt"]
       },
       "uniqueItems": true
     },

@@ -1,33 +1,44 @@
 # Source: inc/data/team.json (Theme praxiszentrum, S57 backfill 2026-05-01)
+# Welle 15 update (2026-05-10): voller Bio-Text, integrativer Ansatz,
+# Behandlungsschwerpunkte ergänzt, Sprachen DE/EN/RU/FR(Basis).
 id: dr-arbitmann
 slug: dr-arbitmann
 order: 8
 name: "Anna Arbitmann"
 role:
-  de: "Physio-Therapie"
-languages: [de, en]
+  de: "Diplom-Physiotherapeutin · Heilpraktikerin"
+languages: [de, en, ru, fr]
 intro:
   de: |
-    Physiotherapeutin und Heilpraktikerin. Schwerpunkte: Craniosacrale Osteopathie, Manuelle Lymphdrainage, Neuraltherapie.
+    Diplom-Physiotherapeutin und Heilpraktikerin. Integratives Konzept aus moderner Physiotherapie, manueller Therapie und Naturheilkunde — mit Schwerpunkten in Neuroorthopädie, postoperativer Nachbehandlung, Lymphdrainage und komplexen Schmerzbildern.
 accent: ink
 image: 9883
 qualifications:
-  - "Physiotherapeutin"
-  - "Heilpraktikerin (Naturheilpraxis)"
+  - "Diplom-Physiotherapeutin · Heilpraktikerin"
+  - "Integrativer Behandlungsansatz · evidenzbasiert · leitliniengerecht"
+  - "Craniosakrale Osteopathie (Upledger Institute)"
+  - "Neuraltherapie (Universitätsklinikum Heidelberg)"
   - "Manuelle Lymphdrainage (Földi Klinik Hinterzarten)"
-  - "Craniosacrale Osteopathie"
-  - "Neuraltherapie"
-  - "Klassische Physiotherapie"
-  - "Indikationen: Neurologie · Vegetativum · Herz-Kreislauf · Atemwege · HNO · Augen"
-  - "Muskel-, Weichteil- und Bandscheibenschmerz · Fibromyalgie"
-  - "Sprache: DE"
+  - "Anthroposophische Medizin · Akupunktur"
+  - "Radiale und fokussierte Stoßwellentherapie"
+  - "Orthopädie · Arthrose · Bandscheibenvorfälle · Schulter- und Hüftbeschwerden · Impingement"
+  - "Neurologische und neuroorthopädische Beschwerdebilder"
+  - "Postoperative Rehabilitation · Unfallnachsorge"
+  - "Gynäkologische Beschwerden · Schwangerschaftsbegleitung (Spezialisierung Troy/Michigan, USA)"
+  - "Kindertherapie · Skoliosen · Schädeldeformitäten"
+  - "Rheuma · Fibromyalgie · chronische Schmerzsyndrome"
+  - "Chronische Kopfschmerzen · Migräne · Tinnitus · Schwindel"
+  - "Chronische Lymphödeme (primär · sekundär)"
+  - "Sprachen: DE/EN/RU/FR (Basis)"
 bio:
   de: |
-    Anna Arbitmann ist Physiotherapeutin und Heilpraktikerin und führt eine eigene Naturheilpraxis in Frankfurt-Innenstadt sowie Bad Homburg. In der Praxisgemeinschaft Sanexio im Westend bietet sie zusätzlich physiotherapeutische und naturheilkundliche Sprechstunden an.
+    Anna Arbitmann ist Diplom-Physiotherapeutin und Heilpraktikerin. In der Praxisgemeinschaft Sanexio im Frankfurter Westend bietet sie physiotherapeutische und naturheilkundliche Sprechstunden im Rahmen eines integrativen Behandlungskonzepts an, das moderne Physiotherapie mit fundierten manualtherapeutischen und naturheilkundlichen Verfahren verbindet.
 
-    Ihr Behandlungsspektrum verbindet klassische Physiotherapie mit craniosacraler Osteopathie, Neuraltherapie und manueller Lymphdrainage. Die Lymphdrainage erlernte sie an der Földi Klinik Hinterzarten — einer der führenden europäischen Fachkliniken für Lymphologie. Indikationsschwerpunkte sind Erkrankungen aus den Bereichen Neurologie und vegetatives Nervensystem, Herz-Kreislauf, Atemwege und HNO sowie Augenheilkunde; ergänzt um Muskel-, Weichteil- und Bandscheibenschmerzen einschließlich Fibromyalgie.
+    Im Mittelpunkt stehen eine präzise funktionelle Diagnostik, die individuelle Begleitung der Patientinnen und Patienten sowie die gezielte Unterstützung von Rehabilitation, Regeneration und Selbstregulation. Ihre Arbeit folgt evidenzbasierten, leitliniengerechten Therapiekonzepten und einer interdisziplinären Zusammenarbeit mit den behandelnden Ärztinnen und Ärzten — mit dem Ziel, funktionelle Zusammenhänge zu erkennen, Beschwerden nachhaltig zu lindern und die körperliche Balance langfristig zu stabilisieren.
 
-    Termine in der Praxisgemeinschaft Sanexio sind telefonisch buchbar.
+    Das therapeutische Spektrum umfasst Craniosakrale Osteopathie (Ausbildung am Upledger Institute), Neuraltherapie (Universitätsklinikum Heidelberg), anthroposophische Medizin, Akupunktur, radiale und fokussierte Stoßwellentherapie sowie manuelle Lymphdrainage (Földi Klinik Hinterzarten — eine der führenden europäischen Fachkliniken für Lymphologie). Internationale Stationen in den USA und der Schweiz sowie ihre aktuelle Tätigkeit an einem Spital des Swiss Medical Network erweitern ihre klinische Kompetenz fortlaufend. Schwerpunkte liegen auf neuroorthopädischen Behandlungskonzepten, postoperativer Nachbehandlung sowie der differenzierten Rehabilitation komplexer Beschwerdebilder.
+
+    Termine sind über die Praxisrezeption oder telefonisch buchbar. Behandlungssprachen: Deutsch, Englisch, Russisch, Französisch (Basis).
 profile_urls:
   praxis: /dr-arbitmann/
   juvantis: null
