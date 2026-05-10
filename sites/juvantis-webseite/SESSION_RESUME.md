@@ -76,20 +76,28 @@ analog zum Phase-4-Pattern, ohne den Shopify-Theme-Klon anzufassen.
 
 ## §5 Offene Tasks (Priorität absteigend)
 
-### P0 — Content-Trunk für Juvantis-Produkte
-Weitere YAML-Produktquellen in `Cortex-Web/trunk/content/products/` pflegen
-(POC `basic-check.yaml` ist exemplarisch; Body Checks, Bluttests, DHT gehören
-noch eingeführt). Jedes neue Produkt wird via `adapters/shopify/` als
-Draft-Produkt in den Store gerendert und via Admin freigegeben.
+> **Stand 2026-05-10 nach Welle „Juvantis-Cleanup":** P0/P1/P2 abgearbeitet.
 
-### P1 — Medien-Pipeline (Phase 2b, verschoben aus Phase-5-Plan)
-`trunk/media/registry.yaml` befüllen, `_media-source/` strukturieren, Upload-
-Skript gegen Shopify Files bauen. Blockiert keine anderen Sprints.
+### Erledigt (2026-05-10)
+- **P0 Trunk-Content:** Bluttest-Pakete (10) waren bereits via drift-sync gepullt;
+  14 weitere Pages (Sono, Funktion, Check-Up) per `bun tools/drift-sync/sync.mjs`
+  in den Trunk gespiegelt; DHT-Avatar als neues Produkt angelegt.
+- **P0 Adapter-Run:** DHT-Avatar als Draft im Shopify-Store live (ID `10958023065867`).
+- **P1 Medien-Pipeline:** `tools/media/register.mjs` + `trunk/media/registry.yaml`
+  mit 26 Mirror-Einträgen befüllt (CW-003-konform).
+- **P2 Tutorial:** `THEME_WORKFLOW.md` (TL;DR + Topologie + Trennlinie + LL).
+- **Schema-Patch:** `product.schema.json` + `page.schema.json` —
+  Drift-Sync-Scopes `ultraschall/funktion/check-up` ergänzt.
 
-### P2 — Theme-Sync-Workflow dokumentieren
-Tutorial-Update: wie arbeite ich weiter am Theme bei `Juvantis/juvantis-web/theme/`,
-wenn Deploy-Skript jetzt bei `Cortex-Web/sites/juvantis-webseite/` liegt?
-(Thema für spätere Session — kein akuter Blocker.)
+### Offen
+- **HWG-Manual-Auflösung (2):** `halsschlagadern-quick-check`,
+  `ultraschall-echokardiographie` — beide haben „Wunder"-Trigger im
+  Source-Text; manuelle Curation nötig, dann erneut `drift-sync.mjs`.
+- **Upload-Pipeline `_media-source/` → Shopify Files:** noch nicht gebaut.
+  Aktuell unkritisch, da alle 26 Bilder schon im Sanexio-CDN. Eigener
+  Sprint nötig, sobald *neue* Assets erstmals im Trunk geboren werden.
+- **DHT-Avatar Live-Schaltung:** aktuell `status=draft`. Vor Publish
+  TestFlight-Link, Datenschutz-Hinweis, Impressum-Link verifizieren.
 
 ## §6 Sofort-Status-Frage für nächste Session
 

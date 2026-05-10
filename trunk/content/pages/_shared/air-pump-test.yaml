@@ -1,31 +1,31 @@
-id: sono-check
-sku: JVT-8117415444747
+id: air-pump-test
+sku: JVT-8115597541643
 category: untersuchungen
 status: active
 parameters:
   - code: TBD
     einheit: —
 title:
-  de: 'Ultraschall: Komplett Check'
+  de: Spirometrie - Lungenfunktion
 views:
   juvantis:
     show_price: true
     cta_label:
       de: Jetzt buchen
-    cta_url: https://sanexio.eu/products/sono-check
+    cta_url: https://sanexio.eu/products/air-pump-test
   praxis:
     show_price: false
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
 images:
-  hero: media://shopify-mirror/check-up/sono-check-hero
+  hero: media://shopify-mirror/check-up/air-pump-test-hero
 sanexio_source:
   type: product
-  handle: sono-check
-  resource_id: 8117415444747
-  last_synced_at: '2026-05-10T14:21:48.983Z'
-  last_synced_hash: d853c4e219ffbc630ad83a287f8df464b212b51feff308d59022a6a85ae287b6
+  handle: air-pump-test
+  resource_id: 8115597541643
+  last_synced_at: '2026-05-10T14:21:46.327Z'
+  last_synced_hash: 1384d6f3a96340ddd1c2d8dbb66d6c82bd6eac297ae30f95ebf5fa520fcba9bc
   drift_strategy: auto-curate
   local_edits: false
   collection: ultraschalluntersuchungen

@@ -1,34 +1,41 @@
 # Source: inc/data/team.json (Theme praxiszentrum, S57 backfill 2026-05-01)
+# Updated: 2026-05-09 — Bio-Refresh per Dr.-Stracke-Direktive
+#   • Titel "M.D." statt "Dr." (auf Wunsch des Kollegen Shahin)
+#   • Rolle nur noch "Facharzt für Neurologie" (Psychiatrie entfällt im Titel)
+#   • Vita ergänzt (14 J. Berufserfahrung, 6 J. Stroke Unit Gießen/Friedberg)
+#   • BOTOX-Sprechstunde mit Indikationsliste neu aufgenommen
+#   • Sprachen DE/EN/Arabisch (Sprechstunde DE/EN)
 id: dr-shahin
 slug: dr-shahin
 order: 6
-name: "Dr. George Shahin"
+name: "George Shahin M.D."
 role:
   de: "Facharzt für Neurologie"
 languages: [de, en]
 intro:
   de: |
-    Facharzt für Neurologie und Psychiatrie. Schwerpunkte in der Praxis: Kopfschmerz, Schwindel, Schlaganfall-Vorsorge, Bewegungsstörungen sowie psychiatrische Sprechstunde.
+    Facharzt für Neurologie mit über 14 Jahren Berufserfahrung, davon 6 Jahre in leitender Position an der Stroke Unit des Universitätsklinikums Gießen (Standort Friedberg). Schwerpunkte: Kopfschmerz und Migräne, Bewegungsstörungen, Schlaganfall-Vor- und -Nachsorge, Botulinumtoxin-Sprechstunde.
 accent: ink
 image: 9881
 qualifications:
-  - "Facharzt für Neurologie und Psychiatrie"
-  - "Botulinumtoxintherapie (zertifiziert)"
+  - "Facharzt für Neurologie"
+  - "Psychosomatische Grundversorgung"
+  - "Zertifizierte Botulinumtoxintherapie (Botox)"
   - "Geriatrie (Zusatzbezeichnung)"
   - "Schlafmedizin (BUB-Qualifikation)"
-  - "EEG · Doppler/Duplex · Nervenleitgeschwindigkeit · evozierte Potentiale"
-  - "Kognitions- und Demenzdiagnostik"
-  - "Migräne · Kopfschmerz · Schwindel · Polyneuropathie"
-  - "Parkinson · Multiple Sklerose · Epilepsie · Schlaganfall-Vorsorge"
-  - "Depression · Angst · Zwang · Schlafstörung"
-  - "Sprachen: DE/EN"
+  - "Demenzvorsorge"
+  - "Sprachen: DE/EN/Arabisch"
 bio:
   de: |
-    Dr. George Shahin ist Facharzt für Neurologie und Psychiatrie und betreut in der Praxisgemeinschaft Sanexio im Frankfurter Westend das gesamte Spektrum ambulanter neurologischer und psychiatrischer Krankheitsbilder.
+    George Shahin ist Facharzt für Neurologie mit mehr als 14 Jahren Berufserfahrung; 6 davon in leitender Position an der Stroke Unit des Universitätsklinikums Gießen (Standort Friedberg). In der Praxisgemeinschaft Sanexio im Frankfurter Westend betreut er das gesamte Spektrum ambulanter neurologischer und psychiatrischer Krankheitsbilder.
 
-    In der Praxis stehen ihm EEG, Doppler- und Duplex-Sonographie der hirnversorgenden Gefäße, Elektroneurographie (Nervenleitgeschwindigkeit), evozierte Potentiale (VEP, AEP, SEP) sowie standardisierte Kognitions- und Demenz-Tests zur Verfügung. Therapeutisch versorgt er Patientinnen und Patienten mit Kopfschmerzen und Migräne, Schwindel, Polyneuropathien, Parkinson und anderen Bewegungsstörungen, Multipler Sklerose und Epilepsie sowie die Schlaganfall-Vorsorge. In der psychiatrischen Sprechstunde behandelt er Depressionen, Angst-, Zwangs- und Schlafstörungen. Botulinumtoxintherapie wird vor Ort durchgeführt.
+    Behandlungsschwerpunkte sind Kopfschmerz und Migräne, Schwindel, Rückenschmerzen, Polyneuropathien, Demenz, Parkinson und andere Bewegungsstörungen, Multiple Sklerose, Epilepsie, Schlaganfall-Vor- und -Nachsorge sowie periphere Nervenläsionen wie das Karpaltunnelsyndrom. In der psychiatrischen Sprechstunde behandelt er Depressionen, Angst-, Zwangs- und Schlafstörungen.
 
-    Termine sind online über Doctolib oder telefonisch buchbar; Sprechstunden in Deutsch und Englisch.
+    Für die Diagnostik stehen Doppler- und Duplexsonographie der hirnversorgenden Gefäße, Nervenultraschall, Elektroneurographie (Nervenleitgeschwindigkeit), evozierte Potenziale, Schlafscreening sowie standardisierte Kognitions- und Demenztests zur Verfügung.
+
+    Als zertifizierter Botulinumtoxin-Anwender und Mitglied des Arbeitskreises Botulinumtoxin in Deutschland bietet Herr Shahin eine BOTOX-Sprechstunde für medizinische Indikationen an: chronische Migräne und Spannungskopfschmerz, Hyperhidrose (übermäßiges Schwitzen), supportive Therapie bei Depression (Glabella- und Stirnfalten), zervikale Dystonie (Schiefhals), Blepharospasmus (Lidkrampf), Spastik nach Schlaganfall oder bei Multipler Sklerose, Hemispasmus facialis (unkontrollierte Gesichtszuckungen, etwa nach peripherer Fazialisparese) sowie Sialorrhoe (übermäßiger Speichelfluss) bei Parkinson-Syndrom oder ALS.
+
+    Termine sind online über Doctolib oder telefonisch buchbar; Sprechstunden auf Deutsch und Englisch.
 profile_urls:
   praxis: /dr-shahin/
   juvantis: null

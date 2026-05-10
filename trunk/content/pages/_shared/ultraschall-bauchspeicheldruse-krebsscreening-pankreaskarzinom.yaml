@@ -1,0 +1,33 @@
+id: ultraschall-bauchspeicheldruse-krebsscreening-pankreaskarzinom
+sku: JVT-8248206721291
+category: untersuchungen
+status: active
+parameters:
+  - code: TBD
+    einheit: —
+title:
+  de: 'Ultraschall: Bauchspeicheldrüse'
+views:
+  juvantis:
+    show_price: true
+    cta_label:
+      de: Jetzt buchen
+    cta_url: https://sanexio.eu/products/ultraschall-bauchspeicheldruse-krebsscreening-pankreaskarzinom
+  praxis:
+    show_price: false
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/
+images:
+  hero: >-
+    media://shopify-mirror/check-up/ultraschall-bauchspeicheldruse-krebsscreening-pankreaskarzinom-hero
+sanexio_source:
+  type: product
+  handle: ultraschall-bauchspeicheldruse-krebsscreening-pankreaskarzinom
+  resource_id: 8248206721291
+  last_synced_at: '2026-05-10T14:21:57.782Z'
+  last_synced_hash: 8c789e90127ff9a2c73315e2e85a4f9dff0ac977ccff657a3548381917e82a4c
+  drift_strategy: auto-curate
+  local_edits: false
+  collection: ultraschalluntersuchungen
+  scope: check-up

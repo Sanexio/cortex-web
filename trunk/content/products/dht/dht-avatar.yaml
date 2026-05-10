@@ -1,0 +1,56 @@
+# trunk/content/products/dht/dht-avatar.yaml
+# Sanexio Digital Health Twin — personalisierter 3D-Avatar zur
+# Gesundheitsdaten-Visualisierung. Stand: Vision-Produkt, status=draft
+# (iOS-App-Pipeline noch in Entwicklung, kein Kauf möglich).
+
+# === SPRACH-INVARIANTE FELDER (Top-Level) ===
+id: dht-avatar
+sku: JVT-DHT-001
+category: dht
+status: draft
+price_eur: 0
+
+parameters:
+  - code: TBD
+    einheit: —
+
+# === MEHRSPRACHIGE FELDER (I-2 verschachtelt) ===
+title:
+  de: Digital Health Twin
+  en: Digital Health Twin
+  fr: Jumeau de santé numérique
+  es: Gemelo digital de salud
+
+tagline:
+  de: Ihr personalisierter 3D-Avatar — Gesundheitsdaten sichtbar machen.
+  en: Your personalised 3D avatar — health data made visible.
+
+beschreibung:
+  de: |
+    Der Digital Health Twin ist ein interaktiver 3D-Avatar, der Ihre
+    Vital- und Laborwerte personalisiert visualisiert. Daten kommen
+    aus Apple Health (HealthKit) und ergänzend aus den Sanexio-
+    Bluttests. Ziel: ein Verständnis Ihres Körpers ohne Tabellen.
+  en: |
+    The Digital Health Twin is an interactive 3D avatar that
+    visualises your vital and lab values in a personalised way.
+    Data comes from Apple Health (HealthKit) plus your Sanexio
+    blood-test results. The goal: understand your body without tables.
+
+# === ADAPTER-VIEWS (HWG-Logik) ===
+views:
+  juvantis:
+    show_price: false
+    cta_label:
+      de: Auf TestFlight vormerken
+      en: Join the TestFlight beta
+    cta_url: /pages/dht-avatar
+
+  praxis:
+    show_price: false
+    headline_override:
+      de: Digital Health Twin — Vorschau
+    cta_label:
+      de: Mehr erfahren auf sanexio.eu
+      en: More at sanexio.eu
+    cta_url: https://sanexio.eu/pages/dht-avatar

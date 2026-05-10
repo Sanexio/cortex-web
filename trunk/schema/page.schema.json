@@ -421,7 +421,7 @@
         },
         "scope": {
           "type": "string",
-          "enum": ["labor", "untersuchungen", "body-checks", "pages-shared"],
+          "enum": ["labor", "untersuchungen", "body-checks", "pages-shared", "ultraschall", "funktion", "check-up"],
           "description": "Logischer Drift-Scope (siehe tools/drift-sync/config.json)."
         },
         "last_synced_at": {

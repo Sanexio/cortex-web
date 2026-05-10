@@ -1,0 +1,32 @@
+id: ultraschall-schilddruse-krebsscreening
+sku: JVT-8248123982091
+category: untersuchungen
+status: active
+parameters:
+  - code: TBD
+    einheit: —
+title:
+  de: 'Ultraschall: Schilddrüse'
+views:
+  juvantis:
+    show_price: true
+    cta_label:
+      de: Jetzt buchen
+    cta_url: https://sanexio.eu/products/ultraschall-schilddruse-krebsscreening
+  praxis:
+    show_price: false
+    cta_label:
+      de: Termin vereinbaren
+    cta_url: /service/terminanfrage/
+images:
+  hero: media://shopify-mirror/check-up/ultraschall-schilddruse-krebsscreening-hero
+sanexio_source:
+  type: product
+  handle: ultraschall-schilddruse-krebsscreening
+  resource_id: 8248123982091
+  last_synced_at: '2026-05-10T14:21:52.892Z'
+  last_synced_hash: f45e793522be8c1afedf83937a7f57a43fed3f0aa18b80ba3f47f15e92ea354a
+  drift_strategy: auto-curate
+  local_edits: false
+  collection: ultraschalluntersuchungen
+  scope: check-up

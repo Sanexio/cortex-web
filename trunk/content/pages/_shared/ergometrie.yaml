@@ -1,31 +1,31 @@
-id: sono-check
-sku: JVT-8117415444747
+id: ergometrie
+sku: JVT-8118691889419
 category: untersuchungen
 status: active
 parameters:
   - code: TBD
     einheit: —
 title:
-  de: 'Ultraschall: Komplett Check'
+  de: Belastungs-EKG
 views:
   juvantis:
     show_price: true
     cta_label:
       de: Jetzt buchen
-    cta_url: https://sanexio.eu/products/sono-check
+    cta_url: https://sanexio.eu/products/ergometrie
   praxis:
     show_price: false
     cta_label:
       de: Termin vereinbaren
     cta_url: /service/terminanfrage/
 images:
-  hero: media://shopify-mirror/check-up/sono-check-hero
+  hero: media://shopify-mirror/check-up/ergometrie-hero
 sanexio_source:
   type: product
-  handle: sono-check
-  resource_id: 8117415444747
-  last_synced_at: '2026-05-10T14:21:48.983Z'
-  last_synced_hash: d853c4e219ffbc630ad83a287f8df464b212b51feff308d59022a6a85ae287b6
+  handle: ergometrie
+  resource_id: 8118691889419
+  last_synced_at: '2026-05-10T14:21:51.581Z'
+  last_synced_hash: b40062586f5c2a5a2e5ef3fe7041e751623dec137f4deecf4b11e06271662908
   drift_strategy: auto-curate
   local_edits: false
   collection: ultraschalluntersuchungen
