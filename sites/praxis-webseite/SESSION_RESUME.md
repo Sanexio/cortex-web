@@ -45,6 +45,46 @@
 - **Architektur-Regel:** LL-060 Autonomy Mode v1 + LL-062 Mode-System (Safe/Autonomy).
 - **Wiederaufnahme-Marker:** Auto-Memory `project_praxis_redesign_s63_resume.md` auf SPRINT-ENDSPURT-Stand.
 
+### Tagesblock 2026-05-11 — DF-Block weg + Verify-Härtung + Welle-14/14c/15 Live ✅
+
+**Auslöser:** Dr. Stracke: „setze Projekt fort, schaue ob Seite zugänglich ist,
+pass mit Anfragen auf." DF-Support-Brief (Daniel/Senior SysAdmin): IP-Block
+2026-05-09 hatte Recon-Pattern-Trigger auf `.env` + `debug.log`, Sperre
+manuell aufgehoben, **Whitelisting nicht möglich**.
+
+**Drei Schritte in einer Session:**
+
+1. **Erreichbarkeit verifiziert.** `.com` → 200 (alter Theme), `.de` →
+   200 mit `praxis:Sanexio`. Auslöser identifiziert als
+   `tools/pre-launch-verify.sh` (10 EXPECT_DENY-Pfade ohne Throttling).
+   DF-LFD/CSF arbeitet **account-weit**, ein Scan gegen `.de` zählt für
+   `.com` mit (gleicher cPanel) — neue Pattern-Erkenntnis.
+
+2. **Verify-Skript gehärtet.** 2 s Throttling (`PXZ_VERIFY_THROTTLE`),
+   Kontakt-UA `Mozilla/5.0 (cortex-verify; contact:stracke.md@me.com)`,
+   `--target=com`-Gate via `PXZ_VERIFY_COM_CONFIRMED=yes` (Exit 2 sonst).
+   Auto-Memory `feedback_hoster_no_recon_scans.md` + MEMORY-Index.
+
+3. **Welle 14 + 14c + 15 Live-Push.** Theme-Repo 3 Commits gepusht
+   (`6264a6d..39b308a`, PXZ 2.7.202 → 2.7.205). `tools/sync-local-to-de.sh`
+   ohne Args → Pre-Push-Guard grün, lftp mirror durchgelaufen,
+   Verify 21/21 PASS auf `.de` mit neuer Härtung — keine erneute
+   LFD-Reaktion.
+
+**Inhalt der live-gegangenen Wellen:**
+- Welle 14: Blog unter „Praxis" subsumiert + erster Patientenartikel
+- Welle 14c: Blog page.css auf single mitladen, Lese-Breite an Page-Cap
+- Welle 15: Anna Arbitmann Vita 6-sprachig (DE/EN/FR/ES/IT/pt-PT)
+
+**Commits:**
+- Theme `Sanexio/praxiszentrum-theme`: `6264a6d..39b308a` gepusht
+- Cortex-Web `Sanexio/cortex-web`: `d17ed63` (verify-Härtung + SESSION_RESUME)
+  gepusht
+
+**Pattern-Reife:** DF-Account-Level-Firewall ist jetzt dokumentiert + im
+Tooling abgebildet. Verify-Recon-Pattern-Scans gegen Live = neuer
+Tier-2-Hardstop via Env-Gate.
+
 ### Tagesblock 2026-05-07 (Spät) — Welle K Spec + Modell-A-Entscheidung + Polish-Sync-Skript ✅
 
 **Auslöser:** Dr. Stracke: „Inhalte und Design müssen teilweise nachgeschärft werden, bevor die Seite endgültig auf die `.com` gezogen wird. Wie verfahren wir mit den Änderungen?"
@@ -1128,21 +1168,26 @@ nicht als reaktiver Assistent. Deterministisch, nachvollziehbar, reproduzierbar.
   Recon-Patterns NIE wieder gegen Live curlen. Hardening-Checks künftig
   via SSH/SFTP-File-Existence statt HTTP-GET.
 
-### Bereit zum Live-Push (sobald Dr. Stracke Go gibt)
-- **Shahin-Bio-Refresh DE+EN+FR+ES+IT+pt-PT** (`team.json` lokal aktualisiert
-  via Adapter, plus 5-Sprach-Strings in `inc/team-strings.php`). Freigegeben
-  von Dr. Stracke 2026-05-09.
-- **Sonst nichts.** Sprint „online-services-2026" ist Code-deaktiviert
-  (Loader-Zeile in `functions.php` auskommentiert), Module bleiben unter
-  `inc/online-services/` als Ideen-Archiv.
+### Live-Stand `.de` nach Session 2026-05-11
+- **Theme HEAD live:** `39b308a` (PXZ **2.7.205**, Welle 15 — Anna Arbitmann
+  Vita 6-sprachig). Vorher live: `6264a6d` (PXZ 2.7.202).
+- **3 Welle-Commits live auf `.de`:**
+  - `ac6c930` Welle 14 — Blog unter „Praxis" subsumiert + erster Patientenartikel
+  - `61a64a6` Welle 14c — Blog `page.css` auf single mitladen, Lese-Breite an Page-Cap
+  - `39b308a` Welle 15 — Anna Arbitmann Vita 6-sprachig
+- **Verify-Lauf nach Sync:** 21/21 PASS auf `.de` mit neuer Härtung
+  (2 s Throttling, Kontakt-UA). DF-LFD nicht erneut getriggert.
+
+### Sprint „online-services-2026" Status
+- Code-deaktiviert (Loader-Zeile in `functions.php` auskommentiert), Module
+  bleiben unter `inc/online-services/` als Ideen-Archiv.
 
 ### Erster Schritt der nächsten Session
-1. Mit Dr. Stracke abstimmen: Shahin-Bio jetzt nach Live oder noch warten?
-2. Wenn Go → lftp-Push der `team.json`-Adapter-Outputs + `inc/team-strings.php`
-   nach `.de` via `tools/sync-local-to-de.sh`, danach Smoke-Test `/team/`
-   auf allen 6 Sprachen.
-3. Vor jedem weiteren Verify-Lauf: gegen `.de` mit aktivem Throttling,
-   gegen `.com` NIE ohne `PXZ_VERIFY_COM_CONFIRMED=yes` + Tier-2-Approval.
+1. Live-Reachability-Probe: `curl -sk -o /dev/null -w "%{http_code}\n" --max-time 10 https://westend-hausarzt.de/` — wenn ≠ 200, ist Block wieder aktiv.
+2. Vor jedem Verify-Lauf: `.de` nur mit aktivem Throttling, `.com` NIE
+   ohne `PXZ_VERIFY_COM_CONFIRMED=yes` + bewusste Entscheidung.
+3. Welle-K (.com-Cutover) bleibt Tier-3 und gated — keine `.com`-Touch ohne
+   Polish-Phase-Abschluss + SFTP_COM_*-Credentials + L-1/L-2 Legal-Review.
 
 ---
 
