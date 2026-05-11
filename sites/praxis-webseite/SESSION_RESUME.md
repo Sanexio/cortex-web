@@ -1099,6 +1099,53 @@ nicht als reaktiver Assistent. Deterministisch, nachvollziehbar, reproduzierbar.
 
 ---
 
+## ⚠️ AKTUELL (Stand 2026-05-11) — NEUE SESSION ZUERST LESEN
+
+### IP-Block AUFGEHOBEN — Live wieder erreichbar
+- **Stand 2026-05-11:** Daniel (DF Senior SysAdmin) hat die Sperre für
+  unsere Heim-IP `92.208.79.185` manuell entfernt. Antwort wörtlich:
+  „unverhältnismäßige Zugriffe auf Laravel .env Dateien und das Wordpress
+  debug.log … Whitelisting ist jedoch nicht möglich."
+- **Reachability-Probe 2026-05-11:**
+  - `https://westend-hausarzt.com/` → **HTTP 200**, 94 KB (alter Theme
+    `freesia-empire`, noch nicht Welle-K-deployed)
+  - `https://westend-hausarzt.de/` → **401** ohne Auth, **200** mit
+    `praxis:Sanexio` (176 KB, unser Staging — wie erwartet)
+- **Auslöser des Blocks:** `tools/pre-launch-verify.sh` mit 10
+  EXPECT_DENY-Pfaden (`.env`, `debug.log`, `.git/config`, `wp-config.php`,
+  `xmlrpc.php`, …) gegen `.de` ohne Throttling, mehrfach. DF-LFD/CSF
+  arbeitet auf Account-Ebene, daher wirkt ein Scan gegen `.de` auch für
+  `.com` (gleicher cPanel).
+
+### Sofortige Härtung (umgesetzt 2026-05-11)
+- `tools/pre-launch-verify.sh` gepatcht:
+  - **Throttling 2 s** zwischen Requests (Default, via `PXZ_VERIFY_THROTTLE`).
+  - **User-Agent** `Mozilla/5.0 (cortex-verify; contact:stracke.md@me.com)`
+    — DF kann uns kontaktieren statt blind zu sperren.
+  - **`--target=com` blockiert** ohne `PXZ_VERIFY_COM_CONFIRMED=yes`
+    Env-Var (Exit 2, klare Warnung im Stderr).
+- **Auto-Memory:** `feedback_hoster_no_recon_scans.md` — Future-Self darf
+  Recon-Patterns NIE wieder gegen Live curlen. Hardening-Checks künftig
+  via SSH/SFTP-File-Existence statt HTTP-GET.
+
+### Bereit zum Live-Push (sobald Dr. Stracke Go gibt)
+- **Shahin-Bio-Refresh DE+EN+FR+ES+IT+pt-PT** (`team.json` lokal aktualisiert
+  via Adapter, plus 5-Sprach-Strings in `inc/team-strings.php`). Freigegeben
+  von Dr. Stracke 2026-05-09.
+- **Sonst nichts.** Sprint „online-services-2026" ist Code-deaktiviert
+  (Loader-Zeile in `functions.php` auskommentiert), Module bleiben unter
+  `inc/online-services/` als Ideen-Archiv.
+
+### Erster Schritt der nächsten Session
+1. Mit Dr. Stracke abstimmen: Shahin-Bio jetzt nach Live oder noch warten?
+2. Wenn Go → lftp-Push der `team.json`-Adapter-Outputs + `inc/team-strings.php`
+   nach `.de` via `tools/sync-local-to-de.sh`, danach Smoke-Test `/team/`
+   auf allen 6 Sprachen.
+3. Vor jedem weiteren Verify-Lauf: gegen `.de` mit aktivem Throttling,
+   gegen `.com` NIE ohne `PXZ_VERIFY_COM_CONFIRMED=yes` + Tier-2-Approval.
+
+---
+
 ## 1. PFLICHT-INITIALISIERUNG (LL-023, KON-001 + 2026-04-18 Update)
 
 Lies in dieser Reihenfolge, **bevor** irgendetwas getan wird:
