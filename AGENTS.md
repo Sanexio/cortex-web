@@ -22,10 +22,20 @@ Dieses Projekt ist Teil eines größeren Cortex/Nexus-Ökosystems unter
 
 ## Hard Boundaries (lies das zuerst)
 
-1. **Schreibe niemals außerhalb dieses Repos.** Insbesondere nicht in:
-   - `~/Cortex/Nexus/` (Wissens-Stammhirn, exklusiv Claude-managed)
+1. **Kein direkter Filesystem-Schreibzugriff außerhalb dieses Repos.**
+   Insbesondere nicht in:
+   - `~/Cortex/Nexus/` (R2 — Nexus-Kern, Filesystem-Schreiben durch
+     Codex/Cursor/andere KIs verboten, **siehe 1a** für den erlaubten
+     Vorschlagsweg)
    - `~/.claude/` (Claude-Code-Konfiguration)
-   - `~/.config/`, `~/.ssh/`, `~/Library/`
+   - `~/.config/`, `~/.ssh/`, `~/Library/`, alles ausserhalb `~/Cortex/`
+1a. **Erlaubter Nexus-Vorschlagsweg (neu seit 2026-05-12):** Wenn du eine
+   Nexus-Regel/Spec/Aenderung anregen willst, schreibe einen Vorschlag
+   als Datei nach `~/Cortex/projects/_ai-cooperation-outbox/` (Format:
+   `YYYY-MM-DD_codex-to-claude_<topic>.md`). Du darfst nicht selbst in
+   Nexus schreiben, committen, mergen oder pushen. Claude und Dr.
+   Stracke reviewen, finale Umsetzung durch Stracke-Freigabe. Details:
+   `Nexus/_rules/AI_COOPERATION.md` + `MULTI_AI_BOUNDARIES.md` (v2).
 2. **Keine Secrets committen.** `.env`, `.env.*` (außer `*.template`)
    sind via `.gitignore` blockiert. Wenn du Secrets brauchst, frag
    den User explizit nach Werten — niemals raten oder ableiten.
@@ -35,6 +45,9 @@ Dieses Projekt ist Teil eines größeren Cortex/Nexus-Ökosystems unter
 4. **GitHub ist Truth.** Vor Arbeit `git pull --ff-only`, nach Arbeit
    `commit + push`. Es kann sein, dass parallel auf einem anderen Mac
    gearbeitet wird — bei Konflikt: STOP und melden.
+5. **Live-Push (`.com`-Production-Domain) niemals autonom.** Lokale
+   Edits und GitHub-Pushes sind wellenweise OK; ein Push auf die
+   Live-Domain passiert nur auf explizite User-Ansage.
 
 ---
 
@@ -126,19 +139,25 @@ du ein Feature umsetzt, teste es auch.
 
 ---
 
-## Was Claude separat tut (nicht dein Bereich)
+## Was Claude separat tut (Umsetzungs-Agent fuer Nexus)
 
-Claude (im `~/Cortex/Nexus/` als Stammhirn) pflegt:
-- Goldene Regeln, User-Profil, Memory-DB
-- Mode-State (autonomy/safe), Tier-3-Hardstops
-- Cron, Telegram-Bridge, Spawn-Watcher
+Claude pflegt im Auftrag von Dr. Stracke (kein alleiniger Gatekeeper):
+- Regeldateien unter `~/Cortex/Nexus/_rules/`
+- Specs unter `~/Cortex/Nexus/specs/`
+- User-Profil, Memory-DB, Mode-State (`autonomy`/`safe`)
+- Cron-Recipes, Gateway, Connexio
 - Vault `Second Brain/`
 
-Berühre das nicht. Wenn du den Eindruck hast, eine Regel ist veraltet
-oder fehlt, **schreibe sie nicht in Nexus** — melde es dem User, er
-oder Claude pflegt es nach.
+Codex und Claude sind **Peer-Reviewer** fuer Nexus-Vorschlaege. Wenn du
+eine Regel veraltet findest oder eine neue Regel vorschlaegst:
+
+1. Schreibe einen Vorschlag in
+   `~/Cortex/projects/_ai-cooperation-outbox/` (Outbox-Konvention).
+2. Claude reviewt, Dr. Stracke gibt frei, Claude oder Stracke setzt um.
+3. Nicht selbst in Nexus committen.
 
 ---
 
-*v1 — 2026-05-10. Erstellt im Rahmen des Multi-Device-Multi-AI-Konzepts
-(`Nexus/specs/multi-device-multi-ai/00_KONZEPT.md`).*
+*v2 — 2026-05-12. Praezisiert Boundary nach Welle 1 + Welle 2 (Phoenix-
+Cleanup). Frueheres v1 vom 2026-05-10 hatte harte Claude-Exklusivitaet,
+v2 erlaubt strukturierten Codex-Vorschlagsweg ueber Outbox.*

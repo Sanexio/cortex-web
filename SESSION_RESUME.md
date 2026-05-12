@@ -1,9 +1,9 @@
 # SESSION_RESUME — Cortex-Web
 
-> **Standard-Einstieg** (LL-043, `Nexus/_rules/SESSION_LIFECYCLE.md`):
+> **Standard-Einstieg** (Phoenix seit 2026-05-12):
 > In einer neuen Session **„Projekt fortsetzen Cortex-Web"** tippen. Claude lädt:
 >
-> 1. Pflicht-Init Nexus (CLAUDE.md, MEMORY.md, GLOBAL_RULES.md, SESSION_LIFECYCLE.md)
+> 1. Pflicht-Init Nexus (CLAUDE.md, AUTONOMY_CONTRACT.md, AI_COOPERATION.md, MULTI_AI_BOUNDARIES.md, _memory/USER.md)
 > 2. Diese Datei (SESSION_RESUME.md)
 > 3. Alle in §0 unten als Pflicht-Lesung markierten Folgedateien
 > 4. Pre-Flight (`tools/validate.sh`, optional `CHECK_SHOPIFY=1`, optional `tools/review.sh`)
@@ -60,14 +60,15 @@ Externe Blocker eingerechnet: DF-Support, Rechtsquellen (Impressum/Datenschutz),
 
 ### Basis (immer)
 1. `~/Cortex/Nexus/CLAUDE.md`
-2. `~/Cortex/Nexus/_memory/MEMORY.md`
-3. `~/Cortex/Nexus/_rules/GLOBAL_RULES.md`
-4. `~/Cortex/Nexus/_rules/SESSION_LIFECYCLE.md`
-5. `~/Cortex/projects/Cortex-Web/CLAUDE.md`
-6. Diese Datei (`SESSION_RESUME.md`)
-7. `~/Cortex/projects/Cortex-Web/_rules/ARCHITECTURE.md`
-8. `~/Cortex/projects/Cortex-Web/_config/RULES.md`
-9. `~/Cortex/projects/Cortex-Web/sites/praxis-webseite/_rules/WORKING_MODE.md` (Architekten-Modus)
+2. `~/Cortex/Nexus/_rules/AUTONOMY_CONTRACT.md`
+3. `~/Cortex/Nexus/_rules/AI_COOPERATION.md`
+4. `~/Cortex/Nexus/_rules/MULTI_AI_BOUNDARIES.md`
+5. `~/Cortex/Nexus/_memory/USER.md`
+6. `~/Cortex/projects/Cortex-Web/CLAUDE.md`
+7. Diese Datei (`SESSION_RESUME.md`)
+8. `~/Cortex/projects/Cortex-Web/_rules/ARCHITECTURE.md`
+9. `~/Cortex/projects/Cortex-Web/_config/RULES.md`
+10. `~/Cortex/projects/Cortex-Web/sites/praxis-webseite/_rules/WORKING_MODE.md` (Architekten-Modus)
 
 ### Wenn Praxis-Sprint-Arbeit ansteht (S2.1+)
 10. `~/Cortex/projects/Cortex-Web/sites/praxis-webseite/SESSION_RESUME.md` — Praxis-Sprint-Stand
