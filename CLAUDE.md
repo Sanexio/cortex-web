@@ -1,7 +1,8 @@
 # Cortex-Web — Claude-Kontext
 
-> Projekt-spezifische Instruktionen. Zusätzlich zu Nexus-Pflicht-Init (CLAUDE.md,
-> MEMORY.md, GLOBAL_RULES.md, SESSION_LIFECYCLE.md).
+> Projekt-spezifische Instruktionen. Zusätzlich zu Nexus-Pflicht-Init
+> (CLAUDE.md, AUTONOMY_CONTRACT.md, AI_COOPERATION.md, MULTI_AI_BOUNDARIES.md —
+> Phoenix-Stand seit 2026-05-12).
 
 ## Projekt-Kurzbeschreibung
 
@@ -31,14 +32,15 @@ Bei Überschneidung: Architekten-Modus hat Vorrang vor Explorations-/Mitdenk-Imp
 ## Pflicht-Lesung bei „Projekt fortsetzen"
 
 1. `~/Cortex/Nexus/CLAUDE.md`
-2. `~/Cortex/Nexus/_memory/MEMORY.md`
-3. `~/Cortex/Nexus/_rules/GLOBAL_RULES.md`
-4. `~/Cortex/Nexus/_rules/SESSION_LIFECYCLE.md`
-5. Diese Datei (`Cortex-Web/CLAUDE.md`)
-6. `Cortex-Web/SESSION_RESUME.md`
-7. `Cortex-Web/_rules/ARCHITECTURE.md`
-8. `Cortex-Web/_config/RULES.md`
-9. `sites/praxis-webseite/_rules/WORKING_MODE.md` (Architekten-Modus)
+2. `~/Cortex/Nexus/_rules/AUTONOMY_CONTRACT.md`
+3. `~/Cortex/Nexus/_rules/AI_COOPERATION.md`
+4. `~/Cortex/Nexus/_rules/MULTI_AI_BOUNDARIES.md`
+5. `~/Cortex/Nexus/_memory/USER.md` (Profil)
+6. Diese Datei (`Cortex-Web/CLAUDE.md`)
+7. `Cortex-Web/SESSION_RESUME.md`
+8. `Cortex-Web/_rules/ARCHITECTURE.md`
+9. `Cortex-Web/_config/RULES.md`
+10. `sites/praxis-webseite/_rules/WORKING_MODE.md` (Architekten-Modus)
 
 Phasen-spezifisch (siehe SESSION_RESUME.md):
 - Phase 1/2 POC: zusätzlich `trunk/schema/product.schema.json` und das POC-Produkt
