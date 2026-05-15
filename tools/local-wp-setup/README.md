@@ -74,3 +74,44 @@ Erwartet: `"<admin-user>"`. Wenn stattdessen `rest_not_logged_in` erscheint, ist
 - mu-plugin-Datei wird gelöscht → Repo-Quelle (`tools/local-wp-setup/cortex-dev-auth.php`) bleibt erhalten
 - nginx-Zeile im `.hbs`-Template kann von Local bei Reset überschrieben werden → einfach erneut ergänzen
 - Application Password im WP-Admin widerrufen
+
+---
+
+## 6. Mail-Bridge (Local → .de Real-Delivery, 2026-05-15)
+
+Formulare auf Local-Staging stellen Praxis-Mails (`praxis@westend-hausarzt.de`,
+`stracke.md@me.com`) real zu, ohne dass SMTP-Credentials auf dem Mac liegen.
+Patient-Confirmation-Mails an Fake-Adressen bleiben im Mailpit.
+
+Architektur: Local → HMAC-SHA256 → `https://westend-hausarzt.de/wp-json/pxz/v1/mail-bridge`
+→ .de `wp_mail()` → Hoster-PHP-`mail()` → echte Mailbox.
+
+**Komponenten:**
+
+- `000-local-mail-redirect.php` — Local mu-plugin (Sender). Kopieren nach
+  `wp-content/mu-plugins/` der Local-Site.
+- `pxz-mail-bridge-receiver.php` — .de mu-plugin (Receiver). Hochladen nach
+  `public_html/wp-content/mu-plugins/` auf westend-hausarzt.de via lftp.
+
+**Shared Secret** (niemals committen):
+
+```bash
+SECRET=$(openssl rand -hex 32)
+# Local:
+wp option update pxz_bridge_secret "$SECRET"
+# .de: via einmaliges token-protected Helper-PHP (siehe Welle 2026-05-15)
+```
+
+**Whitelist:** Receiver liefert nur an `praxis@westend-hausarzt.de` und
+`stracke.md@me.com` aus — strikter Schutz gegen Open-Relay-Missbrauch.
+Rate-Limit: 30/10 min.
+
+**Test:**
+
+```bash
+cd "/Users/.../app/public" && wp eval '$r = wp_mail("praxis@westend-hausarzt.de",
+  "Bridge-Test",
+  "Body"); echo var_export($r, true);'
+```
+
+Erwartet: `true`, kein Mailpit-Eintrag.
