@@ -87,7 +87,22 @@ EXPECT_OK=(
 fails=0
 total=0
 
+# Reachability-Probe — bricht früh ab, wenn der Hoster-LFD unsere IP geblockt
+# hat (Symptom: alles HTTP 415 mit Apache-Errorpage statt WP-Body). Verhindert
+# das Hammern eines geblockten Hosts, was den Block nur verlängern würde.
+# Lehre 2026-05-15: ein 415 auf /robots.txt = WAF-Block, nicht WP-Bug.
 echo "=== Pre-Launch Verify ($TARGET → $BASE) ==="
+echo ""
+echo "Reachability-Probe:"
+probe_body=$($CURL -s --http1.1 -m 10 "${BASE}/robots.txt" 2>/dev/null | head -c 200)
+probe_code=$($CURL -s --http1.1 -m 10 -o /dev/null -w "%{http_code}" "${BASE}/robots.txt" 2>/dev/null)
+if [ "$probe_code" = "415" ] && echo "$probe_body" | grep -q "Unsupported Media Type"; then
+  echo "  ❌ Host returned vanilla Apache 415 — LFD/WAF IP-Block aktiv."
+  echo "     Abort: weiteres Probing verlängert den Block."
+  echo "     Memory: project_praxis_live_ip_block_2026_05_10.md (Re-Block 2026-05-15)."
+  exit 2
+fi
+echo "  ✅ reachable ($probe_code on /robots.txt)"
 echo ""
 
 # Mail-Bridge drift-guard (Welle Mail-Bridge 2026-05-15).
@@ -118,20 +133,8 @@ fi
 sleep "$THROTTLE_SECONDS"
 echo ""
 
-echo "EXPECT denied (403/404):"
-for path in "${EXPECT_DENY[@]}"; do
-  total=$((total+1))
-  code=$($CURL -skL -A "$USER_AGENT" $AUTH -o /dev/null -w "%{http_code}" "${BASE}${path}")
-  if [ "$code" = "403" ] || [ "$code" = "404" ]; then
-    printf "  ✅  %s  %s\n" "$code" "$path"
-  else
-    printf "  ❌  %s  %s  (expected 403 or 404)\n" "$code" "$path"
-    fails=$((fails+1))
-  fi
-  sleep "$THROTTLE_SECONDS"
-done
-
-echo ""
+# Phase A — EXPECT_OK first (legitime Routes, low WAF-risk). Wenn der Hoster-
+# LFD später triggert, sind diese Checks zumindest schon durch.
 echo "EXPECT 200 (legitime Routes):"
 for path in "${EXPECT_OK[@]}"; do
   total=$((total+1))
@@ -143,6 +146,23 @@ for path in "${EXPECT_OK[@]}"; do
     fails=$((fails+1))
   fi
   sleep "$THROTTLE_SECONDS"
+done
+
+# Phase B — EXPECT_DENY last. Recon-Pattern (/.git, /.env, /wp-config.php, …)
+# triggert mod_security-Score auf DF-Hoster. Throttle 2× erhöht, falls die
+# Default-Rate (THROTTLE_SECONDS) zu schnell ist. Lehre 2026-05-15.
+echo ""
+echo "EXPECT denied (403/404):  [⚠ Recon-Pattern — Throttle 2×]"
+for path in "${EXPECT_DENY[@]}"; do
+  total=$((total+1))
+  code=$($CURL -skL -A "$USER_AGENT" $AUTH -o /dev/null -w "%{http_code}" "${BASE}${path}")
+  if [ "$code" = "403" ] || [ "$code" = "404" ]; then
+    printf "  ✅  %s  %s\n" "$code" "$path"
+  else
+    printf "  ❌  %s  %s  (expected 403 or 404)\n" "$code" "$path"
+    fails=$((fails+1))
+  fi
+  sleep "$(( THROTTLE_SECONDS * 2 ))"
 done
 
 echo ""
