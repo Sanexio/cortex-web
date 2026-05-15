@@ -89,6 +89,35 @@ total=0
 
 echo "=== Pre-Launch Verify ($TARGET → $BASE) ==="
 echo ""
+
+# Mail-Bridge drift-guard (Welle Mail-Bridge 2026-05-15).
+# Fails if wp_mail_smtp on the target points to Mailpit (127.0.0.1:10001) —
+# regression that silently drops all form mails. Only checks if endpoint
+# exists (mu-plugin installed); otherwise skips gracefully.
+echo "Mail-config drift-guard:"
+total=$((total+1))
+health=$($CURL -skL -A "$USER_AGENT" $AUTH -m 10 "${BASE}/wp-json/pxz/v1/mail-health" 2>/dev/null)
+health_code=$($CURL -skL -A "$USER_AGENT" $AUTH -m 10 -o /dev/null -w "%{http_code}" "${BASE}/wp-json/pxz/v1/mail-health" 2>/dev/null)
+if [ "$health_code" = "404" ]; then
+  printf "  ⚠️  404  /wp-json/pxz/v1/mail-health  (mu-plugin not installed — skipping drift-guard)\n"
+elif [ "$health_code" != "200" ]; then
+  printf "  ❌  %s  /wp-json/pxz/v1/mail-health  (expected 200)\n" "$health_code"
+  fails=$((fails+1))
+else
+  status=$(echo "$health" | sed -n 's/.*"status":"\([^"]*\)".*/\1/p')
+  mailer=$(echo "$health" | sed -n 's/.*"mailer":"\([^"]*\)".*/\1/p')
+  from_email=$(echo "$health" | sed -n 's/.*"from_email":"\([^"]*\)".*/\1/p')
+  if [ "$status" = "ok" ]; then
+    printf "  ✅  200  mail-health: ok (mailer=%s, from=%s)\n" "$mailer" "$from_email"
+  else
+    printf "  ❌  200  mail-health: %s (mailer=%s, from=%s)\n" "$status" "$mailer" "$from_email"
+    printf "      Issues: %s\n" "$(echo "$health" | sed -n 's/.*"issues":\[\([^]]*\)\].*/\1/p')"
+    fails=$((fails+1))
+  fi
+fi
+sleep "$THROTTLE_SECONDS"
+echo ""
+
 echo "EXPECT denied (403/404):"
 for path in "${EXPECT_DENY[@]}"; do
   total=$((total+1))
