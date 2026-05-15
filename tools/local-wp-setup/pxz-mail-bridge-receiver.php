@@ -26,7 +26,54 @@ add_action( 'rest_api_init', function () {
         'callback'            => 'pxz_mail_bridge_receive',
         'permission_callback' => '__return_true',
     ] );
+    register_rest_route( 'pxz/v1', '/mail-health', [
+        'methods'             => 'GET',
+        'callback'            => 'pxz_mail_health_check',
+        'permission_callback' => '__return_true',
+    ] );
 } );
+
+/**
+ * Health-check for wp_mail_smtp drift. Auth via existing Apache Basic-Auth
+ * on .de. Returns "ok" only when mailer is 'mail' and from_email lives on
+ * westend-hausarzt.de — guards against Mailpit-config sneaking back in
+ * via DB-syncs.
+ */
+function pxz_mail_health_check( WP_REST_Request $req ) {
+    $opt        = get_option( 'wp_mail_smtp', [] );
+    $mailer     = $opt['mail']['mailer']     ?? '';
+    $from_email = $opt['mail']['from_email'] ?? '';
+    $smtp_host  = $opt['smtp']['host']       ?? '';
+    $smtp_port  = $opt['smtp']['port']       ?? 0;
+    $secret     = (string) get_option( 'pxz_bridge_secret', '' );
+
+    $status = 'ok';
+    $issues = [];
+
+    if ( $mailer === 'smtp' && $smtp_host === '127.0.0.1' && (int) $smtp_port === 10001 ) {
+        $status   = 'mailpit-drift';
+        $issues[] = 'wp_mail_smtp points to Mailpit (127.0.0.1:10001) — production would drop all mails';
+    }
+    if ( $mailer === '' ) {
+        $status   = 'missing-mailer';
+        $issues[] = 'wp_mail_smtp.mail.mailer is empty';
+    }
+    if ( ! preg_match( '/@westend-hausarzt\.(de|com)$/i', $from_email ) ) {
+        $status   = ( $status === 'ok' ) ? 'bad-from' : $status;
+        $issues[] = 'from_email is not a westend-hausarzt.{de,com} address: ' . $from_email;
+    }
+
+    return rest_ensure_response( [
+        'status'         => $status,
+        'mailer'         => $mailer,
+        'from_email'     => $from_email,
+        'smtp_host'      => $smtp_host,
+        'smtp_port'      => (int) $smtp_port,
+        'bridge_secret'  => $secret !== '' ? 'present' : 'absent',
+        'issues'         => $issues,
+        'checked_at'     => current_time( 'c' ),
+    ] );
+}
 
 function pxz_mail_bridge_receive( WP_REST_Request $req ) {
     $secret = get_option( 'pxz_bridge_secret', '' );
