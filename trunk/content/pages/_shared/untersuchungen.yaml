@@ -94,7 +94,7 @@ sections:
         image: shopify-mirror://diagnostik/diag-carotis.jpg
         href: /carotis-duplex/
       - id: schilddruese
-        title: { de: Schilddrüsen-Sonographie, en: Thyroid ultrasound, fr: Échographie thyroïdienne, es: Ecografía tiroidea, it: Ecografia della tiroide, pt-pt: Ecografia da tiroide }
+        title: { de: Schilddrüse, en: Thyroid ultrasound, fr: Échographie thyroïdienne, es: Ecografía tiroidea, it: Ecografia della tiroide, pt-pt: Ecografia da tiroide }
         teaser:
           de: Knoten, Zysten und Größenveränderungen sichtbar machen.
           en: Make nodules, cysts and changes in size visible.

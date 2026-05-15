@@ -5,7 +5,7 @@ slugs:
   juvantis: ultraschall-schilddruese
 
 title:
-  de: Schilddrüsen-Sonographie
+  de: Schilddrüse
   en: Thyroid Ultrasound
   fr: Échographie thyroïdienne
   es: Ecografía tiroidea
@@ -39,7 +39,7 @@ sections:
       it: Ecografia · Tiroide
       pt-pt: Ecografia · Tiroide
     heading:
-      de: Schilddrüsen-Sonographie
+      de: Schilddrüse
       en: Thyroid ultrasound
       fr: Échographie thyroïdienne
       es: Ecografía tiroidea

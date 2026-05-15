@@ -4,7 +4,7 @@ slugs:
   praxis: sonographie
   juvantis: sonographie
 title:
-  de: Sonographie
+  de: Bauchorgane
   en: Ultrasound
   fr: Échographie
   es: Ecografía
@@ -35,7 +35,7 @@ sections:
       it: Diagnostica · Ecografia
       pt-pt: Diagnóstico · Ecografia
     heading:
-      de: Sonographie
+      de: Bauchorgane
       en: Ultrasound
       fr: Échographie
       es: Ecografía
@@ -182,7 +182,7 @@ sections:
       pt-pt: Outros exames ecográficos
     items:
       - id: schilddruese
-        title: { de: Schilddrüsen-Sonographie, en: Thyroid ultrasound, fr: Échographie thyroïdienne, es: Ecografía tiroidea, it: Ecografia della tiroide, pt-pt: Ecografia da tiroide }
+        title: { de: Schilddrüse, en: Thyroid ultrasound, fr: Échographie thyroïdienne, es: Ecografía tiroidea, it: Ecografia della tiroide, pt-pt: Ecografia da tiroide }
         teaser:
           de: Knoten, Zysten und Größenveränderungen sichtbar machen.
           en: Make nodules, cysts and size changes visible.
