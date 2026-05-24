@@ -1,0 +1,54 @@
+# Demo Hub-Page — rein fiktiv, für build-page-hub.mjs als Smoke-Test-Datensatz.
+# Schema: trunk/schema/page.schema.json
+id: leistungen
+site: shared
+slugs:
+  praxis: leistungen
+  juvantis: leistungen
+title:
+  de: "Unsere Leistungen"
+  en: "Our Services"
+
+sections:
+  - type: hero
+    eyebrow:
+      de: "Demo-Praxis"
+      en: "Example Clinic"
+    heading:
+      de: "Was wir Ihnen anbieten"
+      en: "What we offer"
+    lead:
+      de: "Diese Hub-Seite listet beispielhaft die Bereiche der fiktiven Demo-Praxis."
+      en: "This hub page lists the example areas of the fictional demo clinic."
+
+  - type: body
+    heading:
+      de: "Schwerpunkte"
+      en: "Focus areas"
+    body_md:
+      de: |
+        Die Demo-Praxis betreut Beispiel-Patienten in den fiktiven
+        Schwerpunkten **Beratung**, **Diagnostik** und **Vorsorge**.
+
+        Diese Page existiert ausschließlich, damit `build-page-hub.mjs`
+        im Demo-Fallback grün läuft.
+      en: |
+        The demo clinic serves example patients in the fictional
+        focus areas of **consultation**, **diagnostics**, and **prevention**.
+
+  - type: cta-banner
+    heading:
+      de: "Termin vereinbaren"
+      en: "Book an appointment"
+    sub:
+      de: "Demo-Praxis — kein realer Kontakt."
+      en: "Demo clinic — not a real contact."
+    cta_label:
+      de: "Anfragen"
+      en: "Enquire"
+    cta_url: "/kontakt/"
+
+meta:
+  description:
+    de: "Demo-Hub-Page: Leistungen der Beispiel-Praxis."
+    en: "Demo hub page: services of the example clinic."
