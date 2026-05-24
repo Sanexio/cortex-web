@@ -1,69 +1,115 @@
 # Cortex-Web
 
-> Common Trunk + Adapter für `westend-hausarzt.com` (WordPress) und `sanexio.eu` (Shopify).
+> **Trunk + Adapter Framework** für die Cortex-Plattform-Schicht.
+> Ein generischer Content-Trunk wird über Plattform-Adapter (WordPress,
+> Shopify, Astro, später iOS) in mehrere getrennte Webseiten ausgeliefert.
 >
-> **Idee in einem Satz:** Inhalt einmal pflegen, Adapter rendern plattform-spezifisch.
+> **Idee in einem Satz:** Inhalt einmal pflegen, Adapter rendern
+> plattform-spezifisch — mit klarer Tenant-Trennung.
 
-## GitHub-Mirror
-
-| | |
-|---|---|
-| **GitHub-Repo** | `git@github.com:Sanexio/cortex-web.git` (privat) |
-| **Eingerichtet** | 2026-05-08 (Welle S55b-d) |
-| **Begleit-Repos** | [`Sanexio/praxiszentrum-theme`](https://github.com/Sanexio/praxiszentrum-theme) (Theme), [`Sanexio/nexus`](https://github.com/Sanexio/nexus) (Wissenskern) |
-
-Dieses Repo enthält **nicht** das WordPress-Theme selbst, sondern den
-Trunk (YAML-Page-Daten), Adapter, Tools, Specs und Sprint-Dokumentation
-für `sites/praxis-webseite/` und `sites/juvantis-webseite/`. Das Theme
-liegt in einem eigenen Repo (siehe oben).
-
-## Rollback-Konzept (Modell A — Local = Master)
-
-Reihenfolge bei jeder Code-Änderung:
+## Architektur
 
 ```
-1. Edit lokal (LocalWP / Cortex-Web Trunk)
-2. git commit + push (zuerst Theme-Repo, dann Cortex-Web)
-3. lftp-Sync auf .de-Staging
-4. Verify-Suite (21/21) auf .de
-5. Wenn grün: Tag live-de-YYYY-MM-DD-NN setzen + push --tags
+┌──────────────────────────────────────────┐
+│  Tenant-Repo (z.B. Sanexio-Tenant)        │
+│  trunk/content/                            │
+│    ├─ team/                                │
+│    ├─ pages/                               │
+│    ├─ products/                            │
+│    └─ legal/                               │
+│  sites/<tenant-site>/                      │
+└────────────────┬─────────────────────────┘
+                 │  (CORTEX_TENANT_DIR)
+                 ▼
+┌──────────────────────────────────────────┐
+│  Cortex-Web (dieses Repo)                  │
+│  trunk/schema/  — JSON-Schemas             │
+│  trunk/_examples/  — Demo-Tenant           │
+│  adapters/                                 │
+│    ├─ wordpress/  → WP-Pages               │
+│    ├─ shopify/    → Shopify-Templates      │
+│    ├─ astro/      → statische Sites        │
+│    └─ ios/        → (geplant)              │
+│  tools/   — Validate, Sync, Promote, Mirror│
+│  _integration-slots/  — Tool-Aufnahme      │
+└──────────────────────────────────────────┘
 ```
 
-**Tags als Rollback-Anker** liegen im **Theme-Repo** (PXZ-Code) und im
-**Cortex-Web-Repo** (Trunk-/Tool-Stand) parallel mit identischem Namen,
-sodass ein Rollback beide Repos synchron auf denselben Stand zurücksetzen
-kann. Volltutorial:
-`~/Cortex/Nexus/Second Brain/30 Tutorials/Webentwicklung/Webdesign/14-rollback-via-git-tag.md`.
+**Cortex-Web enthält keine Tenant-Daten.** Echter Tenant-Inhalt
+(Praxis-Profile, Site-Konfigurationen, Medien) lebt in einem **separaten**
+Repo pro Tenant und wird zur Build-Zeit über die Umgebungs-Variable
+`CORTEX_TENANT_DIR` eingebunden.
 
-## Status
+## Quickstart (Demo-Modus)
 
-**Phasen 0–4 abgeschlossen.** Phase 4 (Subsumierung praxis-redesign → `sites/praxis-webseite/`) am 2026-04-19. Siehe `SESSION_RESUME.md` für aktuellen Status.
+Ohne Tenant-Repo läuft alles gegen `trunk/_examples/` — anonymisierte
+Demo-Inhalte, die zeigen, in welchem Schema Team-Profile, Pages und
+Produkte angelegt werden.
 
-## Struktur (Kurz)
+```bash
+git clone git@github.com:Sanexio/cortex-web.git
+cd cortex-web
+bun install   # falls Adapter-Dependencies gebraucht werden
 
-```
-trunk/        ← plattform-unabhängig (Content, Design, Schemas, Media-Registry)
-_media-source/← lokale Original-Medien (git-ignoriert)
-adapters/     ← plattform-spezifisch (wordpress, shopify, ios)
-tools/        ← validate, sync, verify
-sites/        ← (ab Phase 4) subsumierte Webseiten-Projekte
-_config/      ← Regeln, Fehlerprotokoll, Workflow-Checklist
-_rules/       ← Architektur, Pre-Flight, Working-Mode-Referenz
+# Demo-Lauf des Team-Adapters (liest aus trunk/_examples/)
+bun adapters/wordpress/build-team.mjs
 ```
 
-## Einstieg
+Output:
+```
+[build-team] Tenant: trunk/_examples (Demo-Fallback)
+[build-team] TEAM_DIR=…/trunk/_examples/trunk/content/team
+{ "asset": { … }, "meta": { "source_count": 1 } }
+```
 
-- Neue Session: „Projekt fortsetzen" im Chat → lädt Pflicht-Init + `SESSION_RESUME.md`.
-- Entscheidungshistorie: `Cortex-Web/specs/bridge-strategy/` (00/01/02, seit Phase 4 hier).
+## Eigenen Tenant aufsetzen
 
-## Architektur-Prinzipien (Kurz)
+1. Eigenes (privates) Repo anlegen, das die Tenant-Repo-Struktur spiegelt:
 
-- **Single Source of Truth:** Content nur im Trunk, nicht parallel in WP/Shopify
-- **Plattform-Unabhängigkeit:** Adapter austauschbar, Trunk bleibt stabil
-- **Rechtssicherheit:** Adapter-Views rendern Praxis-Variante HWG-konform (ohne Preis/Kauf-CTA)
-- **Mehrsprachigkeit nativ:** I-2 hybrid Schema, Default-Locale `de`
-- **Medien-Migration vorbereitet:** M-3c Shopify Files heute, M-3d NAS morgen
+   ```
+   <my-tenant>/
+   ├── trunk/
+   │   ├── content/{team,pages,products,legal}/
+   │   ├── media/
+   │   └── design/
+   └── sites/<my-site>/
+   ```
 
-## Kontakt
+2. ENV-Variable setzen (in `~/.zshrc` oder `~/.bashrc`):
 
-Dr. Stracke — Projektleiter. Alle Entscheidungen.
+   ```bash
+   export CORTEX_TENANT_DIR=$HOME/path/to/<my-tenant>
+   ```
+
+3. Adapter laufen lassen — sie lesen jetzt aus deinem Tenant statt aus
+   den Demo-Beispielen.
+
+Vollständige Anleitung: siehe Tutorial `_tutorials/cortex-web/05-tenant-trennung.md`
+im Sanexio-Nexus-Repo (Plattform-Tutorials werden später unter
+`docs.cortex-plattform.org` veröffentlicht).
+
+## Plattform-Kontext
+
+Cortex-Web ist **das erste** Anwendungs-Projekt des **Cortex-Layer**
+in der Sanexio-Cortex-Plattform-Architektur. Weitere Projekte folgen.
+
+Vision + Roadmap + Split-ADR liegen im Sanexio-Nexus-Repo unter
+`specs/cortex-platform/` (nicht öffentlich; Auszüge werden bei
+OSS-Launch unter `docs.cortex-plattform.org` veröffentlicht).
+
+## Mitarbeit
+
+Beiträge willkommen — siehe [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+Für die Aufnahme neuer Adapter oder Sub-Tools wird das
+**Integration-Slot-System** genutzt (`_integration-slots/`), das einen
+Vertrag + Härtungs-Prozess vor jeder Trunk-Aufnahme verlangt.
+
+## Lizenz
+
+Apache License 2.0 — siehe [LICENSE](./LICENSE).
+
+## Eigentümer / Kuration
+
+Sanexio GmbH ([sanexio.eu](https://sanexio.eu)) kuratiert den
+Upstream-Branch. PRs werden im üblichen GitHub-Flow gereviewt.

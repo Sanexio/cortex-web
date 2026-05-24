@@ -28,10 +28,18 @@ import yaml from "js-yaml";
 import Ajv from "ajv";
 
 import { renderTeamPraxis, RENDERER_META } from "./lib/renderers/team-praxis.mjs";
+// CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
+// Mit gesetztem CORTEX_TENANT_DIR (Stracke-Mac) liest aus Sanexio-Tenant.
+// Ohne ENV: Demo-Fallback trunk/_examples/trunk/content/team.
+import { tenantPath, tenantDescribe } from "../../tools/lib/tenant-path.mjs";
 
 const REPO_ROOT = resolve(import.meta.dir, "../..");
-const TEAM_DIR = resolve(REPO_ROOT, "trunk/content/team");
+const TEAM_DIR = tenantPath("trunk/content/team");
 const SCHEMA_PATH = resolve(REPO_ROOT, "trunk/schema/team-member.schema.json");
+
+// Diagnose auf stderr — stdout bleibt das Payload-JSON
+process.stderr.write(`[build-team] ${tenantDescribe()}\n`);
+process.stderr.write(`[build-team] TEAM_DIR=${TEAM_DIR}\n`);
 
 function die(code, msg) {
   process.stderr.write(`ADAPTER_ERROR: ${msg}\n`);

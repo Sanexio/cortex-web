@@ -16,7 +16,7 @@ intro:
   en: |
     Focus on general medicine and preventive care. Example profile for
     schema demonstration — not for production use.
-accent: blue
+accent: ink   # erlaubt: red | amber | ink (siehe team-member.schema.json)
 image: 0  # Demo-Platzhalter — keine echte Medien-ID
 image_asset_juvantis: example.jpg
 qualifications:
