@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.cortex.cw-mirror</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>"$HOME/Cortex/projects/Cortex-Web/tools/cw-mirror-sync.sh"</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/tmp</string>
+
+    <!-- Alle 5 Min. — analog zu nexus-sync.plist. -->
+    <key>StartInterval</key>
+    <integer>300</integer>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Logs werden vom Skript selbst nach _archive/_mirror-logs/cw-mirror-sync.log
+         geschrieben. Hier nur /dev/null als Pre-Exec-Fallback. -->
+    <key>StandardOutPath</key>
+    <string>/dev/null</string>
+
+    <key>StandardErrorPath</key>
+    <string>/dev/null</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+</dict>
+</plist>

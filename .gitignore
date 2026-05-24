@@ -28,6 +28,11 @@ adapters/*/.cache/
 *.log
 logs/
 
+# CW-009 Mirror-Sync — Runtime-State + Logs sind pro-Mac-lokal
+.cw-mirror-state
+.cw-mirror-divergence
+/_archive/_mirror-logs/
+
 # Archivierte Binär-Blobs (z. B. entfernte WP-Plugins in _archive/)
 # Metadaten zu Archiven gehören in specs/*/evidence/ bzw. in Self-Check-Dokumente,
 # nicht als vollständiger Ordner ins Git. README bleibt lokal im Archive-Ordner.

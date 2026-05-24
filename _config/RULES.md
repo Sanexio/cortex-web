@@ -210,7 +210,68 @@ P1 (Medien-Registry), weil ohne die alle Content-Flows Torsos bleiben."
 
 ---
 
+## CW-009 — Multi-Device-Mirror + Promotion-Pipeline
+
+**Regel:** Cortex-Web liegt auf **allen** Nexus-Macs als aktueller
+Mirror (`primary` oder `mirror`), wird aber per Konvention nur von
+**einem** Mac gleichzeitig bearbeitet. Aufnahme neuer Tools/Sub-Projekte
+in den Trunk erfolgt ausschließlich über einen vorab definierten
+Integration-Slot (`_integration-slots/<name>/SLOT.md`) und das
+Promotion-Skript (`tools/promote-to-trunk.sh`).
+
+**Warum:**
+1. **Mirror auf allen Macs**, damit jederzeit von jedem Mac aus ein
+   Tool aus einem Projekt-Sandbox in den Cortex-Web-Trunk promotet
+   werden kann, ohne erst klonen/syncen zu müssen.
+2. **Bearbeitung von nur einem Mac**, weil zwei parallele Writer auf
+   einem geteilten Trunk denselben Klassen-Bug (140-Commit-Split
+   2026-04-24, Nexus) wiederholen würden — und der Mirror-Auftrag dafür
+   nicht den nötigen Konflikt-Apparat hat (kein Lease, kein Heartbeat).
+3. **Slot-Vertrag vor Promotion**, weil „Tool wandert in den Trunk"
+   ohne Interface-Vertrag und Akzeptanz-Kriterien zur stillen
+   Trunk-Verschmutzung führt (FK-3 auf Tool-Ebene).
+
+**Wie anwenden:**
+
+*Mirror-Setup (pro Mac einmalig):*
+- `git clone git@github.com:Sanexio/cortex-web.git ~/Cortex/projects/Cortex-Web`
+  (falls noch nicht vorhanden)
+- `cp tools/cw-mirror-sync.plist ~/Library/LaunchAgents/com.cortex.cw-mirror.plist`
+- `launchctl load ~/Library/LaunchAgents/com.cortex.cw-mirror.plist`
+- Eintrag in `Nexus/.config/devices.json` mit Feld `primary: false` (Mirror)
+  oder `primary: true` (Bearbeitungs-Mac)
+
+*Bearbeitungs-Regel:*
+- Vor jeder Welle: `git pull --ff-only`. Bei Divergenz: STOP, kein Edit.
+- Während der Welle: Edits committen, am Ende `git push`.
+- Mirror-Sync (Pull-only) erkennt lokale Modifikationen und skippt
+  automatisch — kein manuelles Stoppen nötig.
+
+*Promotion-Pipeline (für neue Tools):*
+1. Slot anlegen: `_integration-slots/<name>/SLOT.md` aus Template,
+   Status `PROPOSED`.
+2. Sandbox-Build im Quell-Projekt (`projects/<x>/` oder anderswo),
+   Status `SANDBOX`.
+3. Härtung auf ≥2 Macs + ≥2 echte Anwendungsfälle, Status `HARDENED`.
+4. `tools/promote-to-trunk.sh <slot> --commit` (führt `cp -R` +
+   Status-Update + Commit aus; pusht nicht — Verify zuerst).
+5. Push nach manuellem Trunk-Test.
+
+**Anti-Pattern:**
+
+❌ „Ich kopiere das Tool schnell direkt in `tools/`, der Slot-Kram ist
+   für später." → Trunk verschmutzt, keine Vertragsdoku, keine
+   ≥2-Mac-Härtung.
+✅ Slot erst, dann Sandbox, dann Härtung, dann Promotion-Skript.
+
+❌ Zwei Macs bearbeiten gleichzeitig den Trunk (z.B. Cluster-Mini-02
+   und Mac-Studio mergen parallel zwei Feature-Branches in `main`).
+✅ Ein Bearbeitungs-Mac pro Welle. Andere Macs sind passive Mirror,
+   skippen Sync wegen Heartbeat-Schutz (skipt bei lokalen Mods).
+
+---
+
 ## Weitere Regeln (wachsen beim POC)
 
-- CW-009+ werden bei Phasen C2/D/F (Extraktion/Design/Funktion) ergänzt,
+- CW-010+ werden bei Phasen C2/D/F (Extraktion/Design/Funktion) ergänzt,
   sobald die jeweilige Transfer-Realität weitere Patterns zeigt.

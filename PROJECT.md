@@ -1,11 +1,13 @@
 ---
 name: Cortex-Web
-version: "0.5"
+version: "0.6"
 status: aktiv
-geraete: [home-mac-mini]
+geraete:
+  primary:    [Cluster-Mini-02, Mac-Studio-von-MacStudioZi2]
+  mirror:     [SSMD-MacBookPro, SSMD-MacBookPro-M5, Cluster-Mini-04]
 erstellt: 2026-04-18
-aktualisiert: 2026-04-19
-phase: "Phasen 0–4 abgeschlossen — Praxis subsumiert"
+aktualisiert: 2026-05-24
+phase: "Phasen 0–5 abgeschlossen — Multi-Device-Mirror eingeführt (CW-009)"
 ---
 
 # Cortex-Web — Projekt-Container-Manifest
