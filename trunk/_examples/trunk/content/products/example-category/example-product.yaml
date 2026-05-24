@@ -1,0 +1,38 @@
+# Demo-Produkt — rein fiktiv, dient als Vorlage für eigene Produkt-Einträge.
+# Schema: trunk/schema/product.schema.json
+id: example-product
+sku: EXAMPLE-0000000000
+category: example-category
+status: active
+parameters:
+  - code: EX1
+    einheit: —
+title:
+  de: "Beispiel-Produkt"
+  en: "Example Product"
+views:
+  juvantis:
+    show_price: true
+    cta_label:
+      de: Jetzt buchen
+      en: Book now
+    cta_url: https://example.test/products/example-product
+  praxis:
+    show_price: false
+    cta_label:
+      de: Termin vereinbaren
+      en: Make appointment
+    cta_url: /service/terminanfrage/
+images:
+  hero: media://example/example-product-hero
+sanexio_source:
+  type: product
+  handle: example-product
+description:
+  de: |
+    Demo-Produkt-Beschreibung. Dient als Schema-Beispiel für eigene
+    Produkt-Einträge im Cortex-Web-Trunk. Nicht für Produktiv-Webseiten
+    verwenden.
+  en: |
+    Example product description. Serves as a schema example for product
+    entries in the Cortex-Web trunk. Not intended for production sites.

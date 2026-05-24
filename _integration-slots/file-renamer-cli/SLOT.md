@@ -4,6 +4,8 @@ status: PROPOSED
 proposed_at: 2026-05-24
 proposed_by: SSMD-MacBookPro-M5
 
+operates_on: framework  # nimmt beliebige Quell-Ordner als Argument; kein hartcodierter Tenant-Zugriff
+
 sandbox_location: projects/file-renamer/
 trunk_target: tools/file-renamer/
 

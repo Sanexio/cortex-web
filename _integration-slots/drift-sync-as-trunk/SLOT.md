@@ -4,6 +4,8 @@ status: SANDBOX
 proposed_at: 2026-05-24
 proposed_by: SSMD-MacBookPro-M5
 
+operates_on: tenant  # drift-sync vergleicht/synct Trunk-Content gegen Live-Sites — operiert auf Tenant-Daten; MUSS tenant-path.sh nutzen, sobald Phase 1.3 (Migration) durch ist
+
 # drift-sync lebt bereits im Cortex-Web-Repo unter tools/drift-sync/.
 # Slot dient hier dazu, die "in-place-Härtung" als Promotion-Pfad zu
 # dokumentieren — Tool muss CW-Standards (Vertrag, Tests, README) bestehen.

@@ -1,0 +1,45 @@
+# Demo-Praxis-Page — rein fiktiv, dient als Vorlage für eigene Pages.
+# Schema: trunk/schema/page.schema.json
+id: standorte
+site: praxis
+slugs:
+  praxis: standorte
+title:
+  de: "Unsere Standorte"
+  en: "Our Locations"
+
+sections:
+  - type: service-body
+    body_html:
+      de: |
+        <!-- wp:paragraph -->
+        <p>Unsere Beispiel-Praxis ist an zwei fiktiven Standorten in Musterstadt
+        für Sie da. Diese Page ist ein Demo-Eintrag zur Veranschaulichung
+        des Cortex-Web-Page-Schemas.</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:heading {"level":2} -->
+        <h2>Hauptpraxis — Beispielstraße</h2>
+        <!-- /wp:heading -->
+
+        <!-- wp:paragraph -->
+        <p>Beispielstraße 1<br>12345 Musterstadt<br>Telefon: 0000 0000000</p>
+        <!-- /wp:paragraph -->
+
+        <!-- wp:heading {"level":2} -->
+        <h2>Zweigstelle — Musterallee</h2>
+        <!-- /wp:heading -->
+
+        <!-- wp:paragraph -->
+        <p>Musterallee 99<br>12345 Musterstadt<br>Telefon: 0000 0000001</p>
+        <!-- /wp:paragraph -->
+      en: |
+        <!-- wp:paragraph -->
+        <p>Our example clinic operates at two fictional locations. This page
+        is a demo entry to illustrate the Cortex-Web page schema.</p>
+        <!-- /wp:paragraph -->
+
+meta:
+  description:
+    de: "Demo-Page: Standorte der Beispiel-Praxis."
+    en: "Demo page: locations of the example clinic."

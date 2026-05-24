@@ -1,0 +1,36 @@
+# Demo-Arzt-Profil — rein fiktiv, dient als Vorlage für eigene Team-Einträge.
+# Schema: trunk/schema/team-member.schema.json
+id: dr-example
+slug: dr-example
+order: 1
+name: "Dr. med. Erika Beispiel"
+role:
+  de: "Fachärztin für Allgemeinmedizin"
+  en: "General Practitioner"
+languages: [de, en]
+intro:
+  de: |
+    Schwerpunkt Allgemeinmedizin und Präventionsmedizin. Demo-Profil zur
+    Veranschaulichung des Team-Member-Schemas — nicht für echte Webseiten
+    verwenden.
+  en: |
+    Focus on general medicine and preventive care. Example profile for
+    schema demonstration — not for production use.
+accent: blue
+image: 0  # Demo-Platzhalter — keine echte Medien-ID
+image_asset_juvantis: example.jpg
+qualifications:
+  - Allgemeinmedizin
+  - Präventionsmedizin
+bio:
+  de: |
+    Demo-Biografie. Nach dem Studium Weiterbildung in der Allgemeinmedizin.
+    Heute Fachärztin in einer fiktiven Beispiel-Praxis. Dieser Eintrag
+    existiert nur, damit der Cortex-Web-Adapter eine Datei zum Rendern hat.
+  en: |
+    Example biography. General-practice training after medical school.
+    Currently practising at a fictional example clinic. This entry exists
+    only so the Cortex-Web adapter has a file to render.
+profile_urls:
+  praxis: /dr-example/
+  juvantis: null

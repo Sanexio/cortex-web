@@ -4,6 +4,14 @@ status: PROPOSED  # PROPOSED | SANDBOX | HARDENED | PROMOTED | RETIRED
 proposed_at: YYYY-MM-DD
 proposed_by: <mac-hostname>
 
+# Worauf operiert das Tool? (CW-009 Tenant-Trennung, ADR 01_CORTEX_WEB_SPLIT)
+#   framework — generisch, kein Tenant-Daten-Zugriff (z.B. Validator, Build-Helper)
+#   tenant    — liest/schreibt Tenant-Daten (z.B. Content-Sync, Adapter)
+#   both      — operiert auf beiden (z.B. Migrations-Skripte, Linter)
+# Konsequenz: 'tenant'/'both' MÜSSEN tools/lib/tenant-path.sh nutzen,
+# nicht hartcodierte Pfade auf trunk/content/ oder sites/.
+operates_on: framework  # framework | tenant | both
+
 # Wo die Sandbox-Version lebt (relativ zu ~/Cortex/).
 sandbox_location: projects/<projekt>/<sub>/
 
