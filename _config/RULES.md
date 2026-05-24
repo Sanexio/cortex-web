@@ -46,7 +46,7 @@ führen zu brüchigen Renderings. Fail fast ist billiger als Fail late.
 eine lokale Kopie in `_media-source/<kategorie>/<dateiname>` haben.
 
 **Warum:**
-1. Eigentumsbeweis: Bilder/Rechte liegen nachweisbar bei Dr. Stracke / Sanexio, nicht nur bei Shopify.
+1. Eigentumsbeweis: Bilder/Rechte liegen nachweisbar beim Tenant-Operator, nicht nur bei Shopify.
 2. Migration vorbereitet: Bei Umzug auf M-3d (NAS) wird aus `_media-source/` direkt gespiegelt.
 3. Ausfallsicherheit: Shopify-Ausfall ≠ Verlust der Originale.
 
@@ -78,17 +78,25 @@ gängiger Industriestandard.
 **Regel:** Die beiden Sites sind und bleiben rechtlich, organisatorisch und
 markentechnisch getrennt. Der Trunk teilt nur Substanz, keine Identität.
 
-**Warum:** Praxis = Dr. Stracke (freier Beruf, §4 Nr. 14 UStG, HWG §11, Berufsordnung §27 LÄK Hessen).
-Juvantis = Sanexio GmbH (gewerblich, umsatzsteuerpflichtig, kommerzielle Werbung erlaubt).
-Vermischung = rechtliches Risiko (Abmahnung, steuerliche Einordnung, Berufsrecht).
+**Warum:** Wenn ein Tenant mehrere Sites mit unterschiedlicher rechtlicher
+Stellung betreibt (typisches Beispiel: Heilberuf-Site nach Werbe-/Berufsrecht
+vs. Handelsgewerbe-Shop mit kommerzieller Werbung), gelten je Site
+unterschiedliche regulatorische Constraints (Werbe- und Berufsrecht, Steuer-
+Einordnung, Datenschutz-Anforderungen). Vermischung = rechtliches Risiko
+(Abmahnung, fehlerhafte steuerliche Einordnung, Berufsrechts-Verstoß).
+Konkrete Tenant-Beispiele dokumentiert der jeweilige Tenant in
+`<tenant>/_meta/rechtsrahmen.md`.
 
 **Wie anwenden:**
 - Jede Site hat EIGENES Impressum, EIGENE DSGVO, EIGENE AGB (im Trunk als separate Dateien)
 - KEINE gemeinsame Kasse, KEINE gemeinsamen Nutzerkonten
-- Adapter-Views respektieren HWG-Konformität der Praxis-Seite:
-  - `views.praxis.show_price: false` ist Pflicht für Produkte
-  - Kauf-CTA ist auf Praxis-Site verboten, nur Info-Links auf sanexio.eu erlaubt
-- Bei Produkt-Neuanlage: beide Views (`juvantis`, `praxis`) sind explizit zu definieren
+- Adapter-Views respektieren die regulatorischen Constraints der jeweiligen Site
+  (Tenant-Beispiel im Tenant-Repo dokumentiert):
+  - `views.<heilberuf-site>.show_price: false` ist Pflicht für Produkte,
+    wenn die Site Heilberuf-/HWG-Regeln unterliegt
+  - Kauf-CTA ist auf solchen Sites verboten, nur Info-Links auf die
+    Distributions-Site erlaubt
+- Bei Produkt-Neuanlage: alle für den Tenant relevanten Views sind explizit zu definieren
 - Cross-Links zwischen Sites sind erlaubt, aber als „Partnerinfo" / „Mehr erfahren" zu markieren
 
 ---
@@ -107,7 +115,7 @@ rollback-fähig.
 **Wie anwenden:**
 - Verb im Befehl: `push` (Trunk→Site) oder `pull` (Site→Trunk)
 - Meta-Orchestrator: `tools/cw-transfer <verb> <target>:<type> <arg>`
-- Keine Automatisierung ohne Dr.-Stracke-Auslösung
+- Keine Automatisierung ohne explizite Tenant-Operator-Auslösung
 - Bei Bedarf: Cron/Hook nur für `pull` + Diff-Report, nie für automatisches `push`
 
 ---
@@ -182,7 +190,7 @@ Registry und die Prod-Deploy-Pipelines existieren noch nicht.
 | **P1** | Medien-Registry + `_media-source/`-Flow + N-1b Media-ID-Resolver | Jede Content-Änderung, die Bilder braucht, läuft deterministisch durch den Trunk |
 | **P2** | Prod-Deployment-Pipelines (Praxis via DF/SFTP + Juvantis-Shopify-Sync dokumentiert und wiederholbar) | Von Trunk-Edit bis Prod-Live ≤ 10 Min, ohne manuelle WP-/Shopify-Admin-Klicks |
 | **P3** | Praxis Content-Rest (Cluster C, Impressum/Datenschutz, 7 Arzt-Profile, Aktuelles, WPForms, Google My Map) | Alle Praxis-Pages haben Echt-Content; Stub-Pages sind namentlich dokumentiert mit Blocker-Grund |
-| **P4** | M1: Erster Prod-Push westend-hausarzt.com + Verify | Domain live, HTTPS, alle Cluster erreichbar, SEO-Layer aktiv |
+| **P4** | M1: Erster Prod-Push Primär-Domain des Tenants + Verify | Domain live, HTTPS, alle Cluster erreichbar, SEO-Layer aktiv |
 | **P5** | Juvantis Content-Alltag (2–3 weitere Bridge-Seiten, Content-Pflege als Gewohnheit) | Trunk-Edit → beide Sites upgedatet ist routinierte Operation, kein Einzelnachweis |
 | **P6** | Mehrsprachigkeit Praxis (i18n-Mechanik + externe Übersetzungen + Integration) | Praxis DE + mindestens EN, idealerweise FR/ES |
 | **Ppol** | Design-Polish, A11y-Audit, Mobile-Finish | Accessibility-Score ≥ 90, Mobile-Core-Web-Vitals grün |
@@ -198,7 +206,7 @@ Registry und die Prod-Deploy-Pipelines existieren noch nicht.
 - Wenn Claude eine Popt-/Pios-Front vorschlägt, muss der konkrete
   Pain-Point (was wird heute blockiert, weil das fehlt?) explizit
   benannt werden. Ohne benannten Pain-Point ist die Antwort: verschieben.
-- Dr. Stracke kann jederzeit über die Prio hinweg entscheiden
+- Der Tenant-Operator kann jederzeit über die Prio hinweg entscheiden
   („Ad-hoc-Front") — aber die Default-Pfad der Session ist
   Prio-getrieben.
 

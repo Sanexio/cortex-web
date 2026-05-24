@@ -29,7 +29,7 @@ Noch kein aktiver Pre-Flight — keine Adapter implementiert.
 ### §4 AB-Diff (vor Live-Deploy)
 
 - Vorher-Screenshot vs. Nachher-Screenshot (wie praxis-redesign `tools/ab-diff.mjs`)
-- Bei > 2% pixel-delta: Selbstprüfung + Rückfrage an Dr. Stracke
+- Bei > 2% pixel-delta: Selbstprüfung + Rückfrage an den Tenant-Operator
 
 ## Referenz
 

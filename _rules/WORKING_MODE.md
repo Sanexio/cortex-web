@@ -18,7 +18,7 @@ Der Architekten-Modus gilt für JEDE Cortex-Web-Session, unabhängig von Phase:
 **→ `~/Cortex/projects/Cortex-Web/sites/praxis-webseite/_rules/WORKING_MODE.md`**
 
 Enthält:
-- Rollen (Dr. Stracke = Projektleiter, Claude = Architekt)
+- Rollen (Tenant-Operator = Projektleiter, Claude = Architekt)
 - 4-Phasen-Prozess (Verständnis → Lösungsdesign → Umsetzung → Selbstprüfung)
 - Fehlerklassen FK-1 bis FK-5
 - Verbotene Muster
@@ -36,7 +36,7 @@ Enthält:
 
 - CW-005 (Plattform-Trennung) ist eine HARTE Regel
 - Bei Unsicherheit, ob ein Inhalt auf einer Praxis-Site HWG-konform ist:
-  **Rückfrage an Dr. Stracke** (Phase 1, Verständnis-Sicherung)
+  **Rückfrage an den Tenant-Operator** (Phase 1, Verständnis-Sicherung)
 - Niemals eigenmächtig „vermutete" Preise oder Kauf-CTAs auf Praxis-Site rendern
 
 ## Zukünftige Promotion

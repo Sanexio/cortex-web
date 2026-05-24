@@ -83,7 +83,7 @@ Juvantis-Kern (`DHT/`, `social-media/`) bleibt unter `projects/Juvantis/`.
 | **1** | POC WP-Adapter: 1 Produkt → WP-Page | 2 | ✅ 2026-04-18 | Commit `778635c`, 10/10 AK, HWG-konform, idempotent |
 | **2 (Setup)** | Shopify Custom App + Admin-API-Token | 3 | ✅ 2026-04-18 | Commit `48c4170`, OAuth-Catcher + Authorize-Script |
 | **2 (Adapter)** | POC Shopify-Adapter: gleiches Produkt → Draft | 4 | ✅ 2026-04-19 | Commit `7d6f665`, 12/12 AK, Trunk-Master via Roundtrip nachgewiesen |
-| **3** | Review — trägt der Ansatz? | 5 | ✅ 2026-04-19 | Commit `98d1f67`, 12/12 AK, 6 Dimensionen automatisiert, Dr. Stracke Go für Phase 4 |
+| **3** | Review — trägt der Ansatz? | 5 | ✅ 2026-04-19 | Commit `98d1f67`, 12/12 AK, 6 Dimensionen automatisiert, Tenant-Operator-Go für Phase 4 |
 | **4** | Praxis-Subsumierung: `praxis-redesign/` → `sites/praxis-webseite/` | 6 | ✅ 2026-04-19 | `git subtree add` (E1a, alle 13 Commits erhalten); bridge-strategy nach `Cortex-Web/specs/bridge-strategy/` (3b); `THEME_POINTER.md` für Local-WP-Theme (2a) |
 | **5** | Juvantis-Web-Docs-Subsumierung: `juvantis-web/{shopify-sync.sh,shopify_export,knowledge-graph}` → `sites/juvantis-webseite/` | 7 | ✅ 2026-04-19 | `mv` + SHOPIFY_THEME_POINTER (E1a+E2a+E3a+E4a); Theme-Klon bleibt bei `Juvantis/juvantis-web/theme/` (Remote GitHub `shopify-theme`); shopify-sync.sh THEME_DIR auf absoluten Pfad via `$HOME` |
 
