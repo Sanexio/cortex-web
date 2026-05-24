@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 // build-page-hub.mjs — Render Trunk page YAMLs to PHP arrays for the
-// praxiszentrum theme (template-{diagnostik-hub,labor,leistungen}.php).
+// Praxis-Theme of the configured tenant (template-{diagnostik-hub,labor,leistungen}.php).
 //
 // S49 — Pattern B (Trunk → Theme PHP Data) variant for hub pages.
 //

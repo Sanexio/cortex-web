@@ -11,8 +11,8 @@ in allen Adapter-/Sync-Skripten ab Welle 1.1** (siehe
 ### Hintergrund
 
 Cortex-Web wird in Framework + Tenant-Daten aufgespalten. Damit Adapter
-auf einem beliebigen Mac sowohl mit dem Stracke-Tenant als auch mit dem
-Demo-Tenant (`trunk/_examples/`) laufen, müssen sie den Pfad **zur
+auf einem beliebigen Mac sowohl mit einem realen Tenant-Repo als auch mit
+dem Demo-Tenant (`trunk/_examples/`) laufen, müssen sie den Pfad **zur
 Laufzeit** auflösen — nicht hartkodieren.
 
 ### Auflösungs-Reihenfolge

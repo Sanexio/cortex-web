@@ -85,7 +85,7 @@
             "cta_url": {
               "type": "string",
               "pattern": "^(/|https://sanexio\\.eu/)",
-              "description": "Praxis-CTA darf nur intern (/) oder nach sanexio.eu zeigen"
+              "description": "Praxis-CTA darf nur intern (/) oder auf die zugelassene externe Shop-Domain zeigen. HINWEIS: Die Domain im pattern ist heute auf den Reference-Tenant (sanexio.eu) hartcodiert — Parametrisierung via Tenant-Schema-Override ist offenes Architektur-Item (siehe Plattform-§10)."
             }
           }
         }

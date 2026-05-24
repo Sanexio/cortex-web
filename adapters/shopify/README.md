@@ -4,7 +4,8 @@ Bun-basiert, rendert Trunk-Content zu Shopify-Produkten via Admin REST API.
 
 ## Ziel-Store
 
-`juvantis.myshopify.com` (öffentliche Domain `sanexio.eu`). Custom App
+Shopify-Store des konfigurierten Tenants (Store-Domain + öffentliche Domain
+werden über die Custom-App-Credentials des Tenants aufgelöst). Custom App
 `Cortex-Web Adapter`, Token in `.env.local` als `SHOPIFY_ADMIN_TOKEN`
 (siehe Setup-Tutorial `Second Brain/30 Tutorials/Webentwicklung/Shopify & Liquid/05-admin-api-token-custom-app.md`).
 

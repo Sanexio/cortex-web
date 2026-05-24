@@ -29,7 +29,7 @@ import Ajv from "ajv";
 
 import { renderTeamPraxis, RENDERER_META } from "./lib/renderers/team-praxis.mjs";
 // CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
-// Mit gesetztem CORTEX_TENANT_DIR (Stracke-Mac) liest aus Sanexio-Tenant.
+// Mit gesetztem CORTEX_TENANT_DIR liest aus dem konfigurierten Tenant-Repo.
 // Ohne ENV: Demo-Fallback trunk/_examples/trunk/content/team.
 import { tenantPath, tenantDescribe } from "../../tools/lib/tenant-path.mjs";
 

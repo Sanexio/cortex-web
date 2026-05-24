@@ -19,7 +19,7 @@
     "slug": {
       "type": "string",
       "pattern": "^[a-z0-9-]+$",
-      "description": "URL-slug, z.B. 'dr-stracke'"
+      "description": "URL-slug, z.B. 'dr-example'"
     },
     "name": {
       "type": "string",
@@ -67,7 +67,7 @@
     },
     "image_asset_juvantis": {
       "type": ["string", "null"],
-      "description": "Dateiname im Shopify-Theme-Asset-Ordner (z.B. 'dr-stracke.jpg'). Wird an `asset_image` im Template weitergegeben. null = Placeholder-SVG."
+      "description": "Dateiname im Shopify-Theme-Asset-Ordner (z.B. 'dr-example.jpg'). Wird an `asset_image` im Template weitergegeben. null = Placeholder-SVG."
     },
     "qualifications": {
       "type": "array",

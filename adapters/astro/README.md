@@ -1,8 +1,10 @@
-# Cortex-Web — Astro-Adapter (Sanexio)
+# Cortex-Web — Astro-Adapter
 
 > **Status:** Phase 1+2 Skelett · 2026-05-23
-> **Zielsite:** `sites/sanexio-github-io/repo/` (Astro 5 + TypeScript Data-Files,
-> Deploy via GitHub-Pages auf `sanexio.eu`)
+> **Zielsite:** Konfigurierbares Astro-Sub-Projekt unter `sites/<astro-site>/repo/`
+> (Astro 5 + TypeScript Data-Files, Deploy typischerweise via GitHub-Pages).
+> Die im Reference-Tenant verwendete Site liegt unter
+> `sites/sanexio-github-io/repo/`; auf anderen Tenants entsprechend.
 > **Architekten-Spec:** `specs/cross-site-transfer/ARCHITECTURE.md`
 > **Schema-Erweiterung:** `trunk/schema/page.schema.json` (Site-Enum
 > um `sanexio` ergänzt, plus `status_sanexio`-Flag analog zu `status_juvantis`)

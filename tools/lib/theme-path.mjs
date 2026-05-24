@@ -11,7 +11,7 @@
 //   4. Demo-Fallback: <repo>/.demo-theme (wird bei Bedarf vom Adapter angelegt)
 //
 // Konvention: CORTEX_THEME_PATH zeigt auf die Theme-Root (z.B.
-//   .../themes/praxiszentrum), nicht auf inc/data. Sub-Pfade über themePath('inc/data').
+//   .../themes/<theme-name>), nicht auf inc/data. Sub-Pfade über themePath('inc/data').
 // ============================================================
 
 import { existsSync, readFileSync, mkdirSync } from "node:fs";
