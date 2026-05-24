@@ -17,16 +17,19 @@ import fs from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
 
-// CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
+// CW-009/Plattform-Split: Tenant- und Theme-Pfade via Helper auflösen.
 import { tenantPath, tenantDescribe } from "../../tools/lib/tenant-path.mjs";
+import { themePath, themeDescribe } from "../../tools/lib/theme-path.mjs";
 
 const ROOT = path.resolve(import.meta.dir, "..", "..");
 const SRC_DIR = tenantPath("trunk/content/pages/_shared");
-const THEME = "/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/wp-content/themes/praxiszentrum";
+const THEME = themePath();
 const DEST_DIR = path.join(THEME, "inc", "data");
 
 process.stderr.write(`[build-page-hub] ${tenantDescribe()}\n`);
+process.stderr.write(`[build-page-hub] ${themeDescribe()}\n`);
 process.stderr.write(`[build-page-hub] SRC_DIR=${SRC_DIR}\n`);
+process.stderr.write(`[build-page-hub] DEST_DIR=${DEST_DIR}\n`);
 
 // Auto-discover all page-YAMLs in trunk/content/pages/_shared/.
 // Excludes ueber-uns (uses different render path via content-bridge-v1).

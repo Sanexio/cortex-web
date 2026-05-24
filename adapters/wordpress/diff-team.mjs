@@ -9,10 +9,9 @@
 //   bun adapters/wordpress/diff-team.mjs <renderer-handle>
 //   bun adapters/wordpress/diff-team.mjs team
 //
-// Env:
-//   THEME_PATH   (optional) absolute path to theme root. Default = Local-WP
-//                Praxis-Theme on Cluster-Mini-02 as documented in
-//                sites/praxis-webseite/THEME_POINTER.md.
+// Env / Helper:
+//   Theme-Pfad via tools/lib/theme-path.mjs (CORTEX_THEME_PATH > THEME_PATH-Legacy >
+//   ~/.cortex/theme-path > <repo>/.demo-theme).
 //   FORMAT       (optional) "json" for structured output; default "text".
 //
 // Read-only guarantee (CW-001/008): only readFileSync / existsSync / statSync
@@ -32,12 +31,10 @@ import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 import { existsSync, readFileSync, statSync } from "node:fs";
 
-const REPO_ROOT = resolve(import.meta.dir, "../..");
+// CW-009/Plattform-Split: Theme-Pfad via Helper auflösen statt hartcodieren.
+import { themePath, themeDescribe } from "../../tools/lib/theme-path.mjs";
 
-// Default theme path — kept in sync with adapters/wordpress/team-to-wp.mjs.
-// THEME_PATH env overrides on other devices / other WP installs.
-const DEFAULT_THEME_PATH =
-  "/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/wp-content/themes/praxiszentrum";
+const REPO_ROOT = resolve(import.meta.dir, "../..");
 
 // Registry of renderer handles that this diff tool knows about. Each handle
 // points to the build-*.mjs sub-process whose stdout payload is compared
@@ -97,12 +94,13 @@ try {
 
 // --- Step C: resolve theme path ---
 
-const themePath = process.env.THEME_PATH || DEFAULT_THEME_PATH;
-if (!existsSync(themePath)) {
-  die(2, `theme path not found: ${themePath} (set THEME_PATH to override)`);
+const themeRoot = themePath();
+process.stderr.write(`[diff-team] ${themeDescribe()}\n`);
+if (!existsSync(themeRoot)) {
+  die(2, `theme path not found: ${themeRoot} (set CORTEX_THEME_PATH or ~/.cortex/theme-path)`);
 }
 try {
-  if (!statSync(themePath).isDirectory()) die(2, `theme path is not a directory: ${themePath}`);
+  if (!statSync(themeRoot).isDirectory()) die(2, `theme path is not a directory: ${themeRoot}`);
 } catch (err) {
   die(2, `theme path stat failed: ${err.message}`);
 }
@@ -113,8 +111,8 @@ const assetRel = localPayload.asset.path.replace(/^\/+/, "");
 if (assetRel.includes("..") || assetRel.startsWith("/")) {
   die(2, `unsafe asset.path from build payload: ${localPayload.asset.path}`);
 }
-const targetPath = resolve(themePath, assetRel);
-if (!targetPath.startsWith(resolve(themePath) + "/")) {
+const targetPath = resolve(themeRoot, assetRel);
+if (!targetPath.startsWith(resolve(themeRoot) + "/")) {
   die(2, `resolved target escapes theme root: ${targetPath}`);
 }
 
@@ -125,7 +123,7 @@ const result = {
   renderer: handleArg,
   source: rendererCfg.source_desc,
   asset_path: localPayload.asset.path,
-  theme_path: themePath,
+  theme_path: themeRoot,
   live: { exists: false },
   fields: {},
   result: "EQUAL",

@@ -4,10 +4,12 @@
 // <theme>/inc/data/team.json on the local filesystem, with CW-008-compliant
 // backup of the prior contents (if any) before overwriting.
 //
-// Env:
-//   THEME_PATH (optional) — absolute path to the theme root. Defaults to the
-//                           Local-WP theme on Cluster-Mini-02 as documented in
-//                           sites/praxis-webseite/THEME_POINTER.md.
+// Env / Helper:
+//   Theme-Pfad wird über tools/lib/theme-path.mjs aufgelöst:
+//     1. CORTEX_THEME_PATH (env)         — explizit gesetzt
+//     2. THEME_PATH (env, Legacy)        — Backward-Compat, mit stderr-Hinweis
+//     3. ~/.cortex/theme-path (Mac-lokal) — Default-File mit Pfad in 1. Zeile
+//     4. <repo>/.demo-theme              — Demo-Fallback (gitignored)
 //
 // Exit codes:
 //   0 success, summary JSON on stdout
@@ -21,12 +23,10 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, statSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 
-const REPO_ROOT = resolve(import.meta.dir, "../..");
+// CW-009/Plattform-Split: Theme-Pfad via Helper auflösen statt hartcodieren.
+import { themePath, themeDescribe } from "../../tools/lib/theme-path.mjs";
 
-// Default theme path is documented in sites/praxis-webseite/THEME_POINTER.md.
-// Kept as a constant here so THEME_PATH env can override it on other devices.
-const DEFAULT_THEME_PATH =
-  "/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/wp-content/themes/praxiszentrum";
+const REPO_ROOT = resolve(import.meta.dir, "../..");
 
 function die(code, msg) {
   process.stderr.write(`ADAPTER_ERROR: ${msg}\n`);
@@ -47,12 +47,13 @@ async function readStdinJson() {
 
 // --- main ---
 
-const themePath = process.env.THEME_PATH || DEFAULT_THEME_PATH;
-if (!existsSync(themePath)) {
-  die(1, `theme path not found: ${themePath} (set THEME_PATH to override)`);
+const themeRoot = themePath();
+process.stderr.write(`[team-to-wp] ${themeDescribe()}\n`);
+if (!existsSync(themeRoot)) {
+  die(1, `theme path not found: ${themeRoot} (set CORTEX_THEME_PATH or ~/.cortex/theme-path)`);
 }
 try {
-  if (!statSync(themePath).isDirectory()) die(1, `theme path is not a directory: ${themePath}`);
+  if (!statSync(themeRoot).isDirectory()) die(1, `theme path is not a directory: ${themeRoot}`);
 } catch (err) {
   die(1, `theme path stat failed: ${err.message}`);
 }
@@ -68,8 +69,8 @@ if (assetRel.includes("..") || assetRel.startsWith("/")) {
   die(1, `unsafe asset.path: ${payload.asset.path}`);
 }
 
-const targetPath = resolve(themePath, assetRel);
-if (!targetPath.startsWith(resolve(themePath) + "/")) {
+const targetPath = resolve(themeRoot, assetRel);
+if (!targetPath.startsWith(resolve(themeRoot) + "/")) {
   die(1, `resolved target escapes theme root: ${targetPath}`);
 }
 
@@ -102,7 +103,7 @@ try {
 }
 
 const summary = {
-  theme_path: themePath,
+  theme_path: themeRoot,
   target_path: targetPath,
   action,
   size_bytes: Buffer.byteLength(payload.asset.value, "utf8"),

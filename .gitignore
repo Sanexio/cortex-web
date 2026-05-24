@@ -51,6 +51,9 @@ sites/*/screenshots/claude/
 # CW-008 — Cross-site-transfer backups (local only)
 adapters/*/.backups/
 
+# theme-path Demo-Fallback (Adapter-Output, wenn kein CORTEX_THEME_PATH gesetzt)
+.demo-theme/
+
 # Site-level DB backups (S65: pre-insert MySQL dumps, ~17 MB each, transient rollback points)
 sites/*/_backups/
 
