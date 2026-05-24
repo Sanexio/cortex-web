@@ -88,7 +88,12 @@ for fp in "${FRAMEWORK_PATHS[@]}"; do
     [ -d "$ROOT/$fp" ] || continue
 
     # find Files unter Framework-Pfad, grep nach Patterns
-    hits=$(grep -rilE "$EGREP" "$ROOT/$fp" 2>/dev/null | grep -v "$ROOT/$fp/.*node_modules" || true)
+    # Exclude: node_modules, evidence/ (dokumentarische Test-Outputs vom
+    # Reference-Tenant — siehe specs/REFERENCE_TENANT_EVIDENCE.md).
+    hits=$(grep -rilE "$EGREP" "$ROOT/$fp" 2>/dev/null \
+        | grep -v "/node_modules/" \
+        | grep -v "/evidence/" \
+        || true)
 
     if [ -z "$hits" ]; then
         printf "  ✓ %-25s clean\n" "$fp/"
