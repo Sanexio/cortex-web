@@ -1,0 +1,10 @@
+HTTP/2 404 
+x-powered-by: PHP/8.3.30
+expires: Wed, 11 Jan 1984 05:00:00 GMT
+cache-control: no-cache, must-revalidate, max-age=0, no-store, private
+permissions-policy: private-state-token-redemption=(self "https://www.google.com" "https://www.gstatic.com" "https://recaptcha.net" "https://challenges.cloudflare.com" "https://hcaptcha.com"), private-state-token-issuance=(self "https://www.google.com" "https://www.gstatic.com" "https://recaptcha.net" "https://challenges.cloudflare.com" "https://hcaptcha.com")
+link: <https://westend-hausarzt.de/wp-json/>; rel="https://api.w.org/"
+content-type: text/html; charset=UTF-8
+date: Sat, 09 May 2026 15:07:48 GMT
+server: Apache
+

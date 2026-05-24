@@ -1,0 +1,8 @@
+HTTP/2 200 
+x-powered-by: PHP/8.3.30
+permissions-policy: private-state-token-redemption=(self "https://www.google.com" "https://www.gstatic.com" "https://recaptcha.net" "https://challenges.cloudflare.com" "https://hcaptcha.com"), private-state-token-issuance=(self "https://www.google.com" "https://www.gstatic.com" "https://recaptcha.net" "https://challenges.cloudflare.com" "https://hcaptcha.com")
+link: <https://westend-hausarzt.de/wp-json/>; rel="https://api.w.org/", <https://westend-hausarzt.de/wp-json/wp/v2/pages/9663>; rel="alternate"; title="JSON"; type="application/json", <https://westend-hausarzt.de/>; rel=shortlink
+content-type: text/html; charset=UTF-8
+date: Sat, 09 May 2026 15:07:40 GMT
+server: Apache
+

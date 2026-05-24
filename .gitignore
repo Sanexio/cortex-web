@@ -62,3 +62,4 @@ sites/praxis-webseite/_deploy/welle-F-phase-B/*/import-db.php
 sites/praxis-webseite/_deploy/welle-F-phase-B/*/wp-salts.txt
 sites/praxis-webseite/_deploy/welle-F-phase-A/*/.htpasswd
 adapters/astro/.backups/
+sites/sanexio-github-io/repo/

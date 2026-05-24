@@ -1,0 +1,173 @@
+# /public_html/.htaccess — Welle J + Polish-Perf-A/B/C + S72-Security (2026-05-11)
+# WordPress live für westend-hausarzt.de mit Basic-Auth + Pretty-Lang-URLs.
+# Auth-Block via <If> (Hostname-scoped), Rewrites via RewriteCond HTTP_HOST.
+# Security: mod_rewrite-basierte Deny-Rules (überschreibt Auth-Granted via [F]).
+# Grund: <FilesMatch>+Require deny wird in Apache 2.4 von <If>+Require valid-user
+# via implizitem RequireAny aufgehoben. mod_rewrite [F] ist absolut.
+#
+# Polish-Perf-A 2026-05-09: Browser-Caching-Block (mod_expires + mod_headers).
+# Polish-Perf-B 2026-05-09: WebP-Content-Negotiation für Hero-/Content-Bilder.
+# Polish-Perf-C 2026-05-09: mod_deflate für SVG + JSON (cPanel-default lässt sie aus).
+# S72-Security 2026-05-11: zusätzliche Recon-Targets + PHP-Block in Uploads +
+#                          Server-Token-off + Apache-Server-Signature-off.
+
+DirectoryIndex index.php index.html
+Options -MultiViews -Indexes
+AddDefaultCharset UTF-8
+ServerSignature Off
+
+# Basic-Auth NUR für westend-hausarzt.de (staging.com unbeeinflusst)
+<If "%{HTTP_HOST} == 'westend-hausarzt.de' || %{HTTP_HOST} == 'www.westend-hausarzt.de'">
+    AuthType Basic
+    AuthName "Praxiszentrum Westend - Vorschau"
+    AuthUserFile /home/e88c2b3jxfrg/.htpasswds/westend-de-preview/passwd
+    Require valid-user
+</If>
+
+# === Polish-Perf-C Block: gzip-Compression für Text-Assets ===
+# WICHTIG: Apache mergt AddOutputFilterByType im .htaccess-Scope NICHT mit
+# der Server-Default-Liste — der Block überschreibt komplett. Daher müssen
+# alle Types explizit hier stehen (auch text/html, text/css, javascript),
+# sonst verlieren CSS/HTML/JS ihre Compression.
+<IfModule mod_deflate.c>
+    # Server-Default-Types (sonst Drop-Out)
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    # Polish-Perf-C: ergänzte Types die cPanel-Default nicht abdeckt
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/atom+xml
+    AddOutputFilterByType DEFLATE application/manifest+json
+    AddOutputFilterByType DEFLATE application/ld+json
+    AddOutputFilterByType DEFLATE font/ttf
+    AddOutputFilterByType DEFLATE font/otf
+    AddOutputFilterByType DEFLATE application/x-font-ttf
+</IfModule>
+# === /Polish-Perf-C Block ===
+
+# === Polish-Perf-A Block: Browser-Caching für statische Assets ===
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault                              "access plus 1 month"
+
+    # Bilder — 1 Jahr, cache-busted via WP ?ver=X falls Theme-Asset
+    ExpiresByType image/jpeg                    "access plus 1 year"
+    ExpiresByType image/png                     "access plus 1 year"
+    ExpiresByType image/gif                     "access plus 1 year"
+    ExpiresByType image/webp                    "access plus 1 year"
+    ExpiresByType image/avif                    "access plus 1 year"
+    ExpiresByType image/svg+xml                 "access plus 1 year"
+    ExpiresByType image/x-icon                  "access plus 1 year"
+
+    # Fonts — 1 Jahr
+    ExpiresByType font/woff                     "access plus 1 year"
+    ExpiresByType font/woff2                    "access plus 1 year"
+    ExpiresByType application/font-woff         "access plus 1 year"
+    ExpiresByType application/font-woff2        "access plus 1 year"
+    ExpiresByType application/x-font-ttf        "access plus 1 year"
+    ExpiresByType font/ttf                      "access plus 1 year"
+    ExpiresByType font/otf                      "access plus 1 year"
+
+    # CSS / JS — 1 Monat (WP cache-busted via ?ver=X bei Theme-Bumps)
+    ExpiresByType text/css                      "access plus 1 month"
+    ExpiresByType application/javascript        "access plus 1 month"
+    ExpiresByType application/x-javascript      "access plus 1 month"
+    ExpiresByType text/javascript               "access plus 1 month"
+
+    # HTML / JSON / XML — kein Long-Cache (dynamisch durch WPML/Block-Cache)
+    ExpiresByType text/html                     "access plus 0 seconds"
+    ExpiresByType application/json              "access plus 0 seconds"
+    ExpiresByType application/xml               "access plus 0 seconds"
+    ExpiresByType text/xml                      "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Statische Assets: cache-control public + long max-age + immutable
+    # immutable = Browser muss niemals revalidaten (sicher durch ?ver=X cache-bust)
+    <FilesMatch "\.(jpe?g|png|gif|webp|avif|svg|ico|woff|woff2|ttf|otf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    <FilesMatch "\.(css|js|map)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+    # HTML / dynamic: kein Long-Cache. Browser must revalidate.
+    <FilesMatch "\.(html|htm|xml|json)$">
+        Header set Cache-Control "no-cache, must-revalidate, max-age=0"
+    </FilesMatch>
+
+    # Polish-Perf-B: Vary: Accept für JPEG/PNG, sonst cachen Proxies/CDNs
+    # die WebP-Variante an Clients ohne WebP-Support (oder umgekehrt).
+    <FilesMatch "\.(jpe?g|png)$">
+        Header append Vary Accept
+    </FilesMatch>
+
+    # S72-Security: Server-Identitäts-Header schwächen (mod_headers, falls
+    # nicht auf Server-Level erlaubt). Server-Token-Hardening macht
+    # Recon-Tools wie WPScan und nikto deutlich weniger gesprächig.
+    Header unset Server
+    Header unset X-Powered-By
+    Header unset X-Pingback
+</IfModule>
+# === /Polish-Perf-A Block ===
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # === Welle J + S72 Block: Recon-Targets per [F]=403 absolut blocken ===
+    # File-Extensions, die nie öffentlich sein dürfen
+    RewriteRule "\.(htaccess|htpasswd|gitignore|gitattributes|editorconfig|md|log|bak|swp|sql|tar\.gz|env|ini|conf|sh|sample|orig|old|tmp|dist)$" - [F,L,NC]
+
+    # S72: WP-spezifische Recon-Files + Install-Endpoints zusätzlich abriegeln
+    RewriteRule "(?:^|/)(error_log|composer\.(json|lock)|package(-lock)?\.json|wp-config\.php|wp-config-sample\.php|xmlrpc\.php|readme\.html|license\.txt|liesmich\.html|wp-admin/install\.php|wp-admin/upgrade\.php|wp-admin/setup-config\.php)$" - [F,L,NC]
+
+    # Verzeichnis-Pfade (defense-in-depth, .git etc. sollten ohnehin nicht im DocRoot sein)
+    RewriteRule "(?:^|/)(\.git|\.svn|\.hg|\.idea|\.vscode|node_modules|_archive|_backups|specs|_deploy|tools|trunk)(?:/|$)" - [F,L]
+
+    # S72: User-Enumeration via ?author=N blocken (Doppel-Absicherung zum PHP-Hook).
+    # Wenn Query-String author=<digit> enthält und Request nicht aus /wp-admin/ kommt → 403.
+    RewriteCond %{QUERY_STRING} (^|&)author=\d [NC]
+    RewriteCond %{REQUEST_URI} !^/wp-admin/
+    RewriteRule .* - [F,L]
+    # === /Welle J + S72 Block ===
+
+    # === S72-Security: PHP-Execution-Block in Upload-Verzeichnissen ===
+    # Verhindert PHP-Execution in /wp-content/uploads/ — wichtigste Defense
+    # gegen File-Upload-to-RCE-Chains. Auch eot/swf/xml-Backdoor-Tricks blocken.
+    RewriteRule "^wp-content/uploads/.*\.(php[0-9]?|phtml|phar|pl|py|jsp|asp|aspx|sh|cgi|html?|htaccess)$" - [F,L,NC]
+    # === /S72-Security PHP-Block ===
+
+    # === Polish-Perf-B Block: WebP-Content-Negotiation ===
+    # Wenn Browser image/webp akzeptiert UND .webp-Variante derselben Datei
+    # existiert → liefere die .webp aus statt der .jpg/.jpeg/.png.
+    # T=image/webp setzt Content-Type explizit auf image/webp.
+    # E=accept:1 setzt Env-Var (kann von Headers genutzt werden).
+    # Reihenfolge: NACH Welle-J-[F]-Block (Welle-J blockt absolut, Polish-Perf-B
+    # darf nicht für blockierte Files greifen) und VOR Pretty-Lang-Rules.
+    RewriteCond %{HTTP_ACCEPT} image/webp
+    RewriteCond %{REQUEST_FILENAME} (.+)\.(jpe?g|png)$
+    RewriteCond %1.webp -f
+    RewriteRule (.+)\.(jpe?g|png)$ $1.webp [T=image/webp,E=accept:1,L]
+    # === /Polish-Perf-B Block ===
+
+    # Pretty-Lang-URLs → 302-Redirect zu WPML-Mode-3-Parameter
+    RewriteCond %{HTTP_HOST} ^(www\.)?westend-hausarzt\.de$ [NC]
+    RewriteRule ^(en|fr|es|it|pt-pt)/?$ /?lang=$1 [QSA,R=302,L]
+
+    RewriteCond %{HTTP_HOST} ^(www\.)?westend-hausarzt\.de$ [NC]
+    RewriteRule ^(en|fr|es|it|pt-pt)/(.+?)/?$ /$2/?lang=$1 [QSA,R=302,L]
+
+    # Standard-WP
+    RewriteRule ^index\.php$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.php [L]
+</IfModule>
