@@ -18,11 +18,16 @@ import yaml from "js-yaml";
 import Ajv from "ajv";
 
 import { sanexioPath, writeWithBackup, tsHeader, tsExportConst } from "./lib/astro-writer.mjs";
+// CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
+import { tenantPath, tenantDescribe } from "../../tools/lib/tenant-path.mjs";
 
 const REPO_ROOT = resolve(import.meta.dir, "../..");
-const TEAM_DIR = resolve(REPO_ROOT, "trunk/content/team");
+const TEAM_DIR = tenantPath("trunk/content/team");
 const SCHEMA_PATH = resolve(REPO_ROOT, "trunk/schema/team-member.schema.json");
 const TARGET = sanexioPath("src/data/team.ts");
+
+process.stderr.write(`[astro/team-to-astro] ${tenantDescribe()}\n`);
+process.stderr.write(`[astro/team-to-astro] TEAM_DIR=${TEAM_DIR}\n`);
 
 function die(code, msg) {
   process.stderr.write(`ASTRO_ADAPTER_ERROR: ${msg}\n`);

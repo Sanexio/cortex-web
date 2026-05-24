@@ -21,8 +21,12 @@ import yaml from "js-yaml";
 import Ajv from "ajv";
 
 import { renderTemplateJuvantisUeberUns } from "./lib/renderers/template-juvantis-ueber-uns.mjs";
+// CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
+import { tenantPath, tenantDescribe } from "../../tools/lib/tenant-path.mjs";
 
 const REPO_ROOT = resolve(import.meta.dir, "../..");
+
+process.stderr.write(`[shopify/build-template] ${tenantDescribe()}\n`);
 
 function die(code, msg) {
   process.stderr.write(`ADAPTER_ERROR: ${msg}\n`);
@@ -61,7 +65,7 @@ function enforceValid(validator, data, label) {
 }
 
 function loadAllTeamMembers() {
-  const dir = resolve(REPO_ROOT, "trunk/content/team");
+  const dir = tenantPath("trunk/content/team");
   const entries = readdirSync(dir).filter((f) => f.endsWith(".yaml"));
   const validator = compileValidator(loadSchema("trunk/schema/team-member.schema.json"));
   const members = entries.map((f) => {
