@@ -90,9 +90,12 @@ for fp in "${FRAMEWORK_PATHS[@]}"; do
     # find Files unter Framework-Pfad, grep nach Patterns
     # Exclude: node_modules, evidence/ (dokumentarische Test-Outputs vom
     # Reference-Tenant — siehe specs/REFERENCE_TENANT_EVIDENCE.md).
+    # Exclude: lint-no-tenant-leaks.sh — Self-Reference (enthält die
+    # Tenant-Patterns als Suchstrings per Definition).
     hits=$(grep -rilE "$EGREP" "$ROOT/$fp" 2>/dev/null \
         | grep -v "/node_modules/" \
         | grep -v "/evidence/" \
+        | grep -v "/lint-no-tenant-leaks\.sh$" \
         || true)
 
     if [ -z "$hits" ]; then

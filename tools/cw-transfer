@@ -49,8 +49,8 @@ Usage:
   cw-transfer help
 
 Target/Source:
-  shopify    juvantis.myshopify.com (sanexio.eu)
-  wp         Local-WP Praxis-Webseite
+  shopify    Tenant-Shopify-Store (über Tenant-Credentials in .env.local)
+  wp         Tenant-WordPress-Site (lokal oder Production)
 
 Type:
   page       Simple content page (body_html)

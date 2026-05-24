@@ -78,16 +78,16 @@ function sideBySideHtml({ trunkId, wpShot, shopifyShot, wpLink, shopifyAdminUrl,
 <div class="row">
   <div class="col">
     <header>
-      <h2>WordPress (westend-hausarzt.com / Local-WP)</h2>
-      <div class="sub">Praxis-Sicht &middot; HWG-konform &middot; ohne Preis &middot; CTA verlinkt auf sanexio.eu</div>
+      <h2>WordPress (Tenant-Site, Local-WP)</h2>
+      <div class="sub">Praxis-Sicht &middot; HWG-konform &middot; ohne Preis &middot; CTA verlinkt auf die Tenant-Shop-Domain</div>
     </header>
     <div class="shot"><img src="./${wpShot}" alt="WP-Page-Screenshot"></div>
     <div class="meta">Quelle: <code>${wpLink ?? "-"}</code></div>
   </div>
   <div class="col">
     <header>
-      <h2>Shopify (juvantis.myshopify.com / sanexio.eu)</h2>
-      <div class="sub">Juvantis-Sicht &middot; mit Preis &middot; mit Buchungs-CTA &middot; Draft-Produkt</div>
+      <h2>Shopify (Tenant-Store)</h2>
+      <div class="sub">Shop-Sicht &middot; mit Preis &middot; mit Buchungs-CTA &middot; Draft-Produkt</div>
     </header>
     <div class="shot"><img src="./${shopifyShot}" alt="Shopify body_html Preview"></div>
     <div class="meta">Quelle: Admin <code>${shopifyAdminUrl ?? "-"}</code></div>

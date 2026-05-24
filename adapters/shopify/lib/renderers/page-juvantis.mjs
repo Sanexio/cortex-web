@@ -110,9 +110,9 @@ function renderSection(section, teamMembers) {
   }
 }
 
-// Inline-CSS, content-bridge-v1 Option A (Dr. Stracke, 2026-04-22).
+// Inline-CSS, content-bridge-v1 Option A (2026-04-22).
 // Scoped on `.cw-uber-root` to avoid colliding with the Shopify theme.
-// Design-neutral defaults; full Praxis/Sanexio token bridge is out of scope here.
+// Design-neutral defaults; full Tenant-Token-Bridge ist out of scope hier.
 const INLINE_CSS = `
 <style>
 .cw-uber-root { max-width: 1080px; margin: 0 auto; padding: 2rem 1.25rem; color: #1f2937; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.55; }
