@@ -7,11 +7,20 @@
 
 set -euo pipefail
 
-CLIENT_ID="19fe6e2bd121da1592ac75d27b167e72"
-SHOP="juvantis.myshopify.com"
+cd "$(dirname "$0")/.." || exit 1
+
+# CW-009/Plattform-Split: Shop-Domain + OAuth-Client-ID aus Tenant-Config,
+# nicht mehr hartcodiert. Helper: tools/lib/tenant-config.mjs.
+CLIENT_ID="$(bun tools/lib/tenant-config.mjs shop.oauth_client_id)"
+SHOP="$(bun tools/lib/tenant-config.mjs shop.myshopify_domain)"
 SCOPES="read_products,write_products,read_files,write_files,read_content,write_content,read_themes,write_themes"
 REDIRECT_URI="http://localhost:53682/callback"
 STATE="cortexweb-$(date +%s)"
+
+if [ -z "$CLIENT_ID" ] || [ -z "$SHOP" ]; then
+  echo "shopify-authorize: tenant.config.json muss shop.oauth_client_id + shop.myshopify_domain enthalten." >&2
+  exit 1
+fi
 
 # URL-encode helper (Bash-Builtins only)
 urlencode() {

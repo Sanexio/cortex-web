@@ -1,0 +1,12 @@
+{
+  "_note": "Demo-Tenant-Config. Werte sind rein fiktiv. Wird gelesen von tools/lib/tenant-config.mjs im Demo-Fallback (kein CORTEX_TENANT_DIR gesetzt).",
+  "shop": {
+    "myshopify_domain": "demo-shop.myshopify.com",
+    "public_domain": "demo-shop.example",
+    "oauth_client_id": "00000000000000000000000000000000"
+  },
+  "praxis": {
+    "site_url": "https://demo-praxis.example",
+    "local_url": "http://demo-praxis.local"
+  }
+}

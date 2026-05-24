@@ -13,6 +13,9 @@ import { readFile } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
+// CW-009/Plattform-Split: Shop-Public-Domain aus Tenant-Config, nicht hartcodiert.
+import { tenantConfigGet } from "../../lib/tenant-config.mjs";
+
 const LIB_DIR = dirname(fileURLToPath(import.meta.url));
 
 let _vocab = null;
@@ -131,7 +134,7 @@ export async function curateProductForPraxis({ product, scope, scopeConfig }) {
       juvantis: {
         show_price: true,
         cta_label: { de: "Jetzt buchen" },
-        cta_url: `https://sanexio.eu/products/${product.handle}`
+        cta_url: `https://${tenantConfigGet("shop.public_domain")}/products/${product.handle}`
       },
       praxis: {
         show_price: false,

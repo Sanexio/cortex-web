@@ -9,7 +9,8 @@
 //   Bestellen       (verb, word-boundary, case-insensitive)
 //   Jetzt buchen    (juvantis CTA — appearance on praxis page = cross-contamination)
 //
-// Required: the allowed praxis CTA ("Mehr erfahren auf sanexio.eu") and its URL.
+// Required: the allowed Praxis-CTA (Label + URL aus trunk.views.praxis,
+// also tenant-konfiguriert — kein hartcodierter Domain-Bezug).
 //
 // Output: specs/phase-3/evidence/hwg-scan.json
 
