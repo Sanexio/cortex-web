@@ -25,7 +25,7 @@ views:
     cta_url: /service/terminanfrage/
 images:
   hero: media://example/example-product-hero
-sanexio_source:
+upstream_source:
   type: product
   handle: example-product
   resource_id: 1

@@ -95,7 +95,7 @@ async function detectScope({ client, scopeName, scopeConfig, repoRoot }) {
 
   // Index Trunk nach scope
   const trunkInScope = walkedTrunk.filter(
-    (f) => f.sanexio_source?.scope === scopeName
+    (f) => f.upstream_source?.scope === scopeName
   );
 
   const drifts = [];
@@ -125,19 +125,19 @@ async function detectScope({ client, scopeName, scopeConfig, repoRoot }) {
     });
   }
 
-  // 2. Pro Trunk-YAML mit sanexio_source: REMOVED ermitteln
+  // 2. Pro Trunk-YAML mit upstream_source: REMOVED ermitteln
   for (const t of trunkInScope) {
-    const provId = t.sanexio_source.resource_id;
+    const provId = t.upstream_source.resource_id;
     if (!sourceById.has(provId)) {
       drifts.push({
         status: "REMOVED",
-        source_type: t.sanexio_source.type,
+        source_type: t.upstream_source.type,
         resource_id: provId,
-        handle: t.sanexio_source.handle,
+        handle: t.upstream_source.handle,
         title: null,
         trunk_path: t.filePath.replace(repoRoot + "/", ""),
-        last_synced_hash: t.sanexio_source.last_synced_hash,
-        drift_strategy: t.sanexio_source.drift_strategy
+        last_synced_hash: t.upstream_source.last_synced_hash,
+        drift_strategy: t.upstream_source.drift_strategy
       });
     }
   }

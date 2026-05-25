@@ -152,7 +152,7 @@ async function handleNewOrUpdated({
     driftStrategy: "auto-curate"
   });
 
-  // Bei UPDATED: Existierendes Trunk laden, nur Sanexio-Felder + sanexio_source ersetzen,
+  // Bei UPDATED: Existierendes Trunk laden, nur Sanexio-Felder + upstream_source ersetzen,
   // Lokale Praxis-Felder erhalten.
   let finalTrunk;
   if (drift.status === "UPDATED" && drift.trunk_path) {
@@ -186,7 +186,7 @@ async function handleNewOrUpdated({
     finalTrunk = curate.trunkObject;
   }
 
-  finalTrunk.sanexio_source = provenance;
+  finalTrunk.upstream_source = provenance;
 
   // Trunk-Pfad bestimmen
   const trunkDir = resolve(repoRoot, scopeConfig.praxis_target.trunk_dir);
@@ -264,7 +264,7 @@ async function main() {
     // Trunk walken
     const trunkDir = resolve(REPO_ROOT, scopeConfig.praxis_target.trunk_dir);
     const walkedTrunk = await walkTrunkDir(trunkDir);
-    const trunkInScope = walkedTrunk.filter((f) => f.sanexio_source?.scope === scopeName);
+    const trunkInScope = walkedTrunk.filter((f) => f.upstream_source?.scope === scopeName);
 
     // Pro Source: Drift-Status ermitteln + Aktion
     for (const src of sources) {
@@ -315,10 +315,10 @@ async function main() {
 
     // REMOVED: Trunk-YAMLs in _archive/drift-sync/removed/ schieben
     for (const t of trunkInScope) {
-      const provId = t.sanexio_source.resource_id;
+      const provId = t.upstream_source.resource_id;
       if (sourceById.has(provId)) continue;
       // REMOVED
-      log(`  🗑  REMOVED: ${t.sanexio_source.handle} — Sanexio nicht mehr da`);
+      log(`  🗑  REMOVED: ${t.upstream_source.handle} — Sanexio nicht mehr da`);
       summary.removed++;
       if (!args.dryRun) {
         const removedDir = resolve(REPO_ROOT, "_archive", "drift-sync", "removed");
@@ -328,7 +328,7 @@ async function main() {
         log(`     → ${targetPath.replace(REPO_ROOT + "/", "")}`);
       }
       actions.push({
-        handle: t.sanexio_source.handle,
+        handle: t.upstream_source.handle,
         resource_id: provId,
         action: "REMOVED_ARCHIVED",
         trunk_path: t.filePath.replace(REPO_ROOT + "/", "")

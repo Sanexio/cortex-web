@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://cortex-web.local/schema/page.json",
   "title": "Page",
-  "description": "Inhaltsseite. Role-Keys (practice/shop) sind tenant-rollen-abstrakt — Tenant-spezifische Marken-Namen werden via tenant.config.json gemappt. `sanexio` ist heute noch der Brand-Hub-Site-Identifier (Welle 13 wird das auch abstrahieren).",
+  "description": "Inhaltsseite. Role-Keys (practice/shop/hub/shared) sind tenant-rollen-abstrakt — Tenant-spezifische Marken-Namen werden via tenant.config.json gemappt.",
   "type": "object",
   "required": ["id", "site", "slugs", "title", "sections"],
   "additionalProperties": false,
@@ -10,7 +10,7 @@
     "id": { "type": "string" },
     "site": {
       "type": "string",
-      "enum": ["practice", "shop", "sanexio", "shared"]
+      "enum": ["practice", "shop", "hub", "shared"]
     },
     "slugs": {
       "type": "object",
@@ -19,7 +19,7 @@
       "properties": {
         "practice": { "type": "string", "pattern": "^[a-z0-9/-]+$" },
         "shop": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-        "sanexio": { "type": "string", "pattern": "^[a-z0-9/-]+$" }
+        "hub": { "type": "string", "pattern": "^[a-z0-9/-]+$" }
       }
     },
     "title": {
@@ -38,11 +38,11 @@
       "enum": ["draft", "active"],
       "default": "draft"
     },
-    "status_sanexio": {
+    "status_hub": {
       "type": "string",
       "enum": ["draft", "active"],
       "default": "draft",
-      "description": "Phase-1-Astro-Adapter konsumiert nur Pages mit status_sanexio=active oder site=sanexio."
+      "description": "Phase-1-Astro-Adapter konsumiert nur Pages mit status_hub=active oder site=hub."
     },
     "views": {
       "type": "object",
@@ -400,9 +400,9 @@
         }
       }
     },
-    "sanexio_source": {
+    "upstream_source": {
       "type": "object",
-      "description": "Provenance-Block (LL-053-konform, drift-sync seit 2026-04-29). Verknüpft Trunk-YAML mit Sanexio-Source. Auch bei lokal editiertem Praxis-Content bleibt der Bezug erhalten. Spec: specs/drift-sync/SPEC.md §E2.",
+      "description": "Provenance-Block (drift-sync seit 2026-04-29). Verknüpft Trunk-YAML mit Upstream-Shopify-Source. Auch bei lokal editiertem Practice-Content bleibt der Bezug erhalten. Spec: specs/drift-sync/SPEC.md §E2.",
       "required": ["type", "handle", "resource_id", "last_synced_at", "last_synced_hash"],
       "additionalProperties": false,
       "properties": {

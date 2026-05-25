@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 // drift-sync / backfill.mjs
-// Einmaliges Backfill: bestehende Trunk-YAMLs (ohne sanexio_source) mit
+// Einmaliges Backfill: bestehende Trunk-YAMLs (ohne upstream_source) mit
 // Provenance-Block versehen, soweit Sanexio-Source eindeutig zuordenbar.
 //
 // Heuristik:
@@ -90,7 +90,7 @@ async function backfillScope({ client, scopeName, scopeConfig, dryRun }) {
   const matchActions = [];
 
   for (const t of walked) {
-    if (t.sanexio_source) {
+    if (t.upstream_source) {
       alreadyHas++;
       continue;
     }
@@ -146,8 +146,8 @@ async function backfillScope({ client, scopeName, scopeConfig, dryRun }) {
       local_edits: true  // Bestand wurde lokal kuratiert → Schutz vor Auto-Overwrite
     };
 
-    // YAML mit sanexio_source erweitern
-    const updated = { ...trunkObj, sanexio_source: provenanceBlock };
+    // YAML mit upstream_source erweitern
+    const updated = { ...trunkObj, upstream_source: provenanceBlock };
 
     matched++;
     matchActions.push({

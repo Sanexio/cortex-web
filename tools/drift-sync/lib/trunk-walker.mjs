@@ -7,7 +7,7 @@ import yaml from "js-yaml";
 
 /**
  * Walke alle YAML-Files unter einem Trunk-Verzeichnis. Skip _archive/, _backup/.
- * Returns: Array<{ filePath, parsed, sanexio_source | null }>
+ * Returns: Array<{ filePath, parsed, upstream_source | null }>
  */
 export async function walkTrunkDir(absDir) {
   const results = [];
@@ -43,7 +43,7 @@ async function walkRecursive(dir, results) {
         results.push({
           filePath: fullPath,
           parsed,
-          sanexio_source: parsed.sanexio_source || null
+          upstream_source: parsed.upstream_source || null
         });
       }
     } catch (err) {
@@ -54,12 +54,12 @@ async function walkRecursive(dir, results) {
 }
 
 /**
- * Findet ein Trunk-YAML anhand der sanexio_source.resource_id.
- * Returns: { filePath, parsed, sanexio_source } | null
+ * Findet ein Trunk-YAML anhand der upstream_source.resource_id.
+ * Returns: { filePath, parsed, upstream_source } | null
  */
 export function findByResourceId(walkedFiles, resourceId) {
   for (const f of walkedFiles) {
-    if (f.sanexio_source?.resource_id === resourceId) return f;
+    if (f.upstream_source?.resource_id === resourceId) return f;
   }
   return null;
 }
@@ -68,5 +68,5 @@ export function findByResourceId(walkedFiles, resourceId) {
  * Findet alle Trunk-YAMLs mit einem bestimmten scope.
  */
 export function findByScope(walkedFiles, scope) {
-  return walkedFiles.filter((f) => f.sanexio_source?.scope === scope);
+  return walkedFiles.filter((f) => f.upstream_source?.scope === scope);
 }

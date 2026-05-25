@@ -185,7 +185,7 @@ Usage:
   cw-transfer drift status [--scope=<name>] [--json]      Drift-Bericht (read-only)
   cw-transfer drift sync   [--scope=<name>] [--auto-publish] [--dry-run]
                                                           Auto-Curate + Push (D3 default = WP-draft)
-  cw-transfer drift backfill                              Bestehende Trunk-YAMLs mit sanexio_source-Block versehen
+  cw-transfer drift backfill                              Bestehende Trunk-YAMLs mit upstream_source-Block versehen
   cw-transfer drift help                                  diese Hilfe
 
 Scopes (siehe tools/drift-sync/config.json):

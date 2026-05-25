@@ -1,6 +1,6 @@
 # SESSION_RESUME — Cortex-Web
 
-> **Standard-Einstieg „Cortex-Web fortsetzen"** (Lean v3, 2026-05-25, post Welle 12).
+> **Standard-Einstieg „Cortex-Web fortsetzen"** (Lean v3, 2026-05-25, post Welle 13).
 > Pflicht-Init: `Nexus/CLAUDE.md` + `Nexus/_rules/AUTONOMY_CONTRACT.md`.
 > Aktive Detail-Source-of-Truth: `Nexus/specs/cortex-platform/SESSION_RESUME.md`.
 > Pre-Flight: `bash tools/validate.sh` (läuft im Demo-Modus ohne CORTEX_TENANT_DIR).
@@ -8,10 +8,13 @@
 
 ## §1 Stand (HOT)
 
-- **Cortex-Web-HEAD:** Welle 12 — Role-Keys abstrahiert. `juvantis` →
-  `shop`, `praxis` → `practice` in 4 Schemas, 5 umbenannten Renderern,
-  ~20 Tools, 70 Tenant-YAMLs + 4 Demo-YAMLs. Linter strict 0, validate
-  grün (1 Demo + 11 Tenant-Produkte), Build smoke OK.
+- **Cortex-Web-HEAD:** Welle 13 — `sanexio` als letztes Brand-Token
+  in Schemas/Drift-Sync abstrahiert. `sanexio_source` →
+  `upstream_source`, `site: sanexio` → `site: hub`, `status_sanexio`
+  → `status_hub`. 40 Tenant-YAMLs + 1 Demo-YAML, beide Schemas, 7
+  Drift-Sync-Files. Linter strict 0, validate grün.
+- **Cortex-Web-HEAD vorher:** Welle 12 — Role-Keys `juvantis`→`shop`,
+  `praxis`→`practice` (4 Schemas, 6 Renderer git-mv, 70 Tenant-YAMLs).
 - **Repo-Rolle:** Framework + Adapter + Schema. Tenant-Daten leben in
   `Sanexio-Tenant/` (separates Repo, via `CORTEX_TENANT_DIR` oder
   `~/.cortex/tenant-path`).
@@ -36,17 +39,19 @@ gegen den Stracke-Tenant.
 ## §3 Direkter Einstieg in die nächste Welle
 
 Größere Backlog-Items (eigenständige Wellen):
-- **Welle 13** — `sanexio` als Site-Enum-Wert abstrahieren. Der
-  Astro-Brand-Hub-Adapter rendert heute `site: sanexio`. Per gleicher
-  Logik wie Welle 12: `sanexio` → `hub` (oder `brand-hub`). Schema-
-  Bruch, aber kleiner Scope (nur 1 Site-Enum-Wert + status_sanexio +
-  sites/SANEXIO_GITHUB_IO_INDEX).
-- **Doku-Cleanup** — README + Specs sprechen vielfach noch von
-  „Praxis-View" / „Juvantis-View" als Konzept-Namen. Mechanisch
-  durch `practice-view` / `shop-view` ersetzen. Reine Doku, kein Code.
-- **OSS-History-Cleanup** auf `Sanexio/cortex-web/main`
-  (filter-repo + Force-Push + Re-Clone aller 5 Macs, Backup-Branch
-  `pre-tenant-split-2026-05-24` bleibt).
+- **Welle 14 — Doku-Cleanup** (mittel, kein Risiko): README + Specs
+  sprechen vielfach noch von „Praxis-View" / „Juvantis-View" /
+  „Sanexio-Source" als Konzept-Namen. Mechanisch durch Role-Begriffe
+  ersetzen. Pure-Doku, keine Code-Risiken.
+- **Welle 15 — `SANEXIO_REPO`-Pfad + `vendor: "Sanexio"`** (klein):
+  `adapters/astro/lib/astro-writer.mjs` hardcodiert
+  `sites/sanexio-github-io/repo` — sollte via
+  `tenant.config.astro.repo_path` gelesen werden. Analog
+  `adapters/shopify/lib/renderers/product-shop.mjs` mit hardcoded
+  `vendor: "Sanexio"` — sollte via `tenant.config.shop.vendor` lesen.
+- **OSS-Launch-Vorlauf** (groß, koordiniert): History-Cleanup auf
+  `Sanexio/cortex-web/main` mit filter-repo + Force-Push + Re-Clone
+  aller 5 Macs, Backup-Branch `pre-tenant-split-2026-05-24` als Anker.
 
 ## §4 Harte Verbote
 

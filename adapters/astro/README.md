@@ -7,7 +7,7 @@
 > `sites/sanexio-github-io/repo/`; auf anderen Tenants entsprechend.
 > **Architekten-Spec:** `specs/cross-site-transfer/ARCHITECTURE.md`
 > **Schema-Erweiterung:** `trunk/schema/page.schema.json` (Site-Enum
-> um `sanexio` ergänzt, plus `status_sanexio`-Flag analog zu `status_shop`)
+> um `hub` ergänzt, plus `status_hub`-Flag analog zu `status_shop`)
 
 ## Was dieser Adapter tut
 
@@ -25,7 +25,7 @@ adapters/astro/
 ├── README.md                 (diese Datei)
 ├── build.mjs                 Master — orchestriert alle Trunk→Astro-Steps
 ├── team-to-astro.mjs         trunk/content/team/*.yaml  → src/data/team.ts
-├── pages-to-astro.mjs        trunk/content/pages/... (site=sanexio|shared)
+├── pages-to-astro.mjs        trunk/content/pages/... (site=hub|shared)
 │                             → src/pages/<slug>.astro (Phase 2: Skelett)
 └── lib/
     ├── astro-writer.mjs      TS-/Astro-File-Output-Helper
@@ -45,7 +45,7 @@ wie im Shopify-Adapter (CW-008).
 Phase-1/2-Adapter konsumiert:
 - alle `trunk/content/team/*.yaml` → `src/data/team.ts` (vollständig)
 - später (Phase 2 Aufstockung): `trunk/content/pages/**/*.yaml` mit
-  `site == 'sanexio'` oder (`site == 'shared'` und `status_sanexio == 'active'`)
+  `site == 'hub'` oder (`site == 'shared'` und `status_hub == 'active'`)
 
 ## Verwendung
 

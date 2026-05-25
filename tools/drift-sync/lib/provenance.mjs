@@ -72,7 +72,7 @@ function sortKeysDeep(obj) {
  *   UPDATED      — Hash unterschiedlich, lokale Edits = false
  *   LOCAL_DRIFT  — Hash unterschiedlich, lokale Edits = true → STOPP
  *   REMOVED      — Trunk hat Provenance, Source nicht mehr da
- *   LOCAL_ONLY   — Trunk hat keine sanexio_source (Praxis-eigene Page)
+ *   LOCAL_ONLY   — Trunk hat keine upstream_source (Praxis-eigene Page)
  *   FROZEN       — drift_strategy = "frozen", kein Drift-Check
  */
 export function compareDrift({ trunkYaml, currentSource, sourceType }) {
@@ -82,9 +82,9 @@ export function compareDrift({ trunkYaml, currentSource, sourceType }) {
     return { status: "UNKNOWN" };
   }
 
-  const prov = trunkYaml.sanexio_source;
+  const prov = trunkYaml.upstream_source;
 
-  // Trunk existiert aber hat keinen sanexio_source-Block → LOCAL_ONLY (Praxis-eigene Page)
+  // Trunk existiert aber hat keinen upstream_source-Block → LOCAL_ONLY (Praxis-eigene Page)
   if (!prov) {
     return { status: "LOCAL_ONLY" };
   }
@@ -129,7 +129,7 @@ export function compareDrift({ trunkYaml, currentSource, sourceType }) {
 }
 
 /**
- * Generiere einen frischen sanexio_source-Block für eine neue oder aktualisierte Trunk-YAML.
+ * Generiere einen frischen upstream_source-Block für eine neue oder aktualisierte Trunk-YAML.
  */
 export function buildProvenanceBlock({ type, handle, resourceId, collection, scope, currentHash, driftStrategy = "auto-curate" }) {
   const block = {

@@ -91,9 +91,9 @@
         }
       }
     },
-    "sanexio_source": {
+    "upstream_source": {
       "type": "object",
-      "description": "Provenance-Block (drift-sync seit 2026-04-29). Verknüpft Trunk-YAML mit Upstream-Source. Auch bei lokal editiertem Practice-Content bleibt der Bezug erhalten. Spec: specs/drift-sync/SPEC.md §E2.",
+      "description": "Provenance-Block (drift-sync seit 2026-04-29). Verknüpft Trunk-YAML mit Upstream-Shopify-Source. Auch bei lokal editiertem Practice-Content bleibt der Bezug erhalten. Spec: specs/drift-sync/SPEC.md §E2.",
       "required": ["type", "handle", "resource_id", "last_synced_at", "last_synced_hash"],
       "additionalProperties": false,
       "properties": {
