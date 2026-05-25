@@ -1,7 +1,7 @@
 # cross-site-transfer — Architektur-Session Self-Check
 
 > **Datum:** 2026-04-22
-> **Scope:** Architektonische Vorbereitung zukünftiger Transfers (Dr.-Stracke-Auftrag)
+> **Scope:** Architektonische Vorbereitung zukünftiger Transfers (Operator-Auftrag)
 > **Nicht:** Vollständige Implementierung aller Transfer-Richtungen.
 
 ---
@@ -67,7 +67,7 @@ Zeigt 4 Sektionen:
 ### extract-page.mjs (Shopify)
 ```json
 {
-  "_source": "shopify.page@juvantis.myshopify.com",
+  "_source": "shopify.page@<shopify-store>",
   "_handle": "uber-uns",
   "_shopify_id": 157742137611,
   "title": { "de": "Ärzte & Team" },
@@ -137,7 +137,7 @@ kann ein fehlerhafter Push Wochen an Admin-Edits zerstören.
 | WP-Template-Adapter (Trunk→WP für inc/*.php oder templates/) | Eigene Session nötig (PHP-Side effects, Theme-Git-Konflikte) | Phase C2 Block N-1 |
 | `cw-transfer diff` | Braucht Build-dann-Fetch-dann-JSON-Diff-Logik | Phase C2 Block N-6 |
 | Backup-Automatik auf Page-Adapter + WP-Page-Adapter | 30 Min pro Adapter, getrennt | Phase C2 Block N-7 |
-| Design-Token-Adapter | Architektur-Entscheidung Dr. Stracke (Master-Frage) nicht geklärt | Phase D |
+| Design-Token-Adapter | Architektur-Entscheidung Tenant-Operator (Master-Frage) nicht geklärt | Phase D |
 | Component-Specs | Setzt Design-Tokens voraus | Phase F |
 
 ---

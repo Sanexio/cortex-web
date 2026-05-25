@@ -1,7 +1,7 @@
 # Cross-Site-Transfer — Architektur
 
 > **Status:** Spec (Phase 2, Lösungsdesign) — 2026-04-22
-> **Freigabe Dr. Stracke:** „Bereite zukünftige Transfers architektonisch vor" (2026-04-22)
+> **Freigabe Tenant-Operator:** „Bereite zukünftige Transfers architektonisch vor" (2026-04-22)
 > **Scope:** Architektur-Skelett, nicht vollständige Implementierung
 > **Related:** `SPEC.md` content-bridge-v1 (bereits live), `docs/cross-site-transfer.md`
 
@@ -21,7 +21,7 @@ Jeder Transfer zwischen den beiden Sites läuft **zwingend** über den Trunk.
 
 ### 1.2 Gerichteter, expliziter Transfer
 
-Jeder Transfer ist ein **benannter, von Dr. Stracke bewusst ausgelöster Befehl**.
+Jeder Transfer ist ein **benannter, von Tenant-Operator bewusst ausgelöster Befehl**.
 **Kein** Auto-Sync. **Kein** Webhook-basiertes Live-Mirroring. Der Zustand der
 Sites kann jederzeit vom Trunk abweichen — das ist gewollt.
 
@@ -195,7 +195,7 @@ UI-Verb-Layer für Konsistenz und Entdeckbarkeit.
 ```
 
 Wichtig: Der Extractor schreibt **niemals direkt** in `trunk/`. Stattdessen gibt
-er Proto-JSON aus, das Dr. Stracke (oder Claude) **bewusst** in eine YAML
+er Proto-JSON aus, das Tenant-Operator (oder Claude) **bewusst** in eine YAML
 überführt — inklusive Kuration, Schema-Anpassung, i18n-Split.
 
 ### 6.2 Warum kein Direct-Overwrite des Trunks
@@ -252,10 +252,10 @@ anbieten (nicht jetzt gebaut).
 
 | Nicht-Ziel | Warum |
 |---|---|
-| Auto-Sync / Webhooks | Widerspricht Dr. Strackes Entscheidung (explizit, gerichtet) |
+| Auto-Sync / Webhooks | Widerspricht Tenant-Operators Entscheidung (explizit, gerichtet) |
 | Two-Way-Merge | CW-001-Verletzung; Konflikt-Auflösung ist eigenes Problem |
 | Live-Preview der Trunk-YAML | Pre-Commit-Hooks + Self-Check sind ausreichend |
-| Team-Collaboration-Workflows | Dr. Stracke ist alleiniger Editor (R-001 Juvantis) |
+| Team-Collaboration-Workflows | Tenant-Operator ist alleiniger Editor (R-001 Juvantis) |
 | Multi-Environment (staging/prod) | Shopify = single live theme; WP-Local = Prod-Staging-Proxy |
 
 ---
@@ -290,7 +290,7 @@ anbieten (nicht jetzt gebaut).
 ### Phase C1 (Content) — ✅ **abgeschlossen 2026-04-22**
 - Content-Bridge v1 (page.content)
 - Template-Bridge Option B (template.json mit Section-Blocks)
-- Ueber-Uns produktiv auf sanexio.eu
+- Ueber-Uns produktiv auf <distribution-domain>
 
 ### Phase C2 (Content, rückwärts) — ⏳ offen
 - Extraktions-Tools ausbauen (Proto-JSON → kuratierter YAML)
@@ -298,10 +298,10 @@ anbieten (nicht jetzt gebaut).
 - Erster rückwärtiger Use-Case: Shopify-Impressum → Trunk → Praxis-WP
 
 ### Phase D (Design) — ⏳ offen
-- `trunk/design/tokens.json` schema + initial Extraction aus `praxiszentrum/tokens.css`
+- `trunk/design/tokens.json` schema + initial Extraction aus `<tenant-theme>/tokens.css`
 - `adapters/wordpress/tokens-to-wp-css.mjs`
 - `adapters/shopify/tokens-to-liquid.mjs`
-- Design-Master-Frage: Praxis / Juvantis / Neutral? (Dr. Stracke entscheidet)
+- Design-Master-Frage: Praxis / Juvantis / Neutral? (Tenant-Operator entscheidet)
 
 ### Phase F (Funktion / Komponenten) — ⏳ offen
 - `trunk/design/components/<name>/spec.md` + `reference.html`
@@ -311,4 +311,4 @@ anbieten (nicht jetzt gebaut).
 ---
 
 *Erstellt 2026-04-22 in content-bridge-v1 + Template-Bridge-Session.
-Dr.-Stracke-Freigabe: architektonische Vorbereitung bidirektionaler Transfers.*
+Operator-Freigabe: architektonische Vorbereitung bidirektionaler Transfers.*

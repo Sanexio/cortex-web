@@ -3,7 +3,7 @@
 **Status:** In Umsetzung (Session 26, 2026-04-23)
 **Aufwand:** ~1 Session
 **Abhängigkeiten:** content-bridge-v1 ✅ · cross-site-transfer ARCHITECTURE/PATTERNS ✅ · `pages-to-shopify.mjs` (N-5/N-7) ✅
-**Dr.-Stracke-Freigabe:** Session 26 Front-Wahl „Patt → N-6", Scope-Bestätigung „MVP shopify:page only"
+**Operator-Freigabe:** Session 26 Front-Wahl „Patt → N-6", Scope-Bestätigung „MVP shopify:page only"
 
 ---
 
@@ -170,7 +170,7 @@ Im Gegensatz zu `tools/sync-page-shopify.sh` gibt es **kein** `tools/diff-page-s
 
 | # | AK | Prüfmethode |
 |:-:|---|---|
-| AK-1 | Spec-Datei existiert + 4 Dr-Stracke-Section-Format (Verständnis/Lösungsdesign/Umsetzung/Selbstprüfung) | `ls + grep` |
+| AK-1 | Spec-Datei existiert + 4 Operator-Section-Format (Verständnis/Lösungsdesign/Umsetzung/Selbstprüfung) | `ls + grep` |
 | AK-2 | `adapters/shopify/diff-page.mjs` existiert + ≥ 100 Zeilen produktiv | `wc -l` |
 | AK-3 | `cmdDiff` in `cw-transfer` ist nicht mehr "not yet implemented" | `grep "not yet implemented" cw-transfer` = 0 |
 | AK-4 | `DIFF_TOOLS["shopify:page"]` zeigt auf `diff-page.mjs` | `grep` |
@@ -184,7 +184,7 @@ Im Gegensatz zu `tools/sync-page-shopify.sh` gibt es **kein** `tools/diff-page-s
 | AK-12 | Bundle-Build: `bun build adapters/shopify/diff-page.mjs --target=bun` läuft fehlerfrei | exit 0 |
 
 **Live-Verify NICHT in §4 enthalten** — das wäre ein echter Live-Diff
-gegen `sanexio.eu/pages/uber-uns`. Setzt funktionierende `.env.local`
+gegen `<distribution-domain>/pages/uber-uns`. Setzt funktionierende `.env.local`
 voraus, ist aber nicht für die N-6-Selbstprüfung notwendig (CW-006:
 Live-Push/Verify ist eigene Operation, nicht implizit Teil eines
 Adapter-Tasks).
@@ -209,4 +209,4 @@ Push-Pendant. Pattern-Anlage in Session-Ende prüfen.
 
 ---
 
-*Autor: Claude (Architekten-Modus, Session 26, autonom auf Cluster-Mini-02). Dr.-Stracke-Freigabe: „JA" auf Plan Block 1+2 + Scope MVP shopify:page.*
+*Autor: Claude (Architekten-Modus, Session 26, autonom auf Cluster-Mini-02). Operator-Freigabe: „JA" auf Plan Block 1+2 + Scope MVP shopify:page.*

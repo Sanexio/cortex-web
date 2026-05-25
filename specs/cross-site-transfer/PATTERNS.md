@@ -183,7 +183,7 @@ trunk/design/tokens.json (Master)
   → Shopify-Theme: CSS-Variables in theme.liquid
 ```
 
-**Offene Architektur-Entscheidungen (Dr. Stracke):**
+**Offene Architektur-Entscheidungen (Tenant-Operator):**
 1. **Wer ist Master?** Praxis-tokens.css v2 existiert schon (4-Schichten-Modell).
    Variante A: Praxis ist Master, Juvantis erbt.
    Variante B: Neuer neutraler Master, beide erben.

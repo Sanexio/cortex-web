@@ -7,7 +7,7 @@
 
 ## §0 Problem
 
-Die Praxis-Webseite (`westend-hausarzt.com`) hat seit S2.3-aerzte-services (2026-04-22)
+Die Praxis-Webseite (`<tenant-domain>`) hat seit S2.3-aerzte-services (2026-04-22)
 eine aus 8 Arzt-Einträgen bestehende `/team/`-Seite, deren Datenquelle das PHP-Array
 `pxz_team_doctors()` in `inc/team-data.php` ist. Die Trunk-YAMLs unter
 `trunk/content/team/*.yaml` wurden in content-bridge-v1 (Session 22) als SSoT
@@ -135,7 +135,7 @@ identisch zum IST-`pxz_team_doctors()`-Output sein (AK-11: Dry-Run-Parität).
 
 **Env:**
 - `THEME_PATH` (optional) — Override Theme-Root-Pfad. Default:
-  `/Users/cluster-mini-02/Local Sites/gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604/app/public/wp-content/themes/praxiszentrum`
+  `<local-wp-theme-path>`
   (aus THEME_POINTER.md, Local-WP auf Cluster-Mini-02).
 
 **Output:** Summary-JSON auf stdout:
@@ -237,7 +237,7 @@ sehen den Umbau nicht.
 ## §8 Scope-Verbote (nicht in N-1)
 
 - Kein Media-ID-Resolver (image_id bleibt 0 in Phase 0).
-- Kein Push auf Production (`westend-hausarzt.com`). Nur Local-WP.
+- Kein Push auf Production (`<tenant-domain>`). Nur Local-WP.
 - Kein N-6.3 (`diff wp:template`) — eigene Folge-Front.
 - Keine WP-REST-Abhängigkeit (N-1 ist reiner Filesystem-Adapter).
 - Keine Änderung an Template-Dateien außer `inc/team-data.php`.

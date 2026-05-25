@@ -1,7 +1,7 @@
 # Drift-Sync — Shopify ↔ Praxis Auto-Synchronisation
 
 > **Status:** Phase 2 → Phase 3 (Architekten-Modus, Session 51, 2026-04-29)
-> **Auftrag Dr. Stracke (2026-04-29):** „Ich will, dass alle weiteren Untersuchungen und Labortests, die zuerst auf der Shopify-Seite implementiert werden, automatisch auf die Praxiswebpage übertragen werden. Du erkennst automatisch, wenn ich dir sage, dass du den Abgleich machen sollst, welche neu hinzugekommen sind, und pflegst sie selbst auf der Webpage ein. Auch bei lokal geändertem Praxis-Content musst du erkennen, von welcher ursprünglichen Sanexio-Seite die Praxis-Seite kommt."
+> **Auftrag Tenant-Operator (2026-04-29):** „Ich will, dass alle weiteren Untersuchungen und Labortests, die zuerst auf der Shopify-Seite implementiert werden, automatisch auf die Praxiswebpage übertragen werden. Du erkennst automatisch, wenn ich dir sage, dass du den Abgleich machen sollst, welche neu hinzugekommen sind, und pflegst sie selbst auf der Webpage ein. Auch bei lokal geändertem Praxis-Content musst du erkennen, von welcher ursprünglichen Sanexio-Seite die Praxis-Seite kommt."
 > **Verwandt:** S49 `S49_shopify-content-bridge.md` (§12 Wiederverwendbarer Workflow), `specs/cross-site-transfer/ARCHITECTURE.md`, `PATTERNS.md`
 
 ---
@@ -152,7 +152,7 @@ cw-transfer drift backfill                  # Einmalig: bestehende Trunk-YAMLs m
 ```json
 {
   "version": 1,
-  "shopify_store": "juvantis.myshopify.com",
+  "shopify_store": "<shopify-store>",
   "scopes": {
     "labor": {
       "type": "collection",
@@ -242,7 +242,7 @@ cw-transfer drift backfill                  # Einmalig: bestehende Trunk-YAMLs m
    g. cw-transfer push wp:page <yaml> --status=draft (oder published bei --auto-publish + scope erlaubt)
 3. Pro REMOVED:
    a. Trunk-YAML nach _archive/drift-sync/removed/ verschieben
-   b. WP-Page auf draft setzen (NICHT löschen — Stracke entscheidet)
+   b. WP-Page auf draft setzen (NICHT löschen — Tenant-Operator entscheidet)
 4. Aktualisiere Hub-Page (z.B. /labor/) wenn neue Karten erforderlich
 5. Schreibe Sync-Log: was getan, was übersprungen, was zur Review
 ```
@@ -324,4 +324,4 @@ Existierende Trunk-YAMLs (Stand 2026-04-29):
 
 ---
 
-*Erstellt 2026-04-29 in Session 51 nach Dr.-Stracke-Auftrag „setze das heute vollumfänglich um". Architekten-Modus Phase 2 → direkter Übergang zu Phase 3 (Implementation), weil Auftrag eindeutig.*
+*Erstellt 2026-04-29 in Session 51 nach Operator-Auftrag „setze das heute vollumfänglich um". Architekten-Modus Phase 2 → direkter Übergang zu Phase 3 (Implementation), weil Auftrag eindeutig.*
