@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# ============================================================
+# tools/git-hooks/pre-commit
+# ============================================================
+# Pre-Commit-Hook für Cortex-Web. Wird über `core.hooksPath = tools/git-hooks`
+# aktiv (siehe tools/install-git-hooks.sh).
+#
+# Aufgabe: tools/lint-no-tenant-leaks.sh --strict laufen lassen.
+# Bei Treffern blockt git commit mit exit 1.
+#
+# Bypass im Notfall: `git commit --no-verify`. Bitte sehr restriktiv
+# verwenden (siehe AUTONOMY_CONTRACT R3: Hooks nicht skippen).
+# ============================================================
+
+set -uo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+    echo "pre-commit: git rev-parse failed — kein Repo?" >&2
+    exit 1
+}
+
+LINTER="$REPO_ROOT/tools/lint-no-tenant-leaks.sh"
+if [ ! -x "$LINTER" ]; then
+    echo "pre-commit: $LINTER fehlt oder nicht executable — Hook übersprungen." >&2
+    exit 0
+fi
+
+if ! bash "$LINTER" --strict; then
+    echo >&2
+    echo "pre-commit: lint-no-tenant-leaks --strict hat Tenant-Spuren gefunden." >&2
+    echo "pre-commit: Fix die Treffer oder verschiebe die Datei in einen Tenant-Pfad." >&2
+    echo "pre-commit: Bypass (nur im Notfall): git commit --no-verify" >&2
+    exit 1
+fi
+
+exit 0

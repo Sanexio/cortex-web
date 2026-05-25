@@ -1,22 +1,25 @@
 # SESSION_RESUME — Cortex-Web
 
-> **Standard-Einstieg „Cortex-Web fortsetzen"** (Lean v3, 2026-05-25, post Welle 9).
+> **Standard-Einstieg „Cortex-Web fortsetzen"** (Lean v3, 2026-05-25, post Welle 10).
 > Pflicht-Init: `Nexus/CLAUDE.md` + `Nexus/_rules/AUTONOMY_CONTRACT.md`.
 > Aktive Detail-Source-of-Truth: `Nexus/specs/cortex-platform/SESSION_RESUME.md`.
 > Pre-Flight: `bash tools/validate.sh` (läuft im Demo-Modus ohne CORTEX_TENANT_DIR).
+> **Einmal pro Mac:** `bash tools/install-git-hooks.sh` (aktiviert Pre-Commit-Lint).
 
 ## §1 Stand (HOT)
 
-- **Cortex-Web-HEAD:** Welle 9 — cta_url-Schema parametrisiert, Linter 67→0,
-  Strict-Modus lokal grün.
+- **Cortex-Web-HEAD:** Welle 10 — Pre-Commit-Hook für
+  `lint-no-tenant-leaks --strict` aktiv. Linter bleibt damit automatisch
+  bei 0.
 - **Repo-Rolle:** Framework + Adapter + Schema. Tenant-Daten leben in
   `Sanexio-Tenant/` (separates Repo, via `CORTEX_TENANT_DIR` oder
   `~/.cortex/tenant-path`).
 - **Helper-Trio in `tools/lib/`:** `tenant-path.{sh,mjs}` (Datenpfad),
   `theme-path.mjs` (Local-WP-Theme), `tenant-config.mjs` (funktionale
   Konstanten aus `<tenant>/tenant.config.json`).
-- **Linter:** `tools/lint-no-tenant-leaks.sh` strict-clean. Pre-Commit-
-  Aktivierung steht als nächste kleine Welle aus.
+- **Linter:** `tools/lint-no-tenant-leaks.sh` strict-clean +
+  Pre-Commit-Hook in `tools/git-hooks/pre-commit`. Installer:
+  `tools/install-git-hooks.sh` (setzt `core.hooksPath`).
 
 ## §2 Pre-Flight
 
@@ -31,9 +34,14 @@ gegen den Stracke-Tenant.
 
 ## §3 Direkter Einstieg in die nächste Welle
 
-Welle 10 — Pre-Commit-Hook für `lint-no-tenant-leaks.sh --strict`. Damit
-ein versehentliches Re-Einschleusen von Tenant-Spuren ins Framework
-beim Commit geblockt wird.
+Auf den anderen Macs einmalig den Installer laufen lassen:
+
+```bash
+cd ~/Cortex/projects/Cortex-Web && bash tools/install-git-hooks.sh
+```
+
+(`core.hooksPath` ist lokal-only und wird nicht über GitHub gespiegelt —
+darum pro Mac einmal.)
 
 Größere Backlog-Items (eigenständige Wellen):
 - `adapters/shopify/lib/renderers/page-juvantis.mjs` → `page-tenant-shop.mjs`
