@@ -150,17 +150,17 @@ HWG-konform (keine Preise, keine Buy-CTA).
 
 **Mechanik:**
 ```
-Trunk-YAML (products/<cat>/<id>.yaml mit views.juvantis + views.praxis)
+Trunk-YAML (products/<cat>/<id>.yaml mit views.shop + views.practice)
   ↓ adapters/shopify/build.mjs → lib/renderers/product-juvantis.mjs
   ↓ adapters/shopify/products-to-shopify.mjs
 Payload { product: { handle, title, body_html, variants[], status:draft } }
 ```
 
-**Besonderheit:** `views.praxis.show_price: false` erzwingt HWG-Konformität
+**Besonderheit:** `views.practice.show_price: false` erzwingt HWG-Konformität
 schema-seitig (AJV).
 
 **Erweiterung:** Praxis-seitig rendert `adapters/wordpress/content-to-wp-pages.mjs`
-dieselbe YAML mit Praxis-View auf WordPress — bereits produktiv seit S2.3-checkups
+dieselbe YAML mit Practice-View auf WordPress — bereits produktiv seit S2.3-checkups
 (Bridge `/basic-check/` auf Praxis-Site rendert aus basic-check.yaml).
 
 ---

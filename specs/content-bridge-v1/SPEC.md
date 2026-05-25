@@ -129,7 +129,7 @@ sections:
     members: all                  # "all" oder Liste von slugs
 ```
 
-### 4.3 Renderer-Verhalten (Juvantis-View)
+### 4.3 Renderer-Verhalten (Shop-View)
 
 Der Renderer produziert **semantisches HTML** für `body_html` der Shopify-Page.
 Stil-Klassen werden mit Präfix `pxz-uber-*` versehen, sodass sie im

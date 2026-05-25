@@ -40,7 +40,7 @@
 | A-3 | Adapter-Scripts `sync-wp.sh`/`sync-shopify.sh` sind idempotent (Phase 1+2 bewiesen) | Re-Run im Review bestätigt; bei Abweichung FK-4 |
 | A-4 | Chrome-Executable unter `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome` startet headless | Puppeteer-launch erfolgreich |
 | A-5 | Shopify `body_html` ist Trunk-getrieben und enthält die gleichen Kernfelder wie WP-Page | Content-Parity-Report AK-3 |
-| A-6 | HWG-Compliance der Praxis-View ist schema-erzwungen (`views.praxis.show_price: const false`) | Phase-1-Spec; wird empirisch durch Token-Scan bestätigt |
+| A-6 | HWG-Compliance der Practice-View ist schema-erzwungen (`views.practice.show_price: const false`) | Phase-1-Spec; wird empirisch durch Token-Scan bestätigt |
 
 ---
 
@@ -135,7 +135,7 @@ trunk/content/products/bluttests/basic-check.yaml
 | ID | Kriterium | Evidenz |
 |----|-----------|---------|
 | **AK-1** | Pre-Flight `validate.sh` grün; `CHECK_SHOPIFY=1` grün | Konsolen-Output |
-| **AK-2** | **WP-Content-Parität:** WP-Page 9668 enthält: Trunk-`headline_override.de`, Trunk-`beschreibung.de`, Trunk-`tagline.de`, Trunk-`views.praxis.cta_label.de`, Trunk-`views.praxis.cta_url`, alle 15 Parameter-Codes | `content-parity.json` |
+| **AK-2** | **WP-Content-Parität:** WP-Page 9668 enthält: Trunk-`headline_override.de`, Trunk-`beschreibung.de`, Trunk-`tagline.de`, Trunk-`views.practice.cta_label.de`, Trunk-`views.practice.cta_url`, alle 15 Parameter-Codes | `content-parity.json` |
 | **AK-3** | **Shopify-Content-Parität:** Shopify-Product `10940942844171` enthält: Trunk-`title.de`, Trunk-`tagline.de`, Trunk-`beschreibung.de`, Trunk-`price_eur` als `variants[0].price`, Trunk-`sku`, alle 15 Parameter-Codes im `body_html` | `content-parity.json` |
 | **AK-4** | **HWG-Compliance (Praxis):** WP-Page-HTML enthält KEINE der verbotenen Tokens (`€`, ` EUR`, `Kaufen`, `Warenkorb`, `Bestellen`, `Jetzt buchen`). Erlaubter Praxis-CTA (`Mehr erfahren auf sanexio.eu` + Ziel-URL) ist präsent | `hwg-scan.json` |
 | **AK-5** | **Juvantis-Commerce:** Shopify-Product hat `variants[0].price >= 1`, non-empty `sku`, non-empty `product_type`, non-empty `tags[]`, non-empty `vendor` | `commerce-check.json` |

@@ -10,10 +10,10 @@
 
 ### Kern-Ziele
 
-1. **Drift-Erkennung:** Auf Befehl scannt Claude alle relevanten Sanexio-Sources (Bluttests-Collection, Body-Checks-Collection, Pages) und listet was seit dem letzten Sync neu/geändert/entfernt ist.
+1. **Drift-Erkennung:** Auf Befehl scannt Claude alle relevanten Upstream-Sources (Bluttests-Collection, Body-Checks-Collection, Pages) und listet was seit dem letzten Sync neu/geändert/entfernt ist.
 2. **Auto-Curation:** Pro neuer Quelle wird ein Trunk-YAML mit HWG-Cleanup (Preise raus, Sie-Form, Praxis-CTA) generiert.
 3. **Auto-Push:** Trunk-YAML wird über bestehende `cw-transfer push wp:page`-Pipeline auf die Praxis-WP gepusht (initial als `draft` für Review-Gate).
-4. **Provenance-Stabilität:** Auch bei lokal editiertem Praxis-Content bleibt der Bezug zur Sanexio-Source erhalten — über stabile `sanexio_source`-Markierung im Trunk-YAML.
+4. **Provenance-Stabilität:** Auch bei lokal editiertem Praxis-Content bleibt der Bezug zur Upstream-Source erhalten — über stabile `upstream_source`-Markierung im Trunk-YAML.
 5. **Lokaler Drift-Schutz:** Wenn Praxis lokal geändert wurde UND Sanexio sich neu geändert hat, wird der Konflikt erkannt und der Sync stoppt für manuelle Auflösung (`LOCAL_DRIFT`-Strategie).
 
 ### Pflicht-Constraints
@@ -40,13 +40,13 @@
 
 ### E2 Provenance-Schema
 
-Jedes Trunk-YAML, das von Shopify gespiegelt wurde, bekommt einen `sanexio_source`-Block:
+Jedes Trunk-YAML, das von Shopify gespiegelt wurde, bekommt einen `upstream_source`-Block:
 
 ```yaml
-sanexio_source:
+upstream_source:
   type: product | page                # Shopify-Resource-Typ
   handle: blutbild-basic              # Shopify-Handle (= Slug)
-  collection: bluttests               # nur bei type=product: Sanexio-Collection-Handle
+  collection: bluttests               # nur bei type=product: Upstream-Collection-Handle
   resource_id: 7894561234             # Shopify-Numerische-ID (stabil über Handle-Renaming)
   last_synced_at: 2026-04-29T17:42:00Z
   last_synced_hash: a3f2e1d4...       # SHA-256 des relevanten Source-Content (siehe §3)
@@ -54,7 +54,7 @@ sanexio_source:
   local_edits: false                  # true = Praxis-Content wurde lokal angepasst (SCHUTZ)
 ```
 
-**Anchor:** `sanexio_source.resource_id` ist stabil — auch wenn Sanexio-Handle umbenannt wird, bleibt die Verknüpfung. `handle` ist Convenience.
+**Anchor:** `upstream_source.resource_id` ist stabil — auch wenn Upstream-Handle umbenannt wird, bleibt die Verknüpfung. `handle` ist Convenience.
 
 ### E3 Hash-Berechnung (Drift-Detektion)
 
@@ -71,12 +71,12 @@ Preise werden bewusst NICHT in den Hash genommen → Preisänderungen lösen kei
 
 | Status | Bedingung | Aktion |
 |---|---|---|
-| **NEW** | Sanexio-Resource existiert, kein Trunk-YAML mit `sanexio_source.resource_id == X` | Auto-Curate → neuer Trunk-YAML mit `drift_strategy=auto-curate` |
+| **NEW** | Upstream-Resource existiert, kein Trunk-YAML mit `upstream_source.resource_id == X` | Auto-Curate → neuer Trunk-YAML mit `drift_strategy=auto-curate` |
 | **UPDATED** | Trunk existiert, `local_edits=false`, `current_hash != last_synced_hash` | Auto-Curate-Update mit Backup `_archive/drift-sync/<resource>-<timestamp>.yaml` |
-| **REMOVED** | Trunk hat `sanexio_source.resource_id`, Sanexio-Source nicht mehr da | Trunk-YAML in `_archive/drift-sync/removed/`, Praxis-Page auf draft, manueller Review |
-| **LOCAL_DRIFT** | Trunk existiert, `local_edits=true`, `current_hash != last_synced_hash` | **STOPP** — Sanexio-Diff anzeigen, Sie wählen: (a) Lokal überschreiben, (b) Sanexio-Update ignorieren, (c) Manuell mergen |
+| **REMOVED** | Trunk hat `upstream_source.resource_id`, Upstream-Source nicht mehr da | Trunk-YAML in `_archive/drift-sync/removed/`, Praxis-Page auf draft, manueller Review |
+| **LOCAL_DRIFT** | Trunk existiert, `local_edits=true`, `current_hash != last_synced_hash` | **STOPP** — Upstream-Diff anzeigen, Sie wählen: (a) Lokal überschreiben, (b) Upstream-Update ignorieren, (c) Manuell mergen |
 | **CLEAN** | Trunk existiert, `current_hash == last_synced_hash` | Nichts zu tun |
-| **LOCAL_ONLY** | Trunk existiert ohne `sanexio_source` (Praxis-eigene Page) | Wird ignoriert (kein Sanexio-Bezug) |
+| **LOCAL_ONLY** | Trunk existiert ohne `upstream_source` (Praxis-eigene Page) | Wird ignoriert (kein Upstream-Bezug) |
 
 ### E5 HWG-Curation-Pipeline
 
@@ -84,9 +84,9 @@ Jeder Auto-Curate-Lauf macht mechanisch:
 
 | Schritt | Was |
 |---|---|
-| **C1 Preise raus** | `views.praxis.show_prices: false` setzen, `price_eur` nicht in `views.praxis` rendern |
+| **C1 Preise raus** | `views.practice.show_prices: false` setzen, `price_eur` nicht in `views.practice` rendern |
 | **C2 Sie-Form** | Regex-Replacements für Du→Sie, dein/deine→Ihr/Ihre, dich→Sie. Whitelist häufiger Begriffe |
-| **C3 CTA-Override** | `views.praxis.cta_url: /service/terminanfrage/`, Label „Termin vereinbaren" |
+| **C3 CTA-Override** | `views.practice.cta_url: /service/terminanfrage/`, Label „Termin vereinbaren" |
 | **C4 HWG-Filter** | Heilversprechen-Wörter erkennen (Liste in `lib/hwg-vocab.json`), bei Treffer: Stopp + manuelle Review |
 | **C5 Bilder spiegeln** | Über `tools/mirror-shopify-images.sh`: Featured + Gallery → `_media-source/shopify-mirror/` |
 
@@ -123,8 +123,8 @@ Cortex-Web/
 │       ├── hwg-vocab.json               ← Heilversprechen-Wortliste
 │       └── trunk-walker.mjs             ← Trunk-YAML-Discovery
 └── trunk/schema/
-    ├── product.schema.json              ← + sanexio_source-Block
-    └── page.schema.json                 ← + sanexio_source-Block
+    ├── product.schema.json              ← + upstream_source-Block
+    └── page.schema.json                 ← + upstream_source-Block
 ```
 
 ### CLI-Verben (Erweiterung von `tools/cw-transfer`)
@@ -139,7 +139,7 @@ cw-transfer drift sync --auto-publish       # D4: direkt published
 cw-transfer drift sync --dry-run            # Schreibt nichts, simuliert
 cw-transfer drift sync --scope=labor        # Nur Labor
 
-cw-transfer drift backfill                  # Einmalig: bestehende Trunk-YAMLs mit sanexio_source-Block versehen
+cw-transfer drift backfill                  # Einmalig: bestehende Trunk-YAMLs mit upstream_source-Block versehen
                                             # (für Provenance-Initialisierung der Bestandsdaten)
 ```
 
@@ -214,7 +214,7 @@ cw-transfer drift backfill                  # Einmalig: bestehende Trunk-YAMLs m
 2. Pro Scope:
    a. Frage Sanexio Admin API ab (Liste aller Resources im Scope)
    b. Berechne current_hash für jede Resource
-   c. Walke trunk/ → Liste aller YAMLs mit sanexio_source.scope == <scope>
+   c. Walke trunk/ → Liste aller YAMLs mit upstream_source.scope == <scope>
    d. Compare:
       - resource_id in Sanexio aber nicht in Trunk → NEW
       - resource_id in beiden, hash gleich, local_edits=false → CLEAN
@@ -231,11 +231,11 @@ cw-transfer drift backfill                  # Einmalig: bestehende Trunk-YAMLs m
 1. Lade Drift-Bericht (oder neu detect ausführen)
 2. Pro NEW oder UPDATED:
    a. Wenn LOCAL_DRIFT → STOPP, manuelle Auflösung anbieten
-   b. Lade aktuelle Sanexio-Source via Admin API
+   b. Lade aktuelle Upstream-Source via Admin API
    c. Backup current Trunk-YAML nach _archive/drift-sync/<resource>-<timestamp>.yaml (nur bei UPDATED)
    d. Generiere/aktualisiere Trunk-YAML:
       - HWG-Curate-Pipeline (C1–C5)
-      - sanexio_source-Block aktualisieren mit new hash + timestamp
+      - upstream_source-Block aktualisieren mit new hash + timestamp
       - local_edits=false (frischer Sync)
    e. Bilder spiegeln (Featured + Gallery)
    f. AJV-Validierung gegen schema
@@ -249,10 +249,10 @@ cw-transfer drift backfill                  # Einmalig: bestehende Trunk-YAMLs m
 
 ### Local-Edits-Erkennung
 
-Eine Trunk-YAML wird als „lokal editiert" markiert (`sanexio_source.local_edits=true`), wenn:
+Eine Trunk-YAML wird als „lokal editiert" markiert (`upstream_source.local_edits=true`), wenn:
 
 - **Manuell:** Sie editieren bewusst und setzen das Flag (oder ich setze es bei einem Edit der Praxis-Spalte)
-- **Auto:** Hash der Praxis-spezifischen Felder (`views.praxis.*`, lokale `body_html.de`) hat sich seit `last_synced_hash` geändert
+- **Auto:** Hash der Praxis-spezifischen Felder (`views.practice.*`, lokale `body_html.de`) hat sich seit `last_synced_hash` geändert
 
 Solange `local_edits=true` ist, **stoppt Auto-Sync** bei UPDATE-Drift und fragt nach. Drift-Strategy `frozen` schaltet Auto-Sync für diese eine YAML komplett aus.
 
@@ -262,14 +262,14 @@ Solange `local_edits=true` ist, **stoppt Auto-Sync** bei UPDATE-Drift und fragt 
 
 Existierende Trunk-YAMLs (Stand 2026-04-29):
 
-| Datei | Bestehende Provenance-Marker | Sanexio-Source ableitbar? |
+| Datei | Bestehende Provenance-Marker | Upstream-Source ableitbar? |
 |---|---|---|
 | `trunk/content/products/bluttests/basic-check.yaml` | `slugs.juvantis: basic-check` (implizit) | ✅ aus S49-Spec dokumentiert (handle=basic-check, type=product) |
 | `trunk/content/pages/_shared/untersuchungen.yaml` | `slugs.juvantis: body-checks` | ✅ handle=body-checks, type=page |
 | `trunk/content/pages/_shared/labor.yaml` | nur Praxis-Felder | 🟡 in S49-Spec angedeutet (handle=bluttests) |
 | `trunk/content/pages/_shared/carotis-duplex.yaml` etc. (24 Detail-Pages) | `image: shopify-mirror://detail/<slug>-hero.jpg` | 🟡 Bilder gespiegelt, aber Source-Page-Bezug unklar |
 
-**Backfill-Plan:** Einmaliger `cw-transfer drift backfill`-Lauf, der existierende Trunk-YAMLs mit `sanexio_source`-Block versieht, soweit Sanexio-Source zuordenbar. Bei Mehrdeutigkeit: Eintrag in Backfill-Bericht, manuelle Klärung.
+**Backfill-Plan:** Einmaliger `cw-transfer drift backfill`-Lauf, der existierende Trunk-YAMLs mit `upstream_source`-Block versieht, soweit Upstream-Source zuordenbar. Bei Mehrdeutigkeit: Eintrag in Backfill-Bericht, manuelle Klärung.
 
 ---
 
@@ -284,7 +284,7 @@ Existierende Trunk-YAMLs (Stand 2026-04-29):
 | **AK-5** | UPDATED mit `local_edits=true` stoppt Auto-Sync, zeigt Diff | manueller Test |
 | **AK-6** | Hash ist preis-unabhängig (Preisänderung in Sanexio löst kein Drift aus) | gezielter Test |
 | **AK-7** | `--dry-run` schreibt nichts | git status sauber nach Lauf |
-| **AK-8** | Bestehende Trunk-YAMLs (24 Pages) bekommen via `backfill` Provenance-Block | git diff zeigt nur sanexio_source-Additions |
+| **AK-8** | Bestehende Trunk-YAMLs (24 Pages) bekommen via `backfill` Provenance-Block | git diff zeigt nur upstream_source-Additions |
 | **AK-9** | Sanitizer-Probe grün, alle neuen Files unter Cap | `rotate.sh --probe` Exit 0 |
 | **AK-10** | HWG-Curation entfernt Preise, ersetzt Du→Sie, setzt CTA | Test mit Sample-YAML |
 

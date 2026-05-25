@@ -14,7 +14,7 @@
 
 - Es existiert genau **ein** Beispielprodukt `trunk/content/products/bluttests/basic-check.yaml` nach Schema `trunk/schema/product.schema.json`.
 - `bash tools/validate.sh` validiert den Trunk mit AJV und läuft grün.
-- `bash tools/sync-wp.sh` rendert das Produkt in der `views.praxis`-Sicht und erstellt / aktualisiert eine WordPress-Page auf Local-WP (`http://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/`) via **REST-API + Application-Password**.
+- `bash tools/sync-wp.sh` rendert das Produkt in der `views.practice`-Sicht und erstellt / aktualisiert eine WordPress-Page auf Local-WP (`http://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/`) via **REST-API + Application-Password**.
 - Die erzeugte WP-Page enthält Titel, Tagline, Beschreibung, Laborparameter-Tabelle und einen Partnerinfo-CTA nach Juvantis. Sie enthält **keinen Preis** und **keinen Kauf-CTA** (CW-005 / HWG).
 - Ein zweiter Lauf von `sync-wp.sh` erzeugt keine zweite Page, sondern aktualisiert die bestehende (Idempotenz).
 - Kein Byte wurde im praxis-redesign-Theme (`wp-content/themes/praxiszentrum/`) geändert. Keine DB-Migration. Kein Touch von `wp-config.php`.
@@ -23,7 +23,7 @@
 
 | ID | Constraint | Herkunft |
 |---|---|---|
-| C-1 | Kein Preis, kein Kauf-CTA auf Praxis-View | CW-005, HWG §11 |
+| C-1 | Kein Preis, kein Kauf-CTA auf Practice-View | CW-005, HWG §11 |
 | C-2 | Keine Änderung an `wp-config.php` oder `themes/praxiszentrum/` | User-Safety, Sprint-2-Schutz |
 | C-3 | Keine Credentials im Git-Repo (nicht in `.env.template`, nirgends) | SESSION_RESUME §7 |
 | C-4 | Kein Push zu Prod-WP oder Prod-Shopify | SESSION_RESUME §7 |
@@ -77,14 +77,14 @@ projects/Cortex-Web/
 
 Konkretisiert aus dem Platzhalter, strikt gegen die Vorlage `02_ENTSCHEIDUNGEN_FINAL.md §3.1`:
 
-- **Pflichtfelder Top-Level (sprach-invariant):** `id`, `sku`, `category`, `status`, `parameters[]`, `title` (mit `.de`), `views.juvantis`, `views.praxis`.
+- **Pflichtfelder Top-Level (sprach-invariant):** `id`, `sku`, `category`, `status`, `parameters[]`, `title` (mit `.de`), `views.shop`, `views.practice`.
 - **Pflichtfelder pro View:** `show_price` (bool), `cta_label` (mit `.de`), `cta_url` (string).
 - **Optionale Felder:** `price_eur`, `images.hero`, `images.gallery`, `tagline`, `beschreibung`, weitere Sprachen (`en`, `fr`, `es`).
 - **Validierungsregeln (I-2 hybrid, CW-004):**
   - Jedes mehrsprachige Objekt MUSS `.de` enthalten (AJV `required: ["de"]`).
   - `status ∈ {active, draft, archived}`.
-  - `views.praxis.show_price` MUSS `false` sein (JSON-Schema `const: false`) → statische HWG-Absicherung.
-  - `views.praxis.cta_url` MUSS entweder intern (`/`-prefix) **oder** `https://sanexio.eu/…` sein (regex).
+  - `views.practice.show_price` MUSS `false` sein (JSON-Schema `const: false`) → statische HWG-Absicherung.
+  - `views.practice.cta_url` MUSS entweder intern (`/`-prefix) **oder** `https://sanexio.eu/…` sein (regex).
 - Schema-Version im File: `"$id": "https://cortex-web.local/schemas/product-v1.json"`.
 
 ### 2.3 Beispiel-Inhalt — `basic-check.yaml`
@@ -169,7 +169,7 @@ Ein Kriterium gilt als erfüllt, wenn es manuell oder automatisiert nachweisbar 
 | AK-6 | Zweiter Lauf von `sync-wp.sh` lässt Page-Anzahl unverändert; `modified_gmt` der Page wird aktualisiert | `GET /pages?slug=…` vor/nach — Count identisch, `modified` neu |
 | AK-7 | `wp-config.php` im Local-WP hat identisches mtime wie vor dem Adapter-Lauf | `stat -f %m wp-config.php` vor/nach |
 | AK-8 | Das praxis-redesign-Theme-Verzeichnis hat identischen Stand (`git status` im Theme-Repo zeigt „working tree clean") | `git status` Output |
-| AK-9 | Keine Preise, Kauf-CTAs oder `views.juvantis`-Strings im HTML der Page | HTML-Grep |
+| AK-9 | Keine Preise, Kauf-CTAs oder `views.shop`-Strings im HTML der Page | HTML-Grep |
 | AK-10 | `.env.local` ist **nicht** im Git-Status (`git status` listet es nicht als untracked) | `git status` Output |
 
 **Umsetzung gilt als 100 %**, wenn AK-1 … AK-10 alle erfüllt sind.

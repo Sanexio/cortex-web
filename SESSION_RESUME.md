@@ -1,6 +1,6 @@
 # SESSION_RESUME — Cortex-Web
 
-> **Standard-Einstieg „Cortex-Web fortsetzen"** (Lean v3, 2026-05-25, post Welle 13).
+> **Standard-Einstieg „Cortex-Web fortsetzen"** (Lean v3, 2026-05-25, post Welle 14).
 > Pflicht-Init: `Nexus/CLAUDE.md` + `Nexus/_rules/AUTONOMY_CONTRACT.md`.
 > Aktive Detail-Source-of-Truth: `Nexus/specs/cortex-platform/SESSION_RESUME.md`.
 > Pre-Flight: `bash tools/validate.sh` (läuft im Demo-Modus ohne CORTEX_TENANT_DIR).
@@ -8,12 +8,21 @@
 
 ## §1 Stand (HOT)
 
-- **Cortex-Web-HEAD:** Welle 13 — `sanexio` als letztes Brand-Token
-  in Schemas/Drift-Sync abstrahiert. `sanexio_source` →
+- **Cortex-Web-HEAD:** Welle 14 — Doku-Cleanup: Konzept-Namen
+  „Praxis-View" / „Juvantis-View" / „Sanexio-Source" mechanisch auf
+  Role-Begriffe (`Practice-View` / `Shop-View` / `Upstream-Source`)
+  gezogen; im selben Aufwasch Code-Key-Drift in den berührten Files
+  (`views.praxis`→`views.practice`, `views.juvantis`→`views.shop`,
+  `sanexio_source`→`upstream_source`, `image_asset_juvantis`→
+  `image_asset_shop`). Touched: docs/cross-site-transfer.md,
+  SESSION_RESUME.md, specs/{content-bridge-v1, cross-site-transfer,
+  drift-sync, phase-1, phase-3}/*.md. CHANGELOG + phase-3/evidence/ +
+  phase-2 POC bleiben als Snapshot-in-Time unberührt (Welle-7-Regel).
+- **Cortex-Web-HEAD vorher:** Welle 13 — `sanexio` als letztes
+  Brand-Token in Schemas/Drift-Sync abstrahiert (`sanexio_source` →
   `upstream_source`, `site: sanexio` → `site: hub`, `status_sanexio`
-  → `status_hub`. 40 Tenant-YAMLs + 1 Demo-YAML, beide Schemas, 7
-  Drift-Sync-Files. Linter strict 0, validate grün.
-- **Cortex-Web-HEAD vorher:** Welle 12 — Role-Keys `juvantis`→`shop`,
+  → `status_hub`).
+- **Cortex-Web-HEAD davor:** Welle 12 — Role-Keys `juvantis`→`shop`,
   `praxis`→`practice` (4 Schemas, 6 Renderer git-mv, 70 Tenant-YAMLs).
 - **Repo-Rolle:** Framework + Adapter + Schema. Tenant-Daten leben in
   `Sanexio-Tenant/` (separates Repo, via `CORTEX_TENANT_DIR` oder
@@ -39,10 +48,6 @@ gegen den Stracke-Tenant.
 ## §3 Direkter Einstieg in die nächste Welle
 
 Größere Backlog-Items (eigenständige Wellen):
-- **Welle 14 — Doku-Cleanup** (mittel, kein Risiko): README + Specs
-  sprechen vielfach noch von „Praxis-View" / „Juvantis-View" /
-  „Sanexio-Source" als Konzept-Namen. Mechanisch durch Role-Begriffe
-  ersetzen. Pure-Doku, keine Code-Risiken.
 - **Welle 15 — `SANEXIO_REPO`-Pfad + `vendor: "Sanexio"`** (klein):
   `adapters/astro/lib/astro-writer.mjs` hardcodiert
   `sites/sanexio-github-io/repo` — sollte via

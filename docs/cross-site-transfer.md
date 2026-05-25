@@ -56,7 +56,7 @@ bash tools/sync-page-wp.sh    trunk/content/pages/_shared/ueber-uns.yaml
 | WP-Page-Adapter (Products gemappt auf WP-Pages) | ✅ |
 | WP-Page-Adapter für Pages-mit-Sections | 🔴 geplant |
 | WP-Theme-File-Adapter (PHP inc/* schreiben) | 🔴 geplant |
-| Page-Schema mit Sections + views.juvantis | ✅ content-bridge-v1 |
+| Page-Schema mit Sections + views.shop | ✅ content-bridge-v1 |
 | Team-Member-Schema (8 Felder, required) | ✅ content-bridge-v1 |
 | Extraction Shopify-Page (Skelett) | 🟡 extract-page.mjs |
 | Extraction Shopify-Template (Skelett) | 🟡 extract-template.mjs |
@@ -158,8 +158,8 @@ Praktisch: Adapter generieren Skelette, Dr. Stracke (oder Claude) passt sie an.
 
 1. **Trunk ist Master (CW-001)** — Admin-Edits werden beim nächsten Sync-Lauf
    überschrieben. Editieren darf man immer nur im Trunk.
-2. **HWG-Trennung bleibt (CW-005)** — Praxis-View und Juvantis-View pro Page
-   sind getrennt; Preise nur auf Juvantis.
+2. **HWG-Trennung bleibt (CW-005)** — Practice-View und Shop-View pro Page
+   sind getrennt; Preise nur in der Shop-View.
 3. **Gerichteter Transfer, keine Bidirektion** — Sync nur Trunk→Site, nicht
    umgekehrt. Site→Trunk heißt Extraktions-Pass, einmalig, manuell.
 4. **Explizit auslösen** — Kein Watchdog, kein Webhook. Jede Übertragung ist

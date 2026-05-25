@@ -58,7 +58,7 @@ trunk/content/team/*.yaml (8 Files)
   ↓ adapters/wordpress/build-team.mjs
      • AJV-Validation gegen team-member.schema.json (je YAML)
      • Sort nach order
-     • Schema-Transformation Trunk → Praxis-View (siehe §4)
+     • Schema-Transformation Trunk → Practice-View (siehe §4)
      • Stable serialization (sorted keys, 2-space indent, trailing newline)
 Payload JSON { asset: { path: "inc/data/team.json", value: "<json-string>" },
                meta: { source_count, generated_at, schema_version } }
@@ -79,9 +79,9 @@ Payload JSON { asset: { path: "inc/data/team.json", value: "<json-string>" },
 
 ---
 
-## §4 Schema-Mapping Trunk → Praxis-View
+## §4 Schema-Mapping Trunk → Practice-View
 
-Die Trunk-YAMLs tragen mehr Felder als die Praxis-View braucht (Juvantis-bio,
+Die Trunk-YAMLs tragen mehr Felder als die Practice-View braucht (Juvantis-bio,
 Asset-Image, i18n). Der Renderer extrahiert nur die Praxis-relevanten Felder:
 
 | Trunk-Feld (YAML) | Praxis-JSON-Feld | Transformation |
@@ -95,7 +95,7 @@ Asset-Image, i18n). Der Renderer extrahiert nur die Praxis-relevanten Felder:
 | `image` (`media://...` \| null) | `image_id` | Phase 0: immer `0` (wie IST). Media-Resolver in späterer Phase. |
 | `profile_urls.praxis` | `profile_url` | Fallback `/${slug}/` wenn fehlend |
 | `order` | — | implizit über Array-Position nach Sort |
-| `id`, `qualifications`, `bio`, `image_asset_juvantis` | — | Praxis-View ignoriert |
+| `id`, `qualifications`, `bio`, `image_asset_shop` | — | Practice-View ignoriert |
 
 **Invariante:** Die aus den 8 YAMLs gerenderte Reihenfolge + Feldmenge MUSS
 identisch zum IST-`pxz_team_doctors()`-Output sein (AK-11: Dry-Run-Parität).
@@ -207,7 +207,7 @@ sehen den Umbau nicht.
 | CW-002 Schema-Validation | ✅ — AJV gegen team-member.schema.json vor Render |
 | CW-003 Lokale Originale | n.a. — keine Medien in N-1 |
 | CW-004 i18n I-2 hybrid | ✅ — .de-Lookup (Praxis-Kanon), Top-Level-Fields 1:1 |
-| CW-005 Plattform-Trennung | ✅ — nur Praxis-View, keine Juvantis-Überlagerung |
+| CW-005 Plattform-Trennung | ✅ — nur Practice-View, keine Shop-Überlagerung |
 | CW-006 Gerichteter Transfer | ✅ — explizit `push wp:template`, kein Auto-Sync |
 | CW-007 Trunk alleinige Brücke | ✅ — kein Shopify-WP-Direktzugriff |
 | CW-008 Backup vor Push | ✅ — `.backups/<ts>_team.json` bei update |
