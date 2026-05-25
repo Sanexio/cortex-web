@@ -11,13 +11,13 @@ title:
   de: "Beispiel-Produkt"
   en: "Example Product"
 views:
-  juvantis:
+  shop:
     show_price: true
     cta_label:
       de: Jetzt buchen
       en: Book now
     cta_url: https://example.test/products/example-product
-  praxis:
+  practice:
     show_price: false
     cta_label:
       de: Termin vereinbaren

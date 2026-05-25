@@ -27,7 +27,7 @@ import { resolve, join } from "node:path";
 import yaml from "js-yaml";
 import Ajv from "ajv";
 
-import { renderTeamPraxis, RENDERER_META } from "./lib/renderers/team-praxis.mjs";
+import { renderTeamPractice, RENDERER_META } from "./lib/renderers/team-practice.mjs";
 // CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
 // Mit gesetztem CORTEX_TENANT_DIR liest aus dem konfigurierten Tenant-Repo.
 // Ohne ENV: Demo-Fallback trunk/_examples/trunk/content/team.
@@ -103,7 +103,7 @@ const members = files.map((f) => {
 
 let praxisArray;
 try {
-  praxisArray = renderTeamPraxis(members);
+  praxisArray = renderTeamPractice(members);
 } catch (err) {
   die(3, `render failed: ${err.message}`);
 }

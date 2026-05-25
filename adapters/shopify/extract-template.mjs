@@ -101,7 +101,7 @@ const proto = {
   },
 
   _curation_hints: {
-    next_step: "Identify the primary section (usually non-'main-page'). Its settings + blocks map to trunk views.juvantis.* in the page YAML.",
+    next_step: "Identify the primary section (usually non-'main-page'). Its settings + blocks map to trunk views.shop.* in the page YAML.",
     renderer_hint: "If a matching renderer exists in lib/renderers/, use it; otherwise create template-<section-type>-<view>.mjs.",
     target_yaml: `trunk/content/pages/_shared/${tmplArg.replace(/^page\./, "")}.yaml`
   }

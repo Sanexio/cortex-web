@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://cortex-web.local/schemas/product-v1.json",
   "title": "Product",
-  "description": "Cortex-Web Produkt. I-2 hybrid i18n: sprach-invariante Felder auf Top-Level, mehrsprachige Felder verschachtelt unter .de/.en/.fr/.es. HWG-Gate: views.praxis.show_price MUSS false sein. Externe Praxis-CTA-Domains werden tenant-spezifisch über tenant.config.json (allowed_external_cta_domains) im Build-Step validiert, nicht im Schema.",
+  "description": "Cortex-Web Produkt. I-2 hybrid i18n: sprach-invariante Felder auf Top-Level, mehrsprachige Felder verschachtelt unter .de/.en/.fr/.es. Role-Keys (shop/practice) sind tenant-rollen-abstrakt. HWG-Gate: views.practice.show_price MUSS false sein. Externe practice-CTA-Domains werden tenant-spezifisch über tenant.config.json (allowed_external_cta_domains) im Build-Step validiert.",
   "type": "object",
   "additionalProperties": false,
   "required": ["id", "sku", "category", "status", "parameters", "title", "views"],
@@ -26,7 +26,7 @@
     "price_eur": {
       "type": "number",
       "minimum": 0,
-      "description": "Juvantis-Preis, wird von Praxis-View ignoriert (HWG)"
+      "description": "Shop-Preis, wird von Practice-View ignoriert (HWG)"
     },
     "images": {
       "type": "object",
@@ -58,9 +58,9 @@
     "views": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["juvantis", "praxis"],
+      "required": ["shop", "practice"],
       "properties": {
-        "juvantis": {
+        "shop": {
           "type": "object",
           "additionalProperties": false,
           "required": ["show_price", "cta_label", "cta_url"],
@@ -70,7 +70,7 @@
             "cta_url": { "type": "string", "minLength": 1 }
           }
         },
-        "praxis": {
+        "practice": {
           "type": "object",
           "additionalProperties": false,
           "required": ["show_price", "cta_label", "cta_url"],
@@ -78,14 +78,14 @@
             "show_price": {
               "type": "boolean",
               "const": false,
-              "description": "HWG: Praxis-View darf niemals Preis anzeigen"
+              "description": "HWG: Practice-View darf niemals Preis anzeigen"
             },
             "headline_override": { "$ref": "#/definitions/i18nString" },
             "cta_label": { "$ref": "#/definitions/i18nString" },
             "cta_url": {
               "type": "string",
               "pattern": "^(/|https://)",
-              "description": "Praxis-CTA darf nur intern (/) oder auf eine zugelassene externe Domain zeigen. Die Whitelist wird tenant-spezifisch in tenant.config.json unter `allowed_external_cta_domains` gepflegt und im Build-Step (adapters/wordpress/build.mjs) gegen externe Hosts geprüft."
+              "description": "Practice-CTA darf nur intern (/) oder auf eine zugelassene externe Domain zeigen. Die Whitelist wird tenant-spezifisch in tenant.config.json unter `allowed_external_cta_domains` gepflegt und im Build-Step (adapters/wordpress/build.mjs) gegen externe Hosts geprüft."
             }
           }
         }
@@ -93,7 +93,7 @@
     },
     "sanexio_source": {
       "type": "object",
-      "description": "Provenance-Block (drift-sync seit 2026-04-29). Verknüpft Trunk-YAML mit Sanexio-Source. Auch bei lokal editiertem Praxis-Content bleibt der Bezug erhalten. Spec: specs/drift-sync/SPEC.md §E2.",
+      "description": "Provenance-Block (drift-sync seit 2026-04-29). Verknüpft Trunk-YAML mit Upstream-Source. Auch bei lokal editiertem Practice-Content bleibt der Bezug erhalten. Spec: specs/drift-sync/SPEC.md §E2.",
       "required": ["type", "handle", "resource_id", "last_synced_at", "last_synced_hash"],
       "additionalProperties": false,
       "properties": {

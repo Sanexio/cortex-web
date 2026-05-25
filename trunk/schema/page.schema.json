@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://cortex-web.local/schema/page.json",
   "title": "Page",
-  "description": "Inhaltsseite (shared / praxis-only / juvantis-only / sanexio-only). Konkretisiert in content-bridge-v1 (2026-04-22). Erweitert in cw-astro-adapter Phase 1 (2026-05-23) um sanexio-Site-Enum für die Brand-Hub-Seite sanexio.github.io.",
+  "description": "Inhaltsseite. Role-Keys (practice/shop) sind tenant-rollen-abstrakt — Tenant-spezifische Marken-Namen werden via tenant.config.json gemappt. `sanexio` ist heute noch der Brand-Hub-Site-Identifier (Welle 13 wird das auch abstrahieren).",
   "type": "object",
   "required": ["id", "site", "slugs", "title", "sections"],
   "additionalProperties": false,
@@ -10,15 +10,15 @@
     "id": { "type": "string" },
     "site": {
       "type": "string",
-      "enum": ["praxis", "juvantis", "sanexio", "shared"]
+      "enum": ["practice", "shop", "sanexio", "shared"]
     },
     "slugs": {
       "type": "object",
-      "description": "Pro-Site-Slug. Bei site=shared sind beide / drei sinnvoll.",
+      "description": "Pro-Role-Slug. Bei site=shared sind mehrere sinnvoll.",
       "additionalProperties": false,
       "properties": {
-        "praxis": { "type": "string", "pattern": "^[a-z0-9/-]+$" },
-        "juvantis": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "practice": { "type": "string", "pattern": "^[a-z0-9/-]+$" },
+        "shop": { "type": "string", "pattern": "^[a-z0-9-]+$" },
         "sanexio": { "type": "string", "pattern": "^[a-z0-9/-]+$" }
       }
     },
@@ -33,7 +33,7 @@
         "es": { "type": "string" }
       }
     },
-    "status_juvantis": {
+    "status_shop": {
       "type": "string",
       "enum": ["draft", "active"],
       "default": "draft"

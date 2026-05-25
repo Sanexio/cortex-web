@@ -17,7 +17,7 @@ import { resolve, relative } from "node:path";
 import yaml from "js-yaml";
 import Ajv from "ajv";
 
-import { renderProductJuvantis } from "./lib/renderers/product-juvantis.mjs";
+import { renderProductShop } from "./lib/renderers/product-shop.mjs";
 
 const REPO_ROOT = resolve(import.meta.dir, "../..");
 
@@ -66,7 +66,7 @@ const sourcePath = relative(REPO_ROOT, contentPath);
 
 let payload;
 try {
-  payload = renderProductJuvantis(product, { sourcePath });
+  payload = renderProductShop(product, { sourcePath });
 } catch (err) {
   die(3, `render failed: ${err.message}`);
 }

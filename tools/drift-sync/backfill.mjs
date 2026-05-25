@@ -5,7 +5,7 @@
 //
 // Heuristik:
 //   1. Trunk.id == Sanexio.handle (exact)
-//   2. Trunk.slugs.juvantis == Sanexio.handle
+//   2. Trunk.slugs.shop == Sanexio.handle
 //   3. Bei Mehrdeutigkeit: skip + Bericht
 //
 // `local_edits=true` wird gesetzt, weil die Trunk-YAMLs lokal kuratiert wurden
@@ -106,10 +106,10 @@ async function backfillScope({ client, scopeName, scopeConfig, dryRun }) {
       candidate = sourceByHandle.get(trunkObj.id);
       matchVia = `id="${trunkObj.id}"`;
     }
-    // 2. trunk.slugs.juvantis == source.handle
-    else if (trunkObj.slugs?.juvantis && sourceByHandle.has(trunkObj.slugs.juvantis)) {
-      candidate = sourceByHandle.get(trunkObj.slugs.juvantis);
-      matchVia = `slugs.juvantis="${trunkObj.slugs.juvantis}"`;
+    // 2. trunk.slugs.shop == source.handle
+    else if (trunkObj.slugs?.shop && sourceByHandle.has(trunkObj.slugs.shop)) {
+      candidate = sourceByHandle.get(trunkObj.slugs.shop);
+      matchVia = `slugs.shop="${trunkObj.slugs.shop}"`;
     }
     // 3. trunk.sku → source.variants[0].sku (für Products)
     else if (sourceType === "product" && trunkObj.sku) {

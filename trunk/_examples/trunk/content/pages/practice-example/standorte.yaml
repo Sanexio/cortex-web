@@ -1,9 +1,9 @@
 # Demo-Praxis-Page — rein fiktiv, dient als Vorlage für eigene Pages.
 # Schema: trunk/schema/page.schema.json
 id: standorte
-site: praxis
+site: practice
 slugs:
-  praxis: standorte
+  practice: standorte
 title:
   de: "Unsere Standorte"
   en: "Our Locations"

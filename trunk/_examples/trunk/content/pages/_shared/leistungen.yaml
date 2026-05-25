@@ -3,8 +3,8 @@
 id: leistungen
 site: shared
 slugs:
-  praxis: leistungen
-  juvantis: leistungen
+  practice: leistungen
+  shop: leistungen
 title:
   de: "Unsere Leistungen"
   en: "Our Services"

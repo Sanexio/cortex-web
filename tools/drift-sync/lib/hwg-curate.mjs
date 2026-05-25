@@ -3,7 +3,7 @@
 // Spec: specs/drift-sync/SPEC.md §E5.
 //
 // 5 Schritte (C1–C5):
-//   C1 Preise raus (views.praxis.show_prices=false)
+//   C1 Preise raus (views.practice.show_prices=false)
 //   C2 Sie-Form (Du→Sie via auto_replace aus hwg-vocab.json)
 //   C3 CTA-Override (/service/terminanfrage/)
 //   C4 HWG-Filter (halt_words → throw, review_words → warn)

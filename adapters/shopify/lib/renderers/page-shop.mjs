@@ -83,7 +83,7 @@ function renderTeamGridSection(section, teamMembers) {
     : teamMembers.filter((m) => section.members.includes(m.slug));
 
   if (requested.length === 0) {
-    throw new Error(`page-juvantis: team-grid section produced 0 members (requested="${JSON.stringify(section.members)}")`);
+    throw new Error(`page-shop: team-grid section produced 0 members (requested="${JSON.stringify(section.members)}")`);
   }
 
   const heading = section.heading?.de
@@ -106,7 +106,7 @@ function renderSection(section, teamMembers) {
   switch (section.type) {
     case "intro": return renderIntroSection(section);
     case "team-grid": return renderTeamGridSection(section, teamMembers);
-    default: throw new Error(`page-juvantis: unknown section type "${section.type}"`);
+    default: throw new Error(`page-shop: unknown section type "${section.type}"`);
   }
 }
 
@@ -163,20 +163,20 @@ function buildBodyHtml(page, teamMembers) {
   return wrapper.join("\n");
 }
 
-export function renderPageJuvantis(page, teamMembers, { sourcePath }) {
-  if (!page.slugs?.juvantis) {
-    throw new Error(`page-juvantis: slugs.juvantis missing (id=${page.id})`);
+export function renderPageShop(page, teamMembers, { sourcePath }) {
+  if (!page.slugs?.shop) {
+    throw new Error(`page-shop: slugs.shop missing (id=${page.id})`);
   }
   if (!page.title?.de) {
-    throw new Error(`page-juvantis: title.de missing (id=${page.id})`);
+    throw new Error(`page-shop: title.de missing (id=${page.id})`);
   }
 
   // CW-001: Shopify-Pages use "published: false" for draft, not a status field.
-  const published = page.status_juvantis === "active";
+  const published = page.status_shop === "active";
 
   return {
     page: {
-      handle: page.slugs.juvantis,
+      handle: page.slugs.shop,
       title: page.title.de,
       body_html: buildBodyHtml(page, teamMembers),
       published: published,
@@ -184,7 +184,7 @@ export function renderPageJuvantis(page, teamMembers, { sourcePath }) {
     },
     meta: {
       cw_source: sourcePath,
-      cw_view: "juvantis",
+      cw_view: "shop",
       cw_page_id: page.id,
       cw_team_member_count: teamMembers.length
     }

@@ -1,4 +1,4 @@
-// Renderer for products in the "praxis" view — HWG-compliant.
+// Renderer for products in the "practice" view — HWG-compliant.
 // Emits Gutenberg HTML (core/paragraph, core/heading, core/table, core/buttons).
 // Reads only the `.de` locale (Phase 1 scope).
 
@@ -40,15 +40,15 @@ function ctaButtonBlock(label, url) {
   return `<!-- wp:buttons -->\n<div class="wp-block-buttons">${inner}</div>\n<!-- /wp:buttons -->`;
 }
 
-export function renderProductPraxis(product, { sourcePath }) {
-  const praxis = product.views.praxis;
+export function renderProductPractice(product, { sourcePath }) {
+  const practice = product.views.practice;
 
   // HWG safeguard, schema also enforces this
-  if (praxis.show_price !== false) {
-    throw new Error(`product-praxis: HWG violation — show_price must be false for praxis view (id=${product.id})`);
+  if (practice.show_price !== false) {
+    throw new Error(`product-practice: HWG violation — show_price must be false for practice view (id=${product.id})`);
   }
 
-  const title = praxis.headline_override?.de ?? product.title.de;
+  const title = practice.headline_override?.de ?? product.title.de;
 
   const blocks = [];
 
@@ -62,7 +62,7 @@ export function renderProductPraxis(product, { sourcePath }) {
   blocks.push(headingBlock("Laborparameter", 2));
   blocks.push(parameterTableBlock(product.parameters));
 
-  blocks.push(ctaButtonBlock(praxis.cta_label.de, praxis.cta_url));
+  blocks.push(ctaButtonBlock(practice.cta_label.de, practice.cta_url));
 
   const content = blocks.join("\n\n");
 
@@ -73,7 +73,7 @@ export function renderProductPraxis(product, { sourcePath }) {
     status: "publish",
     meta: {
       _cortex_web_source: sourcePath,
-      _cortex_web_view: "praxis",
+      _cortex_web_view: "practice",
       _cortex_web_product_id: product.id
     }
   };

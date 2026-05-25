@@ -196,7 +196,7 @@ Scopes (siehe tools/drift-sync/config.json):
 
 Drift-Status:
   NEW          Auf Sanexio neu — wird auto-curated angelegt
-  UPDATED      Sanexio hat Änderung — Trunk wird aktualisiert (lokale views.praxis bleibt)
+  UPDATED      Sanexio hat Änderung — Trunk wird aktualisiert (lokale views.practice bleibt)
   LOCAL_DRIFT  Praxis lokal editiert UND Sanexio geändert — STOPP, manuelle Auflösung
   REMOVED      Auf Sanexio nicht mehr — Trunk archiviert, WP auf draft
   CLEAN        Synchron, nichts zu tun

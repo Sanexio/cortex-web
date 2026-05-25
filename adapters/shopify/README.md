@@ -31,13 +31,13 @@ bash tools/sync-shopify.sh trunk/content/products/bluttests/basic-check.yaml
 
 ## Views-Logik (CW-005)
 
-Shopify-Adapter rendert `views.juvantis` (Preis erlaubt, Kauf-CTA erlaubt).
-`views.praxis` wird ignoriert (HWG-Trennung).
+Shopify-Adapter rendert `views.shop` (Preis erlaubt, Kauf-CTA erlaubt).
+`views.practice` wird ignoriert (HWG-Trennung).
 
 ## Constraints (Spec §1.2)
 
 - C-1 `status: "draft"` hartcodiert, nicht überschreibbar
-- C-7 nur `views.juvantis` wird gelesen
+- C-7 nur `views.shop` wird gelesen
 - C-9 Token-Mask in allen Stderr-Pfaden
 - C-10 keine Bilder in Phase 2 (Medien-Pipeline = Phase 2b)
 

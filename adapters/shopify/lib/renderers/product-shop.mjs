@@ -1,4 +1,4 @@
-// Renderer for products in the "juvantis" view — Shopify Product payload.
+// Renderer for products in the "shop" view — Shopify Product payload.
 // Reads only the .de locale (Phase 2 scope).
 // body_html is intentionally minimal: theme owns price, variant, images, CTA.
 
@@ -38,10 +38,10 @@ function formatPrice(value) {
   return Number(value).toFixed(2);
 }
 
-export function renderProductJuvantis(product, { sourcePath }) {
-  const juvantis = product.views.juvantis;
+export function renderProductShop(product, { sourcePath }) {
+  const juvantis = product.views.shop;
   if (!juvantis) {
-    throw new Error(`product-juvantis: views.juvantis missing (id=${product.id})`);
+    throw new Error(`product-shop: views.shop missing (id=${product.id})`);
   }
 
   const tags = ["cortex-web", product.category]
@@ -71,7 +71,7 @@ export function renderProductJuvantis(product, { sourcePath }) {
     },
     meta: {
       cw_source: sourcePath,
-      cw_view: "juvantis",
+      cw_view: "shop",
       cw_product_id: product.id
     }
   };

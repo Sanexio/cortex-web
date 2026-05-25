@@ -18,7 +18,7 @@ import { resolve, relative } from "node:path";
 import yaml from "js-yaml";
 import Ajv from "ajv";
 
-import { renderProductPraxis } from "./lib/renderers/product-praxis.mjs";
+import { renderProductPractice } from "./lib/renderers/product-practice.mjs";
 import { tenantConfigGet } from "../../tools/lib/tenant-config.mjs";
 
 const REPO_ROOT = resolve(import.meta.dir, "../..");
@@ -64,22 +64,22 @@ if (!validate(product)) {
   process.exit(2);
 }
 
-// Tenant-Policy: views.praxis.cta_url darf nur intern (/) oder auf eine whitelisted Domain zeigen.
+// Tenant-Policy: views.practice.cta_url darf nur intern (/) oder auf eine whitelisted Domain zeigen.
 // Whitelist kommt aus tenant.config.json (cta.allowed_external_cta_domains). Internal-CTAs sind immer ok.
-const praxisCta = product?.views?.praxis?.cta_url;
+const praxisCta = product?.views?.practice?.cta_url;
 if (typeof praxisCta === "string" && praxisCta.startsWith("https://")) {
   let host;
   try {
     host = new URL(praxisCta).host;
   } catch (err) {
-    die(4, `views.praxis.cta_url is not a valid URL: ${praxisCta} (${err.message})`);
+    die(4, `views.practice.cta_url is not a valid URL: ${praxisCta} (${err.message})`);
   }
   const allowed = tenantConfigGet("cta.allowed_external_cta_domains", []);
   if (!Array.isArray(allowed) || allowed.length === 0) {
-    die(4, `views.praxis.cta_url is external (${host}) but tenant.config.json defines no cta.allowed_external_cta_domains whitelist`);
+    die(4, `views.practice.cta_url is external (${host}) but tenant.config.json defines no cta.allowed_external_cta_domains whitelist`);
   }
   if (!allowed.includes(host)) {
-    die(4, `views.praxis.cta_url host "${host}" is not in tenant.config.json cta.allowed_external_cta_domains (${allowed.join(", ")})`);
+    die(4, `views.practice.cta_url host "${host}" is not in tenant.config.json cta.allowed_external_cta_domains (${allowed.join(", ")})`);
   }
 }
 
@@ -87,7 +87,7 @@ const sourcePath = relative(REPO_ROOT, contentPath);
 
 let payload;
 try {
-  payload = renderProductPraxis(product, { sourcePath });
+  payload = renderProductPractice(product, { sourcePath });
 } catch (err) {
   die(3, `render failed: ${err.message}`);
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // Cortex-Web Shopify adapter — build step for THEME TEMPLATES (templates/*.json).
 // Loads the trunk page YAML + all team members, validates both schemas, then
-// dispatches to the correct template renderer based on page.views.juvantis.renderer
+// dispatches to the correct template renderer based on page.views.shop.renderer
 // (defaults to "juvantis-ueber-uns" for the uber-uns page).
 //
 // Usage:
@@ -20,7 +20,7 @@ import { resolve, relative, join } from "node:path";
 import yaml from "js-yaml";
 import Ajv from "ajv";
 
-import { renderTemplateJuvantisUeberUns } from "./lib/renderers/template-juvantis-ueber-uns.mjs";
+import { renderTemplateShopUeberUns } from "./lib/renderers/template-shop-ueber-uns.mjs";
 // CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
 import { tenantPath, tenantDescribe } from "../../tools/lib/tenant-path.mjs";
 
@@ -90,17 +90,17 @@ const teamMembers = loadAllTeamMembers();
 const sourcePath = relative(REPO_ROOT, contentPath);
 
 // Dispatch: for now only the ueber-uns page has a juvantis-template renderer.
-// Future pages can declare `views.juvantis.renderer` explicitly.
-const rendererKey = page.views?.juvantis?.renderer || (page.id === "ueber-uns" ? "juvantis-ueber-uns" : null);
+// Future pages can declare `views.shop.renderer` explicitly.
+const rendererKey = page.views?.shop?.renderer || (page.id === "ueber-uns" ? "shop-ueber-uns" : null);
 if (!rendererKey) {
-  die(3, `no juvantis template renderer configured for page id=${page.id} (set views.juvantis.renderer)`);
+  die(3, `no juvantis template renderer configured for page id=${page.id} (set views.shop.renderer)`);
 }
 
 let payload;
 try {
   switch (rendererKey) {
     case "juvantis-ueber-uns":
-      payload = renderTemplateJuvantisUeberUns(page, teamMembers, { sourcePath });
+      payload = renderTemplateShopUeberUns(page, teamMembers, { sourcePath });
       break;
     default:
       die(3, `unknown renderer key: ${rendererKey}`);

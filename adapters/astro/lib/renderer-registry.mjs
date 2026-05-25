@@ -50,7 +50,7 @@ REGISTRY.set("body-html", (sec, { lang = "de" } = {}) => ({
 /** cross-brand-cta → <CrossBrandCTA> with partner+product slugs */
 REGISTRY.set("cross-brand-cta", (sec) => ({
   astroImport: `import CrossBrandCTA from "../components/CrossBrandCTA.astro";`,
-  astroBlock: `<CrossBrandCTA partner="${escAttr(sec.partner || "praxis")}" product="${escAttr(sec.product || "")}" />`,
+  astroBlock: `<CrossBrandCTA partner="${escAttr(sec.partner || "practice")}" product="${escAttr(sec.product || "")}" />`,
 }));
 
 export function renderSection(section, opts = {}) {

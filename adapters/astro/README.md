@@ -7,7 +7,7 @@
 > `sites/sanexio-github-io/repo/`; auf anderen Tenants entsprechend.
 > **Architekten-Spec:** `specs/cross-site-transfer/ARCHITECTURE.md`
 > **Schema-Erweiterung:** `trunk/schema/page.schema.json` (Site-Enum
-> um `sanexio` ergänzt, plus `status_sanexio`-Flag analog zu `status_juvantis`)
+> um `sanexio` ergänzt, plus `status_sanexio`-Flag analog zu `status_shop`)
 
 ## Was dieser Adapter tut
 

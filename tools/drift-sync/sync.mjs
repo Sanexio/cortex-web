@@ -167,11 +167,11 @@ async function handleNewOrUpdated({
     // Merge: neue Curation als Basis, Praxis-Lokal-Felder aus existing übernehmen
     finalTrunk = {
       ...curate.trunkObject,
-      // Lokal: views.praxis bleibt aus existing (Schutz lokaler Edits)
+      // Lokal: views.practice bleibt aus existing (Schutz lokaler Edits)
       views: {
         ...(curate.trunkObject.views || {}),
-        praxis: existing.views?.praxis || curate.trunkObject.views?.praxis,
-        juvantis: curate.trunkObject.views?.juvantis || existing.views?.juvantis
+        praxis: existing.views?.practice || curate.trunkObject.views?.practice,
+        juvantis: curate.trunkObject.views?.shop || existing.views?.shop
       }
     };
     // Wenn existing zusätzliche sections über die ersten 2 hinaus hat → behalten als „lokal hinzugefügt"

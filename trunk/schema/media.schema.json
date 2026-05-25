@@ -24,8 +24,8 @@
     "sites": {
       "type": "object",
       "properties": {
-        "juvantis": { "enum": ["auto-synced", "manual", "none"] },
-        "praxis": { "enum": ["auto-synced", "manual", "none"] }
+        "shop": { "enum": ["auto-synced", "manual", "none"] },
+        "practice": { "enum": ["auto-synced", "manual", "none"] }
       }
     }
   }

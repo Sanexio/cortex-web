@@ -56,13 +56,13 @@ export async function runContentParity(ctx) {
     const titleRaw = page.title?.rendered ?? "";
     const fullText = titleRaw + "\n" + rendered;
 
-    const expectedHeadline = trunk.views.praxis.headline_override?.de ?? trunk.title.de;
+    const expectedHeadline = trunk.views.practice.headline_override?.de ?? trunk.title.de;
     wpDetails.headline_expected = expectedHeadline;
 
     const tagline = trunk.tagline?.de ?? "";
     const beschreibung = (trunk.beschreibung?.de ?? "").trim();
-    const ctaLabel = trunk.views.praxis.cta_label?.de ?? "";
-    const ctaUrl = trunk.views.praxis.cta_url ?? "";
+    const ctaLabel = trunk.views.practice.cta_label?.de ?? "";
+    const ctaUrl = trunk.views.practice.cta_url ?? "";
 
     const headlineCheck = contains(fullText, expectedHeadline);
     const taglineCheck = contains(fullText, tagline);

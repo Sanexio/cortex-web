@@ -21,7 +21,7 @@ aufgelöst — keine Mac- oder Domain-Hartcodes in den Adaptern.
 
 ## Views-Logik (CW-005)
 
-Bei Produkt-Rendering greift der WP-Adapter IMMER auf `views.praxis`:
+Bei Produkt-Rendering greift der WP-Adapter IMMER auf `views.practice`:
 - `show_price: false` → Preis wird NICHT gerendert
 - `cta_url` → externer Link (z. B. zur Shop-Domain des Tenants), keine Kauf-Buttons im Praxis-Output
 

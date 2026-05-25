@@ -12,12 +12,12 @@
 //   intro.de (trimmed)  -> intro
 //   accent              -> accent
 //   image (numeric)     -> image_id (0 = initials-placeholder)
-//   profile_urls.praxis -> profile_url (fallback: "/<slug>/")
+//   profile_urls.practice -> profile_url (fallback: "/<slug>/")
 //   bio.de (trimmed)    -> bio (empty string if trunk has none)
 //   qualifications      -> qualifications (array, 1:1; empty array if none)
 //
 // Fields intentionally dropped from praxis view: id, order (implicit via sort),
-// image_asset_juvantis. They remain in the trunk for the shopify/juvantis view.
+// image_asset_shop. They remain in the trunk for the shopify/juvantis view.
 
 function pick(member, path, fallback = null) {
   const segs = path.split(".");
@@ -31,14 +31,14 @@ function pick(member, path, fallback = null) {
 
 function mapSingle(member) {
   if (!member || typeof member !== "object") {
-    throw new Error(`team-praxis: invalid member entry (not an object)`);
+    throw new Error(`team-practice: invalid member entry (not an object)`);
   }
-  if (!member.slug) throw new Error(`team-praxis: member missing slug`);
-  if (!member.name) throw new Error(`team-praxis: member "${member.slug}" missing name`);
+  if (!member.slug) throw new Error(`team-practice: member missing slug`);
+  if (!member.name) throw new Error(`team-practice: member "${member.slug}" missing name`);
 
   const roleDe = pick(member, "role.de", "");
   const introDe = (pick(member, "intro.de", "") || "").trim();
-  const profileUrl = pick(member, "profile_urls.praxis", `/${member.slug}/`);
+  const profileUrl = pick(member, "profile_urls.practice", `/${member.slug}/`);
 
   const bioDe = (pick(member, "bio.de", "") || "").trim();
   const qualifications = Array.isArray(member.qualifications) ? [...member.qualifications] : [];
@@ -59,12 +59,12 @@ function mapSingle(member) {
   };
 }
 
-export function renderTeamPraxis(teamMembers) {
+export function renderTeamPractice(teamMembers) {
   if (!Array.isArray(teamMembers)) {
-    throw new Error(`team-praxis: teamMembers is not an array`);
+    throw new Error(`team-practice: teamMembers is not an array`);
   }
   if (teamMembers.length === 0) {
-    throw new Error(`team-praxis: no team members supplied`);
+    throw new Error(`team-practice: no team members supplied`);
   }
 
   // Sort by trunk order ascending. Stable for equal order values.
@@ -78,7 +78,7 @@ export function renderTeamPraxis(teamMembers) {
 }
 
 export const RENDERER_META = {
-  id: "wordpress.template.praxis.team",
+  id: "wordpress.template.practice.team",
   consumes: "trunk/content/team/*.yaml",
   produces: "inc/data/team.json (Praxis-Theme)",
   schema_ref: "trunk/schema/team-member.schema.json"

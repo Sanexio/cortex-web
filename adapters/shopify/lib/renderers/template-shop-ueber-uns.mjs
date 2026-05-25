@@ -21,7 +21,7 @@ function buildTeamBlock(member) {
   return {
     type: "team_member",
     settings: {
-      ...(member.image_asset_juvantis ? { asset_image: member.image_asset_juvantis } : {}),
+      ...(member.image_asset_shop ? { asset_image: member.image_asset_shop } : {}),
       name: member.name,
       role: member.role?.de || "",
       qualifications,
@@ -40,13 +40,13 @@ function buildValueBlock(value) {
   };
 }
 
-export function renderTemplateJuvantisUeberUns(page, teamMembers, { sourcePath }) {
-  const juv = page.views?.juvantis;
+export function renderTemplateShopUeberUns(page, teamMembers, { sourcePath }) {
+  const juv = page.views?.shop;
   if (!juv) {
-    throw new Error(`template-juvantis-ueber-uns: views.juvantis missing on page id=${page.id}`);
+    throw new Error(`template-shop-ueber-uns: views.shop missing on page id=${page.id}`);
   }
-  if (!page.slugs?.juvantis) {
-    throw new Error(`template-juvantis-ueber-uns: slugs.juvantis missing on page id=${page.id}`);
+  if (!page.slugs?.shop) {
+    throw new Error(`template-shop-ueber-uns: slugs.shop missing on page id=${page.id}`);
   }
 
   const sortedMembers = [...teamMembers].sort((a, b) => a.order - b.order);
@@ -101,7 +101,7 @@ export function renderTemplateJuvantisUeberUns(page, teamMembers, { sourcePath }
     order: ["main", "about"]
   };
 
-  const assetKey = `templates/page.${page.slugs.juvantis}.json`;
+  const assetKey = `templates/page.${page.slugs.shop}.json`;
   const assetValue = TEMPLATE_HEADER + JSON.stringify(templateJson, null, 2) + "\n";
 
   return {
@@ -111,7 +111,7 @@ export function renderTemplateJuvantisUeberUns(page, teamMembers, { sourcePath }
     },
     meta: {
       cw_source: sourcePath,
-      cw_view: "juvantis",
+      cw_view: "shop",
       cw_page_id: page.id,
       cw_team_member_count: sortedMembers.length,
       cw_value_count: values.length,

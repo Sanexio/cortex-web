@@ -6,29 +6,29 @@
 // Lookup key convention: "<target>.<artifact-type>.<view-or-section-type>"
 // cross-site-transfer Phase C (registry skeleton), 2026-04-22.
 
-import { renderProductJuvantis } from "./renderers/product-juvantis.mjs";
-import { renderPageJuvantis } from "./renderers/page-juvantis.mjs";
-import { renderTemplateJuvantisUeberUns } from "./renderers/template-juvantis-ueber-uns.mjs";
+import { renderProductShop } from "./renderers/product-shop.mjs";
+import { renderPageShop } from "./renderers/page-shop.mjs";
+import { renderTemplateShopUeberUns } from "./renderers/template-shop-ueber-uns.mjs";
 
 export const RENDERER_REGISTRY = {
-  "shopify.product.juvantis": {
-    fn: renderProductJuvantis,
+  "shopify.product.shop": {
+    fn: renderProductShop,
     tool: "tools/sync-shopify.sh",
     source_shape: "trunk/content/products/<cat>/<id>.yaml",
     target_shape: "Shopify Product (POST /products.json)",
     status: "stable"
   },
-  "shopify.page.juvantis": {
-    fn: renderPageJuvantis,
+  "shopify.page.shop": {
+    fn: renderPageShop,
     tool: "tools/sync-page-shopify.sh",
     source_shape: "trunk/content/pages/**/<id>.yaml with sections[]",
     target_shape: "Shopify Page body_html (POST/PUT /pages.json)",
     status: "stable"
   },
-  "shopify.template.juvantis-ueber-uns": {
-    fn: renderTemplateJuvantisUeberUns,
+  "shopify.template.shop-ueber-uns": {
+    fn: renderTemplateShopUeberUns,
     tool: "tools/sync-template-shopify.sh",
-    source_shape: "trunk/content/pages/**/<id>.yaml with views.juvantis.{hero,mission,values,history,cta,team,padding}",
+    source_shape: "trunk/content/pages/**/<id>.yaml with views.shop.{hero,mission,values,history,cta,team,padding}",
     target_shape: "Shopify Theme Asset templates/page.<slug>.json with juvantis-ueber-uns section blocks",
     status: "stable"
   }

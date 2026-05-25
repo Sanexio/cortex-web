@@ -21,7 +21,7 @@ import { resolve, relative, join } from "node:path";
 import yaml from "js-yaml";
 import Ajv from "ajv";
 
-import { renderPageJuvantis } from "./lib/renderers/page-juvantis.mjs";
+import { renderPageShop } from "./lib/renderers/page-shop.mjs";
 // CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
 import { tenantPath, tenantDescribe } from "../../tools/lib/tenant-path.mjs";
 
@@ -116,7 +116,7 @@ const sourcePath = relative(REPO_ROOT, contentPath);
 
 let payload;
 try {
-  payload = renderPageJuvantis(page, teamMembers, { sourcePath });
+  payload = renderPageShop(page, teamMembers, { sourcePath });
 } catch (err) {
   die(3, `render failed: ${err.message}`);
 }

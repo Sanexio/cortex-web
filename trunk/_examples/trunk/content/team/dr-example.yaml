@@ -18,7 +18,7 @@ intro:
     schema demonstration — not for production use.
 accent: ink   # erlaubt: red | amber | ink (siehe team-member.schema.json)
 image: 0  # Demo-Platzhalter — keine echte Medien-ID
-image_asset_juvantis: example.jpg
+image_asset_shop: example.jpg
 qualifications:
   - Allgemeinmedizin
   - Präventionsmedizin
@@ -32,5 +32,5 @@ bio:
     Currently practising at a fictional example clinic. This entry exists
     only so the Cortex-Web adapter has a file to render.
 profile_urls:
-  praxis: /dr-example/
-  juvantis: null
+  practice: /dr-example/
+  shop: null

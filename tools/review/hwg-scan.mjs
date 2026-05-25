@@ -9,7 +9,7 @@
 //   Bestellen       (verb, word-boundary, case-insensitive)
 //   Jetzt buchen    (juvantis CTA — appearance on praxis page = cross-contamination)
 //
-// Required: the allowed Praxis-CTA (Label + URL aus trunk.views.praxis,
+// Required: the allowed Praxis-CTA (Label + URL aus trunk.views.practice,
 // also tenant-konfiguriert — kein hartcodierter Domain-Bezug).
 //
 // Output: specs/phase-3/evidence/hwg-scan.json
@@ -52,8 +52,8 @@ export async function runHwgScan(ctx) {
   const fullText = title + "\n" + rendered;
 
   const forbiddenHits = scan(fullText);
-  const allowedCtaLabel = trunk.views.praxis.cta_label?.de ?? "";
-  const allowedCtaUrl = trunk.views.praxis.cta_url ?? "";
+  const allowedCtaLabel = trunk.views.practice.cta_label?.de ?? "";
+  const allowedCtaUrl = trunk.views.practice.cta_url ?? "";
 
   const ctaLabelPresent = fullText.includes(allowedCtaLabel);
   const ctaUrlPresent = fullText.includes(allowedCtaUrl);

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://cortex-web.local/schema/team-member.json",
   "title": "TeamMember",
-  "description": "Team-Mitglied (Arzt/Ärztin) der Praxisgemeinschaft. Konkretisiert in content-bridge-v1 (2026-04-22).",
+  "description": "Team-Mitglied. Tenant-rollen-abstrakt — role und intro sind tenant-spezifischer Freitext.",
   "type": "object",
   "required": ["id", "slug", "name", "role", "languages", "intro", "accent", "order"],
   "additionalProperties": false,
@@ -65,14 +65,14 @@
       "type": ["string", "integer", "null"],
       "description": "Either a media:// URI (future N-1b resolver), a numeric WP attachment id (Block A shortcut, Session 32), or null."
     },
-    "image_asset_juvantis": {
+    "image_asset_shop": {
       "type": ["string", "null"],
       "description": "Dateiname im Shopify-Theme-Asset-Ordner (z.B. 'dr-example.jpg'). Wird an `asset_image` im Template weitergegeben. null = Placeholder-SVG."
     },
     "qualifications": {
       "type": "array",
       "items": { "type": "string" },
-      "description": "Pills im Juvantis-Template (Shopify). Kommagetrennt im Template-Settings."
+      "description": "Pills im Shop-Template (Shopify). Kommagetrennt im Template-Settings."
     },
     "bio": {
       "type": "object",
@@ -81,15 +81,15 @@
         "de": { "type": "string" },
         "en": { "type": "string" }
       },
-      "description": "Ausführliche Biografie für Juvantis-About-Section. Leer = intro wird benutzt."
+      "description": "Ausführliche Biografie für Shop-About-Section. Leer = intro wird benutzt."
     },
     "profile_urls": {
       "type": "object",
-      "description": "Pro-Site-Profil-URLs (optional). Wenn nicht gesetzt, linkt kein Detail.",
+      "description": "Pro-Role-Profil-URLs (optional). Wenn nicht gesetzt, linkt kein Detail.",
       "additionalProperties": false,
       "properties": {
-        "praxis": { "type": "string" },
-        "juvantis": { "type": ["string", "null"] }
+        "practice": { "type": "string" },
+        "shop": { "type": ["string", "null"] }
       }
     }
   }

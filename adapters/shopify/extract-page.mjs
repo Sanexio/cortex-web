@@ -60,7 +60,7 @@ const proto = {
   id_hint: p.handle,
   slugs: { juvantis: p.handle },
   title: { de: p.title },
-  status_juvantis_hint: p.published_at ? "active" : "draft",
+  status_shop_hint: p.published_at ? "active" : "draft",
   template_suffix: p.template_suffix,
 
   // Body HTML — needs to be split into sections if complex

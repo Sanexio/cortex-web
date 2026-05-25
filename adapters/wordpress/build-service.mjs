@@ -17,7 +17,7 @@ import { resolve, relative } from "node:path";
 import yaml from "js-yaml";
 import Ajv from "ajv";
 
-import { renderServicePraxis } from "./lib/renderers/service-praxis.mjs";
+import { renderServicePractice } from "./lib/renderers/service-practice.mjs";
 
 const REPO_ROOT = resolve(import.meta.dir, "../..");
 
@@ -79,7 +79,7 @@ const sourcePath = relative(REPO_ROOT, contentPath);
 
 let payload;
 try {
-  payload = renderServicePraxis(page, { sourcePath, parentId });
+  payload = renderServicePractice(page, { sourcePath, parentId });
 } catch (err) {
   die(3, `render failed: ${err.message}`);
 }

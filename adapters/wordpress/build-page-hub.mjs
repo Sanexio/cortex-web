@@ -9,7 +9,7 @@
 //
 // Usage:  bun adapters/wordpress/build-page-hub.mjs
 //
-// HWG-Strip: views.praxis.show_prices=false → Adapter zieht KEINE Preis-/
+// HWG-Strip: views.practice.show_prices=false → Adapter zieht KEINE Preis-/
 // Money-Felder aus YAML in Praxis-Output. (Trunk-YAMLs enthalten keine Preise
 // — diese Regel hier ist primär ein Sicherheits-Guard für später.)
 
@@ -278,7 +278,7 @@ function buildOverviewCards(lang) {
     out.push({
       id,
       category,
-      slug: "/" + (data.slugs?.praxis || slug) + "/",
+      slug: "/" + (data.slugs?.practice || slug) + "/",
       title: pickLang(data.title, lang),
       image: heroImageOf(data),
     });
@@ -309,16 +309,16 @@ for (const slug of PAGES) {
   }
 
   // HWG-Guard: Praxis-View darf show_prices=true nicht erlauben
-  if (data?.views?.praxis?.show_prices === true) {
-    console.error(`  ✗ HWG-Verstoß: ${slug}.yaml hat views.praxis.show_prices=true`);
+  if (data?.views?.practice?.show_prices === true) {
+    console.error(`  ✗ HWG-Verstoß: ${slug}.yaml hat views.practice.show_prices=true`);
     process.exit(2);
   }
 
   // Doctolib-Resolver: per-page Doctolib URL overrides cta_url, falls leer
   // Default-Fallback. Phase-3-Setup.
   const ctaUrl =
-    data.views?.praxis?.doctolib_url ||
-    data.views?.praxis?.cta_url ||
+    data.views?.practice?.doctolib_url ||
+    data.views?.practice?.cta_url ||
     "/service/terminanfrage/";
 
   const isDetail = data?.wp?.page_template === DETAIL_TPL;
@@ -333,12 +333,12 @@ for (const slug of PAGES) {
 
     const out = {
       id: data.id,
-      slug: data.slugs?.praxis || slug,
+      slug: data.slugs?.practice || slug,
       title: pickLang(data.title, lang),
       page_template: data.wp?.page_template || `template-${slug}.php`,
       eyebrow: pickLang(data.wp?.eyebrow, lang),
       cta_url: ctaUrl,
-      cta_label: pickLang(data.views?.praxis?.cta_label, lang) || CTA_DEFAULT[lang] || CTA_DEFAULT.de,
+      cta_label: pickLang(data.views?.practice?.cta_label, lang) || CTA_DEFAULT[lang] || CTA_DEFAULT.de,
       sections: (data.sections || []).map((sec) => normalizeSection(sec, lang)),
       related_overview: related,
     };
