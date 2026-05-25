@@ -28,7 +28,10 @@ images:
 sanexio_source:
   type: product
   handle: example-product
-description:
+  resource_id: 1
+  last_synced_at: '2026-01-01T00:00:00.000Z'
+  last_synced_hash: '0000000000000000000000000000000000000000000000000000000000000000'
+beschreibung:
   de: |
     Demo-Produkt-Beschreibung. Dient als Schema-Beispiel für eigene
     Produkt-Einträge im Cortex-Web-Trunk. Nicht für Produktiv-Webseiten

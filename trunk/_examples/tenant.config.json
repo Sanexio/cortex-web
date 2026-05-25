@@ -8,5 +8,9 @@
   "praxis": {
     "site_url": "https://demo-praxis.example",
     "local_url": "http://demo-praxis.local"
+  },
+  "cta": {
+    "_note": "Whitelist erlaubter externer Domains für views.praxis.cta_url. Build-Step (adapters/wordpress/build.mjs) blockt jeden externen Host, der nicht in dieser Liste steht. Internal-CTAs (/...) sind immer erlaubt.",
+    "allowed_external_cta_domains": ["example.test", "demo-shop.example"]
   }
 }

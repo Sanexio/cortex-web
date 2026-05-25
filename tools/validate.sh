@@ -8,8 +8,18 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
+# shellcheck source=lib/tenant-path.sh
+. "$REPO_ROOT/tools/lib/tenant-path.sh"
+PRODUCTS_DIR="$(tenant_path trunk/content/products)"
+echo "validate: $(tenant_describe)"
+
 if [ ! -d node_modules ]; then
   echo "validate: node_modules missing — run 'bun install' in $REPO_ROOT" >&2
+  exit 1
+fi
+
+if [ ! -d "$PRODUCTS_DIR" ]; then
+  echo "validate: products directory missing at $PRODUCTS_DIR" >&2
   exit 1
 fi
 
@@ -18,14 +28,14 @@ count=0
 
 while IFS= read -r -d '' file; do
   count=$((count + 1))
-  echo "validate: ${file}"
+  echo "validate: ${file#$REPO_ROOT/}"
   if ! bun adapters/wordpress/build.mjs "$file" > /dev/null; then
     fail=$((fail + 1))
   fi
-done < <(find trunk/content/products -type f -name '*.yaml' -print0)
+done < <(find "$PRODUCTS_DIR" -type f -name '*.yaml' -print0)
 
 if [ $count -eq 0 ]; then
-  echo "validate: no product YAML files found (trunk/content/products/**/*.yaml)" >&2
+  echo "validate: no product YAML files found under $PRODUCTS_DIR" >&2
   exit 1
 fi
 

@@ -1,67 +1,61 @@
 # SESSION_RESUME — Cortex-Web
 
-> **Standard-Einstieg „Projekt fortsetzen Cortex-Web"** (Lean v3, 2026-05-13).
+> **Standard-Einstieg „Cortex-Web fortsetzen"** (Lean v3, 2026-05-25, post Welle 9).
 > Pflicht-Init: `Nexus/CLAUDE.md` + `Nexus/_rules/AUTONOMY_CONTRACT.md`.
-> Plus diese Datei + `_rules/ARCHITECTURE.md` + `sites/praxis-webseite/_rules/WORKING_MODE.md`.
-> Pre-Flight: `bash tools/validate.sh`.
-> Vor Schreibarbeit: Lease via Connexio `lease_project("Sanexio/cortex-web", "<scope>", ...)`.
+> Aktive Detail-Source-of-Truth: `Nexus/specs/cortex-platform/SESSION_RESUME.md`.
+> Pre-Flight: `bash tools/validate.sh` (läuft im Demo-Modus ohne CORTEX_TENANT_DIR).
 
 ## §1 Stand (HOT)
 
-- **Cortex-Web-HEAD:** `bd506ff` (2026-05-12, Codex Phoenix-Drift-Cleanup CLAUDE.md + dieser SESSION_RESUME alt).
-- **Praxis-Theme PXZ:** `2.7.179` Tag `live-de-2026-05-08-01` (Rollback-Anker), Live-Push auf `.de` lief in separater Praxis-Mac-Session.
-- **Repo-Workflow:** Modell A (Local = Master), `tools/sync-local-to-de.sh` mit Pre-Push-Guard.
-- **Aktive Phase:** Praxis-Polish-Arc (S55+ ff.), DE-Content-Vervollständigung (P3a) + Doctolib-Mapping + Page-Review.
-
-Detail aller Sessions S31–S55 liegt im Cold-Archive (siehe §5).
+- **Cortex-Web-HEAD:** Welle 9 — cta_url-Schema parametrisiert, Linter 67→0,
+  Strict-Modus lokal grün.
+- **Repo-Rolle:** Framework + Adapter + Schema. Tenant-Daten leben in
+  `Sanexio-Tenant/` (separates Repo, via `CORTEX_TENANT_DIR` oder
+  `~/.cortex/tenant-path`).
+- **Helper-Trio in `tools/lib/`:** `tenant-path.{sh,mjs}` (Datenpfad),
+  `theme-path.mjs` (Local-WP-Theme), `tenant-config.mjs` (funktionale
+  Konstanten aus `<tenant>/tenant.config.json`).
+- **Linter:** `tools/lint-no-tenant-leaks.sh` strict-clean. Pre-Commit-
+  Aktivierung steht als nächste kleine Welle aus.
 
 ## §2 Pre-Flight
 
 ```bash
 cd ~/Cortex/projects/Cortex-Web && bash tools/validate.sh
-cd sites/praxis-webseite && bash tools/verify.sh   # Praxis-spezifisch
+bash tools/lint-no-tenant-leaks.sh --strict
 ```
 
-## §3 Holistische Prio-Leiter (CW-PRIO-001, kompakt)
+Im Demo-Modus (kein `CORTEX_TENANT_DIR` gesetzt) liest validate.sh aus
+`trunk/_examples/`. Mit `CORTEX_TENANT_DIR=$HOME/Cortex/projects/Sanexio-Tenant`
+gegen den Stracke-Tenant.
 
-| Prio | Block | Status |
-|:---:|---|:---:|
-| P1 | Medien-Pipeline (8 Fotos) | 🟢 2/8 live, Rest extern |
-| P2 | Prod-Deployment-Pipelines | 🟢 .de live, .com pending C-1 |
-| P3 | DE-Content + Menü + SEO | 🟡 P3a aktiv |
-| P4 | M1 Prod-Push .com | 🔴 nach P3a + L-1/L-2 + C-1 |
-| P5 | Juvantis Content-Alltag | 🔴 nach M1 |
-| P6 | i18n EN/FR/ES | 🔴 nach P5 |
-| Ppol-rest | A11y / Mobile / Polish | 🔴 nach P4 |
-| Popt/Pios | iOS / Pattern C / Media-Registry | ⏸ |
+## §3 Direkter Einstieg in die nächste Welle
 
-Externe Blocker: L-1/L-2 (Anwalt — Impressum/Datenschutz), C-1 (DF-Support für SFTP-`.com`).
+Welle 10 — Pre-Commit-Hook für `lint-no-tenant-leaks.sh --strict`. Damit
+ein versehentliches Re-Einschleusen von Tenant-Spuren ins Framework
+beim Commit geblockt wird.
 
-## §4 Top-3-Open-Tasks (HOT)
+Größere Backlog-Items (eigenständige Wellen):
+- `adapters/shopify/lib/renderers/page-juvantis.mjs` → `page-tenant-shop.mjs`
+  (Schema-Bruch, juvantis-Site-Enum tief im Trunk-Schema verwoben).
+- History-Cleanup auf `Sanexio/cortex-web/main` vor OSS-Launch
+  (filter-repo + Force-Push + Re-Clone aller 5 Macs, Backup-Branch
+  `pre-tenant-split-2026-05-24` bleibt).
 
-1. **CR-1..5 Page-Review** (25 Sanexio-Detail-Pages): Sie-Form, HWG, Bilder. Iterativ pro Page.
-2. **Doctolib-Mapping** (Phase 3d): pro Page `views.praxis.doctolib_url` setzen.
-3. **eye-check + labor-biohack** Stub schließen (Praxis-eigenes Bild + Text).
+## §4 Harte Verbote
 
-## §5 Cold-Archive (verlinkte Detail-Historie)
+- Linter strict bleibt grün. Neue Tenant-Spuren im Framework-Pfad
+  (`adapters/`, `tools/`, `_config/`, `_rules/`, `specs/`,
+  `_integration-slots/`, `trunk/schema/`) werden vor Commit gefixt oder
+  in Tenant-Pfad verschoben.
+- Adapter dürfen NICHT mehr hartcodiert `trunk/content/` oder
+  `trunk/media/` lesen — immer via Helper-Trio.
+- Schema-Validation vor Build (CW-002).
+- I-2 hybrid i18n (CW-004).
+- Plattform-Trennung zwischen Tenant-Sites bleibt bestehen (CW-005).
 
-- S31–S55 Praxis-Polish-Arc, holistische Prio-Tabelle Vollversion, alle Sprint-Boxen,
-  Fronten-Liste, Hygiene-Checkliste:
-  [`_archive/sessions/2026-05/sessions-S31-S55-praxis-polish-arc-pre-lean-v3.md`](_archive/sessions/2026-05/sessions-S31-S55-praxis-polish-arc-pre-lean-v3.md)
-- Sessions 7–46 (S2.x + MVP + Polish-Arc): `_archive/sessions/2026-04/`
-- S65–S67 i18n-Welle: `_archive/sessions/2026-05/sessions-65-67-praxisgemeinschaft-i18n-welle.md`
+## §5 Detail-Quelle
 
-## §6 Harte Verbote
-
-- HWG / Berufsordnung: keine Werbung, keine Heilversprechen, keine Preise.
-- CW-001 Trunk ist Master: keine Inhalte direkt im WP-Admin / Shopify-Admin.
-- CW-006 expliziter Transfer: kein Auto-Sync, kein Webhook-Mirror.
-- CW-008 Backup vor destruktivem Push.
-- Theme-Render-Source vor DB-Schreiben verifizieren (`inc/*-data.php` ist Master für nav/footer/practice/team/homepage, NICHT WP-Admin).
-- Type-Scale-Pflicht (T1–T8) bei Font-Änderungen.
-- Holistische Prio (CW-PRIO-001): P1–P5 dominieren; Popt/Pios nur bei echtem Pain-Point.
-
----
-
-*HOT-File ≤80 LOC nach Lean-v3-Welle L2 Paket B (Claude 2026-05-13).*
-*Vorgängerversion 431 LOC ist im Cold-Archive verlinkt in §5.*
+Vollständige Welle-Historie + Backlog: `~/Cortex/Nexus/specs/cortex-platform/SESSION_RESUME.md`.
+Die ist auch der „letzter Stand"-Master, wenn dieses HOT-File und der
+Plattform-Resume divergieren.

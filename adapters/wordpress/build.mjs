@@ -11,6 +11,7 @@
 //   1 = usage / IO error
 //   2 = schema validation failed
 //   3 = render error
+//   4 = tenant policy violation (external cta_url domain not in whitelist)
 
 import { readFileSync } from "node:fs";
 import { resolve, relative } from "node:path";
@@ -18,6 +19,7 @@ import yaml from "js-yaml";
 import Ajv from "ajv";
 
 import { renderProductPraxis } from "./lib/renderers/product-praxis.mjs";
+import { tenantConfigGet } from "../../tools/lib/tenant-config.mjs";
 
 const REPO_ROOT = resolve(import.meta.dir, "../..");
 
@@ -60,6 +62,25 @@ if (!validate(product)) {
     .join("\n");
   process.stderr.write(`ADAPTER_ERROR: schema validation failed for ${contentArg}:\n${details}\n`);
   process.exit(2);
+}
+
+// Tenant-Policy: views.praxis.cta_url darf nur intern (/) oder auf eine whitelisted Domain zeigen.
+// Whitelist kommt aus tenant.config.json (cta.allowed_external_cta_domains). Internal-CTAs sind immer ok.
+const praxisCta = product?.views?.praxis?.cta_url;
+if (typeof praxisCta === "string" && praxisCta.startsWith("https://")) {
+  let host;
+  try {
+    host = new URL(praxisCta).host;
+  } catch (err) {
+    die(4, `views.praxis.cta_url is not a valid URL: ${praxisCta} (${err.message})`);
+  }
+  const allowed = tenantConfigGet("cta.allowed_external_cta_domains", []);
+  if (!Array.isArray(allowed) || allowed.length === 0) {
+    die(4, `views.praxis.cta_url is external (${host}) but tenant.config.json defines no cta.allowed_external_cta_domains whitelist`);
+  }
+  if (!allowed.includes(host)) {
+    die(4, `views.praxis.cta_url host "${host}" is not in tenant.config.json cta.allowed_external_cta_domains (${allowed.join(", ")})`);
+  }
 }
 
 const sourcePath = relative(REPO_ROOT, contentPath);

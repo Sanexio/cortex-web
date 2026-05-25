@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://cortex-web.local/schemas/product-v1.json",
   "title": "Product",
-  "description": "Cortex-Web Produkt (Bluttest, Body-Check etc.). I-2 hybrid i18n: sprach-invariante Felder auf Top-Level, mehrsprachige Felder verschachtelt unter .de/.en/.fr/.es. HWG-Gate: views.praxis.show_price MUSS false sein.",
+  "description": "Cortex-Web Produkt. I-2 hybrid i18n: sprach-invariante Felder auf Top-Level, mehrsprachige Felder verschachtelt unter .de/.en/.fr/.es. HWG-Gate: views.praxis.show_price MUSS false sein. Externe Praxis-CTA-Domains werden tenant-spezifisch über tenant.config.json (allowed_external_cta_domains) im Build-Step validiert, nicht im Schema.",
   "type": "object",
   "additionalProperties": false,
   "required": ["id", "sku", "category", "status", "parameters", "title", "views"],
@@ -84,8 +84,8 @@
             "cta_label": { "$ref": "#/definitions/i18nString" },
             "cta_url": {
               "type": "string",
-              "pattern": "^(/|https://sanexio\\.eu/)",
-              "description": "Praxis-CTA darf nur intern (/) oder auf die zugelassene externe Shop-Domain zeigen. HINWEIS: Die Domain im pattern ist heute auf den Reference-Tenant (sanexio.eu) hartcodiert — Parametrisierung via Tenant-Schema-Override ist offenes Architektur-Item (siehe Plattform-§10)."
+              "pattern": "^(/|https://)",
+              "description": "Praxis-CTA darf nur intern (/) oder auf eine zugelassene externe Domain zeigen. Die Whitelist wird tenant-spezifisch in tenant.config.json unter `allowed_external_cta_domains` gepflegt und im Build-Step (adapters/wordpress/build.mjs) gegen externe Hosts geprüft."
             }
           }
         }
