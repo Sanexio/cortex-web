@@ -92,10 +92,20 @@ for fp in "${FRAMEWORK_PATHS[@]}"; do
     # Reference-Tenant — siehe specs/REFERENCE_TENANT_EVIDENCE.md).
     # Exclude: lint-no-tenant-leaks.sh — Self-Reference (enthält die
     # Tenant-Patterns als Suchstrings per Definition).
+    # Exclude: historisch-dokumentarische Spec-Verzeichnisse — abgeschlossene
+    # Aufbau-/Strategie-/Session-Specs sind Snapshot-in-Time-Artefakte mit
+    # konkreten Tenant-Beispielen aus dem Aufbau, kein lebendes Framework-
+    # Regelwerk (siehe REFERENCE_TENANT_EVIDENCE.md §"Historisch-
+    # dokumentarische Spec-Verzeichnisse"). Neue lebende Specs gehören in
+    # einen anders benannten Spec-Ordner (nicht phase-N, nicht session-N).
     hits=$(grep -rilE "$EGREP" "$ROOT/$fp" 2>/dev/null \
         | grep -v "/node_modules/" \
         | grep -v "/evidence/" \
         | grep -v "/lint-no-tenant-leaks\.sh$" \
+        | grep -vE "/specs/phase-[0-9]+/" \
+        | grep -v "/specs/bridge-strategy/" \
+        | grep -v "/specs/content-bridge-v1/" \
+        | grep -vE "/specs/session-[0-9]+/" \
         || true)
 
     if [ -z "$hits" ]; then
