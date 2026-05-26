@@ -1,14 +1,26 @@
 # SESSION_RESUME — Cortex-Web
 
-> **Standard-Einstieg „Cortex-Web fortsetzen"** (Lean v3, 2026-05-26, post Welle 15).
+> **Standard-Einstieg „Cortex-Web fortsetzen"** (Lean v3, 2026-05-26, post OSS-Launch).
 > Pflicht-Init: `Nexus/CLAUDE.md` + `Nexus/_rules/AUTONOMY_CONTRACT.md`.
 > Aktive Detail-Source-of-Truth: `Nexus/specs/cortex-platform/SESSION_RESUME.md`.
 > Pre-Flight: `bash tools/validate.sh` (läuft im Demo-Modus ohne CORTEX_TENANT_DIR).
 > **Einmal pro Mac:** `bash tools/install-git-hooks.sh` (aktiviert Pre-Commit-Lint).
+> **⚠ Post-OSS-Launch (2026-05-26):** History wurde umgeschrieben. Andere Tenant-Macs
+> MÜSSEN re-clonen — `git pull` schlägt fehl (force-pushed History, alle Commit-Hashes
+> neu). Anleitung: siehe `_archive/cortex-web-pre-oss/README` oder Skript-Output von
+> `tools/oss-launch-filter.sh push`.
 
 ## §1 Stand (HOT)
 
-- **Cortex-Web-HEAD:** Welle 15 — Letzte zwei `Sanexio`-Hardcodes aus
+- **Cortex-Web-HEAD:** OSS-Launch durch (2026-05-26 08:46Z). filter-repo
+  hat `trunk/content`, `trunk/media`, `sites/praxis-webseite`,
+  `sites/juvantis-webseite`, `projects` aus der gesamten History
+  gescrubbt — origin/main + pre-tenant-split-2026-05-24 + live-de-Tag
+  force-pushed. Repo-Größe 86M→34M, 220→130 Commits. Bundle-Backup der
+  pre-scrub-History: `~/Cortex/_archive/cortex-web-pre-oss/
+  cortex-web-pre-oss-2026-05-26T08-46-16Z.bundle` (84M). HEAD-Hash
+  `ee6e92e` (pipefail-Fix im Recipe nach Force-Push-Lauf).
+- **Cortex-Web-HEAD vorher:** Welle 15 — Letzte zwei `Sanexio`-Hardcodes aus
   dem Framework gezogen. Astro-Adapter (`adapters/astro/lib/astro-writer.mjs`)
   und Shopify-Renderer (`adapters/shopify/lib/renderers/product-shop.mjs`)
   lesen ihren Tenant-Wert jetzt via `tenant.config.json` (neue Keys
@@ -55,15 +67,18 @@ gegen den Stracke-Tenant.
 ## §3 Direkter Einstieg in die nächste Welle
 
 Größere Backlog-Items (eigenständige Wellen):
-- **OSS-Launch Force-Push** (vorbereitet, wartet auf User-Go):
-  `tools/oss-launch-filter.sh` ist gebaut + dry-verifiziert. Mirror-
-  Scrub in /tmp hat 86M → 34M reduziert, alle 5 Tenant-Pfade-Blobs
-  raus, 130 Commits stehen sauber. Vor Force-Push noch:
-  `bash tools/oss-launch-filter.sh prepare` (legt Bundle-Backup in
-  `_archive/cortex-web-pre-oss/`). Dann mit allen Macs-idle:
-  `bash tools/oss-launch-filter.sh push` (manuelle Bestätigung
-  `JA-ICH-WILL-OSS-LAUNCH`). Re-Clone aller 5 Tenant-Macs danach,
-  Anleitung im Skript-Output.
+- **Re-Clone der 4 anderen Tenant-Macs** (User-Aufgabe, nicht
+  Claude-automatisierbar): Auf jedem Mac außer diesem hier (auf dem
+  der Push lief) muss laufen:
+  ```bash
+  cd ~/Cortex/projects && mv Cortex-Web Cortex-Web.pre-oss
+  git clone git@github.com:Sanexio/cortex-web.git Cortex-Web
+  bash Cortex-Web/tools/install-git-hooks.sh
+  bash Cortex-Web/tools/validate.sh
+  rm -rf Cortex-Web.pre-oss     # erst wenn validate grün
+  ```
+  Auto-Sync (falls für Cortex-Web aktiv) wird auf den anderen Macs
+  beim nächsten Fetch crashen, bis re-cloned ist.
 - **OSS-Launch-Vorlauf (historisch)** (groß, koordiniert): History-Cleanup auf
   `Sanexio/cortex-web/main` mit filter-repo + Force-Push + Re-Clone
   aller 5 Macs, Backup-Branch `pre-tenant-split-2026-05-24` als Anker.
