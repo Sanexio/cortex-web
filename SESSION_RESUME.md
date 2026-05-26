@@ -55,7 +55,16 @@ gegen den Stracke-Tenant.
 ## §3 Direkter Einstieg in die nächste Welle
 
 Größere Backlog-Items (eigenständige Wellen):
-- **OSS-Launch-Vorlauf** (groß, koordiniert): History-Cleanup auf
+- **OSS-Launch Force-Push** (vorbereitet, wartet auf User-Go):
+  `tools/oss-launch-filter.sh` ist gebaut + dry-verifiziert. Mirror-
+  Scrub in /tmp hat 86M → 34M reduziert, alle 5 Tenant-Pfade-Blobs
+  raus, 130 Commits stehen sauber. Vor Force-Push noch:
+  `bash tools/oss-launch-filter.sh prepare` (legt Bundle-Backup in
+  `_archive/cortex-web-pre-oss/`). Dann mit allen Macs-idle:
+  `bash tools/oss-launch-filter.sh push` (manuelle Bestätigung
+  `JA-ICH-WILL-OSS-LAUNCH`). Re-Clone aller 5 Tenant-Macs danach,
+  Anleitung im Skript-Output.
+- **OSS-Launch-Vorlauf (historisch)** (groß, koordiniert): History-Cleanup auf
   `Sanexio/cortex-web/main` mit filter-repo + Force-Push + Re-Clone
   aller 5 Macs, Backup-Branch `pre-tenant-split-2026-05-24` als Anker.
 
