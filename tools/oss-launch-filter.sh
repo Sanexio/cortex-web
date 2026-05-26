@@ -88,7 +88,7 @@ echo "Größe nach Scrub:  $(du -sh "$WORK" | cut -f1)"
 echo ""
 echo "Tenant-Pfade in gescrubbter History (alle müssen 0 sein):"
 for p in trunk/content trunk/media sites/praxis-webseite sites/juvantis-webseite projects; do
-  n=$(git rev-list --all --objects 2>/dev/null | grep -c "^[a-f0-9]\{40\} $p/")
+  n=$(git rev-list --all --objects 2>/dev/null | grep -c "^[a-f0-9]\{40\} $p/" || true)
   printf "  %-35s %s blobs\n" "$p" "$n"
 done
 
