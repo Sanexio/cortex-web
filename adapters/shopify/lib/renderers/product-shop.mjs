@@ -1,6 +1,10 @@
 // Renderer for products in the "shop" view — Shopify Product payload.
 // Reads only the .de locale (Phase 2 scope).
 // body_html is intentionally minimal: theme owns price, variant, images, CTA.
+// Vendor wird tenant-spezifisch über tenant.config.json → shop.vendor
+// gelesen (vor Welle 15: hartcodiert "Sanexio").
+
+import { tenantConfigGet } from "../../../../tools/lib/tenant-config.mjs";
 
 function escapeHtml(value) {
   return String(value)
@@ -39,8 +43,8 @@ function formatPrice(value) {
 }
 
 export function renderProductShop(product, { sourcePath }) {
-  const juvantis = product.views.shop;
-  if (!juvantis) {
+  const shopView = product.views.shop;
+  if (!shopView) {
     throw new Error(`product-shop: views.shop missing (id=${product.id})`);
   }
 
@@ -62,7 +66,7 @@ export function renderProductShop(product, { sourcePath }) {
       handle: product.id,         // explicit handle — Shopify would otherwise derive one from title
       title: product.title.de,
       body_html: buildBodyHtml(product),
-      vendor: "Sanexio",
+      vendor: tenantConfigGet("shop.vendor"),
       product_type: product.category,
       tags,
       status: "draft",            // C-1: hardcoded, never overridable

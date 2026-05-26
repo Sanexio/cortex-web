@@ -2,7 +2,7 @@
 // Cortex-Web Astro-Adapter — Team-Sync.
 // Liest alle trunk/content/team/*.yaml-Files, validiert gegen
 // trunk/schema/team-member.schema.json und schreibt eine konsolidierte
-// TypeScript-Data-Datei in sites/sanexio-github-io/repo/src/data/team.ts.
+// TypeScript-Data-Datei in <tenant.astro.repo_path>/src/data/team.ts.
 //
 // Verwendung:
 //   bun adapters/astro/team-to-astro.mjs
@@ -17,14 +17,14 @@ import { resolve, basename } from "node:path";
 import yaml from "js-yaml";
 import Ajv from "ajv";
 
-import { sanexioPath, writeWithBackup, tsHeader, tsExportConst } from "./lib/astro-writer.mjs";
+import { astroPath, writeWithBackup, tsHeader, tsExportConst } from "./lib/astro-writer.mjs";
 // CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
 import { tenantPath, tenantDescribe } from "../../tools/lib/tenant-path.mjs";
 
 const REPO_ROOT = resolve(import.meta.dir, "../..");
 const TEAM_DIR = tenantPath("trunk/content/team");
 const SCHEMA_PATH = resolve(REPO_ROOT, "trunk/schema/team-member.schema.json");
-const TARGET = sanexioPath("src/data/team.ts");
+const TARGET = astroPath("src/data/team.ts");
 
 process.stderr.write(`[astro/team-to-astro] ${tenantDescribe()}\n`);
 process.stderr.write(`[astro/team-to-astro] TEAM_DIR=${TEAM_DIR}\n`);
@@ -95,7 +95,7 @@ const ts =
   `  intro: { de: string; en?: string };\n` +
   `  accent: string;\n` +
   `  qualifications: readonly string[];\n` +
-  `  profile_urls?: { praxis?: string | null; juvantis?: string | null; sanexio?: string | null };\n` +
+  `  profile_urls?: { practice?: string | null; shop?: string | null };\n` +
   `}\n\n` +
   tsExportConst("TEAM", members, "readonly TeamMember[]");
 
@@ -112,9 +112,9 @@ process.stdout.write(JSON.stringify({
 }, null, 2) + "\n");
 
 function projectMember(doc) {
-  // Reduziert das Trunk-Schema auf das, was Sanexio aktuell konsumiert.
-  // bio/image* werden absichtlich nicht exportiert — Sanexio rendert nur
-  // Kurzprofile als „klinischer Validator". Bei Bedarf später erweitern.
+  // Reduziert das Trunk-Schema auf das, was die Astro-Site aktuell
+  // konsumiert. bio/image* werden absichtlich nicht exportiert — die
+  // Site rendert nur Kurzprofile als „klinischer Validator".
   return {
     id: doc.id,
     slug: doc.slug,

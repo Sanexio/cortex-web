@@ -1,17 +1,30 @@
 // Cortex-Web Astro-Adapter — File-Output-Helper.
-// Schreibt TypeScript-Data-Files in sites/sanexio-github-io/repo/src/data/
+// Schreibt TypeScript-Data-Files in <tenant.astro.repo_path>/src/data/
 // und Astro-Page-Files in src/pages/. Vor jedem Überschreiben wird ein
 // Backup nach adapters/astro/.backups/ angelegt (CW-008-Backup-Pflicht).
+//
+// Der Ziel-Repo-Pfad wird per `tenant.config.json` → `astro.repo_path`
+// aufgelöst (relativ zum Cortex-Web-Framework-Root). Vor Welle 15 war
+// `sites/sanexio-github-io/repo` hartcodiert.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from "node:fs";
 import { dirname, resolve, basename } from "node:path";
+import { tenantConfigGet } from "../../../tools/lib/tenant-config.mjs";
 
 const REPO_ROOT = resolve(import.meta.dir, "../../..");
-const SANEXIO_REPO = resolve(REPO_ROOT, "sites/sanexio-github-io/repo");
 const BACKUP_DIR = resolve(REPO_ROOT, "adapters/astro/.backups");
 
-export function sanexioPath(rel) {
-  return resolve(SANEXIO_REPO, rel);
+let _astroRepoCache = null;
+
+function astroRepoRoot() {
+  if (_astroRepoCache) return _astroRepoCache;
+  const rel = tenantConfigGet("astro.repo_path");
+  _astroRepoCache = resolve(REPO_ROOT, rel);
+  return _astroRepoCache;
+}
+
+export function astroPath(rel) {
+  return resolve(astroRepoRoot(), rel);
 }
 
 function timestampIso() {

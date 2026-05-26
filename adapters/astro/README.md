@@ -1,19 +1,19 @@
 # Cortex-Web — Astro-Adapter
 
-> **Status:** Phase 1+2 Skelett · 2026-05-23
+> **Status:** Phase 1+2 Skelett · 2026-05-23 (Welle-15-Pfad: tenant.config-getrieben)
 > **Zielsite:** Konfigurierbares Astro-Sub-Projekt unter `sites/<astro-site>/repo/`
 > (Astro 5 + TypeScript Data-Files, Deploy typischerweise via GitHub-Pages).
-> Die im Reference-Tenant verwendete Site liegt unter
-> `sites/sanexio-github-io/repo/`; auf anderen Tenants entsprechend.
+> Der konkrete Pfad wird per `tenant.config.json` → `astro.repo_path`
+> aufgelöst (relativ zum Cortex-Web-Framework-Root).
 > **Architekten-Spec:** `specs/cross-site-transfer/ARCHITECTURE.md`
 > **Schema-Erweiterung:** `trunk/schema/page.schema.json` (Site-Enum
 > um `hub` ergänzt, plus `status_hub`-Flag analog zu `status_shop`)
 
 ## Was dieser Adapter tut
 
-Der Astro-Adapter rendert ausgewählte Trunk-Inhalte in das Sanexio-Astro-Repo
-unter `sites/sanexio-github-io/repo/`. Im Unterschied zu den anderen beiden
-Adaptern (`wordpress/`, `shopify/`) schreibt er **TypeScript-Data-Files**
+Der Astro-Adapter rendert ausgewählte Trunk-Inhalte in das Astro-Site-Repo
+des aktiven Tenants. Im Unterschied zu den anderen beiden Adaptern
+(`wordpress/`, `shopify/`) schreibt er **TypeScript-Data-Files**
 (`src/data/*.ts`), nicht REST-API-Payloads. Astro picked die Daten beim
 Build (`bun run build`) selber aus `src/data/` und rendert sie in die Astro-
 Components.
@@ -57,10 +57,10 @@ bun adapters/astro/build.mjs
 bun adapters/astro/team-to-astro.mjs
 
 # Output prüfen, dann Astro bauen
-cd sites/sanexio-github-io/repo && bun run build
+cd "$(bun tools/lib/tenant-config.mjs astro.repo_path)" && bun run build
 ```
 
-Für komfortableren Top-Level-Aufruf: `tools/build-sanexio.sh` orchestriert
+Für komfortableren Top-Level-Aufruf: `tools/build-astro.sh` orchestriert
 Adapter-Run + Astro-Build + optional Commit+Push der `dist/`-Files.
 
 ## Phasen-Roadmap (siehe Architektur-Plan 2026-05-23)
@@ -74,7 +74,7 @@ Adapter-Run + Astro-Build + optional Commit+Push der `dist/`-Files.
 
 ## Nicht-Ziele dieser Phase
 
-- Kein Astro-Build (das macht `bun run build` im Sanexio-Repo selbst)
-- Kein GitHub-Pages-Push (separat per `gh-pages`-Action im Sanexio-Repo)
+- Kein Astro-Build (das macht `bun run build` im Astro-Repo selbst)
+- Kein GitHub-Pages-Push (separat per `gh-pages`-Action im Astro-Repo)
 - Keine Section-Komponenten — die Astro-Components existieren bereits im
-  Sanexio-Repo. Der Adapter füllt nur ihre Data-Sources.
+  Astro-Repo. Der Adapter füllt nur ihre Data-Sources.

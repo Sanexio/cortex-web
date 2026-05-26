@@ -1,6 +1,6 @@
 # SESSION_RESUME — Cortex-Web
 
-> **Standard-Einstieg „Cortex-Web fortsetzen"** (Lean v3, 2026-05-25, post Welle 14).
+> **Standard-Einstieg „Cortex-Web fortsetzen"** (Lean v3, 2026-05-26, post Welle 15).
 > Pflicht-Init: `Nexus/CLAUDE.md` + `Nexus/_rules/AUTONOMY_CONTRACT.md`.
 > Aktive Detail-Source-of-Truth: `Nexus/specs/cortex-platform/SESSION_RESUME.md`.
 > Pre-Flight: `bash tools/validate.sh` (läuft im Demo-Modus ohne CORTEX_TENANT_DIR).
@@ -8,17 +8,24 @@
 
 ## §1 Stand (HOT)
 
-- **Cortex-Web-HEAD:** Welle 14 — Doku-Cleanup: Konzept-Namen
+- **Cortex-Web-HEAD:** Welle 15 — Letzte zwei `Sanexio`-Hardcodes aus
+  dem Framework gezogen. Astro-Adapter (`adapters/astro/lib/astro-writer.mjs`)
+  und Shopify-Renderer (`adapters/shopify/lib/renderers/product-shop.mjs`)
+  lesen ihren Tenant-Wert jetzt via `tenant.config.json` (neue Keys
+  `astro.repo_path` + `shop.vendor`, in beiden Tenants gepflegt:
+  Sanexio-Tenant real, trunk/_examples Demo). `SANEXIO_REPO`/`sanexioPath`
+  → `ASTRO_REPO`/`astroPath`; `tools/build-sanexio.sh` →
+  `tools/build-astro.sh` (git-mv, neuer Inhalt liest astro.repo_path).
+  Stale TS-Interface `profile_urls: {praxis|juvantis|sanexio}` →
+  `{practice|shop}` (Welle-12-Nachzug). Verifikation: shopify build dry
+  liefert `vendor: "Sanexio"` aus Config; team-to-astro schreibt nach
+  resolvtem Pfad ohne Diff (idempotent). Lockstep-Commit:
+  Sanexio-Tenant zuerst, dann Cortex-Web.
+- **Cortex-Web-HEAD vorher:** Welle 14 — Doku-Cleanup: Konzept-Namen
   „Praxis-View" / „Juvantis-View" / „Sanexio-Source" mechanisch auf
-  Role-Begriffe (`Practice-View` / `Shop-View` / `Upstream-Source`)
-  gezogen; im selben Aufwasch Code-Key-Drift in den berührten Files
-  (`views.praxis`→`views.practice`, `views.juvantis`→`views.shop`,
-  `sanexio_source`→`upstream_source`, `image_asset_juvantis`→
-  `image_asset_shop`). Touched: docs/cross-site-transfer.md,
-  SESSION_RESUME.md, specs/{content-bridge-v1, cross-site-transfer,
-  drift-sync, phase-1, phase-3}/*.md. CHANGELOG + phase-3/evidence/ +
-  phase-2 POC bleiben als Snapshot-in-Time unberührt (Welle-7-Regel).
-- **Cortex-Web-HEAD vorher:** Welle 13 — `sanexio` als letztes
+  Role-Begriffe gezogen; Code-Key-Drift in berührten Files
+  synchronisiert.
+- **Cortex-Web-HEAD davor:** Welle 13 — `sanexio` als letztes
   Brand-Token in Schemas/Drift-Sync abstrahiert (`sanexio_source` →
   `upstream_source`, `site: sanexio` → `site: hub`, `status_sanexio`
   → `status_hub`).
@@ -48,12 +55,6 @@ gegen den Stracke-Tenant.
 ## §3 Direkter Einstieg in die nächste Welle
 
 Größere Backlog-Items (eigenständige Wellen):
-- **Welle 15 — `SANEXIO_REPO`-Pfad + `vendor: "Sanexio"`** (klein):
-  `adapters/astro/lib/astro-writer.mjs` hardcodiert
-  `sites/sanexio-github-io/repo` — sollte via
-  `tenant.config.astro.repo_path` gelesen werden. Analog
-  `adapters/shopify/lib/renderers/product-shop.mjs` mit hardcoded
-  `vendor: "Sanexio"` — sollte via `tenant.config.shop.vendor` lesen.
 - **OSS-Launch-Vorlauf** (groß, koordiniert): History-Cleanup auf
   `Sanexio/cortex-web/main` mit filter-repo + Force-Push + Re-Clone
   aller 5 Macs, Backup-Branch `pre-tenant-split-2026-05-24` als Anker.
