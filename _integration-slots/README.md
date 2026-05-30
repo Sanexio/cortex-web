@@ -78,6 +78,7 @@ Details: siehe `tools/promote-to-trunk.sh --help`.
 |------|:------:|--------|------------|---------------------|
 | `file-renamer-cli` | PROPOSED | `projects/file-renamer/` | `tools/file-renamer/` | SSMD-MacBookPro (Praxis) |
 | `drift-sync-as-trunk` | SANDBOX | `projects/Cortex-Web/tools/drift-sync/` | `tools/drift-sync/` (in-place-Härtung) | Cluster-Mini-02 |
+| `workforce-time-app` | HARDENED | `projects/Praxis Monitoring/Arbeitszeiten/` | `sites/workforce-time/` (Tenant-Daten in `Sanexio-Tenant`) | SSMD-MacBookPro-M5 |
 
 > Tabelle wird beim Anlegen/Schließen eines Slots aktualisiert. Quelle
 > der Wahrheit bleibt aber `<slot>/SLOT.md`.
