@@ -29,6 +29,15 @@ SLOTS_DIR="$CW_ROOT/_integration-slots"
 DRY_RUN=1
 SLOT_NAME=""
 
+# Default-Excludes fuer App-/Site-Sandboxes. Build-Artefakte, lokale
+# Daten, OS-Kram, Git-Metadaten gehoeren nie in den Trunk-Kopierschritt.
+# Mit --exclude <muster> koennen weitere Muster angehaengt werden;
+# --no-default-excludes setzt die Defaults zurueck (z.B. wenn ein Slot
+# explizit eine pristine Kopie braucht).
+DEFAULT_EXCLUDES=( node_modules dist .git .DS_Store private )
+EXTRA_EXCLUDES=()
+USE_DEFAULT_EXCLUDES=1
+
 die()  { printf "FAIL: %s\n" "$*" >&2; exit 1; }
 info() { printf "%s\n" "$*"; }
 step() { printf "→ %s\n" "$*"; }
@@ -38,13 +47,22 @@ usage() {
 Cortex-Web Tool-Promotion
 
 Usage:
-  tools/promote-to-trunk.sh <slot-name>           # dry-run (Default)
-  tools/promote-to-trunk.sh <slot-name> --commit  # echt promoten
-  tools/promote-to-trunk.sh --list                # Slots auflisten
+  tools/promote-to-trunk.sh <slot-name>                        # dry-run (Default)
+  tools/promote-to-trunk.sh <slot-name> --commit               # echt promoten
+  tools/promote-to-trunk.sh <slot-name> --exclude <muster>     # zusaetzliches Exclude (mehrfach moeglich)
+  tools/promote-to-trunk.sh <slot-name> --no-default-excludes  # Default-Excludes ignorieren
+  tools/promote-to-trunk.sh --list                             # Slots auflisten
   tools/promote-to-trunk.sh --help
 
 Slot-Vertrag muss Status HARDENED haben. Quelle:
   _integration-slots/<slot-name>/SLOT.md
+
+Default-Excludes (zaehlen NICHT in den Trunk):
+  node_modules dist .git .DS_Store private
+
+Beispiel App-Promotion mit zusaetzlichem Exclude:
+  tools/promote-to-trunk.sh workforce-time-app \
+      --exclude docs --exclude .vite --commit
 EOF
 }
 
@@ -75,6 +93,12 @@ esac
 while [ $# -gt 0 ]; do
     case "$1" in
         --commit) DRY_RUN=0; shift ;;
+        --exclude)
+            shift
+            [ $# -gt 0 ] || die "--exclude braucht ein Muster."
+            EXTRA_EXCLUDES+=( "$1" )
+            shift ;;
+        --no-default-excludes) USE_DEFAULT_EXCLUDES=0; shift ;;
         --help|-h) usage; exit 0 ;;
         *) die "Unbekannter Flag '$1'." ;;
     esac
@@ -86,10 +110,19 @@ SLOT_FILE="$SLOT_DIR/SLOT.md"
 [ -f "$SLOT_FILE" ] || die "$SLOT_FILE existiert nicht."
 
 # --- Slot-Vertrag parsen (YAML-Frontmatter) ---
-status=$(grep -m1 '^status:'           "$SLOT_FILE" | awk '{print $2}')
-sandbox=$(grep -m1 '^sandbox_location:' "$SLOT_FILE" | awk '{print $2}')
-target=$( grep -m1 '^trunk_target:'    "$SLOT_FILE" | awk '{print $2}')
-owner=$(  grep -m1 '^owner_mac:'       "$SLOT_FILE" | awk '{print $2}')
+# yaml_value <feld> liest "feld: value rest mit spaces" als ganzen
+# Rest der Zeile, damit Sandbox-Pfade mit Leerzeichen
+# (z.B. "projects/Praxis Monitoring/Arbeitszeiten/") nicht abgeschnitten
+# werden. Inline-Kommentare (# ...) am Zeilen-Ende werden entfernt.
+yaml_value() {
+    local field="$1"
+    grep -m1 "^${field}:" "$SLOT_FILE" \
+        | sed -E "s/^${field}:[[:space:]]+//; s/[[:space:]]+#.*$//; s/[[:space:]]+$//"
+}
+status=$(yaml_value status)
+sandbox=$(yaml_value sandbox_location)
+target=$(yaml_value trunk_target)
+owner=$(yaml_value owner_mac)
 
 [ -n "$status" ]  || die "SLOT.md hat kein 'status:'-Feld."
 [ -n "$sandbox" ] || die "SLOT.md hat kein 'sandbox_location:'-Feld."
@@ -127,8 +160,18 @@ if [ -n "$(git status --porcelain)" ]; then
     die "Cortex-Web hat uncommittete Änderungen. Erst aufräumen, dann promoten."
 fi
 
+# Effektive Exclude-Liste zusammenstellen
+EFFECTIVE_EXCLUDES=()
+if [ $USE_DEFAULT_EXCLUDES -eq 1 ]; then
+    EFFECTIVE_EXCLUDES+=( "${DEFAULT_EXCLUDES[@]}" )
+fi
+EFFECTIVE_EXCLUDES+=( "${EXTRA_EXCLUDES[@]}" )
+
 # --- Plan ---
 step "Würde kopieren: $SANDBOX_ABS  →  $TARGET_ABS"
+if [ ${#EFFECTIVE_EXCLUDES[@]} -gt 0 ]; then
+    step "Würde ausnehmen: ${EFFECTIVE_EXCLUDES[*]}"
+fi
 step "Würde SLOT.md auf PROMOTED setzen (mit Datum + Commit-Hash)"
 step "Würde Commit anlegen: 'cw: promote $SLOT_NAME to trunk ($target)'"
 step "WÜRDE NICHT PUSHEN — User entscheidet nach Verify."
@@ -142,8 +185,18 @@ fi
 # --- Echte Promotion ---
 echo
 step "Kopiere Sandbox in Trunk-Ziel..."
-mkdir -p "$(dirname "$TARGET_ABS")"
-cp -R "$SANDBOX_ABS" "$TARGET_ABS"
+mkdir -p "$TARGET_ABS"
+# tar | tar mit --exclude funktioniert mit Apple-tar und GNU-tar identisch;
+# Build-Artefakte und Live-Daten bleiben verlaesslich draussen.
+TAR_EXCLUDES=()
+for pat in "${EFFECTIVE_EXCLUDES[@]}"; do
+    TAR_EXCLUDES+=( "--exclude=$pat" )
+done
+tar -C "$SANDBOX_ABS" "${TAR_EXCLUDES[@]}" -cf - . | tar -C "$TARGET_ABS" -xf - \
+    || die "Sandbox-Kopie fehlgeschlagen (tar pipe)."
+
+# Trunk-Ziel darf nicht leer rauskommen (passiert nur, wenn ALLES exkludiert wurde)
+[ "$(ls -A "$TARGET_ABS" 2>/dev/null)" ] || die "Trunk-Ziel ist nach Kopie leer — Excludes zu aggressiv?"
 
 step "Update SLOT.md: status → PROMOTED"
 today=$(date -u +"%Y-%m-%d")
