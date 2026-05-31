@@ -33,6 +33,8 @@ Noch kein aktiver Pre-Flight — keine Adapter implementiert.
 
 ## Referenz
 
-Vorbild: `Cortex-Web/sites/praxis-webseite/_rules/PRE_FLIGHT_CHECKLIST.md` (vor
-2026-04-19: `projects/praxis-redesign/_rules/PRE_FLIGHT_CHECKLIST.md`). Viele
-Checks werden von dort übernommen, sobald Adapter existieren.
+Vorbild: `${CORTEX_TENANT_DIR}/sites/praxis-webseite/_rules/PRE_FLIGHT_CHECKLIST.md`
+(seit Welle 1.3 im Tenant-Repo `Sanexio/sanexio-tenant`; vor 2026-05-26
+unter `Cortex-Web/sites/praxis-webseite/`; vor 2026-04-19 unter
+`projects/praxis-redesign/`). Viele Checks werden von dort übernommen,
+sobald Adapter existieren.

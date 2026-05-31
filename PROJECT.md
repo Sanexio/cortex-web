@@ -17,27 +17,39 @@ phase: "Phasen 0–5 abgeschlossen — Multi-Device-Mirror eingeführt (CW-009)"
 
 ## Beschreibung
 
-Cortex-Web ist der gemeinsame Content-, Design- und Medien-Trunk für
-`westend-hausarzt.com` (Praxis Dr. Stracke) und `sanexio.eu` (Juvantis-Distribution).
-Inhalte werden **einmal** im Trunk gepflegt und via **Adapter** plattform-spezifisch
-ausgeliefert. Die beiden Webseiten bleiben formal getrennt (rechtlich, organisatorisch,
-markentechnisch), teilen sich aber Ressourcen, Komponenten und Design-Tokens.
+Cortex-Web ist seit Welle 1.3+1.5b (2026-05-26 / §10.9 final 2026-05-31)
+das **OSS-Framework-Repo** für gemeinsamen Content-, Design- und
+Medien-Trunk plus Multi-Plattform-Adapter (WordPress + Shopify + iOS).
+Tenant-eigene Sites leben **im separaten Tenant-Repo**
+`Sanexio/sanexio-tenant` (privat), z.B. `westend-hausarzt.com` (Praxis
+Dr. Stracke) und `sanexio.eu` (Juvantis-Distribution). Inhalte werden
+**einmal** im Trunk gepflegt und via **Adapter** plattform-spezifisch
+ausgeliefert. Die beiden Stracke-Sites bleiben formal getrennt
+(rechtlich, organisatorisch, markentechnisch), teilen sich aber
+Ressourcen, Komponenten und Design-Tokens.
 
-**Scope:**
-- Content: Pages, Products, Team, Legal — mehrsprachig (DE/EN/FR/ES, I-2 hybrid)
-- Design: Tokens + UI-Komponenten-Specs (Maximal-Trunk)
-- Media: Master in Shopify Files (M-3c) + lokale Originale in `_media-source/`
-- Adapter: WordPress (praxis-webseite) + Shopify (juvantis-webseite) + iOS (später)
+**Scope (Framework):**
+- Content-Schemas: Pages, Products, Team, Legal — mehrsprachig
+  (DE/EN/FR/ES, I-2 hybrid)
+- Design-Trunk: Tokens + UI-Komponenten-Specs (Maximal-Trunk)
+- Media-Pattern: Master in Shopify Files (M-3c) + lokale Originale
+  in `_media-source/`
+- Adapter: WordPress + Shopify + Astro + iOS (später)
+- Slot-System: `_integration-slots/` für Tenant-Sub-Projekte
+- Helper-Trio: `tools/lib/tenant-path.{sh,mjs}` für
+  Cross-Repo-Pfad-Auflösung
 
-## Unterprojekte (geplante Subsumierung, nach POC)
+## Aktive Tenant-Sites (im Tenant-Repo, nicht hier)
 
-| UP | Beschreibung | Pfad (Ziel) | Technologie |
-|----|-------------|-------------|-------------|
-| praxis-webseite | Praxis-Dr.-Stracke-Webseite | `sites/praxis-webseite/` | WordPress (Blocksy Child: praxiszentrum) |
-| juvantis-webseite | Sanexio-Juvantis-Distribution | `sites/juvantis-webseite/` | Shopify Taste 8.0.1 |
+| Site | Pfad | Technologie |
+|------|------|-------------|
+| praxis-webseite | `${CORTEX_TENANT_DIR}/sites/praxis-webseite/` | WordPress (Blocksy Child: praxiszentrum) |
+| juvantis-webseite | `${CORTEX_TENANT_DIR}/sites/juvantis-webseite/` | Shopify Taste 8.0.1 |
 
-**Wichtig:** Die Subsumierung erfolgt in Phase 4 (Praxis) und Phase 5 (Juvantis),
-jeweils mit separatem Go von Dr. Stracke via `git mv` (Historie bleibt erhalten).
+**Hinweis:** Die Tenant-Migration ist abgeschlossen (Welle 1.3+1.5b).
+Historisch lagen die Sites in `Cortex-Web/sites/praxis-webseite/` bzw.
+`Cortex-Web/sites/juvantis-webseite/` (Phase 4/5, 2026-04-19) — diese
+Pfade existieren nicht mehr im Framework-Repo.
 
 ## Strategie-Dokumente
 
@@ -60,16 +72,19 @@ Diese drei Dokumente bilden die Entscheidungshistorie. Seit Phase 4 (2026-04-19,
 - `Nexus/_rules/GLOBAL_RULES.md` (LL-001 … LL-043+)
 - `Nexus/_rules/SESSION_LIFECYCLE.md` (LL-042/043)
 - `Nexus/_memory/MEMORY.md` (aktive Projekte, Top-Fehler)
-- Architekten-Modus wird aus `sites/praxis-webseite/_rules/WORKING_MODE.md` referenziert (Phase 0 Entscheidung; vor Phase 4: `projects/praxis-redesign/_rules/WORKING_MODE.md`)
+- Architekten-Modus wird aus
+  `${CORTEX_TENANT_DIR}/sites/praxis-webseite/_rules/WORKING_MODE.md`
+  referenziert (Phase 0 Entscheidung; vor Phase 4: `projects/praxis-redesign/_rules/WORKING_MODE.md`;
+  seit Welle 1.3 im Tenant-Repo).
 
 ## Datenvolumen (initial, wächst)
 
 | Ordner | Beschreibung |
 |--------|--------------|
-| `trunk/` | Content, Design, Schemas (Text/YAML/MD, klein) |
+| `trunk/` | Content-Generika, Design, Schemas (Text/YAML/MD, klein) |
 | `_media-source/` | Lokale Original-Medien (git-ignoriert) |
 | `adapters/` | Build-Skripte pro Plattform |
-| `sites/` | Nach Subsumierung: praxis-webseite + juvantis-webseite |
+| `sites/` | Framework-Stubs (`_examples/`, `sanexio-github-io/`, `workforce-time/`); Tenant-Sites liegen seit Welle 1.3 im Tenant-Repo |
 
 ## Phasen-Roadmap
 
@@ -91,6 +106,14 @@ Diese drei Dokumente bilden die Entscheidungshistorie. Seit Phase 4 (2026-04-19,
 
 ## Hinweise
 
-- Praxis-Sprint 2 (jetzt unter `sites/praxis-webseite/`) + Juvantis-Weiterentwicklung laufen PARALLEL weiter, keine Blockade durch verbleibende Cortex-Web-Phasen.
-- Phase 5 (Juvantis-Subsumierung) pausiert die Juvantis-Site für ca. 30 Min (`git subtree add` analog Phase 4).
-- Alle Medien bekommen lokale Originale in `_media-source/` — auch bei M-3c. Das sichert den späteren Umzug auf M-3d (NAS).
+- Praxis-Sprint + Juvantis-Weiterentwicklung laufen weiterhin parallel
+  zum Framework, jetzt aus dem Tenant-Repo heraus
+  (`${CORTEX_TENANT_DIR}/sites/...`); Framework-Wellen blockieren die
+  Site-Arbeit nicht.
+- Historischer Phase-5-Hinweis: Die Juvantis-Doku-Subsumierung
+  (2026-04-19) hat die Site für ~30 Min pausiert (`git subtree add`
+  analog Phase 4). Aktuelle Sites werden nicht erneut subsumiert —
+  Tenant-Migration (Welle 1.3, 2026-05-26) ist die letzte
+  Umzugs-Operation.
+- Alle Medien bekommen lokale Originale in `_media-source/` — auch bei
+  M-3c. Das sichert den späteren Umzug auf M-3d (NAS).

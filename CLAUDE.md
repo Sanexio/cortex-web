@@ -6,26 +6,37 @@
 
 ## Projekt-Kurzbeschreibung
 
-Cortex-Web ist das Dach-Projekt für zwei rechtlich getrennte Webseiten, die sich
-einen gemeinsamen Content-, Design- und Medien-Trunk teilen:
+Cortex-Web ist seit Welle 1.3+1.5b (2026-05-26 / §10.9 final 2026-05-31)
+ein **reines Framework-Repo** (OSS, `Sanexio/cortex-web`): Schemas,
+Adapter, Tools, Trunk-Generika, Slot-Definitionen. Tenant-eigene Sites
+liegen **nicht mehr in diesem Repo**, sondern im privaten Tenant-Repo
+`Sanexio/sanexio-tenant` (Pfad-Auflösung via Helper-Trio
+`tools/lib/tenant-path.{sh,mjs}`, Env-Override `CORTEX_TENANT_DIR`,
+Fallback `~/.cortex/tenant-path`).
 
-- **Praxis-Webseite** (`westend-hausarzt.com`) — Praxis Dr. Stracke & Kollegen
+Das Framework treibt heute zwei rechtlich getrennte Stracke-Sites (im
+Tenant gehostet, hier nur als Konsumenten relevant):
+
+- **Praxis-Webseite** (`westend-hausarzt.com`) — Praxis Dr. Stracke
   - Plattform: WordPress mit Blocksy Child-Theme `praxiszentrum`
   - HWG-/Berufsordnungs-konform (keine Preise, kein Anpreisen)
+  - Site-Tree: `${CORTEX_TENANT_DIR}/sites/praxis-webseite/`
 - **Juvantis-Webseite** (`sanexio.eu`) — Sanexio GmbH Distribution
-  - Plattform: Shopify Taste 8.0.1, Store `juvantis.myshopify.com` (öffentliche Domain: `sanexio.eu`)
+  - Plattform: Shopify Taste 8.0.1, Store `juvantis.myshopify.com`
   - B2C + B2B Distribution von Juvantis-Produkten (DHT, Bluttests, Body Checks)
+  - Site-Tree: `${CORTEX_TENANT_DIR}/sites/juvantis-webseite/`
 
-Die Webseiten bleiben formal getrennt (eigenes Impressum, eigene DSGVO, eigene
-Domain, eigene Plattform). Sie teilen sich nur ihre **Substanz**:
-Produktdaten, Team-Infos, gemeinsame Seiten (Partnerpraxis, DHT-Erklärung),
-Design-Tokens, Medien.
+Die Sites bleiben formal getrennt (eigenes Impressum, eigene DSGVO,
+eigene Domain, eigene Plattform). Sie teilen sich nur die **Substanz**
+aus dem Trunk (Produkt-, Team-, Page-Daten; Design-Tokens; Medien) und
+laufen über dieselben Framework-Adapter.
 
 ## Arbeitsprinzip — Architekten-Modus
 
-Es gilt der **Architekten-Modus aus `sites/praxis-webseite/_rules/WORKING_MODE.md`**
-(FK-1…FK-5, 4-Phasen-Prozess: Verständnis → Lösungsdesign → Umsetzung → Selbstprüfung).
-Keine Umsetzung ohne Spec. Keine Spec ohne Freigabe.
+Es gilt der **Architekten-Modus** aus
+`${CORTEX_TENANT_DIR}/sites/praxis-webseite/_rules/WORKING_MODE.md`
+(FK-1…FK-5, 4-Phasen-Prozess: Verständnis → Lösungsdesign → Umsetzung
+→ Selbstprüfung). Keine Umsetzung ohne Spec. Keine Spec ohne Freigabe.
 
 Bei Überschneidung: Architekten-Modus hat Vorrang vor Explorations-/Mitdenk-Impulsen.
 
@@ -40,11 +51,13 @@ Bei Überschneidung: Architekten-Modus hat Vorrang vor Explorations-/Mitdenk-Imp
 7. `Cortex-Web/SESSION_RESUME.md`
 8. `Cortex-Web/_rules/ARCHITECTURE.md`
 9. `Cortex-Web/_config/RULES.md`
-10. `sites/praxis-webseite/_rules/WORKING_MODE.md` (Architekten-Modus)
+10. `${CORTEX_TENANT_DIR}/sites/praxis-webseite/_rules/WORKING_MODE.md`
+    (Architekten-Modus — Site lebt im Tenant-Repo seit Welle 1.3)
 
-Phasen-spezifisch (siehe SESSION_RESUME.md):
-- Phase 1/2 POC: zusätzlich `trunk/schema/product.schema.json` und das POC-Produkt
-- Phase 4/5 Subsumierung: zusätzlich `sites/<site>/SESSION_RESUME.md` nach Umzug
+Site-spezifisch (sobald Site-Arbeit ansteht):
+- POC-Produkt-Smokes: zusätzlich `trunk/schema/product.schema.json`
+- Site-Arbeiten: zusätzlich
+  `${CORTEX_TENANT_DIR}/sites/<site>/SESSION_RESUME.md`
 
 ## Aktuelle Sprint-Roadmap
 
@@ -55,10 +68,11 @@ nach Phase 5 übernehmen die subsumierten Site-Sprints ihre eigene Nummerierung 
 
 | Projekt | Zustand | Bezug zu Cortex-Web |
 |---------|---------|---------------------|
-| `sites/praxis-webseite/` (ex `praxis-redesign`) | Sprint 2 aktiv, in Cortex-Web subsumiert 2026-04-19 | Eigenes WORKING_MODE / FEHLERPROTOKOLL / Sprints |
-| `sites/juvantis-webseite/` | Docs subsumiert 2026-04-19 (Phase 5) | Eigene SESSION_RESUME + SHOPIFY_THEME_POINTER; Theme-Klon bleibt bei `Juvantis/juvantis-web/theme/` |
-| `Juvantis/juvantis-web/theme/` | produktiv, unverändert | Shopify-Theme-Klon, GitHub-Remote Branch `shopify-theme`, Deploy via `sites/juvantis-webseite/shopify-sync.sh` |
+| `Sanexio-Tenant/sites/praxis-webseite/` (ex `praxis-redesign`, ex `Cortex-Web/sites/`) | aktiv, im Tenant-Repo seit Welle 1.3 (2026-05-26) | Eigenes WORKING_MODE / FEHLERPROTOKOLL / Sprints; konsumiert Cortex-Web-Framework |
+| `Sanexio-Tenant/sites/juvantis-webseite/` | aktiv, im Tenant-Repo seit Welle 1.3 | Eigene SESSION_RESUME + SHOPIFY_THEME_POINTER; Theme-Klon bleibt bei `Juvantis/juvantis-web/theme/` |
+| `Juvantis/juvantis-web/theme/` | produktiv, unverändert | Shopify-Theme-Klon, GitHub-Remote Branch `shopify-theme`, Deploy via `${CORTEX_TENANT_DIR}/sites/juvantis-webseite/shopify-sync.sh` |
 | `Juvantis/DHT`, `Juvantis/social-media` | produktiv | bleiben unter `projects/Juvantis/` |
+| `Sanexio-Tenant` (Repo `Sanexio/sanexio-tenant`, privat) | aktiv | Hostet Stracke-Sites + tenant-spezifische YAML-Daten; Pfad via `CORTEX_TENANT_DIR` |
 | `telegram-bridge` | produktiv | unabhängig |
 
 ## Wichtige Regeln (Top-Level)

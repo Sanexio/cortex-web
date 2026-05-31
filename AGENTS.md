@@ -8,12 +8,20 @@
 
 ## Kontext in einem Absatz
 
-Cortex-Web ist das Dach-Projekt von Dr. Stracke (Internist, Praxisinhaber,
-Sanexio GmbH) für zwei rechtlich getrennte Webseiten mit gemeinsamem
-Trunk: `praxis-webseite` (WordPress, `westend-hausarzt.com`) und
-`juvantis-shopify` (Shopify, `sanexio.eu`). Plattformen bleiben getrennt
-(Impressum, DSGVO, Domain), Substanz wird geteilt (Trunk-Schema, Medien,
-Design-Tokens).
+Cortex-Web ist seit Welle 1.3+1.5b (Mai 2026) ein OSS-Framework-Repo
+(`Sanexio/cortex-web`) für Multi-Site-Trunk-Architekturen: Schemas,
+Adapter (WordPress + Shopify), Tools, Trunk-Generika, Slot-Definitionen.
+**Tenant-eigene Sites leben NICHT in diesem Repo** — sie liegen im
+privaten Tenant-Repo `Sanexio/sanexio-tenant`, dessen Pfad via Env-Var
+`CORTEX_TENANT_DIR` (oder Fallback `~/.cortex/tenant-path`) aufgelöst
+wird. Helper-Trio: `tools/lib/tenant-path.{sh,mjs}` +
+`tools/lib/theme-path.mjs` + `tools/lib/tenant-config.mjs`.
+
+Konkret treibt das Framework heute zwei rechtlich getrennte
+Stracke-Sites (im Tenant): `praxis-webseite` (WordPress,
+`westend-hausarzt.com`) und `juvantis-webseite` (Shopify,
+`sanexio.eu`). Plattformen bleiben getrennt (Impressum, DSGVO, Domain),
+Substanz wird über den Trunk geteilt.
 
 Dieses Projekt ist Teil eines größeren Cortex/Nexus-Ökosystems unter
 `~/Cortex/`. Du arbeitest in `~/Cortex/projects/Cortex-Web/`.
@@ -39,7 +47,8 @@ Dieses Projekt ist Teil eines größeren Cortex/Nexus-Ökosystems unter
 2. **Keine Secrets committen.** `.env`, `.env.*` (außer `*.template`)
    sind via `.gitignore` blockiert. Wenn du Secrets brauchst, frag
    den User explizit nach Werten — niemals raten oder ableiten.
-3. **HWG-/Berufsordnung** ist relevant für `sites/praxis-webseite/`:
+3. **HWG-/Berufsordnung** ist relevant für die
+   Stracke-Praxis-Site (`${CORTEX_TENANT_DIR}/sites/praxis-webseite/`):
    keine Preise nennen, kein Anpreisen von Behandlungen, keine
    irreführende Werbung. Im Zweifel: Inhalt vorlegen, nicht publishen.
 4. **GitHub ist Truth.** Vor Arbeit `git pull --ff-only`, nach Arbeit
@@ -53,6 +62,8 @@ Dieses Projekt ist Teil eines größeren Cortex/Nexus-Ökosystems unter
 
 ## Verzeichnis-Übersicht
 
+Framework-Repo `Sanexio/cortex-web` (das hier):
+
 ```
 Cortex-Web/
 ├── AGENTS.md                ← diese Datei
@@ -63,16 +74,32 @@ Cortex-Web/
 ├── _config/                 ← Trunk-Konfig, Schema-Definitionen
 ├── _media-source/           ← Lokale Medien-Originale (gitignored)
 ├── _archive/                ← Alte Sessions, archivierte Artefakte
-├── adapters/                ← Plattform-Adapter (WordPress, Shopify)
+├── _integration-slots/      ← Slot-Spezifikationen für Tenant-Sub-Projekte
+├── adapters/                ← Plattform-Adapter (WordPress, Shopify, Astro)
 ├── docs/                    ← Doku
-├── sites/
-│   ├── praxis-webseite/     ← WordPress-Theme + Content
-│   ├── juvantis-shopify/    ← Shopify-Theme + Content
-│   └── sanexio-github-io/   ← GitHub-Pages-Beistand
+├── sites/                   ← nur Framework-Stub-Sites:
+│   ├── _examples/           ← Demo-Tenant-Slot-Stub
+│   ├── sanexio-github-io/   ← öffentliches Sanexio-GitHub-Pages-Skelett (OSS)
+│   └── workforce-time/      ← Generika-Slot (post-Promotion)
 ├── trunk/                   ← Geteilte Substanz (Produkt-Schemas, Medien-Refs)
-├── tools/                   ← Build-/Sync-Skripte
+├── tools/                   ← Build-/Sync-Skripte + Helper-Trio (lib/)
 └── specs/                   ← Sprint-Specs
 ```
+
+Tenant-Repo `Sanexio/sanexio-tenant` (privat, separates Git-Repo;
+Pfad via `CORTEX_TENANT_DIR`-Env oder `~/.cortex/tenant-path`):
+
+```
+Sanexio-Tenant/
+├── tenant.config.json       ← funktionale Tenant-Konstanten
+└── sites/
+    ├── praxis-webseite/     ← WordPress-Theme + Content (Stracke)
+    └── juvantis-webseite/   ← Shopify-Theme + Content (Stracke)
+```
+
+Cortex-Web-Adapter dürfen Tenant-Inhalte **niemals hartkodiert über
+`sites/praxis-webseite/...`** lesen — immer über das Helper-Trio
+`tools/lib/tenant-path.{sh,mjs}` + `tenant-config.mjs`.
 
 ---
 
@@ -109,7 +136,8 @@ Dieses Projekt arbeitet im **Architekten-Modus**:
 3. Umsetzung (kleine Schritte, jeder verifiziert)
 4. Selbstprüfung (Smoke-Test, Diff-Audit)
 
-Volle Spec: `sites/praxis-webseite/_rules/WORKING_MODE.md` (FK-1…FK-5).
+Volle Spec: `${CORTEX_TENANT_DIR}/sites/praxis-webseite/_rules/WORKING_MODE.md`
+(FK-1…FK-5; Datei liegt im Tenant-Repo).
 
 Wichtig: **„Fertig" = funktionstüchtig**, nicht „Datei abgelegt". Wenn
 du ein Feature umsetzt, teste es auch.
@@ -125,8 +153,8 @@ du ein Feature umsetzt, teste es auch.
 - Commits: deutsche Beschreibung, Prefix nach Convention (`feat`, `fix`,
   `chore`, `refactor`, …) — siehe `git log --oneline | head -20` für
   bestehenden Stil.
-- HTML/Content: gemäß Site-Sprache. praxis-webseite ist primär DE +
-  EN/FR/ES/IT/pt-PT i18n.
+- HTML/Content: gemäß Site-Sprache. Stracke-praxis-webseite ist
+  primär DE + EN/FR/ES/IT/pt-PT i18n.
 
 ---
 

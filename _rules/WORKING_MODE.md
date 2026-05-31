@@ -1,6 +1,10 @@
 # WORKING_MODE — Cortex-Web
 
-> **Architekten-Modus** gilt. Quelle: `Cortex-Web/sites/praxis-webseite/_rules/WORKING_MODE.md` (vor Phase-4-Subsumierung am 2026-04-19: `projects/praxis-redesign/_rules/WORKING_MODE.md`).
+> **Architekten-Modus** gilt. Quelle:
+> `${CORTEX_TENANT_DIR}/sites/praxis-webseite/_rules/WORKING_MODE.md`
+> (im Tenant-Repo `Sanexio/sanexio-tenant`; vor Welle 1.3 am 2026-05-26:
+> `Cortex-Web/sites/praxis-webseite/`; vor Phase-4-Subsumierung am
+> 2026-04-19: `projects/praxis-redesign/_rules/WORKING_MODE.md`).
 >
 > Um Drift zu vermeiden, wird der Modus nicht dupliziert, sondern referenziert.
 > Bei Änderungen am Architekten-Modus: Quelle bearbeiten, hier nur Verweis pflegen.
@@ -15,7 +19,10 @@ Der Architekten-Modus gilt für JEDE Cortex-Web-Session, unabhängig von Phase:
 
 ## Referenzdokument
 
-**→ `~/Cortex/projects/Cortex-Web/sites/praxis-webseite/_rules/WORKING_MODE.md`**
+**→ `${CORTEX_TENANT_DIR}/sites/praxis-webseite/_rules/WORKING_MODE.md`**
+
+(Konkret z.B. `~/Cortex/projects/Sanexio-Tenant/sites/praxis-webseite/_rules/WORKING_MODE.md`,
+wenn der Tenant lokal unter `~/Cortex/projects/Sanexio-Tenant/` ausgecheckt ist.)
 
 Enthält:
 - Rollen (Tenant-Operator = Projektleiter, Claude = Architekt)

@@ -1,10 +1,27 @@
 # ARCHITECTURE — Cortex-Web
 
-> Lebendes Dokument. Stand: 2026-04-19 nach Phase 4 (Praxis subsumiert).
+> Lebendes Dokument. Stand: 2026-05-31 nach Welle 1.3+1.5b
+> (Tenant-Migration-Konsolidierung, §10.9 final). Davor: 2026-04-19
+> nach Phase 4 (Praxis subsumiert).
 
 ---
 
-## 1. IST-Architektur (Phase 0 Abschluss)
+## 0. Architektur-Status seit Welle 1.3+1.5b (2026-05-26 / 2026-05-31)
+
+Cortex-Web ist heute ein **Framework-Repo** (OSS, `Sanexio/cortex-web`)
+ohne Tenant-Inhalte. Tenant-Sites (`praxis-webseite`,
+`juvantis-webseite`) leben im separaten Tenant-Repo
+`Sanexio/sanexio-tenant` (privat). Adapter lösen den Tenant-Pfad über
+das Helper-Trio `tools/lib/tenant-path.{sh,mjs}` auf
+(Env-Var `CORTEX_TENANT_DIR`, Fallback `~/.cortex/tenant-path`).
+
+Die Diagramme in §1 + §2 unten beschreiben den historischen
+Phase-0-Abschluss-Stand bzw. Phase-5-Ziel-Stand vor der Tenant-Migration
+und sind als **historischer Kontext** zu lesen.
+
+---
+
+## 1. IST-Architektur (Phase 0 Abschluss — historisch)
 
 ```
 ~/Cortex/projects/Cortex-Web/
@@ -59,7 +76,7 @@
 
 ---
 
-## 2. Ziel-Architektur (nach Phase 5)
+## 2. Ziel-Architektur (nach Phase 5 — historisch, vor Welle 1.3)
 
 ```
 ~/Cortex/projects/Cortex-Web/
@@ -75,6 +92,34 @@ Juvantis-Kern (`DHT/`, `social-media/`) bleibt unter `projects/Juvantis/`.
 
 ---
 
+## 2a. IST-Architektur seit Welle 1.3+1.5b (2026-05-26)
+
+```
+~/Cortex/projects/Cortex-Web/              # Sanexio/cortex-web (OSS)
+├── trunk/                                 # Trunk-Generika (Schemas, Demo)
+├── adapters/{wordpress,shopify,astro}/    # Pfad-Auflösung via tenant-path
+├── tools/lib/{tenant-path,theme-path,tenant-config}.{sh,mjs}
+├── _integration-slots/                    # Slot-Spezifikationen
+├── sites/                                 # NUR Framework-Stubs:
+│   ├── _examples/                         # Demo-Tenant-Slot-Stub
+│   ├── sanexio-github-io/                 # OSS-GitHub-Pages-Skelett
+│   └── workforce-time/                    # Generika-Slot post-Promotion
+└── specs/                                 # Sprint-Specs
+
+${CORTEX_TENANT_DIR}/                      # Sanexio/sanexio-tenant (privat)
+├── tenant.config.json                     # funktionale Tenant-Konstanten
+└── sites/
+    ├── praxis-webseite/                   # WordPress, ex Cortex-Web/sites/
+    ├── juvantis-webseite/                 # Shopify, ex Cortex-Web/sites/
+    └── sanexio-github-io/                 # Tenant-Mirror der OSS-Stub
+```
+
+Juvantis-Kern (`DHT/`, `social-media/`) bleibt unter
+`projects/Juvantis/`. Shopify-Theme-Klon bleibt bei
+`Juvantis/juvantis-web/theme/`.
+
+---
+
 ## 3. Phasen-Roadmap
 
 | Phase | Ziel | Session | Status | Kommentar |
@@ -86,6 +131,8 @@ Juvantis-Kern (`DHT/`, `social-media/`) bleibt unter `projects/Juvantis/`.
 | **3** | Review — trägt der Ansatz? | 5 | ✅ 2026-04-19 | Commit `98d1f67`, 12/12 AK, 6 Dimensionen automatisiert, Tenant-Operator-Go für Phase 4 |
 | **4** | Praxis-Subsumierung: `praxis-redesign/` → `sites/praxis-webseite/` | 6 | ✅ 2026-04-19 | `git subtree add` (E1a, alle 13 Commits erhalten); bridge-strategy nach `Cortex-Web/specs/bridge-strategy/` (3b); `THEME_POINTER.md` für Local-WP-Theme (2a) |
 | **5** | Juvantis-Web-Docs-Subsumierung: `juvantis-web/{shopify-sync.sh,shopify_export,knowledge-graph}` → `sites/juvantis-webseite/` | 7 | ✅ 2026-04-19 | `mv` + SHOPIFY_THEME_POINTER (E1a+E2a+E3a+E4a); Theme-Klon bleibt bei `Juvantis/juvantis-web/theme/` (Remote GitHub `shopify-theme`); shopify-sync.sh THEME_DIR auf absoluten Pfad via `$HOME` |
+| **1.3** | Tenant-Extraktion: Tenant-Sites raus aus `Cortex-Web/sites/` rein in `Sanexio-Tenant/sites/` | — | ✅ 2026-05-26 | Sites + tenant-spezifische YAMLs ins private Tenant-Repo; Adapter lesen via `tools/lib/tenant-path.{sh,mjs}` |
+| **1.5b** | Tenant-Migration-Konsolidierung (§10.9 final) | — | ✅ 2026-05-31 | Commit `9783d41`: verankert Welle-1.3-Zustand, `lint-no-tenant-leaks --strict` 0 Treffer; Doku-Welle (diese Files) folgt |
 
 **Wichtig:** Phasen sind in separaten Sessions abzuschließen. Jede Phase endet mit
 „Session beenden" (LL-042), nächste Phase startet mit „Projekt fortsetzen" (LL-043).

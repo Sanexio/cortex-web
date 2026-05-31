@@ -81,7 +81,8 @@ bash tools/sync-page-wp.sh    trunk/content/pages/_shared/ueber-uns.yaml
 
 **Quelle-der-Wahrheit-Kandidaten:**
 
-- `sites/praxis-webseite/theme/praxiszentrum/assets/css/tokens.css` (v2, Praxis-optimiert)
+- `${CORTEX_TENANT_DIR}/sites/praxis-webseite/theme/praxiszentrum/assets/css/tokens.css`
+  (v2, Praxis-optimiert; im Tenant-Repo seit Welle 1.3)
 - `trunk/design/tokens.json` (Cortex-Web Master, noch leer)
 - Figma-Variables (perspektivisch)
 
@@ -126,13 +127,14 @@ trunk/design/components/team-grid/
 └── tokens.json       # Komponenten-lokale Tokens
 ```
 
-Adapter rendern daraus plattform-spezifische Artefakte:
+Adapter rendern daraus plattform-spezifische Artefakte (Tenant-Pfad
+wird vom Helper-Trio `tools/lib/tenant-path.{sh,mjs}` aufgelöst):
 
 ```
 # WordPress:
-sites/praxis-webseite/theme/praxiszentrum/template-parts/team-grid.php
+${CORTEX_TENANT_DIR}/sites/praxis-webseite/theme/praxiszentrum/template-parts/team-grid.php
 # Shopify:
-sites/juvantis-webseite/theme/snippets/team-grid.liquid
+${CORTEX_TENANT_DIR}/sites/juvantis-webseite/theme/snippets/team-grid.liquid
 # iOS (später):
 Juvantis/ios/Views/TeamGrid.swift
 ```
