@@ -5,9 +5,10 @@ Cortex-Plattform, kuratiert von **Sanexio GmbH** (sanexio.eu).
 
 ## Code of Conduct
 
-Sei freundlich, sei präzise, sei geduldig. Wir reviewen PRs sorgfältig
-und freuen uns über jeden Beitrag — auch über Issues, die nur Fragen
-stellen.
+Es gilt der [Code of Conduct](./CODE_OF_CONDUCT.md) (Contributor
+Covenant 2.1, deutsch). Kurzform: Sei freundlich, sei präzise, sei
+geduldig. Wir reviewen PRs sorgfältig und freuen uns über jeden
+Beitrag — auch über Issues, die nur Fragen stellen.
 
 ## Vor dem ersten Beitrag
 
