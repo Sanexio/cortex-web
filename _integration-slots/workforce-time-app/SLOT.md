@@ -19,7 +19,7 @@ trunk_target: sites/workforce-time/
 owner_mac: SSMD-MacBookPro-M5
 verification_macs: [Cluster-Mini-02]
 
-promotion_commit: null
+promotion_commit: b19c660
 retired_at: null
 ---
 
