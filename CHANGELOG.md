@@ -2,6 +2,36 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionierung: SemVer.
 
+## [0.7.1] — 2026-05-31
+
+### Welle 1.3+1.5b — Tenant-Migration-Konsolidierung (nach §10.9-Entscheidung)
+
+Cortex-Plattform-§10-Entscheidungen (`Nexus/specs/cortex-platform/02_OPEN_DECISIONS_RECOMMENDATIONS.md`)
+am 2026-05-31 final. §10.9 → Option A: Stracke-Sites bleiben nicht im OSS-Repo.
+Diese Welle finalisiert + verankert den bereits durch den OSS-Launch-Filter
+(2026-05-26) durchgeführten Migrations-Zustand.
+
+#### Hinzugefuegt
+- `sites/_examples/README.md` — Demo-Tenant-Slot-Stub (Befüllung in eigener
+  Demo-Tenant-Welle).
+- `tools/oss-launch-filter.sh` — Status-Banner: Skript ist historisch
+  (gelaufen 2026-05-26), nicht erneut ausführen.
+
+#### Stand
+- `sites/praxis-webseite/` ✅ migriert nach `Sanexio/sanexio-tenant/sites/praxis-webseite/`
+  (46 MB tracked Content).
+- `sites/juvantis-webseite/` ✅ migriert nach `Sanexio/sanexio-tenant/sites/juvantis-webseite/`
+  (1.7 MB tracked Content).
+- `tools/lint-no-tenant-leaks.sh` ✅ 0 Tenant-Spuren in Framework-Verzeichnissen
+  (adapters/, tools/, _config/, _rules/, specs/, _integration-slots/, trunk/schema/).
+- Verbleibende Doku-Referenzen auf alte Pfade (CLAUDE.md, AGENTS.md,
+  _rules/, specs/phase-4/+5/, docs/cross-site-transfer.md) sind historischer
+  Kontext — Sweep in eigener Doku-Welle, nicht akut.
+
+#### Memory-Anker
+- `feedback_framework_tenant_split.md` — universelles Cortex-Layer-Aufnahme-
+  Kriterium (Skills/Hooks/Regeln/Schablonen OSS, Rest privat).
+
 ## [0.7.0] — 2026-05-31
 
 ### Promotion — Workforce-Time-App in den Trunk (Slot `workforce-time-app`)

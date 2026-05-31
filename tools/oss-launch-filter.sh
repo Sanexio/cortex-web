@@ -2,6 +2,21 @@
 # ============================================================
 # oss-launch-filter.sh — git-filter-repo Recipe für OSS-Launch
 # ============================================================
+#
+# ============================================================
+# STATUS: HISTORISCH — Skript ist am 2026-05-26 (OSS-Launch durch)
+# gelaufen und hat seine Aufgabe erfüllt. NICHT erneut ausführen —
+# History-Rewrite würde mit der heute-aktuellen Geschichte
+# (post-filter, alle Macs synchronisiert seit 2026-05-31)
+# kollidieren.
+#
+# Aufbewahrt als Archiv-Dokumentation. Verwende erneut nur in
+# einer komplett neuen filter-repo-Welle (z.B. wenn weitere
+# Tenant-Spuren in History auftauchen), und dann mit eigener
+# Multi-Mac-Reset-Anleitung (siehe
+# Nexus/_memory/feedback_filter_repo_breaks_auto_ff.md).
+# ============================================================
+#
 # Scrubbt die Cortex-Web-Git-History von allen Pfaden, die in
 # Welle 1.x in das Sanexio-Tenant-Repo ausgegliedert wurden, plus
 # legacy projects/-Pfade aus der Pre-Cortex-Web-Zeit.
