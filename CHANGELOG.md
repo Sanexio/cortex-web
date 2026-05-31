@@ -2,6 +2,45 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionierung: SemVer.
 
+## [0.7.0] — 2026-05-31
+
+### Promotion — Workforce-Time-App in den Trunk (Slot `workforce-time-app`)
+
+Erste Promotion ueber die `_integration-slots/`-Pipeline (CW-009).
+React/Vite/Node-App fuer Arbeitszeiten + Schichtplanung wandert aus
+der projekt-nahen Sandbox (`~/Cortex/projects/Praxis Monitoring/Arbeitszeiten/`)
+in `sites/workforce-time/`. Operates_on `both`: App-Code generisch im
+Trunk, Praxisdaten via Tenant.
+
+#### Hinzugefuegt
+- `sites/workforce-time/` — komplette App (React + Vite + Node/SQLite-API
+  + Tooling). Eintrittspunkte: `npm run dev`, `npm run api`,
+  `npm run build`, `npm run extract-tenant-seed`.
+- `sites/workforce-time/server/tenant.js` — Wrapper, der die
+  Cortex-Web-Helper aus `tools/lib/tenant-{path,config}.mjs` re-exportiert
+  und die API-Bruecke (`tenantIsDemo`, `tenantSource`) zur Sandbox-Variante
+  haelt.
+
+#### Aenderungen am Vertrag
+- `_integration-slots/workforce-time-app/SLOT.md`: Status
+  `HARDENED → PROMOTED`, `promoted_at` + `promotion_commit` gesetzt.
+- `_integration-slots/README.md`: Slot-Tabelle aktualisiert.
+
+#### Tenant-Anteil
+- `Sanexio-Tenant/tenant.config.json -> workforce.*` und
+  `Sanexio-Tenant/trunk/workforce/{seed.json,migration-baseline.json,db/,imports/}`
+  (Tenant-Commit `970b2f8`, separat gepusht).
+- App-Code im Trunk traegt keine Praxis-Identifier mehr;
+  `tools/lint-no-tenant-leaks.sh --strict` clean fuer alle Framework-
+  Pfade.
+
+#### Verify
+- SSMD-MacBookPro-M5: `npm run build` + API-Smoke aus dem Trunk gegen
+  Tenant-DB → 8 Stamm-Mitarbeitende, 1.150 Shifts, 1.227 TimeEntries.
+- Cluster-Mini-02 (HARDENED-Bedingung): App startete aus
+  `Praxis Monitoring/Arbeitszeiten/`-Sandbox mit gleichem Tenant-Repo
+  und Tenant-Seed → identische Counts.
+
 ## [0.6.0] — 2026-04-19 (Session 7)
 
 ### Phase 5 abgeschlossen — Subsumierung Juvantis-Web-Docs → sites/juvantis-webseite/ (12/12 AKs grün)

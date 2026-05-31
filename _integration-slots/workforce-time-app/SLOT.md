@@ -1,10 +1,11 @@
 ---
 slot_name: workforce-time-app
-status: HARDENED
+status: PROMOTED
 proposed_at: 2026-05-27
 proposed_by: SSMD-MacBookPro-M5
 sandbox_at: 2026-05-28
 hardened_at: 2026-05-30
+promoted_at: 2026-05-31
 
 # Workforce-Time-App ist eine eigenstaendige Web-App (React/Vite + Node-API + SQLite).
 # Der App-Code selbst soll generisch werden (Framework-Anteil im Cortex-Web-Trunk),
@@ -18,7 +19,6 @@ trunk_target: sites/workforce-time/
 owner_mac: SSMD-MacBookPro-M5
 verification_macs: [Cluster-Mini-02]
 
-promoted_at: null
 promotion_commit: null
 retired_at: null
 ---
@@ -232,5 +232,26 @@ bun run --cwd sites/workforce-time build
     zum Stand auf SSMD-MacBookPro-M5. Display-Overrides greifen.
   - Acceptance-Criteria fuer HARDENED erfuellt (zwei Macs, echter
     Anwendungsfall, README, kein hartcodierter Pfad).
-- Naechster Schritt: Schritt 5 im Promotion-Plan
-  (`tools/promote-to-trunk.sh` -> `sites/workforce-time/`).
+- 2026-05-31: Status `HARDENED` → `PROMOTED`. Schritt 5 ausgefuehrt:
+  - Code per `tar | tar` aus der Sandbox in `sites/workforce-time/`
+    kopiert (ohne node_modules/dist/private/.git/docs).
+  - `server/tenant.js` durch Re-Export der Cortex-Web-Helper
+    (`tools/lib/tenant-path.mjs` + `tools/lib/tenant-config.mjs`)
+    ersetzt; API-Bruecken `tenantIsDemo`/`tenantSource` lokal nachgebildet.
+  - `package.json` Name auf `@cortex-web/workforce-time` umgestellt,
+    Trunk-spezifischer README geschrieben, Sandbox-`docs/` entfernt.
+  - Code-Kommentare entstanden Tenant-frei (Override-Schemas mit
+    generischen Token-Platzhaltern).
+  - `tools/lint-no-tenant-leaks.sh --strict` clean fuer alle Framework-
+    Pfade; Trunk-Site selbst manuell gescannt (0 Treffer).
+  - `npm install` (71 packages, Node v22+), `npm run build`
+    (`tsc --noEmit` + `vite build`, 242 KB) clean.
+  - API-Smoketest aus `sites/workforce-time/server/api.js` mit
+    `CORTEX_TENANT_DIR=…/Sanexio-Tenant` greift auf die echte
+    Tenant-SQLite zu (8 Mitarbeitende, 1.150 Shifts, 1.227 TimeEntries,
+    2.453 Source-Records).
+  - CHANGELOG-Eintrag in Cortex-Web v0.7.0; neue Regel CW-010
+    „Trunk-Sites sind framework-only".
+- Sandbox-Endzustand:
+  `~/Cortex/projects/Praxis Monitoring/Arbeitszeiten/` bleibt als
+  read-only-Historie mit Pointer-README auf `sites/workforce-time/`.

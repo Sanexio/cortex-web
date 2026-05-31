@@ -279,7 +279,61 @@ Promotion-Skript (`tools/promote-to-trunk.sh`).
 
 ---
 
+## CW-010 — Trunk-Sites sind framework-only (Tenant via tenant.config.json)
+
+**Regel:** Jede App/Site im Trunk-Pfad `sites/<name>/`, die als
+`operates_on: both` oder `operates_on: tenant` markiert ist (siehe
+Slot-Vertrag), darf in ihrem Code-Pfad keinerlei Tenant-Identifikatoren
+hartcodieren (Praxisnamen, Personen-Klarnamen, Standortnamen, Domains).
+Alle solchen Werte werden aus dem aktiven Tenant gelesen:
+
+- Konfigurations-Werte aus `tenant.config.json -> <site>.*` per
+  `tools/lib/tenant-config.mjs`.
+- Pfad-Resolution per `tools/lib/tenant-path.mjs`.
+- Initialdaten aus `<tenant>/trunk/<site>/seed.json`, geladen beim
+  Erststart einer leeren Live-DB.
+- Live-State (DB, Snapshots, personenbezogene Artefakte) bleibt
+  im Tenant-Repo unter `<tenant>/trunk/<site>/` und ist dort per
+  `.gitignore` von der Versionierung ausgeschlossen.
+
+**Warum:**
+1. **Mehrmandantenfaehigkeit**: ein zweiter Tenant darf dieselbe App
+   ohne Code-Fork betreiben.
+2. **OSS-Tauglichkeit**: der Trunk darf jederzeit oeffentlich werden,
+   ohne dass Praxisnamen in der Historie mitwandern.
+3. **Lint-Hardstop**: `tools/lint-no-tenant-leaks.sh --strict` haengt
+   im Pre-Commit. Trunk-Sites sind im aktuellen Linter-Exclude, aber
+   die Konvention bleibt: jede neue Trunk-Site wird beim Promotion-
+   Review explizit auf Tenant-Strings gegrept.
+
+**Wie anwenden:**
+
+- Im Slot-`SLOT.md` die Akzeptanz-Kriterien um „kein Praxis-Identifier
+  im Trunk-Code (Glob-Scan auf bekannte Tokens)" ergaenzen.
+- Im Sandbox-Build die Tenant-Trennung VOR Promotion durchziehen:
+  Konfig-Helper im App-Code, Demo-Fallbacks fuer Standalone-Tests,
+  Seed-Loader fuer Initialdaten.
+- Beim Promotion-Schritt einen Wrapper im Trunk anlegen, der die
+  Cortex-Web-Framework-Helper re-exportiert (statt einen App-eigenen
+  Tenant-Helper zu duplizieren).
+
+**Erst angewandt:** Slot `workforce-time-app` (Cortex-Web v0.7.0).
+
+**Anti-Pattern:**
+
+❌ „Ist nur ein einziger Tenant, deshalb hartcoden wir den
+   Praxisnamen schnell als Default und ziehen es spaeter raus."
+   → Spaeter wird vergessen. Der Trunk wird nicht OSS-tauglich.
+✅ Default ist generisch (`"Praxis Demo"`), Tenant-Wert kommt ueber
+   `tenantConfigGet("workforce.default_location_name", ...)`.
+
+❌ „Die Live-SQLite ist halt im Site-Ordner, ist doch praktisch."
+   → Personenbezogene Daten im Trunk-Repo, ggf. in der Git-Historie.
+✅ Live-Daten in `<tenant>/trunk/<site>/db/`, gitignored.
+
+---
+
 ## Weitere Regeln (wachsen beim POC)
 
-- CW-010+ werden bei Phasen C2/D/F (Extraktion/Design/Funktion) ergänzt,
+- CW-011+ werden bei Phasen C2/D/F (Extraktion/Design/Funktion) ergänzt,
   sobald die jeweilige Transfer-Realität weitere Patterns zeigt.
