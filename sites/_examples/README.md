@@ -1,40 +1,59 @@
-# sites/_examples/ — Demo-Tenant-Slot (OSS-Demo)
+# sites/_examples/ — Reserviert für Site-Layer-Demos (zukünftig)
 
-> **Status 2026-05-31:** Stub-Anlage nach Welle 1.3+1.5b
-> (Stracke-Tenant-Migration nach `sanexio-tenant`). Befüllung folgt in
-> eigener Demo-Tenant-Welle.
+> **Status 2026-05-31 (Welle 1.5c-Folgewelle):** Dieser Slot ist
+> derzeit **leer und reserviert**. Der **kanonische OSS-Demo-Tenant**
+> liegt unter `trunk/_examples/` — *nicht* hier.
 
-## Zweck
+## Wo ist der Demo-Tenant?
 
-`sites/_examples/` ist der **Slot für öffentliche Demo-Konfigurationen**, mit
-denen das Cortex-Web-Framework (Trunk + Adapter) ohne realen Tenant
-lauffähig vorgeführt werden kann. Anders gesagt: hier liegt eine
-**Fake-Praxis** (z.B. „Dr. Demo, Westend") mit anonymisierten Beispiel-
-Inhalten, an der Contributors und Tester den Framework-Code prüfen können.
-
-## Was hier später hineinkommt
+Der Default-Fallback der Adapter (wenn kein `CORTEX_TENANT_DIR`
+gesetzt ist) zeigt auf:
 
 ```
-sites/_examples/
-├── praxis-demo/         # Beispiel-Tenant (WordPress-Adapter)
-│   ├── tenant.config.json    # Demo-Konfiguration (Fake-Praxis-Daten)
-│   ├── content/              # Demo-Trunk-Content (anonyme Team-/Service-/Page-YAMLs)
-│   ├── media/                # Lizenzfreie Beispiel-Medien (CC0/Public-Domain)
-│   └── README.md
-├── juvantis-demo/       # Beispiel-Shop-Tenant (Shopify-Adapter), optional
-└── README.md            (diese Datei)
+trunk/_examples/
+├── tenant.config.json
+└── trunk/content/
+    ├── team/{dr-example,dr-muster,dr-probe}.yaml
+    ├── pages/{_shared,practice-example}/*.yaml
+    └── products/example-category/example-product.yaml
 ```
+
+Befüllung + Anwendung dokumentiert in
+[`trunk/_examples/README.md`](../../trunk/_examples/README.md).
+
+## Wofür wäre `sites/_examples/` dann da?
+
+Reserviert für zukünftige **Site-Layer-Demos** — also Mini-Beispiele
+für Theme-/Site-Code, nicht für Trunk-Daten. Konkret denkbare Slots:
+
+- `sites/_examples/praxis-theme-demo/` — Minimal-WordPress-Child-Theme,
+  das den WP-Adapter-Output am Ende einer Build-Pipeline rendert.
+- `sites/_examples/shop-theme-demo/` — Minimal-Shopify-Liquid-Theme
+  analog für den Shopify-Adapter.
+- `sites/_examples/astro-site-demo/` — Astro-Site-Skelett für den
+  Astro-Adapter.
+
+Bis solche Site-Layer-Demos konkret gebraucht werden, bleibt der
+Ordner leer (außer dieser README).
 
 ## Abgrenzung gegenüber `sites/sanexio-github-io/`
 
 `sites/sanexio-github-io/` ist die **echte Sanexio-Hauptseite** (Astro,
-public Repo) und bleibt als realer Tenant in Cortex-Web. `sites/_examples/`
-ist demgegenüber **rein didaktisch** — keine Production, keine Live-Domains,
-keine echten Daten.
+public Repo) und bleibt als realer Tenant in Cortex-Web. Sie ist
+*keine* Demo, sondern Production.
+
+## Historie
+
+Welle 1.5b (2026-05-31) hatte hier einen Stub angelegt, der einen
+parallel-stehenden Demo-Tenant `sites/_examples/praxis-demo/`
+skizzierte. Dieser Stub überschnitt sich mit dem bereits funktionierenden
+`trunk/_examples/`-Konzept. Folgewelle 1.5c (2026-05-31) hat den Stub
+zurückgenommen und stattdessen `trunk/_examples/` als einzige
+kanonische Demo-Quelle ausgebaut.
 
 ## Querverweise
 
-- Migration Welle 1.3+1.5b: `Nexus/specs/cortex-platform/02_OPEN_DECISIONS_RECOMMENDATIONS.md` §10.9
+- Kanonischer Demo-Tenant: [`trunk/_examples/README.md`](../../trunk/_examples/README.md)
 - Tenant-Trennungs-Helper: `tools/lib/tenant-path.{sh,mjs}`
 - Framework/Tenant-Split-Pattern: `Nexus/_memory/feedback_framework_tenant_split.md`
 - Cortex-Plattform Vision: `Nexus/specs/cortex-platform/00_VISION_UND_ROADMAP.md`

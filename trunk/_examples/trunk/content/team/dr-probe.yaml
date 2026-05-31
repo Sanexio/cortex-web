@@ -1,0 +1,25 @@
+# Demo-Arzt-Profil — rein fiktiv, dritte Team-Member.
+# Schema: trunk/schema/team-member.schema.json
+id: dr-probe
+slug: dr-probe
+order: 3
+name: "Dr. med. Lisa Probe"
+role:
+  de: "Fachärztin für Kinderheilkunde"
+  en: "Paediatrician"
+languages: [de, en]
+intro:
+  de: |
+    Schwerpunkt Kinder- und Jugendmedizin. Demo-Profil mit minimalem
+    Schema-Bestand (keine Qualifikations-Pills, keine Bio) — zeigt, was
+    optional ist und was Pflicht.
+  en: |
+    Focus on paediatric and adolescent medicine. Example profile with
+    a minimal schema set (no qualification pills, no bio) — illustrates
+    which fields are optional versus required.
+accent: red
+image: null
+image_asset_shop: null
+profile_urls:
+  practice: /dr-probe/
+  shop: null

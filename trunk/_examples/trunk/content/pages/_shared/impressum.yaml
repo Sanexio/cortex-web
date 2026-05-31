@@ -1,0 +1,51 @@
+# Demo-Impressum — rein fiktiv, Schema-Beispiel für Legal-Pages.
+# Schema: trunk/schema/page.schema.json
+id: impressum
+site: shared
+slugs:
+  practice: impressum
+  shop: impressum
+title:
+  de: "Impressum"
+  en: "Legal Notice"
+
+sections:
+  - type: body
+    heading:
+      de: "Angaben gemäß § 5 TMG (Demo)"
+      en: "Provider information (demo)"
+    body_md:
+      de: |
+        **Beispiel-Praxis GmbH**
+        Beispielstraße 1
+        12345 Musterstadt
+
+        Vertreten durch: Dr. med. Erika Beispiel
+
+        Kontakt: kontakt@example.test
+        Telefon: 0000 0000000
+
+        Diese Impressum-Page ist ein **rein fiktives Schema-Beispiel**
+        für `trunk/_examples/`. Sie darf nicht für eine echte Webseite
+        verwendet werden — jeder Tenant legt ein eigenes, juristisch
+        geprüftes Impressum unter seiner eigenen `tenant.config.json`-
+        Adresse an.
+      en: |
+        **Example Clinic LLC**
+        Sample Street 1
+        12345 Sample Town
+
+        Represented by: Dr. Erika Example
+
+        Contact: contact@example.test
+        Phone: 0000 0000000
+
+        This legal-notice page is a **purely fictional schema example**
+        for `trunk/_examples/`. Do not use it on a production website —
+        every tenant must publish its own legally reviewed legal notice
+        from its own `tenant.config.json` address.
+
+meta:
+  description:
+    de: "Demo-Impressum der fiktiven Beispiel-Praxis."
+    en: "Demo legal notice of the fictional example clinic."

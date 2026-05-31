@@ -1,0 +1,42 @@
+# Demo-Arzt-Profil — rein fiktiv, zweite Team-Member für Multi-Person-Demos.
+# Schema: trunk/schema/team-member.schema.json
+id: dr-muster
+slug: dr-muster
+order: 2
+name: "Dr. med. Max Muster"
+role:
+  de: "Facharzt für Innere Medizin"
+  en: "Internal Medicine Specialist"
+  fr: "Spécialiste en médecine interne"
+languages: [de, en, fr]
+intro:
+  de: |
+    Schwerpunkt Innere Medizin und Gastroenterologie. Demo-Profil zur
+    Veranschaulichung des Team-Member-Schemas mit drei Sprachen — nicht
+    für echte Webseiten verwenden.
+  en: |
+    Focus on internal medicine and gastroenterology. Example profile
+    demonstrating the team-member schema with three languages — not
+    for production use.
+  fr: |
+    Spécialisé en médecine interne et gastroentérologie. Profil de
+    démonstration pour le schéma team-member — usage non productif.
+accent: amber
+image: null
+image_asset_shop: null
+qualifications:
+  - Innere Medizin
+  - Gastroenterologie
+  - Ernährungsmedizin
+bio:
+  de: |
+    Demo-Biografie. Nach dem Studium Weiterbildung in der Inneren Medizin
+    mit Schwerpunkt Gastroenterologie. Heute tätig in einer fiktiven
+    Beispiel-Praxis. Dieser Eintrag existiert nur als Schema-Beispiel.
+  en: |
+    Example biography. Internal-medicine training after medical school
+    with a focus on gastroenterology. Currently practising at a fictional
+    example clinic. This entry exists only as a schema example.
+profile_urls:
+  practice: /dr-muster/
+  shop: null
