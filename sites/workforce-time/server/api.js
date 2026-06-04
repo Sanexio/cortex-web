@@ -1,6 +1,8 @@
 import { createServer } from "node:http";
 import {
   buildPayrollExport,
+  calculateAbsenceQuota,
+  calculateAbsenceQuotasForAll,
   createAbsenceRequest,
   createEmployee,
   createShift,
@@ -160,6 +162,24 @@ const server = createServer(async (request, response) => {
     if (request.method === "PATCH" && breaksMatch) {
       const payload = await readJson(request);
       sendJson(response, 200, updateTimeEntryBreaks(decodeURIComponent(breaksMatch[1]), payload));
+      return;
+    }
+
+    // T-006 Urlaubsrest-Kontingent.
+    if (request.method === "GET" && url.pathname === "/api/absences/quota") {
+      const year = Number(url.searchParams.get("year") || new Date().getFullYear());
+      sendJson(response, 200, { ok: true, quotas: calculateAbsenceQuotasForAll(year), year });
+      return;
+    }
+    const quotaMatch = url.pathname.match(/^\/api\/employees\/([^/]+)\/quota$/);
+    if (request.method === "GET" && quotaMatch) {
+      const year = Number(url.searchParams.get("year") || new Date().getFullYear());
+      try {
+        const result = calculateAbsenceQuota(decodeURIComponent(quotaMatch[1]), year);
+        sendJson(response, 200, { ok: true, quota: result });
+      } catch (err) {
+        sendJson(response, 404, { ok: false, error: { code: "quota_not_available", message: err.message } });
+      }
       return;
     }
 

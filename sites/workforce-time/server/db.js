@@ -4182,6 +4182,80 @@ function loadPayrollPersonnelNumberMap() {
   return map;
 }
 
+// T-006 — Urlaubsrest-Kontingent (claude-chat, 2026-06-04).
+// Berechnet pro Mitarbeitendem den Resturlaub für ein Jahr aus
+// tenant.config.workforce.absence_quotas und genehmigten
+// vacation-Anträgen.
+export function getAbsenceQuotaConfig() {
+  const defaultDays = Number(tenantConfigGet("workforce.absence_quotas.default_days", 28));
+  const byEmployee = tenantConfigGet("workforce.absence_quotas.by_employee", {}) || {};
+  return { defaultDays, byEmployee };
+}
+
+function countApprovedVacationDaysForYear(employeeId, year) {
+  const yearStart = `${year}-01-01`;
+  const yearEnd = `${year}-12-31`;
+  const rows = db.prepare(`
+    SELECT starts_on, ends_on
+    FROM absence_requests
+    WHERE employee_id = @employeeId
+      AND absence_type = 'vacation'
+      AND status = 'approved'
+      AND ends_on >= @yearStart
+      AND starts_on <= @yearEnd
+  `).all({ employeeId, yearStart, yearEnd });
+  let totalDays = 0;
+  for (const row of rows) {
+    const start = row.starts_on < yearStart ? yearStart : row.starts_on;
+    const end = row.ends_on > yearEnd ? yearEnd : row.ends_on;
+    const days = Math.floor((Date.parse(end) - Date.parse(start)) / (1000 * 60 * 60 * 24)) + 1;
+    if (days > 0) totalDays += days;
+  }
+  return totalDays;
+}
+
+export function calculateAbsenceQuota(employeeId, year) {
+  const yearNum = Number(year);
+  if (!Number.isFinite(yearNum) || yearNum < 1900 || yearNum > 2999) {
+    throw new Error(`Ungültiges Jahr: ${year}`);
+  }
+  const emp = db.prepare(`SELECT id, display_name AS name FROM employees WHERE id = ?`).get(employeeId);
+  if (!emp) {
+    throw new Error(`Mitarbeitender nicht gefunden: ${employeeId}`);
+  }
+  const { defaultDays, byEmployee } = getAbsenceQuotaConfig();
+  const allocated = Number(byEmployee?.[employeeId] ?? defaultDays);
+  const used = countApprovedVacationDaysForYear(employeeId, yearNum);
+  const pendingRows = db.prepare(`
+    SELECT starts_on, ends_on
+    FROM absence_requests
+    WHERE employee_id = ?
+      AND absence_type = 'vacation'
+      AND status = 'open'
+      AND ends_on >= ?
+      AND starts_on <= ?
+  `).all(employeeId, `${yearNum}-01-01`, `${yearNum}-12-31`);
+  let pending = 0;
+  for (const r of pendingRows) {
+    const days = Math.floor((Date.parse(r.ends_on) - Date.parse(r.starts_on)) / (1000 * 60 * 60 * 24)) + 1;
+    if (days > 0) pending += days;
+  }
+  return {
+    employeeId,
+    employeeName: emp.name,
+    year: yearNum,
+    allocated,
+    used,
+    pending,
+    remaining: Math.max(0, allocated - used - pending)
+  };
+}
+
+export function calculateAbsenceQuotasForAll(year) {
+  const employees = db.prepare(`SELECT id FROM employees`).all();
+  return employees.map((e) => calculateAbsenceQuota(e.id, year));
+}
+
 export function buildPayrollExport({ year, month } = {}) {
   const numericYear = Number(year);
   const numericMonth = Number(month);
