@@ -6,6 +6,7 @@ import {
   createShift,
   createTimeEntry,
   databasePath,
+  deleteEmployee,
   getBootstrap,
   getHealth,
   renderPayrollExportCsv,
@@ -15,6 +16,7 @@ import {
   deleteShift,
   setPayrollPersonnelNumber,
   updateAbsenceStatus,
+  updateEmployee,
   updateShift,
   updateTimeEntryBreaks,
   updateTimeEntryStatus
@@ -207,6 +209,17 @@ const server = createServer(async (request, response) => {
         200,
         setPayrollPersonnelNumber(decodeURIComponent(payrollNumberMatch[1]), payload.personnelNumber ?? "")
       );
+      return;
+    }
+
+    const employeeMatch = url.pathname.match(/^\/api\/employees\/([^/]+)$/);
+    if (request.method === "PATCH" && employeeMatch) {
+      const payload = await readJson(request);
+      sendJson(response, 200, updateEmployee(decodeURIComponent(employeeMatch[1]), payload));
+      return;
+    }
+    if (request.method === "DELETE" && employeeMatch) {
+      sendJson(response, 200, deleteEmployee(decodeURIComponent(employeeMatch[1])));
       return;
     }
 

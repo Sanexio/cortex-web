@@ -719,6 +719,18 @@ function migrate() {
     CREATE INDEX IF NOT EXISTS idx_source_records_batch ON source_records(import_batch_id);
     CREATE INDEX IF NOT EXISTS idx_sync_conflicts_status ON sync_conflicts(status);
   `);
+
+  addColumnIfMissing("employees", "email", "TEXT");
+  addColumnIfMissing("employees", "weekly_hours", "REAL");
+}
+
+function addColumnIfMissing(table, column, ddl) {
+  const exists = db
+    .prepare(`SELECT 1 FROM pragma_table_info(?) WHERE name = ?`)
+    .get(table, column);
+  if (!exists) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${ddl}`);
+  }
 }
 
 function insertSourceRecord(
@@ -1897,6 +1909,8 @@ function listEmployees() {
       role_title AS role,
       initials,
       employment_status AS employmentStatus,
+      email,
+      weekly_hours AS weeklyHours,
       source_system AS sourceSystem,
       imported_at AS importedAt
     FROM employees
@@ -1906,6 +1920,10 @@ function listEmployees() {
     ...employee,
     name: practiceDisplayName(employee.name)
   }));
+}
+
+function getEmployeeRecord(id) {
+  return listEmployees().find((employee) => employee.id === id) ?? null;
 }
 
 function listLocations() {
@@ -2666,15 +2684,17 @@ export function createEmployee(payload) {
           .toUpperCase();
   const id = payload.id && typeof payload.id === "string" ? payload.id : `emp_${randomUUID()}`;
   const createdAt = now();
+  const email = normalizeEmployeeEmail(payload.email);
+  const weeklyHours = normalizeEmployeeWeeklyHours(payload.weeklyHours);
 
   db.exec("BEGIN");
   try {
     db.prepare(`
       INSERT INTO employees (
-        id, display_name, role_title, initials, employment_status, created_at, updated_at
+        id, display_name, role_title, initials, employment_status, email, weekly_hours, created_at, updated_at
       )
-      VALUES (?, ?, ?, ?, 'active', ?, ?)
-    `).run(id, displayName, roleTitle, initials, createdAt, createdAt);
+      VALUES (?, ?, ?, ?, 'active', ?, ?, ?, ?)
+    `).run(id, displayName, roleTitle, initials, email, weeklyHours, createdAt, createdAt);
     insertAudit("employee", id, "Mitarbeiter angelegt", "Lokal in Praxis Monitoring erstellt");
     db.exec("COMMIT");
   } catch (error) {
@@ -2682,7 +2702,128 @@ export function createEmployee(payload) {
     throw error;
   }
 
-  return listEmployees().find((employee) => employee.id === id);
+  return getEmployeeRecord(id);
+}
+
+function normalizeEmployeeEmail(value) {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    throw new Error("Ungueltige E-Mail-Adresse");
+  }
+  return trimmed.toLowerCase();
+}
+
+function normalizeEmployeeWeeklyHours(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const num = Number(value);
+  if (!Number.isFinite(num) || num < 0 || num > 168) {
+    throw new Error("Wochenstunden muss eine Zahl zwischen 0 und 168 sein");
+  }
+  return Math.round(num * 100) / 100;
+}
+
+export function updateEmployee(id, payload) {
+  const current = db.prepare("SELECT * FROM employees WHERE id = ? AND removed_from_source = 0").get(id);
+  if (!current) {
+    throw new Error("Mitarbeiter nicht gefunden");
+  }
+  const updates = {};
+
+  if (typeof payload.name === "string" && payload.name.trim()) {
+    updates.display_name = payload.name.trim();
+  }
+  if (typeof payload.role === "string" && payload.role.trim()) {
+    updates.role_title = payload.role.trim();
+  }
+  if (typeof payload.initials === "string" && payload.initials.trim()) {
+    updates.initials = payload.initials.trim().slice(0, 2).toUpperCase();
+  } else if (updates.display_name) {
+    updates.initials = updates.display_name
+      .split(/\s+/)
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  }
+  if (Object.prototype.hasOwnProperty.call(payload, "email")) {
+    updates.email = normalizeEmployeeEmail(payload.email);
+  }
+  if (Object.prototype.hasOwnProperty.call(payload, "weeklyHours")) {
+    updates.weekly_hours = normalizeEmployeeWeeklyHours(payload.weeklyHours);
+  }
+  if (typeof payload.employmentStatus === "string") {
+    const status = payload.employmentStatus.trim();
+    if (status !== "active" && status !== "inactive") {
+      throw new Error("employmentStatus muss 'active' oder 'inactive' sein");
+    }
+    updates.employment_status = status;
+  }
+
+  const keys = Object.keys(updates);
+  if (keys.length === 0) {
+    return getEmployeeRecord(id);
+  }
+
+  const assignments = keys.map((key) => `${key} = ?`).join(", ");
+  const values = keys.map((key) => updates[key]);
+  const updatedAt = now();
+
+  db.exec("BEGIN");
+  try {
+    db.prepare(
+      `UPDATE employees SET ${assignments}, updated_at = ? WHERE id = ?`
+    ).run(...values, updatedAt, id);
+    insertAudit(
+      "employee",
+      id,
+      "Mitarbeiter aktualisiert",
+      `Felder: ${keys.join(", ")}`,
+      JSON.stringify(
+        Object.fromEntries(keys.map((key) => [key, current[key] ?? null]))
+      ),
+      JSON.stringify(updates)
+    );
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+
+  return getEmployeeRecord(id);
+}
+
+export function deleteEmployee(id) {
+  const current = db.prepare("SELECT * FROM employees WHERE id = ?").get(id);
+  if (!current) {
+    throw new Error("Mitarbeiter nicht gefunden");
+  }
+  if (current.removed_from_source) {
+    return { id, removed: true };
+  }
+  const updatedAt = now();
+
+  db.exec("BEGIN");
+  try {
+    db.prepare(
+      `UPDATE employees SET removed_from_source = 1, employment_status = 'inactive', updated_at = ? WHERE id = ?`
+    ).run(updatedAt, id);
+    insertAudit(
+      "employee",
+      id,
+      "Mitarbeiter entfernt",
+      "Soft-Delete via API; historische Zeiteintraege bleiben erhalten",
+      JSON.stringify({ employment_status: current.employment_status, removed_from_source: current.removed_from_source }),
+      JSON.stringify({ employment_status: "inactive", removed_from_source: 1 })
+    );
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+
+  return { id, removed: true };
 }
 
 export function createShift(payload) {

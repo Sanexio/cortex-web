@@ -32,6 +32,7 @@ import {
   X
 } from "lucide-react";
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
+import { EmployeesView } from "./views/employees";
 
 type ViewKey = "dashboard" | "plan" | "time" | "absences" | "employees" | "payroll" | "imports" | "settings";
 
@@ -94,6 +95,8 @@ type Employee = {
   role: string;
   initials: string;
   employmentStatus?: string;
+  email?: string | null;
+  weeklyHours?: number | null;
   sourceSystem?: string | null;
   importedAt?: string | null;
 };
@@ -2116,7 +2119,9 @@ function App() {
             updateStatus={updateAbsenceStatus}
           />
         ) : null}
-        {view === "employees" ? <EmployeesView data={data} /> : null}
+        {view === "employees" ? (
+          <EmployeesView data={data} request={request} refresh={refresh} />
+        ) : null}
         {view === "payroll" ? <PayrollView request={request} employees={data.employees} /> : null}
         {view === "imports" ? (
           <ImportsView
@@ -4354,34 +4359,6 @@ function EntryDetails({
         </button>
       </div>
     </Panel>
-  );
-}
-
-function EmployeesView({ data }: { data: BootstrapPayload }) {
-  return (
-    <section className="wide-panel">
-      <div className="section-heading">
-        <div>
-          <h2>Team</h2>
-          <p>{data.employees.length} aktive Datensätze</p>
-        </div>
-      </div>
-      <div className="people-grid">
-        {data.employees.map((employee) => (
-          <article className="person-card" key={employee.id}>
-            <span className="avatar large" style={employeeAvatarStyle(employee)}>{compactInitials(employee.initials)}</span>
-            <div>
-              <strong>{employee.name}</strong>
-              <span>{employee.role}</span>
-              <small>{employee.employmentStatus === "inactive" ? "pausiert" : "aktiv"}</small>
-            </div>
-            <Badge tone={employee.employmentStatus === "inactive" ? "muted" : "teal"}>
-              {employee.employmentStatus ?? "active"}
-            </Badge>
-          </article>
-        ))}
-      </div>
-    </section>
   );
 }
 
