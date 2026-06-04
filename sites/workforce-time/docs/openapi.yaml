@@ -1,0 +1,481 @@
+openapi: 3.1.0
+info:
+  title: Workforce-Time API
+  version: 0.1.0
+  description: |
+    HTTP-API der Workforce-Time-App (Cortex-Web Trunk-Komponente).
+    Tenant-spezifische Daten kommen über CORTEX_TENANT_DIR; das Schema
+    selbst ist tenant-neutral.
+  contact:
+    name: Cortex-Plattform
+    url: https://cortex.sanexio.de
+  license:
+    name: Apache-2.0
+
+servers:
+  - url: http://127.0.0.1:5175
+    description: Lokaler Dev-Server (Default)
+  - url: https://mitarbeiter.westend-hausarzt.com/api
+    description: Praxis Westend Live (Welle O.8, geplant)
+  - url: https://{tenant}.workforce.sanexio.de/api
+    description: External-Tenant-Hosting (Welle O.9, geplant)
+    variables:
+      tenant:
+        default: demo
+        description: Tenant-Slug
+
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: workforce_session
+      description: Browser-Session-Cookie, gesetzt nach Magic-Link + TOTP-Login.
+    deviceToken:
+      type: http
+      scheme: bearer
+      bearerFormat: device-token
+      description: Geräte-Token für iPad-/iPhone-Terminal (Welle O.4 + O.5e).
+
+  schemas:
+    Health:
+      type: object
+      required: [status, version]
+      properties:
+        status: { type: string, enum: [ok] }
+        version: { type: string }
+
+    Bootstrap:
+      type: object
+      description: Initial-Payload für Frontend-Bootstrap (Tenant-Config + Demo-Flag).
+      properties:
+        tenant:
+          type: object
+          properties:
+            slug: { type: string }
+            isDemo: { type: boolean }
+            displayName: { type: string }
+        workforce:
+          type: object
+          description: tenant.config.json → workforce.* (Standorte, Bereiche, etc.)
+
+    Employee:
+      type: object
+      required: [id, name, role, weeklyTargetHours]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: string, format: email, nullable: true }
+        role: { type: string }
+        weeklyTargetHours: { type: number, format: float, minimum: 0 }
+        sourceSystem: { type: string, nullable: true, description: "z.B. 'ordio'" }
+        sourceId: { type: string, nullable: true }
+        payrollPersonnelNumber: { type: string, nullable: true }
+        active: { type: boolean, default: true }
+
+    Shift:
+      type: object
+      required: [id, date, startTime, endTime, area, status]
+      properties:
+        id: { type: string }
+        date: { type: string, format: date }
+        startTime: { type: string, example: "08:00" }
+        endTime: { type: string, example: "16:30" }
+        area: { type: string }
+        location: { type: string, nullable: true }
+        requiredStaff: { type: integer, minimum: 0 }
+        assignments:
+          type: array
+          items: { type: string, description: Employee-ID }
+        status:
+          type: string
+          enum: [planned, confirmed, cancelled, conflict]
+        note: { type: string, nullable: true }
+
+    TimeEntry:
+      type: object
+      required: [id, employeeId, startAt, status, type]
+      properties:
+        id: { type: string }
+        employeeId: { type: string }
+        startAt: { type: string, format: date-time }
+        endAt: { type: string, format: date-time, nullable: true }
+        breaks:
+          type: array
+          items:
+            type: object
+            properties:
+              startAt: { type: string, format: date-time }
+              endAt: { type: string, format: date-time, nullable: true }
+        area: { type: string, nullable: true }
+        status:
+          type: string
+          enum: [running, completed, correction_requested, approved]
+        type:
+          type: string
+          enum: [regular, dienstgang, correction]
+        sourceSystem: { type: string, nullable: true }
+        auditTrail:
+          type: array
+          items:
+            type: object
+
+    AbsenceRequest:
+      type: object
+      required: [id, employeeId, type, startDate, endDate, status]
+      properties:
+        id: { type: string }
+        employeeId: { type: string }
+        type:
+          type: string
+          enum: [vacation, sick, training, other]
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        status:
+          type: string
+          enum: [open, approved, rejected]
+        note: { type: string, nullable: true }
+
+    PayrollExport:
+      type: object
+      properties:
+        periodStart: { type: string, format: date }
+        periodEnd: { type: string, format: date }
+        format:
+          type: string
+          enum: [datev-lodas, csv, json]
+        rows:
+          type: array
+          items: { type: object }
+
+    ImportBatch:
+      type: object
+      required: [id, source, status]
+      properties:
+        id: { type: string }
+        source:
+          type: string
+          enum: [demo, ordio-snapshot]
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        importedRecords: { type: integer }
+        startedAt: { type: string, format: date-time }
+        finishedAt: { type: string, format: date-time, nullable: true }
+        summary: { type: object, nullable: true }
+
+    Error:
+      type: object
+      required: [ok, error]
+      properties:
+        ok: { type: boolean, const: false }
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+
+paths:
+  /api/health:
+    get:
+      summary: Health-Check
+      tags: [System]
+      security: []
+      responses:
+        "200":
+          description: Server lebt.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+
+  /api/bootstrap:
+    get:
+      summary: Initial-Payload für Frontend-Bootstrap.
+      tags: [System]
+      security: []
+      responses:
+        "200":
+          description: Tenant-Config + Bootstrap-Daten.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Bootstrap" }
+
+  /api/employees:
+    post:
+      summary: Neuen Mitarbeitenden anlegen.
+      tags: [Employees]
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Employee" }
+      responses:
+        "201":
+          description: Mitarbeitender angelegt.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Employee" }
+
+  /api/employees/{id}:
+    patch:
+      summary: Mitarbeiter-Stammdaten ändern.
+      tags: [Employees]
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Employee" }
+      responses:
+        "200":
+          description: Aktualisiert.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Employee" }
+    delete:
+      summary: Mitarbeiter (soft-)löschen.
+      tags: [Employees]
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "204": { description: Gelöscht. }
+
+  /api/employees/{id}/payroll-number:
+    patch:
+      summary: Payroll-Personalnummer setzen (für DATEV-Export).
+      tags: [Employees, Payroll]
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [payrollPersonnelNumber]
+              properties:
+                payrollPersonnelNumber: { type: string }
+      responses:
+        "200": { description: Gesetzt. }
+
+  /api/shifts:
+    post:
+      summary: Neue Schicht anlegen.
+      tags: [Shifts]
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Shift" }
+      responses:
+        "201":
+          description: Schicht angelegt.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Shift" }
+
+  /api/shifts/{id}:
+    patch:
+      summary: Schicht ändern.
+      tags: [Shifts]
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Shift" }
+      responses:
+        "200": { description: Aktualisiert. }
+    delete:
+      summary: Schicht löschen.
+      tags: [Shifts]
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "204": { description: Gelöscht. }
+
+  /api/time-entries:
+    post:
+      summary: Neue Zeitbuchung anlegen.
+      tags: [TimeEntries]
+      security:
+        - sessionCookie: []
+        - deviceToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TimeEntry" }
+      responses:
+        "201":
+          description: Zeitbuchung angelegt.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TimeEntry" }
+
+  /api/time-entries/{id}/status:
+    patch:
+      summary: Status einer Zeitbuchung ändern (z.B. Freigabe).
+      tags: [TimeEntries]
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [running, completed, correction_requested, approved] }
+      responses:
+        "200": { description: Status aktualisiert. }
+
+  /api/time-entries/{id}/breaks:
+    patch:
+      summary: Pausen einer Zeitbuchung bearbeiten.
+      tags: [TimeEntries]
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                breaks:
+                  type: array
+                  items: { type: object }
+      responses:
+        "200": { description: Pausen aktualisiert. }
+
+  /api/absences:
+    post:
+      summary: Neuen Abwesenheits-/Urlaubsantrag stellen.
+      tags: [Absences]
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AbsenceRequest" }
+      responses:
+        "201":
+          description: Antrag eingereicht.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AbsenceRequest" }
+
+  /api/absences/{id}/status:
+    patch:
+      summary: Abwesenheits-Status setzen (Genehmigung/Ablehnung).
+      tags: [Absences]
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [open, approved, rejected] }
+                note: { type: string }
+      responses:
+        "200": { description: Status aktualisiert. }
+
+  /api/imports/demo:
+    post:
+      summary: Pseudonymisierten Demo-Datensatz importieren.
+      tags: [Imports]
+      security: [{ sessionCookie: [] }]
+      responses:
+        "200":
+          description: Demo-Import gestartet.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportBatch" }
+
+  /api/imports/delta-snapshot:
+    post:
+      summary: Externen Snapshot importieren (Ordio etc.).
+      tags: [Imports]
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source: { type: string, enum: [ordio-snapshot] }
+                payload: { type: object }
+      responses:
+        "200":
+          description: Snapshot importiert.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportBatch" }
+
+  /api/payroll/export:
+    get:
+      summary: Lohn-/Payroll-Export für einen Zeitraum.
+      tags: [Payroll]
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: format
+          in: query
+          required: false
+          schema: { type: string, enum: [json, csv, datev-lodas], default: json }
+      responses:
+        "200":
+          description: Export-Resultat im gewählten Format.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PayrollExport" }
+            text/csv:
+              schema: { type: string }
+            text/plain:
+              schema: { type: string }
+
+security:
+  - sessionCookie: []
+
+tags:
+  - name: System
+    description: Health- und Bootstrap-Endpunkte.
+  - name: Employees
+    description: Mitarbeiter-Stammdaten und -Pflege.
+  - name: Shifts
+    description: Schicht- und Dienstplanung.
+  - name: TimeEntries
+    description: Zeitbuchungen und Korrekturen.
+  - name: Absences
+    description: Urlaub und Abwesenheiten.
+  - name: Payroll
+    description: Lohn- und Payroll-Export.
+  - name: Imports
+    description: Demo- und Snapshot-Imports.
