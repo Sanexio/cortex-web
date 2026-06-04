@@ -42,7 +42,7 @@ export const migrationBaselinePath =
 
 mkdirSync(dirname(databasePath), { recursive: true });
 
-const db = new DatabaseSync(databasePath);
+export const db = new DatabaseSync(databasePath);
 db.exec(`
   PRAGMA busy_timeout = 5000;
   PRAGMA foreign_keys = ON;

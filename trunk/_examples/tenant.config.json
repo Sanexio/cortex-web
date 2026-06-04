@@ -17,5 +17,33 @@
   "cta": {
     "_note": "Whitelist erlaubter externer Domains für views.practice.cta_url. Build-Step (adapters/wordpress/build.mjs) blockt jeden externen Host, der nicht in dieser Liste steht. Internal-CTAs (/...) sind immer erlaubt.",
     "allowed_external_cta_domains": ["example.test", "demo-shop.example"]
+  },
+  "workforce": {
+    "_note": "Demo-Werte fuer die Workforce-Time-App. Fiktive E-Mails nur fuer lokale Auth-Smokes.",
+    "slug": "demo",
+    "team_members": [
+      {
+        "email": "admin@workforce.local",
+        "employee_id": "mfa-a",
+        "display_name": "Demo Admin",
+        "role": "admin"
+      },
+      {
+        "email": "mfa-a@workforce.local",
+        "employee_id": "mfa-a",
+        "display_name": "MFA A",
+        "role": "employee"
+      }
+    ],
+    "auth": {
+      "mail_from": "noreply@workforce.local",
+      "magic_link_subject": "Login-Link fuer Workforce-Time Demo",
+      "totp_encryption_key_env": "WORKFORCE_TOTP_KEY",
+      "smtp": {
+        "host": "127.0.0.1",
+        "port": 1025,
+        "secure": false
+      }
+    }
   }
 }

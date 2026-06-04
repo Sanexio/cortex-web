@@ -15,17 +15,20 @@ import {
   updateTimeEntryBreaks,
   updateTimeEntryStatus
 } from "./db.js";
+import { handleAuthRoute, requireWorkforceApiSession } from "./auth.js";
 
 const host = process.env.ARBEITSZEITEN_API_HOST ?? "127.0.0.1";
 const port = Number(process.env.ARBEITSZEITEN_API_PORT ?? 5175);
 
-function sendJson(response, statusCode, payload) {
+function sendJson(response, statusCode, payload, extraHeaders = {}) {
   response.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
     "Access-Control-Allow-Origin": "http://127.0.0.1:5174",
-    "Access-Control-Allow-Headers": "content-type",
-    "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS"
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Headers": "content-type, authorization",
+    "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
+    ...extraHeaders
   });
   response.end(JSON.stringify(payload));
 }
@@ -69,8 +72,18 @@ const server = createServer(async (request, response) => {
   }
 
   try {
+    if (await handleAuthRoute({ request, response, url, readJson, sendJson })) {
+      return;
+    }
+
     if (request.method === "GET" && url.pathname === "/api/health") {
       sendJson(response, 200, getHealth());
+      return;
+    }
+
+    const authGate = requireWorkforceApiSession(request);
+    if (!authGate.ok) {
+      sendJson(response, authGate.status, { ok: false, error: authGate.error });
       return;
     }
 
