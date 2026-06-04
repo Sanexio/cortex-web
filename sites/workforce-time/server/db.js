@@ -713,6 +713,22 @@ function migrate() {
       created_at TEXT NOT NULL
     );
 
+    -- T-003a Schichttausch-Workflow: Mitarbeiter A bietet seine Schicht
+    -- zur Übernahme an; Mitarbeiter B akzeptiert; Plan-Update + Audit.
+    CREATE TABLE IF NOT EXISTS shift_swap_requests (
+      id TEXT PRIMARY KEY,
+      requester_employee_id TEXT NOT NULL REFERENCES employees(id),
+      requester_shift_id TEXT NOT NULL REFERENCES shifts(id) ON DELETE CASCADE,
+      target_employee_id TEXT REFERENCES employees(id),
+      reason TEXT,
+      status TEXT NOT NULL DEFAULT 'open',
+      decided_by_employee_id TEXT REFERENCES employees(id),
+      decided_at TEXT,
+      decision_note TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
     -- T-005a Korrektur-Workflow: Mitarbeiter beantragen Time-Entry-Korrekturen,
     -- Admin genehmigt/lehnt ab (4-Augen).
     CREATE TABLE IF NOT EXISTS time_entry_corrections (
@@ -736,6 +752,9 @@ function migrate() {
     CREATE INDEX IF NOT EXISTS idx_sync_conflicts_status ON sync_conflicts(status);
     CREATE INDEX IF NOT EXISTS idx_corrections_status ON time_entry_corrections(status, created_at);
     CREATE INDEX IF NOT EXISTS idx_corrections_employee ON time_entry_corrections(employee_id);
+    CREATE INDEX IF NOT EXISTS idx_swap_status ON shift_swap_requests(status, created_at);
+    CREATE INDEX IF NOT EXISTS idx_swap_requester ON shift_swap_requests(requester_employee_id);
+    CREATE INDEX IF NOT EXISTS idx_swap_target ON shift_swap_requests(target_employee_id);
   `);
 
   addColumnIfMissing("employees", "email", "TEXT");
@@ -4198,6 +4217,287 @@ function loadPayrollPersonnelNumberMap() {
     map.set(row.employee_id, row.source_id);
   }
   return map;
+}
+
+// T-003a — Schichttausch-Workflow Backend (claude-chat, 2026-06-04).
+function newSwapId() {
+  return `swap_${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
+}
+
+export function createSwapRequest(payload) {
+  const requesterEmployeeId = String(payload?.requesterEmployeeId || "").trim();
+  const requesterShiftId = String(payload?.requesterShiftId || "").trim();
+  const targetEmployeeId = payload?.targetEmployeeId
+    ? String(payload.targetEmployeeId).trim()
+    : null;
+  const reason = String(payload?.reason || "").trim() || null;
+  if (!requesterEmployeeId || !requesterShiftId) {
+    throw new Error("requesterEmployeeId und requesterShiftId sind Pflicht");
+  }
+  // Prüfe dass requester wirklich an der Schicht assigned ist.
+  const assigned = db.prepare(`
+    SELECT 1 FROM shift_assignments WHERE shift_id = ? AND employee_id = ?
+  `).get(requesterShiftId, requesterEmployeeId);
+  if (!assigned) {
+    throw new Error("Mitarbeiter ist nicht an dieser Schicht zugewiesen");
+  }
+  const id = newSwapId();
+  db.prepare(`
+    INSERT INTO shift_swap_requests (
+      id, requester_employee_id, requester_shift_id, target_employee_id, reason, status
+    ) VALUES (?, ?, ?, ?, ?, 'open')
+  `).run(id, requesterEmployeeId, requesterShiftId, targetEmployeeId, reason);
+  recordAuditEvent({
+    entityType: "shift_swap_request",
+    entityId: id,
+    actorType: "employee",
+    actorId: requesterEmployeeId,
+    action: "created",
+    reason,
+    newValue: { requesterShiftId, targetEmployeeId }
+  });
+  return getSwapRequest(id);
+}
+
+export function getSwapRequest(id) {
+  const row = db.prepare(`
+    SELECT id, requester_employee_id, requester_shift_id, target_employee_id,
+           reason, status, decided_by_employee_id, decided_at, decision_note,
+           created_at, updated_at
+    FROM shift_swap_requests WHERE id = ?
+  `).get(id);
+  if (!row) return null;
+  return {
+    id: row.id,
+    requesterEmployeeId: row.requester_employee_id,
+    requesterShiftId: row.requester_shift_id,
+    targetEmployeeId: row.target_employee_id,
+    reason: row.reason,
+    status: row.status,
+    decidedByEmployeeId: row.decided_by_employee_id,
+    decidedAt: row.decided_at,
+    decisionNote: row.decision_note,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  };
+}
+
+export function listOpenSwapRequests(filter = {}) {
+  const conditions = ["status = 'open'"];
+  const params = {};
+  if (filter.targetEmployeeId) {
+    conditions.push("(target_employee_id IS NULL OR target_employee_id = @targetEmployeeId)");
+    params.targetEmployeeId = filter.targetEmployeeId;
+  }
+  const sql = `
+    SELECT id FROM shift_swap_requests
+    WHERE ${conditions.join(" AND ")}
+    ORDER BY created_at ASC
+  `;
+  const rows = db.prepare(sql).all(params);
+  return rows.map((r) => getSwapRequest(r.id));
+}
+
+export function acceptSwapRequest(id, accepterEmployeeId, note) {
+  const swap = getSwapRequest(id);
+  if (!swap) throw new Error(`Tausch-Anfrage nicht gefunden: ${id}`);
+  if (swap.status !== "open") throw new Error(`Tausch-Anfrage nicht offen: ${swap.status}`);
+  if (swap.requesterEmployeeId === accepterEmployeeId) {
+    throw new Error("Akzeptierer darf nicht der Antragsteller sein");
+  }
+  if (swap.targetEmployeeId && swap.targetEmployeeId !== accepterEmployeeId) {
+    throw new Error("Diese Tausch-Anfrage ist an einen anderen Mitarbeitenden gerichtet");
+  }
+  const decidedAt = new Date().toISOString();
+  db.exec("BEGIN");
+  try {
+    db.prepare(`
+      UPDATE shift_swap_requests
+      SET status = 'accepted', decided_by_employee_id = ?, decided_at = ?, decision_note = ?, updated_at = ?
+      WHERE id = ?
+    `).run(accepterEmployeeId, decidedAt, note ?? null, decidedAt, id);
+    // Plan-Update: requester-assignment durch accepter ersetzen.
+    db.prepare(`
+      DELETE FROM shift_assignments WHERE shift_id = ? AND employee_id = ?
+    `).run(swap.requesterShiftId, swap.requesterEmployeeId);
+    const assignmentId = `asg_${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
+    db.prepare(`
+      INSERT INTO shift_assignments (id, shift_id, employee_id, status)
+      VALUES (?, ?, ?, 'assigned')
+    `).run(assignmentId, swap.requesterShiftId, accepterEmployeeId);
+    db.exec("COMMIT");
+  } catch (err) {
+    db.exec("ROLLBACK");
+    throw err;
+  }
+  recordAuditEvent({
+    entityType: "shift_swap_request",
+    entityId: id,
+    actorType: "employee",
+    actorId: accepterEmployeeId,
+    action: "accepted",
+    reason: note,
+    newValue: { shiftId: swap.requesterShiftId, newAssignee: accepterEmployeeId }
+  });
+  return getSwapRequest(id);
+}
+
+export function declineSwapRequest(id, declinerEmployeeId, note) {
+  const swap = getSwapRequest(id);
+  if (!swap) throw new Error(`Tausch-Anfrage nicht gefunden: ${id}`);
+  if (swap.status !== "open") throw new Error(`Tausch-Anfrage nicht offen: ${swap.status}`);
+  if (swap.requesterEmployeeId === declinerEmployeeId) {
+    throw new Error("Antragsteller kann eigene Anfrage nicht ablehnen, nur stornieren");
+  }
+  const decidedAt = new Date().toISOString();
+  db.prepare(`
+    UPDATE shift_swap_requests
+    SET status = 'declined', decided_by_employee_id = ?, decided_at = ?, decision_note = ?, updated_at = ?
+    WHERE id = ?
+  `).run(declinerEmployeeId, decidedAt, note ?? null, decidedAt, id);
+  recordAuditEvent({
+    entityType: "shift_swap_request",
+    entityId: id,
+    actorType: "employee",
+    actorId: declinerEmployeeId,
+    action: "declined",
+    reason: note
+  });
+  return getSwapRequest(id);
+}
+
+export function cancelSwapRequest(id, cancellerEmployeeId, note) {
+  const swap = getSwapRequest(id);
+  if (!swap) throw new Error(`Tausch-Anfrage nicht gefunden: ${id}`);
+  if (swap.status !== "open") throw new Error(`Tausch-Anfrage nicht offen: ${swap.status}`);
+  if (swap.requesterEmployeeId !== cancellerEmployeeId) {
+    throw new Error("Nur der Antragsteller darf stornieren");
+  }
+  const decidedAt = new Date().toISOString();
+  db.prepare(`
+    UPDATE shift_swap_requests
+    SET status = 'cancelled', decided_by_employee_id = ?, decided_at = ?, decision_note = ?, updated_at = ?
+    WHERE id = ?
+  `).run(cancellerEmployeeId, decidedAt, note ?? null, decidedAt, id);
+  recordAuditEvent({
+    entityType: "shift_swap_request",
+    entityId: id,
+    actorType: "employee",
+    actorId: cancellerEmployeeId,
+    action: "cancelled",
+    reason: note
+  });
+  return getSwapRequest(id);
+}
+
+// T-009a — Reporting/Auswertung Backend (claude-chat, 2026-06-04).
+function netWorkedMinutes(row) {
+  const start = Date.parse(row.starts_at);
+  const end = Date.parse(row.ends_at);
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return 0;
+  const gross = Math.floor((end - start) / 60000);
+  const unpaidBreak = Number(row.unpaid_break_minutes ?? 0);
+  const net = gross - unpaidBreak;
+  return net > 0 ? net : 0;
+}
+
+function getEmployeeWeeklyTargetHours(employeeId) {
+  const row = db.prepare(`SELECT weekly_hours FROM employees WHERE id = ?`).get(employeeId);
+  if (row && Number.isFinite(Number(row.weekly_hours)) && row.weekly_hours > 0) {
+    return Number(row.weekly_hours);
+  }
+  // Fallback aus tenant-config
+  const defaults = tenantConfigGet("workforce.default_weekly_hours", null);
+  if (typeof defaults === "number" && defaults > 0) return defaults;
+  if (defaults && typeof defaults === "object" && Number.isFinite(Number(defaults.default))) {
+    return Number(defaults.default);
+  }
+  return 40;
+}
+
+function workingDaysInMonth(year, month) {
+  const last = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  let count = 0;
+  for (let d = 1; d <= last; d++) {
+    const dow = new Date(Date.UTC(year, month - 1, d)).getUTCDay();
+    if (dow !== 0 && dow !== 6) count++;
+  }
+  return count;
+}
+
+export function buildEmployeeMonthlySollIst(employeeId, year, month) {
+  const yearNum = Number(year);
+  const monthNum = Number(month);
+  if (!Number.isInteger(yearNum) || yearNum < 2000 || yearNum > 2100) {
+    throw new Error("year muss eine ganze Zahl zwischen 2000 und 2100 sein");
+  }
+  if (!Number.isInteger(monthNum) || monthNum < 1 || monthNum > 12) {
+    throw new Error("month muss zwischen 1 und 12 liegen");
+  }
+  const emp = db.prepare(`SELECT id, display_name AS name FROM employees WHERE id = ?`).get(employeeId);
+  if (!emp) throw new Error(`Mitarbeitender nicht gefunden: ${employeeId}`);
+  const monthStart = `${yearNum}-${String(monthNum).padStart(2, "0")}-01`;
+  const last = new Date(Date.UTC(yearNum, monthNum, 0)).getUTCDate();
+  const monthEnd = `${yearNum}-${String(monthNum).padStart(2, "0")}-${String(last).padStart(2, "0")}`;
+  const rows = db.prepare(`
+    SELECT starts_at, ends_at, unpaid_break_minutes
+    FROM time_entries
+    WHERE employee_id = @employeeId
+      AND date(starts_at) >= @monthStart
+      AND date(starts_at) <= @monthEnd
+      AND status IN ('completed', 'approved')
+  `).all({ employeeId, monthStart, monthEnd });
+  let totalNetMinutes = 0;
+  const dayBuckets = new Map();
+  for (const r of rows) {
+    const day = r.starts_at.slice(0, 10);
+    const minutes = netWorkedMinutes(r);
+    totalNetMinutes += minutes;
+    dayBuckets.set(day, (dayBuckets.get(day) || 0) + minutes);
+  }
+  const overlongDays = [];
+  for (const [day, mins] of dayBuckets.entries()) {
+    if (mins > 600) overlongDays.push({ day, minutes: mins });
+  }
+  const weeklyTarget = getEmployeeWeeklyTargetHours(employeeId);
+  const workingDays = workingDaysInMonth(yearNum, monthNum);
+  const sollMinutes = Math.round((weeklyTarget / 5) * workingDays * 60);
+  return {
+    employeeId,
+    employeeName: emp.name,
+    year: yearNum,
+    month: monthNum,
+    weeklyTargetHours: weeklyTarget,
+    workingDaysInMonth: workingDays,
+    sollMinutes,
+    istMinutes: totalNetMinutes,
+    differenceMinutes: totalNetMinutes - sollMinutes,
+    daysWithEntries: dayBuckets.size,
+    overlongDays
+  };
+}
+
+export function buildTeamSollIstSummary(year, month) {
+  const employees = db.prepare(`SELECT id FROM employees`).all();
+  return employees.map((e) => buildEmployeeMonthlySollIst(e.id, year, month));
+}
+
+export function renderTeamSollIstCsv(report) {
+  const headers = ["employeeId", "employeeName", "weeklyTargetHours", "sollMinutes", "istMinutes", "differenceMinutes", "daysWithEntries", "overlongDayCount"];
+  const lines = [headers.join(";")];
+  for (const r of report) {
+    lines.push([
+      r.employeeId,
+      escapeCsvField(r.employeeName),
+      r.weeklyTargetHours,
+      r.sollMinutes,
+      r.istMinutes,
+      r.differenceMinutes,
+      r.daysWithEntries,
+      r.overlongDays.length
+    ].join(";"));
+  }
+  return lines.join("\n");
 }
 
 // T-002 — Shift-Konflikterkennung (claude-chat, 2026-06-04).

@@ -1,23 +1,32 @@
 import { createServer } from "node:http";
 import {
+  acceptSwapRequest,
   approveCorrection,
+  buildEmployeeMonthlySollIst,
   buildPayrollExport,
+  buildTeamSollIstSummary,
   calculateAbsenceQuota,
   calculateAbsenceQuotasForAll,
+  cancelSwapRequest,
   createAbsenceRequest,
   createEmployee,
   createShift,
+  createSwapRequest,
   createTimeEntry,
   databasePath,
+  declineSwapRequest,
   deleteEmployee,
   detectShiftConflicts,
   getBootstrap,
   getCorrection,
   getHealth,
+  getSwapRequest,
+  listOpenSwapRequests,
   listPendingCorrections,
   rejectCorrection,
   renderPayrollExportCsv,
   renderPayrollExportDatevLodas,
+  renderTeamSollIstCsv,
   requestTimeEntryCorrection,
   runDemoImport,
   runExternalSnapshotImport,
@@ -168,6 +177,94 @@ const server = createServer(async (request, response) => {
     if (request.method === "PATCH" && breaksMatch) {
       const payload = await readJson(request);
       sendJson(response, 200, updateTimeEntryBreaks(decodeURIComponent(breaksMatch[1]), payload));
+      return;
+    }
+
+    // T-003a Schichttausch.
+    if (request.method === "POST" && url.pathname === "/api/swap-requests") {
+      const payload = await readJson(request);
+      try {
+        const result = createSwapRequest(payload);
+        sendJson(response, 201, { ok: true, swapRequest: result });
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+      }
+      return;
+    }
+    if (request.method === "GET" && url.pathname === "/api/swap-requests") {
+      const targetEmployeeId = url.searchParams.get("targetEmployeeId") || undefined;
+      sendJson(response, 200, { ok: true, swapRequests: listOpenSwapRequests({ targetEmployeeId }) });
+      return;
+    }
+    const swapAcceptMatch = url.pathname.match(/^\/api\/swap-requests\/([^/]+)\/accept$/);
+    if (request.method === "PATCH" && swapAcceptMatch) {
+      const payload = await readJson(request);
+      try {
+        const result = acceptSwapRequest(decodeURIComponent(swapAcceptMatch[1]), payload?.accepterEmployeeId, payload?.note);
+        sendJson(response, 200, { ok: true, swapRequest: result });
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+      }
+      return;
+    }
+    const swapDeclineMatch = url.pathname.match(/^\/api\/swap-requests\/([^/]+)\/decline$/);
+    if (request.method === "PATCH" && swapDeclineMatch) {
+      const payload = await readJson(request);
+      try {
+        const result = declineSwapRequest(decodeURIComponent(swapDeclineMatch[1]), payload?.declinerEmployeeId, payload?.note);
+        sendJson(response, 200, { ok: true, swapRequest: result });
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+      }
+      return;
+    }
+    const swapCancelMatch = url.pathname.match(/^\/api\/swap-requests\/([^/]+)\/cancel$/);
+    if (request.method === "PATCH" && swapCancelMatch) {
+      const payload = await readJson(request);
+      try {
+        const result = cancelSwapRequest(decodeURIComponent(swapCancelMatch[1]), payload?.cancellerEmployeeId, payload?.note);
+        sendJson(response, 200, { ok: true, swapRequest: result });
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+      }
+      return;
+    }
+
+    // T-009a Reporting.
+    const reportEmployeeMatch = url.pathname.match(/^\/api\/reports\/employee\/([^/]+)\/monthly$/);
+    if (request.method === "GET" && reportEmployeeMatch) {
+      const year = Number(url.searchParams.get("year") || new Date().getFullYear());
+      const month = Number(url.searchParams.get("month") || (new Date().getMonth() + 1));
+      try {
+        const result = buildEmployeeMonthlySollIst(decodeURIComponent(reportEmployeeMatch[1]), year, month);
+        sendJson(response, 200, { ok: true, report: result });
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+      }
+      return;
+    }
+    if (request.method === "GET" && url.pathname === "/api/reports/team/monthly") {
+      const year = Number(url.searchParams.get("year") || new Date().getFullYear());
+      const month = Number(url.searchParams.get("month") || (new Date().getMonth() + 1));
+      const format = (url.searchParams.get("format") || "json").toLowerCase();
+      try {
+        const result = buildTeamSollIstSummary(year, month);
+        if (format === "csv") {
+          const body = renderTeamSollIstCsv(result);
+          response.writeHead(200, {
+            "Content-Type": "text/csv; charset=utf-8",
+            "Cache-Control": "no-store",
+            "Content-Disposition": `attachment; filename="team-soll-ist-${year}-${String(month).padStart(2, "0")}.csv"`,
+            "Access-Control-Allow-Origin": "http://127.0.0.1:5174",
+            "Access-Control-Allow-Credentials": "true"
+          });
+          response.end(body);
+        } else {
+          sendJson(response, 200, { ok: true, report: result, year, month });
+        }
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+      }
       return;
     }
 
