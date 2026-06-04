@@ -8,8 +8,10 @@ import {
   Check,
   ClipboardCheck,
   Clock3,
+  Coins,
   Columns3,
   Database,
+  Download,
   Filter,
   Home,
   KeyRound,
@@ -31,7 +33,57 @@ import {
 } from "lucide-react";
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
 
-type ViewKey = "dashboard" | "plan" | "time" | "absences" | "employees" | "imports" | "settings";
+type ViewKey = "dashboard" | "plan" | "time" | "absences" | "employees" | "payroll" | "imports" | "settings";
+
+type PayrollDay = {
+  date: string;
+  grossMinutes: number;
+  unpaidBreakMinutes: number;
+  paidBreakMinutes: number;
+  netMinutes: number;
+  netHours: number;
+  grossHours: number;
+  entryTypes: string[];
+  entryCount: number;
+};
+
+type PayrollEmployee = {
+  employeeId: string;
+  employeeName: string;
+  roleTitle: string;
+  personnelNumber: string | null;
+  totals: {
+    grossMinutes: number;
+    unpaidBreakMinutes: number;
+    paidBreakMinutes: number;
+    netMinutes: number;
+    entryCount: number;
+    netHours: number;
+    grossHours: number;
+  };
+  days: PayrollDay[];
+};
+
+type PayrollReport = {
+  period: { year: number; month: number; startDate: string; endDate: string };
+  generatedAt: string;
+  employees: PayrollEmployee[];
+  totals: {
+    grossMinutes: number;
+    unpaidBreakMinutes: number;
+    paidBreakMinutes: number;
+    netMinutes: number;
+    entryCount: number;
+    employeeCount: number;
+    netHours: number;
+    grossHours: number;
+  };
+  warnings: {
+    missingPersonnelNumbers: Array<{ employeeId: string; employeeName: string }>;
+    onlyApprovedEntriesIncluded: boolean;
+    lohnartCode: string;
+  };
+};
 type Status = "freigegeben" | "aenderungsantrag" | "konflikt" | "entwurf";
 type EntryType = "Arbeitszeit" | "Schichtunabhaengig" | "Dienstgang";
 type AbsenceStatus = "offen" | "genehmigt" | "abgelehnt";
@@ -811,6 +863,7 @@ const viewMeta: Record<ViewKey, { title: string; eyebrow: string }> = {
   time: { title: "Arbeitszeiten", eyebrow: "Zeit & Reporting" },
   absences: { title: "Urlaub & Abwesenheit", eyebrow: "Anträge & Kalender" },
   employees: { title: "Mitarbeiter", eyebrow: "Stammdaten" },
+  payroll: { title: "Lohnabrechnung", eyebrow: "DATEV-Export · Monatsstunden" },
   imports: { title: "Import & Sync", eyebrow: "Migration" },
   settings: { title: "Einstellungen", eyebrow: "Rollen & Schutz" }
 };
@@ -1943,6 +1996,12 @@ function App() {
         Mitarbeiter
       </button>
     ),
+    payroll: (
+      <button className="secondary-button" onClick={refresh}>
+        <RefreshCw size={17} />
+        Aktualisieren
+      </button>
+    ),
     imports: (
       <button className="primary-button" onClick={runDeltaImport} disabled={busy}>
         <RefreshCw size={18} />
@@ -2058,6 +2117,7 @@ function App() {
           />
         ) : null}
         {view === "employees" ? <EmployeesView data={data} /> : null}
+        {view === "payroll" ? <PayrollView request={request} employees={data.employees} /> : null}
         {view === "imports" ? (
           <ImportsView
             data={data}
@@ -2370,6 +2430,7 @@ function Sidebar({
     { view: "time", label: "Arbeitszeiten", icon: Clock3 },
     { view: "absences", label: "Urlaub", icon: CalendarDays },
     { view: "employees", label: "Mitarbeiter", icon: Users },
+    { view: "payroll", label: "Lohnabrechnung", icon: Coins },
     { view: "imports", label: "Import & Sync", icon: Database },
     { view: "settings", label: "Einstellungen", icon: Settings2 }
   ];
@@ -5546,6 +5607,254 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
       <span>{label}</span>
       {children}
     </label>
+  );
+}
+
+function PayrollView({
+  request,
+  employees
+}: {
+  request: <T>(url: string, options?: RequestInit) => Promise<T>;
+  employees: Employee[];
+}) {
+  const today = new Date();
+  const defaultMonth = today.getMonth() === 0 ? 12 : today.getMonth();
+  const defaultYear = today.getMonth() === 0 ? today.getFullYear() - 1 : today.getFullYear();
+  const [year, setYear] = useState(defaultYear);
+  const [month, setMonth] = useState(defaultMonth);
+  const [report, setReport] = useState<PayrollReport | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [personnelDraft, setPersonnelDraft] = useState<Record<string, string>>({});
+  const [savingFor, setSavingFor] = useState<string | null>(null);
+
+  async function loadReport(targetYear: number, targetMonth: number) {
+    setLoading(true);
+    setErrorMessage(null);
+    try {
+      const payload = await request<PayrollReport>(
+        `/api/payroll/export?year=${targetYear}&month=${targetMonth}&format=json`
+      );
+      setReport(payload);
+      const draft: Record<string, string> = {};
+      for (const employee of payload.employees) {
+        draft[employee.employeeId] = employee.personnelNumber ?? "";
+      }
+      setPersonnelDraft(draft);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Unbekannter Fehler");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadReport(year, month);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [year, month]);
+
+  async function savePersonnelNumber(employeeId: string) {
+    const value = personnelDraft[employeeId] ?? "";
+    setSavingFor(employeeId);
+    setErrorMessage(null);
+    try {
+      await request(`/api/employees/${encodeURIComponent(employeeId)}/payroll-number`, {
+        method: "PATCH",
+        body: JSON.stringify({ personnelNumber: value })
+      });
+      await loadReport(year, month);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Speichern fehlgeschlagen");
+    } finally {
+      setSavingFor(null);
+    }
+  }
+
+  const monthNames = [
+    "Januar", "Februar", "März", "April", "Mai", "Juni",
+    "Juli", "August", "September", "Oktober", "November", "Dezember"
+  ];
+  const yearOptions = [defaultYear + 1, defaultYear, defaultYear - 1, defaultYear - 2];
+  const employeesWithoutData = employees.filter(
+    (employee) => report && !report.employees.some((row) => row.employeeId === employee.id)
+  );
+
+  function formatHours(hours: number): string {
+    return hours.toFixed(2).replace(".", ",");
+  }
+
+  function buildDownloadUrl(format: "csv" | "datev_lodas") {
+    return `/api/payroll/export?year=${year}&month=${month}&format=${format}`;
+  }
+
+  return (
+    <div className="payroll-view" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      <section className="card" style={{ display: "flex", flexWrap: "wrap", gap: "1rem", alignItems: "flex-end" }}>
+        <Field label="Jahr">
+          <select value={year} onChange={(event) => setYear(Number(event.target.value))}>
+            {yearOptions.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Monat">
+          <select value={month} onChange={(event) => setMonth(Number(event.target.value))}>
+            {monthNames.map((name, index) => (
+              <option key={name} value={index + 1}>{name}</option>
+            ))}
+          </select>
+        </Field>
+        <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem" }}>
+          <a className="secondary-button" href={buildDownloadUrl("csv")} download>
+            <Download size={16} /> CSV
+          </a>
+          <a className="primary-button" href={buildDownloadUrl("datev_lodas")} download>
+            <Download size={16} /> DATEV-LODAS
+          </a>
+        </div>
+      </section>
+
+      {loading ? <p>Lade Lohn-Report…</p> : null}
+      {errorMessage ? <p className="error-message">Fehler: {errorMessage}</p> : null}
+
+      {report && !loading ? (
+        <>
+          <section className="card">
+            <h2 style={{ marginTop: 0 }}>
+              Zeitraum {report.period.startDate} – {report.period.endDate}
+            </h2>
+            <p>
+              {report.totals.employeeCount} Mitarbeitende · {report.totals.entryCount} freigegebene Einträge ·
+              {" "}<strong>{formatHours(report.totals.netHours)} h netto</strong>
+              {" "}(brutto {formatHours(report.totals.grossHours)} h, abzüglich
+              {" "}{Math.round(report.totals.unpaidBreakMinutes / 60 * 100) / 100} h unbezahlter Pausen)
+            </p>
+            <p style={{ fontSize: "0.85em", color: "var(--muted, #666)" }}>
+              Nur freigegebene Arbeitszeit-Einträge fließen in den DATEV-Export. Lohnart {report.warnings.lohnartCode} (Pauschal-Stunden).
+            </p>
+          </section>
+
+          {report.warnings.missingPersonnelNumbers.length > 0 ? (
+            <section className="card" style={{ borderColor: "#d97706" }}>
+              <h3 style={{ marginTop: 0 }}>⚠ Personalnummern fehlen</h3>
+              <p>Diese Mitarbeitenden haben freigegebene Stunden, aber keine DATEV-Personalnummer — sie werden im LODAS-Export übersprungen:</p>
+              <ul>
+                {report.warnings.missingPersonnelNumbers.map((entry) => (
+                  <li key={entry.employeeId}>{entry.employeeName}</li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          <section className="card">
+            <h3 style={{ marginTop: 0 }}>Mitarbeiter im Monat</h3>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Mitarbeiter</th>
+                  <th>Personalnummer</th>
+                  <th style={{ textAlign: "right" }}>Brutto h</th>
+                  <th style={{ textAlign: "right" }}>Unbezahlte Pausen (min)</th>
+                  <th style={{ textAlign: "right" }}>Netto h</th>
+                  <th style={{ textAlign: "right" }}>Einträge</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {report.employees.map((employee) => {
+                  const draftValue = personnelDraft[employee.employeeId] ?? "";
+                  const persisted = employee.personnelNumber ?? "";
+                  const dirty = draftValue !== persisted;
+                  return (
+                    <tr key={employee.employeeId}>
+                      <td>
+                        <strong>{employee.employeeName}</strong>
+                        <div style={{ fontSize: "0.85em", color: "var(--muted, #666)" }}>{employee.roleTitle}</div>
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          value={draftValue}
+                          onChange={(event) =>
+                            setPersonnelDraft((current) => ({
+                              ...current,
+                              [employee.employeeId]: event.target.value
+                            }))
+                          }
+                          style={{ width: "8rem" }}
+                          placeholder="—"
+                        />
+                      </td>
+                      <td style={{ textAlign: "right" }}>{formatHours(employee.totals.grossHours)}</td>
+                      <td style={{ textAlign: "right" }}>{employee.totals.unpaidBreakMinutes}</td>
+                      <td style={{ textAlign: "right" }}><strong>{formatHours(employee.totals.netHours)}</strong></td>
+                      <td style={{ textAlign: "right" }}>{employee.totals.entryCount}</td>
+                      <td>
+                        {dirty ? (
+                          <button
+                            type="button"
+                            className="secondary-button"
+                            disabled={savingFor === employee.employeeId}
+                            onClick={() => savePersonnelNumber(employee.employeeId)}
+                          >
+                            {savingFor === employee.employeeId ? "…" : "Speichern"}
+                          </button>
+                        ) : null}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </section>
+
+          {employeesWithoutData.length > 0 ? (
+            <section className="card">
+              <h3 style={{ marginTop: 0 }}>Mitarbeitende ohne freigegebene Stunden</h3>
+              <ul>
+                {employeesWithoutData.map((employee) => (
+                  <li key={employee.id}>{employee.name} ({employee.role})</li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          <section className="card">
+            <h3 style={{ marginTop: 0 }}>Detail pro Tag</h3>
+            {report.employees.length === 0 ? <p>Keine Einträge im gewählten Monat.</p> : null}
+            {report.employees.map((employee) => (
+              <details key={employee.employeeId} style={{ marginBottom: "1rem" }}>
+                <summary>
+                  <strong>{employee.employeeName}</strong> — {formatHours(employee.totals.netHours)} h netto an {employee.days.length} Tagen
+                </summary>
+                <table className="data-table" style={{ marginTop: "0.5rem" }}>
+                  <thead>
+                    <tr>
+                      <th>Datum</th>
+                      <th>Eintrags-Typ</th>
+                      <th style={{ textAlign: "right" }}>Brutto h</th>
+                      <th style={{ textAlign: "right" }}>Unbez. Pause (min)</th>
+                      <th style={{ textAlign: "right" }}>Netto h</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {employee.days.map((day) => (
+                      <tr key={`${employee.employeeId}_${day.date}`}>
+                        <td>{day.date}</td>
+                        <td>{day.entryTypes.join(", ")}</td>
+                        <td style={{ textAlign: "right" }}>{formatHours(day.grossHours)}</td>
+                        <td style={{ textAlign: "right" }}>{day.unpaidBreakMinutes}</td>
+                        <td style={{ textAlign: "right" }}>{formatHours(day.netHours)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </details>
+            ))}
+          </section>
+        </>
+      ) : null}
+    </div>
   );
 }
 

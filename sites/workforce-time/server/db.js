@@ -4005,6 +4005,304 @@ export function getHealth() {
   };
 }
 
+function pad2(value) {
+  return String(value).padStart(2, "0");
+}
+
+function diffMinutes(startIso, endIso) {
+  const start = new Date(startIso).getTime();
+  const end = new Date(endIso).getTime();
+  if (Number.isNaN(start) || Number.isNaN(end) || end <= start) return 0;
+  return Math.round((end - start) / 60_000);
+}
+
+function dayBucketFromIso(iso) {
+  return iso.slice(0, 10);
+}
+
+function escapeCsvField(value) {
+  const text = value === null || value === undefined ? "" : String(value);
+  if (/[",;\r\n]/.test(text)) {
+    return `"${text.replace(/"/g, '""')}"`;
+  }
+  return text;
+}
+
+function loadPayrollPersonnelNumberMap() {
+  const rows = db.prepare(`
+    SELECT employee_id, source_id
+    FROM employee_external_ids
+    WHERE source_system = 'datev_payroll' AND source_entity = 'employee'
+  `).all();
+  const map = new Map();
+  for (const row of rows) {
+    map.set(row.employee_id, row.source_id);
+  }
+  return map;
+}
+
+export function buildPayrollExport({ year, month } = {}) {
+  const numericYear = Number(year);
+  const numericMonth = Number(month);
+  if (!Number.isInteger(numericYear) || numericYear < 2000 || numericYear > 2100) {
+    throw new Error("year muss eine ganze Zahl zwischen 2000 und 2100 sein");
+  }
+  if (!Number.isInteger(numericMonth) || numericMonth < 1 || numericMonth > 12) {
+    throw new Error("month muss zwischen 1 und 12 liegen");
+  }
+
+  const periodStart = `${numericYear}-${pad2(numericMonth)}-01`;
+  const nextMonth = numericMonth === 12 ? 1 : numericMonth + 1;
+  const nextYear = numericMonth === 12 ? numericYear + 1 : numericYear;
+  const periodEndExclusive = `${nextYear}-${pad2(nextMonth)}-01`;
+  const periodEndInclusive = new Date(new Date(periodEndExclusive).getTime() - 86_400_000)
+    .toISOString().slice(0, 10);
+
+  const rows = db.prepare(`
+    SELECT
+      time_entries.id,
+      time_entries.employee_id,
+      time_entries.starts_at,
+      time_entries.ends_at,
+      time_entries.entry_type,
+      time_entries.status,
+      time_entries.paid_break_minutes,
+      time_entries.unpaid_break_minutes,
+      employees.display_name AS employee_name,
+      employees.role_title AS employee_role
+    FROM time_entries
+    JOIN employees ON employees.id = time_entries.employee_id
+    WHERE time_entries.removed_from_source = 0
+      AND time_entries.status = 'freigegeben'
+      AND time_entries.starts_at >= ?
+      AND time_entries.starts_at < ?
+    ORDER BY employees.display_name, time_entries.starts_at
+  `).all(periodStart, periodEndExclusive);
+
+  const personnelMap = loadPayrollPersonnelNumberMap();
+  const perEmployee = new Map();
+
+  for (const row of rows) {
+    const grossMinutes = diffMinutes(row.starts_at, row.ends_at);
+    const unpaidBreak = Number(row.unpaid_break_minutes) || 0;
+    const paidBreak = Number(row.paid_break_minutes) || 0;
+    const netMinutes = Math.max(0, grossMinutes - unpaidBreak);
+    const day = dayBucketFromIso(row.starts_at);
+
+    if (!perEmployee.has(row.employee_id)) {
+      perEmployee.set(row.employee_id, {
+        employeeId: row.employee_id,
+        employeeName: practiceDisplayName(row.employee_name),
+        roleTitle: row.employee_role,
+        personnelNumber: personnelMap.get(row.employee_id) ?? null,
+        days: new Map(),
+        totals: {
+          grossMinutes: 0,
+          unpaidBreakMinutes: 0,
+          paidBreakMinutes: 0,
+          netMinutes: 0,
+          entryCount: 0
+        }
+      });
+    }
+
+    const employeeBucket = perEmployee.get(row.employee_id);
+    const dayBucket = employeeBucket.days.get(day) ?? {
+      date: day,
+      grossMinutes: 0,
+      unpaidBreakMinutes: 0,
+      paidBreakMinutes: 0,
+      netMinutes: 0,
+      entryTypes: new Set(),
+      entryCount: 0
+    };
+
+    dayBucket.grossMinutes += grossMinutes;
+    dayBucket.unpaidBreakMinutes += unpaidBreak;
+    dayBucket.paidBreakMinutes += paidBreak;
+    dayBucket.netMinutes += netMinutes;
+    dayBucket.entryTypes.add(row.entry_type);
+    dayBucket.entryCount += 1;
+    employeeBucket.days.set(day, dayBucket);
+
+    employeeBucket.totals.grossMinutes += grossMinutes;
+    employeeBucket.totals.unpaidBreakMinutes += unpaidBreak;
+    employeeBucket.totals.paidBreakMinutes += paidBreak;
+    employeeBucket.totals.netMinutes += netMinutes;
+    employeeBucket.totals.entryCount += 1;
+  }
+
+  const employees = Array.from(perEmployee.values()).map((entry) => ({
+    employeeId: entry.employeeId,
+    employeeName: entry.employeeName,
+    roleTitle: entry.roleTitle,
+    personnelNumber: entry.personnelNumber,
+    totals: {
+      ...entry.totals,
+      netHours: Math.round((entry.totals.netMinutes / 60) * 100) / 100,
+      grossHours: Math.round((entry.totals.grossMinutes / 60) * 100) / 100
+    },
+    days: Array.from(entry.days.values())
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((day) => ({
+        date: day.date,
+        grossMinutes: day.grossMinutes,
+        unpaidBreakMinutes: day.unpaidBreakMinutes,
+        paidBreakMinutes: day.paidBreakMinutes,
+        netMinutes: day.netMinutes,
+        netHours: Math.round((day.netMinutes / 60) * 100) / 100,
+        grossHours: Math.round((day.grossMinutes / 60) * 100) / 100,
+        entryTypes: Array.from(day.entryTypes).sort(),
+        entryCount: day.entryCount
+      }))
+  }));
+
+  const totals = employees.reduce((acc, employee) => ({
+    grossMinutes: acc.grossMinutes + employee.totals.grossMinutes,
+    unpaidBreakMinutes: acc.unpaidBreakMinutes + employee.totals.unpaidBreakMinutes,
+    paidBreakMinutes: acc.paidBreakMinutes + employee.totals.paidBreakMinutes,
+    netMinutes: acc.netMinutes + employee.totals.netMinutes,
+    entryCount: acc.entryCount + employee.totals.entryCount,
+    employeeCount: acc.employeeCount + 1
+  }), {
+    grossMinutes: 0,
+    unpaidBreakMinutes: 0,
+    paidBreakMinutes: 0,
+    netMinutes: 0,
+    entryCount: 0,
+    employeeCount: 0
+  });
+
+  totals.netHours = Math.round((totals.netMinutes / 60) * 100) / 100;
+  totals.grossHours = Math.round((totals.grossMinutes / 60) * 100) / 100;
+
+  const missingPersonnelNumbers = employees
+    .filter((employee) => employee.totals.netMinutes > 0 && !employee.personnelNumber)
+    .map((employee) => ({
+      employeeId: employee.employeeId,
+      employeeName: employee.employeeName
+    }));
+
+  return {
+    period: {
+      year: numericYear,
+      month: numericMonth,
+      startDate: periodStart,
+      endDate: periodEndInclusive
+    },
+    generatedAt: now(),
+    employees,
+    totals,
+    warnings: {
+      missingPersonnelNumbers,
+      onlyApprovedEntriesIncluded: true,
+      lohnartCode: "100"
+    }
+  };
+}
+
+export function renderPayrollExportCsv(report) {
+  const headers = [
+    "Personalnummer",
+    "Mitarbeitername",
+    "Rolle",
+    "Datum",
+    "Brutto-Stunden",
+    "Unbezahlte Pause (min)",
+    "Bezahlte Pause (min)",
+    "Netto-Stunden",
+    "Eintraege"
+  ];
+  const lines = [headers.join(";")];
+  for (const employee of report.employees) {
+    for (const day of employee.days) {
+      lines.push([
+        escapeCsvField(employee.personnelNumber ?? ""),
+        escapeCsvField(employee.employeeName),
+        escapeCsvField(employee.roleTitle),
+        escapeCsvField(day.date),
+        escapeCsvField(day.netHours.toFixed(2).replace(".", ",")),
+        escapeCsvField(day.unpaidBreakMinutes),
+        escapeCsvField(day.paidBreakMinutes),
+        escapeCsvField(day.netHours.toFixed(2).replace(".", ",")),
+        escapeCsvField(day.entryCount)
+      ].join(";"));
+    }
+  }
+  return `${lines.join("\r\n")}\r\n`;
+}
+
+export function renderPayrollExportDatevLodas(report) {
+  const lohnart = report.warnings.lohnartCode ?? "100";
+  const headerLines = [
+    "[Allgemein]",
+    "Ziel=lodas",
+    "Version_SST=1.0",
+    `Berater=${process.env.DATEV_BERATERNUMMER ?? "0000000"}`,
+    `Mandant=${process.env.DATEV_MANDANTENNUMMER ?? "00000"}`,
+    "Kommentarzeichen=*",
+    "Feldtrennzeichen=;",
+    "Zahlenkomma=,",
+    `Datumsformat=TT.MM.JJJJ`,
+    "Stringbegrenzer=\"",
+    "DatensatzEnde=\\r\\n",
+    "Feldnamen=Ja",
+    "",
+    "[Satzbeschreibung]",
+    "1;Bewegungsdaten;u_lod_bwd_buchung",
+    "1;pnr#bwd;",
+    "1;abrechnung_zeitraum#bwd;",
+    "1;lohnart_nr#bwd;",
+    "1;anzahl#bwd;",
+    "1;buchung_belegfeld_1#bwd;",
+    "",
+    "[Bewegungsdaten]",
+    "Personalnummer;Abrechnungszeitraum;Lohnart;Stunden;Belegfeld"
+  ];
+
+  const lines = [...headerLines];
+  const period = `${pad2(report.period.month)}.${report.period.year}`;
+  for (const employee of report.employees) {
+    if (!employee.personnelNumber) continue;
+    if (employee.totals.netMinutes <= 0) continue;
+    const stundenStr = employee.totals.netHours.toFixed(2).replace(".", ",");
+    lines.push([
+      escapeCsvField(employee.personnelNumber),
+      escapeCsvField(period),
+      escapeCsvField(lohnart),
+      escapeCsvField(stundenStr),
+      escapeCsvField(`Praxis ${report.period.year}-${pad2(report.period.month)}`)
+    ].join(";"));
+  }
+  return `${lines.join("\r\n")}\r\n`;
+}
+
+export function setPayrollPersonnelNumber(employeeId, personnelNumber) {
+  const trimmedId = typeof employeeId === "string" ? employeeId.trim() : "";
+  const trimmedNumber = typeof personnelNumber === "string" ? personnelNumber.trim() : "";
+  if (!trimmedId) throw new Error("employeeId fehlt");
+  const employee = db.prepare("SELECT id FROM employees WHERE id = ?").get(trimmedId);
+  if (!employee) throw new Error("Mitarbeiter nicht gefunden");
+
+  if (!trimmedNumber) {
+    db.prepare(`
+      DELETE FROM employee_external_ids
+      WHERE employee_id = ? AND source_system = 'datev_payroll' AND source_entity = 'employee'
+    `).run(trimmedId);
+    return { employeeId: trimmedId, personnelNumber: null };
+  }
+
+  const importedAt = now();
+  db.prepare(`
+    INSERT INTO employee_external_ids (id, employee_id, source_system, source_id, source_entity, imported_at)
+    VALUES (?, ?, 'datev_payroll', ?, 'employee', ?)
+    ON CONFLICT(source_system, source_entity, source_id) DO UPDATE SET
+      employee_id = excluded.employee_id,
+      imported_at = excluded.imported_at
+  `).run(`payroll_${randomUUID()}`, trimmedId, trimmedNumber, importedAt);
+  return { employeeId: trimmedId, personnelNumber: trimmedNumber };
+}
+
 migrate();
 seed();
 ensureOperationalSeed();

@@ -1,5 +1,6 @@
 import { createServer } from "node:http";
 import {
+  buildPayrollExport,
   createAbsenceRequest,
   createEmployee,
   createShift,
@@ -7,9 +8,12 @@ import {
   databasePath,
   getBootstrap,
   getHealth,
+  renderPayrollExportCsv,
+  renderPayrollExportDatevLodas,
   runDemoImport,
   runExternalSnapshotImport,
   deleteShift,
+  setPayrollPersonnelNumber,
   updateAbsenceStatus,
   updateShift,
   updateTimeEntryBreaks,
@@ -154,6 +158,55 @@ const server = createServer(async (request, response) => {
     if (request.method === "PATCH" && breaksMatch) {
       const payload = await readJson(request);
       sendJson(response, 200, updateTimeEntryBreaks(decodeURIComponent(breaksMatch[1]), payload));
+      return;
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/payroll/export") {
+      const year = Number(url.searchParams.get("year"));
+      const month = Number(url.searchParams.get("month"));
+      const format = (url.searchParams.get("format") ?? "json").toLowerCase();
+      const report = buildPayrollExport({ year, month });
+
+      if (format === "csv") {
+        const body = renderPayrollExportCsv(report);
+        const filename = `payroll-${report.period.year}-${String(report.period.month).padStart(2, "0")}.csv`;
+        response.writeHead(200, {
+          "Content-Type": "text/csv; charset=utf-8",
+          "Cache-Control": "no-store",
+          "Content-Disposition": `attachment; filename="${filename}"`,
+          "Access-Control-Allow-Origin": "http://127.0.0.1:5174",
+          "Access-Control-Allow-Credentials": "true"
+        });
+        response.end(body);
+        return;
+      }
+
+      if (format === "datev_lodas" || format === "datev") {
+        const body = renderPayrollExportDatevLodas(report);
+        const filename = `payroll-datev-lodas-${report.period.year}-${String(report.period.month).padStart(2, "0")}.csv`;
+        response.writeHead(200, {
+          "Content-Type": "text/csv; charset=utf-8",
+          "Cache-Control": "no-store",
+          "Content-Disposition": `attachment; filename="${filename}"`,
+          "Access-Control-Allow-Origin": "http://127.0.0.1:5174",
+          "Access-Control-Allow-Credentials": "true"
+        });
+        response.end(body);
+        return;
+      }
+
+      sendJson(response, 200, report);
+      return;
+    }
+
+    const payrollNumberMatch = url.pathname.match(/^\/api\/employees\/([^/]+)\/payroll-number$/);
+    if (request.method === "PATCH" && payrollNumberMatch) {
+      const payload = await readJson(request);
+      sendJson(
+        response,
+        200,
+        setPayrollPersonnelNumber(decodeURIComponent(payrollNumberMatch[1]), payload.personnelNumber ?? "")
+      );
       return;
     }
 
