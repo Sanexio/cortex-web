@@ -49,6 +49,8 @@ TENANT_PATHS_EXCLUDE=(
     "_media-source"
     "node_modules"
     ".git"
+    "adapters/astro/.backups"
+    "adapters/wordpress/.backups"
 )
 
 # Tenant-Identifier (Indikatoren für Stracke-Daten)
@@ -106,6 +108,7 @@ for fp in "${FRAMEWORK_PATHS[@]}"; do
         | grep -v "/specs/bridge-strategy/" \
         | grep -v "/specs/content-bridge-v1/" \
         | grep -vE "/specs/session-[0-9]+/" \
+        | grep -v "/\.backups/" \
         || true)
 
     if [ -z "$hits" ]; then
