@@ -755,6 +755,30 @@ function migrate() {
     CREATE INDEX IF NOT EXISTS idx_swap_status ON shift_swap_requests(status, created_at);
     CREATE INDEX IF NOT EXISTS idx_swap_requester ON shift_swap_requests(requester_employee_id);
     CREATE INDEX IF NOT EXISTS idx_swap_target ON shift_swap_requests(target_employee_id);
+
+    -- T-004a Stempeluhr-State: Pause läuft aktuell für eine running-time_entry.
+    CREATE TABLE IF NOT EXISTS stamp_active_breaks (
+      time_entry_id TEXT PRIMARY KEY REFERENCES time_entries(id) ON DELETE CASCADE,
+      started_at TEXT NOT NULL
+    );
+
+    -- T-010a defensive Vor-Anlage der auth_users-Tabelle, damit Rollen-
+    -- Admin-Funktionen auch dann arbeiten können, wenn der Auth-Server
+    -- noch nie gelaufen ist. auth.js legt dieselbe Tabelle als IF NOT
+    -- EXISTS an, daher kein Konflikt.
+    CREATE TABLE IF NOT EXISTS auth_users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT NOT NULL UNIQUE,
+      employee_id TEXT,
+      display_name TEXT,
+      role TEXT NOT NULL DEFAULT 'employee',
+      tenant_slug TEXT NOT NULL,
+      totp_enrolled_at TEXT,
+      totp_secret_id INTEGER,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      last_login_at TEXT,
+      disabled_at TEXT
+    );
   `);
 
   addColumnIfMissing("employees", "email", "TEXT");
@@ -4217,6 +4241,242 @@ function loadPayrollPersonnelNumberMap() {
     map.set(row.employee_id, row.source_id);
   }
   return map;
+}
+
+// T-004a — Stempeluhr Backend (claude-chat, 2026-06-04).
+// Nutzt time_entries-Tabelle mit status='running'. Pausen werden über
+// stamp_active_breaks-Tabelle als laufende Pause verfolgt; bei break-end
+// werden die Pausen-Minuten in unpaid_break_minutes aufaddiert.
+function getActiveTimeEntry(employeeId) {
+  return db.prepare(`
+    SELECT * FROM time_entries
+    WHERE employee_id = ? AND status = 'running'
+    ORDER BY starts_at DESC LIMIT 1
+  `).get(employeeId);
+}
+
+function newTimeEntryId() {
+  return `te_${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
+}
+
+export function stampStart(employeeId, options = {}) {
+  if (!employeeId) throw new Error("employeeId ist Pflicht");
+  const emp = db.prepare(`SELECT id FROM employees WHERE id = ?`).get(employeeId);
+  if (!emp) throw new Error(`Mitarbeitender nicht gefunden: ${employeeId}`);
+  const active = getActiveTimeEntry(employeeId);
+  if (active) throw new Error(`Bereits gestempelt seit ${active.starts_at}`);
+  // Standard-WorkArea + Location aus erster shift_assignment heute oder Default
+  const today = new Date().toISOString().slice(0, 10);
+  const fallback = db.prepare(`
+    SELECT shifts.work_area_id, shifts.location_id
+    FROM shift_assignments
+    INNER JOIN shifts ON shifts.id = shift_assignments.shift_id
+    WHERE shift_assignments.employee_id = ?
+      AND date(shifts.starts_at) = ?
+    ORDER BY shifts.starts_at ASC LIMIT 1
+  `).get(employeeId, today);
+  const workAreaId = options.workAreaId || fallback?.work_area_id
+    || db.prepare(`SELECT id FROM work_areas ORDER BY id LIMIT 1`).get()?.id;
+  const locationId = options.locationId || fallback?.location_id
+    || db.prepare(`SELECT id FROM locations ORDER BY id LIMIT 1`).get()?.id;
+  if (!workAreaId || !locationId) {
+    throw new Error("Kein Standard-Bereich oder Standort konfiguriert");
+  }
+  const id = newTimeEntryId();
+  const startsAt = new Date().toISOString();
+  db.prepare(`
+    INSERT INTO time_entries (
+      id, employee_id, starts_at, ends_at, work_area_id, location_id,
+      status, entry_type, paid_break_minutes, unpaid_break_minutes, note
+    ) VALUES (?, ?, ?, ?, ?, ?, 'running', 'regular', 0, 0, ?)
+  `).run(id, employeeId, startsAt, startsAt, workAreaId, locationId, options.note ?? null);
+  recordAuditEvent({
+    entityType: "time_entry",
+    entityId: id,
+    actorType: options.actorType || "kiosk",
+    actorId: options.actorId || employeeId,
+    action: "stamp_start",
+    newValue: { startsAt, workAreaId, locationId }
+  });
+  return { ok: true, timeEntryId: id, startsAt };
+}
+
+export function stampEnd(employeeId, options = {}) {
+  const active = getActiveTimeEntry(employeeId);
+  if (!active) throw new Error("Keine laufende Stempel-Session");
+  // Falls noch eine Pause läuft, automatisch beenden.
+  const openBreak = db.prepare(`SELECT started_at FROM stamp_active_breaks WHERE time_entry_id = ?`).get(active.id);
+  let unpaidExtra = 0;
+  if (openBreak) {
+    unpaidExtra = Math.max(0, Math.floor((Date.now() - Date.parse(openBreak.started_at)) / 60000));
+    db.prepare(`DELETE FROM stamp_active_breaks WHERE time_entry_id = ?`).run(active.id);
+  }
+  const endsAt = new Date().toISOString();
+  const newUnpaid = Number(active.unpaid_break_minutes ?? 0) + unpaidExtra;
+  db.prepare(`
+    UPDATE time_entries
+    SET ends_at = ?, status = 'completed', unpaid_break_minutes = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(endsAt, newUnpaid, active.id);
+  recordAuditEvent({
+    entityType: "time_entry",
+    entityId: active.id,
+    actorType: options.actorType || "kiosk",
+    actorId: options.actorId || employeeId,
+    action: "stamp_end",
+    newValue: { endsAt, unpaidBreakMinutes: newUnpaid }
+  });
+  return { ok: true, timeEntryId: active.id, endsAt };
+}
+
+export function stampBreakStart(employeeId, options = {}) {
+  const active = getActiveTimeEntry(employeeId);
+  if (!active) throw new Error("Keine laufende Stempel-Session");
+  const existing = db.prepare(`SELECT 1 FROM stamp_active_breaks WHERE time_entry_id = ?`).get(active.id);
+  if (existing) throw new Error("Pause läuft bereits");
+  const startedAt = new Date().toISOString();
+  db.prepare(`INSERT INTO stamp_active_breaks (time_entry_id, started_at) VALUES (?, ?)`).run(active.id, startedAt);
+  recordAuditEvent({
+    entityType: "time_entry",
+    entityId: active.id,
+    actorType: options.actorType || "kiosk",
+    actorId: options.actorId || employeeId,
+    action: "stamp_break_start",
+    newValue: { startedAt }
+  });
+  return { ok: true, timeEntryId: active.id, breakStartedAt: startedAt };
+}
+
+export function stampBreakEnd(employeeId, options = {}) {
+  const active = getActiveTimeEntry(employeeId);
+  if (!active) throw new Error("Keine laufende Stempel-Session");
+  const openBreak = db.prepare(`SELECT started_at FROM stamp_active_breaks WHERE time_entry_id = ?`).get(active.id);
+  if (!openBreak) throw new Error("Keine laufende Pause");
+  const breakMinutes = Math.max(0, Math.floor((Date.now() - Date.parse(openBreak.started_at)) / 60000));
+  const newUnpaid = Number(active.unpaid_break_minutes ?? 0) + breakMinutes;
+  db.exec("BEGIN");
+  try {
+    db.prepare(`DELETE FROM stamp_active_breaks WHERE time_entry_id = ?`).run(active.id);
+    db.prepare(`UPDATE time_entries SET unpaid_break_minutes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).run(newUnpaid, active.id);
+    db.exec("COMMIT");
+  } catch (err) {
+    db.exec("ROLLBACK");
+    throw err;
+  }
+  recordAuditEvent({
+    entityType: "time_entry",
+    entityId: active.id,
+    actorType: options.actorType || "kiosk",
+    actorId: options.actorId || employeeId,
+    action: "stamp_break_end",
+    newValue: { breakMinutes, totalUnpaidBreakMinutes: newUnpaid }
+  });
+  return { ok: true, timeEntryId: active.id, breakMinutes, totalUnpaidBreakMinutes: newUnpaid };
+}
+
+export function getStampState(employeeId) {
+  const active = getActiveTimeEntry(employeeId);
+  if (!active) return { active: false };
+  const openBreak = db.prepare(`SELECT started_at FROM stamp_active_breaks WHERE time_entry_id = ?`).get(active.id);
+  return {
+    active: true,
+    timeEntryId: active.id,
+    startsAt: active.starts_at,
+    onBreak: !!openBreak,
+    breakStartedAt: openBreak?.started_at ?? null,
+    accruedUnpaidBreakMinutes: Number(active.unpaid_break_minutes ?? 0)
+  };
+}
+
+// T-007a — Freigabe-Aggregator Backend (claude-chat, 2026-06-04).
+export function listAllPendingApprovals() {
+  const corrections = listPendingCorrections().map((c) => ({
+    type: "correction",
+    id: c.id,
+    employeeId: c.employeeId,
+    createdAt: c.createdAt,
+    reason: c.reason,
+    payload: c
+  }));
+  const swapRequests = listOpenSwapRequests().map((s) => ({
+    type: "swap_request",
+    id: s.id,
+    employeeId: s.requesterEmployeeId,
+    createdAt: s.createdAt,
+    reason: s.reason,
+    payload: s
+  }));
+  const absenceRows = db.prepare(`
+    SELECT id, employee_id, absence_type, starts_on, ends_on, status, note, created_at
+    FROM absence_requests
+    WHERE status = 'open'
+    ORDER BY created_at ASC
+  `).all();
+  const absences = absenceRows.map((r) => ({
+    type: "absence",
+    id: r.id,
+    employeeId: r.employee_id,
+    createdAt: r.created_at,
+    reason: r.note ?? `${r.absence_type} ${r.starts_on}–${r.ends_on}`,
+    payload: {
+      id: r.id,
+      employeeId: r.employee_id,
+      absenceType: r.absence_type,
+      startsOn: r.starts_on,
+      endsOn: r.ends_on,
+      status: r.status,
+      note: r.note
+    }
+  }));
+  const all = [...corrections, ...swapRequests, ...absences].sort((a, b) =>
+    String(a.createdAt).localeCompare(String(b.createdAt))
+  );
+  return { total: all.length, items: all, breakdown: { corrections: corrections.length, swap_requests: swapRequests.length, absences: absences.length } };
+}
+
+// T-010a — Rollen-Admin Backend (claude-chat, 2026-06-04).
+const ALLOWED_ROLES = ["employee", "manager", "admin"];
+
+export function listAuthUsersWithRoles() {
+  const rows = db.prepare(`
+    SELECT id, email, employee_id, display_name, role, tenant_slug, last_login_at, disabled_at, created_at
+    FROM auth_users
+    ORDER BY created_at ASC
+  `).all();
+  return rows.map((r) => ({
+    id: r.id,
+    email: r.email,
+    employeeId: r.employee_id,
+    displayName: r.display_name,
+    role: r.role,
+    tenantSlug: r.tenant_slug,
+    lastLoginAt: r.last_login_at,
+    disabledAt: r.disabled_at,
+    createdAt: r.created_at
+  }));
+}
+
+export function updateAuthUserRole(authUserId, newRole, actorId, note) {
+  if (!ALLOWED_ROLES.includes(newRole)) {
+    throw new Error(`Rolle ungültig. Erlaubt: ${ALLOWED_ROLES.join(", ")}`);
+  }
+  const user = db.prepare(`SELECT id, role, email FROM auth_users WHERE id = ?`).get(authUserId);
+  if (!user) throw new Error(`Auth-User nicht gefunden: ${authUserId}`);
+  if (user.role === newRole) {
+    return { ok: true, unchanged: true, role: newRole };
+  }
+  db.prepare(`UPDATE auth_users SET role = ? WHERE id = ?`).run(newRole, authUserId);
+  recordAuditEvent({
+    entityType: "auth_user",
+    entityId: String(authUserId),
+    actorType: "admin",
+    actorId,
+    action: "role_changed",
+    reason: note,
+    oldValue: { role: user.role },
+    newValue: { role: newRole }
+  });
+  return { ok: true, unchanged: false, oldRole: user.role, newRole, email: user.email };
 }
 
 // T-003a — Schichttausch-Workflow Backend (claude-chat, 2026-06-04).

@@ -20,7 +20,10 @@ import {
   getBootstrap,
   getCorrection,
   getHealth,
+  getStampState,
   getSwapRequest,
+  listAllPendingApprovals,
+  listAuthUsersWithRoles,
   listOpenSwapRequests,
   listPendingCorrections,
   rejectCorrection,
@@ -32,7 +35,12 @@ import {
   runExternalSnapshotImport,
   deleteShift,
   setPayrollPersonnelNumber,
+  stampBreakEnd,
+  stampBreakStart,
+  stampEnd,
+  stampStart,
   updateAbsenceStatus,
+  updateAuthUserRole,
   updateEmployee,
   updateShift,
   updateTimeEntryBreaks,
@@ -177,6 +185,63 @@ const server = createServer(async (request, response) => {
     if (request.method === "PATCH" && breaksMatch) {
       const payload = await readJson(request);
       sendJson(response, 200, updateTimeEntryBreaks(decodeURIComponent(breaksMatch[1]), payload));
+      return;
+    }
+
+    // T-004a Stempeluhr.
+    const stampOpMatch = url.pathname.match(/^\/api\/stamp\/(start|end|break-start|break-end|state)$/);
+    if (stampOpMatch) {
+      const op = stampOpMatch[1];
+      if (request.method === "GET" && op === "state") {
+        const employeeId = url.searchParams.get("employeeId");
+        if (!employeeId) {
+          sendJson(response, 400, { ok: false, error: { code: "bad_request", message: "employeeId fehlt" } });
+          return;
+        }
+        sendJson(response, 200, { ok: true, ...getStampState(employeeId) });
+        return;
+      }
+      if (request.method === "POST") {
+        const payload = await readJson(request);
+        try {
+          let result;
+          if (op === "start") result = stampStart(payload?.employeeId, payload || {});
+          else if (op === "end") result = stampEnd(payload?.employeeId, payload || {});
+          else if (op === "break-start") result = stampBreakStart(payload?.employeeId, payload || {});
+          else if (op === "break-end") result = stampBreakEnd(payload?.employeeId, payload || {});
+          sendJson(response, 200, result);
+        } catch (err) {
+          sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+        }
+        return;
+      }
+    }
+
+    // T-007a Freigabe-Aggregator.
+    if (request.method === "GET" && url.pathname === "/api/approvals") {
+      sendJson(response, 200, { ok: true, ...listAllPendingApprovals() });
+      return;
+    }
+
+    // T-010a Rollen-Admin.
+    if (request.method === "GET" && url.pathname === "/api/admin/users") {
+      sendJson(response, 200, { ok: true, users: listAuthUsersWithRoles() });
+      return;
+    }
+    const roleMatch = url.pathname.match(/^\/api\/admin\/users\/([^/]+)\/role$/);
+    if (request.method === "PATCH" && roleMatch) {
+      const payload = await readJson(request);
+      try {
+        const result = updateAuthUserRole(
+          decodeURIComponent(roleMatch[1]),
+          payload?.role,
+          payload?.actorId,
+          payload?.note
+        );
+        sendJson(response, 200, { ok: true, ...result });
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+      }
       return;
     }
 
