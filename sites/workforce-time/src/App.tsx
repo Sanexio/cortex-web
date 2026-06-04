@@ -2491,6 +2491,54 @@ function WeekNavigator({
   );
 }
 
+type OperationalAlert = {
+  id: string;
+  count: number;
+  label: string;
+  detail: string;
+  tone: "rose" | "amber" | "teal";
+  icon: typeof AlertTriangle;
+  onClick: () => void;
+};
+
+function OperationalAlertsBanner({
+  alerts
+}: {
+  alerts: OperationalAlert[];
+}) {
+  const urgent = alerts.filter((alert) => alert.count > 0);
+  if (urgent.length === 0) {
+    return (
+      <section className="ops-alerts ops-alerts-empty" aria-label="Operativ-Alerts">
+        <Check size={17} />
+        <span>Keine offenen Operativ-Punkte. Alles im Lot.</span>
+      </section>
+    );
+  }
+  return (
+    <section className="ops-alerts" aria-label="Operativ-Alerts">
+      {urgent.map((alert) => {
+        const Icon = alert.icon;
+        return (
+          <button
+            key={alert.id}
+            type="button"
+            className={`ops-alert-pill tone-${alert.tone}`}
+            onClick={alert.onClick}
+          >
+            <Icon size={17} />
+            <span className="ops-alert-count">{alert.count}</span>
+            <span className="ops-alert-label">
+              <strong>{alert.label}</strong>
+              <small>{alert.detail}</small>
+            </span>
+          </button>
+        );
+      })}
+    </section>
+  );
+}
+
 function DashboardView({
   activeWeekStart,
   data,
@@ -2555,8 +2603,63 @@ function DashboardView({
     });
   };
 
+  const today = localTodayIso();
+  const openAbsencesAll = data.absences.filter((absence) => absence.status === "offen");
+  const openTimeRequestsAll = data.timeEntries.filter((entry) => entry.status === "aenderungsantrag");
+  const missingTimePast = coherence.issues.filter(
+    (issue) => issue.type === "missing_time" && issue.date <= today
+  );
+  const operationalAlerts: OperationalAlert[] = [
+    {
+      id: "missing-time",
+      count: missingTimePast.length,
+      label: "Fehlende Stempel",
+      detail: "Plan-Schichten ohne Arbeitszeit-Buchung bis heute",
+      tone: "rose",
+      icon: TimerReset,
+      onClick: () => setView("time")
+    },
+    {
+      id: "vacation-open",
+      count: openAbsencesAll.length,
+      label: "Urlaubsanträge offen",
+      detail: "warten auf Genehmigung",
+      tone: "amber",
+      icon: CalendarDays,
+      onClick: () => setView("absences")
+    },
+    {
+      id: "time-requests",
+      count: openTimeRequestsAll.length,
+      label: "Zeit-Änderungsanträge",
+      detail: "warten auf Freigabe",
+      tone: "amber",
+      icon: ClipboardCheck,
+      onClick: () => setView("time")
+    },
+    {
+      id: "open-shifts",
+      count: coherence.summary.openShiftSlots,
+      label: "Offene Schicht-Slots",
+      detail: "Plan-Slots ohne Person diese Woche",
+      tone: "amber",
+      icon: AlertTriangle,
+      onClick: () => setView("plan")
+    },
+    {
+      id: "break-warnings",
+      count: breakWarnings.length,
+      label: "Pausen-Warnungen",
+      detail: "Mindestpause unterschritten diese Woche",
+      tone: "rose",
+      icon: PauseCircle,
+      onClick: () => setView("time")
+    }
+  ];
+
   return (
     <div className="operations-layout">
+      <OperationalAlertsBanner alerts={operationalAlerts} />
       <section className="focus-header">
         <div>
           <span className="eyebrow">Planwoche {formatShortDate(weekStart)} - {formatShortDate(weekEnd)}</span>
