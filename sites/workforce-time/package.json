@@ -9,6 +9,7 @@
     "dev": "node server/dev.js",
     "dev:web": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
+    "test:auth": "node --test server/auth-smoke.test.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "extract-tenant-seed": "node tools/extract-tenant-seed.mjs"
   },

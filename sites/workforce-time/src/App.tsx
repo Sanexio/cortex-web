@@ -12,8 +12,12 @@ import {
   Database,
   Filter,
   Home,
+  KeyRound,
+  LogOut,
+  Mail,
   PauseCircle,
   Plus,
+  QrCode,
   RefreshCw,
   Search,
   Settings2,
@@ -155,6 +159,54 @@ type User = {
   authProvider: string;
   isActive: boolean;
   roles: string[];
+};
+
+type AuthUser = {
+  id: number;
+  email: string;
+  displayName: string;
+  employeeId: string | null;
+  role: "admin" | "employee" | string;
+  totpEnrolled: boolean;
+  totpVerified: boolean;
+  permissions: string[];
+};
+
+type AuthStatus = "checking" | "anonymous" | "magic_sent" | "token_pending" | "totp_enroll" | "authenticated" | "offline";
+
+type AuthEnvelope<T> = {
+  ok: boolean;
+  data?: T;
+  error?: {
+    code: string;
+    message: string;
+  };
+};
+
+type AuthMePayload = {
+  authenticated: boolean;
+  user: AuthUser | null;
+};
+
+type MagicLinkPayload = {
+  message: string;
+  delivery?: {
+    delivered?: boolean;
+    stdout?: boolean;
+    error?: string;
+  };
+};
+
+type MagicLinkVerifyPayload = {
+  user: AuthUser | null;
+  enroll_totp: boolean;
+};
+
+type TotpEnrollmentPayload = {
+  secret: string;
+  otpauth_uri: string;
+  qr_uri: string;
+  recovery_codes: string[];
 };
 
 type DashboardState = {
@@ -1500,6 +1552,15 @@ function App() {
   const [apiConnected, setApiConnected] = useState(false);
   const [apiMessage, setApiMessage] = useState("API wird geladen");
   const [busy, setBusy] = useState(false);
+  const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [authMessage, setAuthMessage] = useState("Session wird geprüft");
+  const [loginEmail, setLoginEmail] = useState("");
+  const [magicToken, setMagicToken] = useState(() => (
+    typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("token") ?? ""
+  ));
+  const [totpCode, setTotpCode] = useState("");
+  const [totpSetup, setTotpSetup] = useState<TotpEnrollmentPayload | null>(null);
   const visibleWeekStart = activeWeekStart ?? getPrototypeWeekStart(data);
 
   function navigateView(nextView: ViewKey) {
@@ -1516,6 +1577,7 @@ function App() {
   async function request<T>(url: string, options?: RequestInit): Promise<T> {
     const response = await fetch(url, {
       ...options,
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         ...(options?.headers ?? {})
@@ -1523,11 +1585,57 @@ function App() {
     });
 
     if (!response.ok) {
-      const payload = (await response.json().catch(() => ({}))) as { error?: string };
-      throw new Error(payload.error ?? "API-Fehler");
+      const payload = (await response.json().catch(() => ({}))) as {
+        error?: string | { code?: string; message?: string };
+      };
+      const message = typeof payload.error === "string"
+        ? payload.error
+        : payload.error?.message ?? "API-Fehler";
+      const error = new Error(message) as Error & { code?: string };
+      if (typeof payload.error === "object") error.code = payload.error?.code;
+      throw error;
     }
 
     return (await response.json()) as T;
+  }
+
+  async function authRequest<T>(url: string, options?: RequestInit): Promise<T> {
+    const response = await fetch(url, {
+      ...options,
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(options?.headers ?? {})
+      }
+    });
+    const payload = (await response.json().catch(() => ({}))) as AuthEnvelope<T>;
+
+    if (!response.ok || payload.ok === false) {
+      const error = new Error(payload.error?.message ?? "Auth-Fehler") as Error & { code?: string };
+      error.code = payload.error?.code;
+      throw error;
+    }
+
+    return (payload.data ?? {}) as T;
+  }
+
+  async function checkAuth() {
+    try {
+      const payload = await authRequest<AuthMePayload>("/api/auth/me");
+      if (payload.authenticated && payload.user?.totpVerified) {
+        setAuthUser(payload.user);
+        setAuthStatus("authenticated");
+        setAuthMessage("Angemeldet");
+        return;
+      }
+
+      setAuthUser(payload.user);
+      setAuthStatus(magicToken ? "token_pending" : "anonymous");
+      setAuthMessage(magicToken ? "Login-Link bereit" : "Login erforderlich");
+    } catch {
+      setAuthStatus("offline");
+      setAuthMessage("Auth-API offline");
+    }
   }
 
   async function refresh() {
@@ -1537,7 +1645,14 @@ function App() {
       setData(payload);
       setApiConnected(true);
       setApiMessage("SQLite-API verbunden");
-    } catch {
+    } catch (error) {
+      const authCode = (error as Error & { code?: string }).code;
+      if (authCode === "SESSION_REQUIRED" || authCode === "TOTP_REQUIRED") {
+        setApiConnected(true);
+        setApiMessage("Login erforderlich");
+        setAuthStatus((current) => (current === "checking" ? "anonymous" : current));
+        return;
+      }
       setWorkforceConfig(null);
       setData(fallbackData);
       setApiConnected(false);
@@ -1546,8 +1661,100 @@ function App() {
   }
 
   useEffect(() => {
+    checkAuth();
     refresh();
   }, []);
+
+  async function requestLoginLink(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      const payload = await authRequest<MagicLinkPayload>("/api/auth/magic-link", {
+        method: "POST",
+        body: JSON.stringify({ email: loginEmail })
+      });
+      setAuthStatus("magic_sent");
+      setAuthMessage(payload.delivery?.delivered ? "Login-Link verschickt" : "Login-Link lokal erzeugt");
+    } catch (error) {
+      setAuthMessage(error instanceof Error ? error.message : "Login-Link konnte nicht erzeugt werden");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function startTotpEnrollment() {
+    const setup = await authRequest<TotpEnrollmentPayload>("/api/auth/totp/enroll", {
+      method: "POST"
+    });
+    setTotpSetup(setup);
+  }
+
+  async function verifyLoginToken(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      const payload = await authRequest<MagicLinkVerifyPayload>("/api/auth/magic-link/verify", {
+        method: "POST",
+        body: JSON.stringify({ token: magicToken, totp: totpCode || undefined })
+      });
+      setAuthUser(payload.user);
+      setTotpCode("");
+
+      if (payload.enroll_totp) {
+        setAuthStatus("totp_enroll");
+        setAuthMessage("Zwei-Faktor-Setup bereit");
+        await startTotpEnrollment();
+        return;
+      }
+
+      if (payload.user?.totpVerified) {
+        setAuthStatus("authenticated");
+        setAuthMessage("Angemeldet");
+        await refresh();
+        if (typeof window !== "undefined") window.history.replaceState(null, "", window.location.pathname);
+      }
+    } catch (error) {
+      const code = (error as Error & { code?: string }).code;
+      setAuthStatus(code === "TOTP_REQUIRED" ? "token_pending" : "anonymous");
+      setAuthMessage(error instanceof Error ? error.message : "Login-Link konnte nicht geprüft werden");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function confirmTotp(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      const payload = await authRequest<{ user: AuthUser }>("/api/auth/totp/confirm", {
+        method: "POST",
+        body: JSON.stringify({ code: totpCode })
+      });
+      setAuthUser(payload.user);
+      setAuthStatus("authenticated");
+      setAuthMessage("Angemeldet");
+      setTotpCode("");
+      setTotpSetup(null);
+      await refresh();
+      if (typeof window !== "undefined") window.history.replaceState(null, "", window.location.pathname);
+    } catch (error) {
+      setAuthMessage(error instanceof Error ? error.message : "Zwei-Faktor-Code konnte nicht bestätigt werden");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function logout() {
+    setBusy(true);
+    try {
+      await authRequest<{ logged_out: boolean }>("/api/auth/logout", { method: "POST" });
+    } finally {
+      setAuthUser(null);
+      setAuthStatus("anonymous");
+      setAuthMessage("Abgemeldet");
+      setBusy(false);
+    }
+  }
 
   async function mutate<T>(action: () => Promise<T>, after?: (result: T) => void) {
     setBusy(true);
@@ -1750,6 +1957,33 @@ function App() {
     )
   } satisfies Record<ViewKey, ReactNode>;
 
+  if (authStatus !== "authenticated" && authStatus !== "offline") {
+    return (
+      <AuthShell
+        status={authStatus}
+        email={loginEmail}
+        token={magicToken}
+        totpCode={totpCode}
+        setup={totpSetup}
+        message={authMessage}
+        busy={busy}
+        onEmailChange={setLoginEmail}
+        onTokenChange={setMagicToken}
+        onTotpChange={setTotpCode}
+        onRequestLink={requestLoginLink}
+        onVerifyToken={verifyLoginToken}
+        onConfirmTotp={confirmTotp}
+        onRestart={() => {
+          setAuthStatus("anonymous");
+          setMagicToken("");
+          setTotpCode("");
+          setTotpSetup(null);
+          setAuthMessage("Login erforderlich");
+        }}
+      />
+    );
+  }
+
   const meta = viewMeta[view];
 
   return (
@@ -1767,6 +2001,12 @@ function App() {
             <h1>{meta.title}</h1>
           </div>
           <div className="topbar-actions">
+            {authUser ? <UserPill user={authUser} /> : null}
+            {authUser ? (
+              <button className="icon-button" type="button" aria-label="Abmelden" onClick={logout} disabled={busy}>
+                <LogOut size={17} />
+              </button>
+            ) : null}
             <ConnectionPill connected={apiConnected} message={apiMessage} />
             {headerAction[view]}
           </div>
@@ -1937,6 +2177,178 @@ function App() {
         <CalculationDetailDialog details={calculation} onClose={() => setCalculation(null)} />
       ) : null}
     </div>
+  );
+}
+
+function AuthShell({
+  status,
+  email,
+  token,
+  totpCode,
+  setup,
+  message,
+  busy,
+  onEmailChange,
+  onTokenChange,
+  onTotpChange,
+  onRequestLink,
+  onVerifyToken,
+  onConfirmTotp,
+  onRestart
+}: {
+  status: AuthStatus;
+  email: string;
+  token: string;
+  totpCode: string;
+  setup: TotpEnrollmentPayload | null;
+  message: string;
+  busy: boolean;
+  onEmailChange: (value: string) => void;
+  onTokenChange: (value: string) => void;
+  onTotpChange: (value: string) => void;
+  onRequestLink: (event: FormEvent<HTMLFormElement>) => void;
+  onVerifyToken: (event: FormEvent<HTMLFormElement>) => void;
+  onConfirmTotp: (event: FormEvent<HTMLFormElement>) => void;
+  onRestart: () => void;
+}) {
+  const showTokenForm = status === "magic_sent" || status === "token_pending";
+  const showTotpSetup = status === "totp_enroll";
+
+  return (
+    <main className="auth-shell">
+      <section className="auth-panel" aria-live="polite">
+        <div className="auth-heading">
+          <span className="auth-mark">
+            <ShieldCheck size={24} />
+          </span>
+          <div>
+            <p className="eyebrow">Workforce-Time</p>
+            <h1>Mitarbeiter-Login</h1>
+          </div>
+        </div>
+
+        <span className={message.includes("Fehler") || message.includes("ung") ? "auth-message warn" : "auth-message"}>
+          <KeyRound size={16} />
+          {status === "checking" ? "Session wird geprüft" : message}
+        </span>
+
+        {status === "checking" ? (
+          <div className="auth-progress">
+            <RefreshCw size={18} />
+            <span>Prüfung läuft</span>
+          </div>
+        ) : null}
+
+        {status === "anonymous" ? (
+          <form className="auth-form" onSubmit={onRequestLink}>
+            <label className="field">
+              <span>E-Mail</span>
+              <input
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(event) => onEmailChange(event.target.value)}
+                placeholder="name@beispiel.de"
+                required
+              />
+            </label>
+            <button className="primary-button" type="submit" disabled={busy}>
+              <Mail size={17} />
+              Login-Link
+            </button>
+          </form>
+        ) : null}
+
+        {showTokenForm ? (
+          <form className="auth-form" onSubmit={onVerifyToken}>
+            <label className="field">
+              <span>Magic-Link-Token</span>
+              <input
+                type="text"
+                autoComplete="one-time-code"
+                value={token}
+                onChange={(event) => onTokenChange(event.target.value)}
+                placeholder="Token"
+                required
+              />
+            </label>
+            <label className="field">
+              <span>TOTP-Code</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                value={totpCode}
+                onChange={(event) => onTotpChange(event.target.value)}
+                placeholder="000000"
+              />
+            </label>
+            <div className="split-actions">
+              <button className="primary-button" type="submit" disabled={busy}>
+                <Check size={17} />
+                Einlösen
+              </button>
+              <button className="secondary-button" type="button" onClick={onRestart} disabled={busy}>
+                Zurück
+              </button>
+            </div>
+          </form>
+        ) : null}
+
+        {showTotpSetup ? (
+          <div className="auth-form">
+            <div className="totp-box">
+              <QrCode size={20} />
+              <label className="field">
+                <span>TOTP-Secret</span>
+                <input type="text" value={setup?.secret ?? ""} readOnly />
+              </label>
+              <label className="field">
+                <span>otpauth URI</span>
+                <input type="text" value={setup?.otpauth_uri ?? ""} readOnly />
+              </label>
+            </div>
+            {setup?.recovery_codes.length ? (
+              <div className="recovery-grid">
+                {setup.recovery_codes.map((code) => (
+                  <code key={code}>{code}</code>
+                ))}
+              </div>
+            ) : null}
+            <form className="auth-form compact" onSubmit={onConfirmTotp}>
+              <label className="field">
+                <span>TOTP-Code</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  value={totpCode}
+                  onChange={(event) => onTotpChange(event.target.value)}
+                  placeholder="000000"
+                  required
+                />
+              </label>
+              <button className="primary-button" type="submit" disabled={busy || !setup}>
+                <ShieldCheck size={17} />
+                Bestätigen
+              </button>
+            </form>
+          </div>
+        ) : null}
+      </section>
+    </main>
+  );
+}
+
+function UserPill({ user }: { user: AuthUser }) {
+  return (
+    <span className="user-pill">
+      <ShieldCheck size={15} />
+      <span>
+        <strong>{user.displayName || user.email}</strong>
+        <small>{user.role}</small>
+      </span>
+    </span>
   );
 }
 

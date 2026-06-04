@@ -439,6 +439,157 @@ h2 {
   color: var(--teal);
 }
 
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--bg);
+}
+
+.auth-panel {
+  display: grid;
+  gap: 18px;
+  width: min(100%, 520px);
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.auth-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.auth-mark {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: var(--text);
+  color: #ffffff;
+}
+
+.auth-message,
+.auth-progress,
+.user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid #a7ddd4;
+  border-radius: var(--radius-pill);
+  background: var(--teal-soft);
+  color: var(--teal);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.auth-message.warn {
+  border-color: #f3d08a;
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.auth-progress {
+  border-color: var(--line);
+  background: var(--surface-muted);
+  color: var(--muted);
+}
+
+.auth-progress svg {
+  animation: spin 900ms linear infinite;
+}
+
+.auth-form {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.auth-form.compact {
+  padding-top: 2px;
+}
+
+.totp-box {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface-muted);
+}
+
+.totp-box > svg {
+  color: var(--blue);
+}
+
+.recovery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.recovery-grid code {
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-muted);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.user-pill {
+  flex: 0 1 220px;
+  max-width: 260px;
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.user-pill > span {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.user-pill strong,
+.user-pill small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-pill small {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+  transform: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .dashboard-layout,
 .operations-layout,
 .import-layout,
