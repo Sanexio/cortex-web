@@ -2117,6 +2117,7 @@ function App() {
             activeWeekStart={visibleWeekStart}
             data={data}
             updateStatus={updateAbsenceStatus}
+            request={request}
           />
         ) : null}
         {view === "employees" ? (
@@ -4362,15 +4363,55 @@ function EntryDetails({
   );
 }
 
+type AbsenceQuotaRow = {
+  employeeId: string;
+  employeeName: string;
+  year: number;
+  allocated: number;
+  used: number;
+  pending: number;
+  remaining: number;
+};
+
 function AbsenceView({
   activeWeekStart,
   data,
-  updateStatus
+  updateStatus,
+  request
 }: {
   activeWeekStart: string;
   data: BootstrapPayload;
   updateStatus: (id: string, status: AbsenceStatus) => void;
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
 }) {
+  // T-006b Resturlaub-Kontingent: aus /api/absences/quota?year=YYYY
+  const currentYear = new Date().getFullYear();
+  const [quotaYear, setQuotaYear] = useState(currentYear);
+  const [quotaRows, setQuotaRows] = useState<AbsenceQuotaRow[]>([]);
+  const [quotaError, setQuotaError] = useState<string | null>(null);
+  const [quotaLoading, setQuotaLoading] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    setQuotaLoading(true);
+    setQuotaError(null);
+    request<{ ok: boolean; quotas: AbsenceQuotaRow[] }>(`/api/absences/quota?year=${quotaYear}`)
+      .then((res) => {
+        if (cancelled) return;
+        setQuotaRows(Array.isArray(res?.quotas) ? res.quotas : []);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setQuotaError(err instanceof Error ? err.message : "Quota-Abruf fehlgeschlagen");
+        setQuotaRows([]);
+      })
+      .finally(() => {
+        if (!cancelled) setQuotaLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [quotaYear, request]);
+
   const [calendarMonth, setCalendarMonth] = useState(startOfMonth(activeWeekStart));
   const [selectedDay, setSelectedDay] = useState(activeWeekStart);
   const monthStart = calendarMonth;
@@ -4413,6 +4454,55 @@ function AbsenceView({
 
   return (
     <div className="absence-layout">
+      <section className="wide-panel absence-quota-panel">
+        <div className="section-heading">
+          <div>
+            <h2>Resturlaub-Kontingent</h2>
+            <p className="section-eyebrow">
+              {quotaLoading ? "Lädt …" : quotaError ? `Fehler: ${quotaError}` : `${quotaRows.length} Mitarbeitende · Jahr ${quotaYear}`}
+            </p>
+          </div>
+          <div className="quota-year-switch">
+            <button type="button" onClick={() => setQuotaYear((y) => y - 1)} aria-label="Vorheriges Jahr">‹</button>
+            <span>{quotaYear}</span>
+            <button type="button" onClick={() => setQuotaYear((y) => y + 1)} aria-label="Folgejahr">›</button>
+          </div>
+        </div>
+        {quotaError ? null : (
+          <div className="quota-table-wrap" style={{ overflowX: "auto" }}>
+            <table className="quota-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.92em" }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>Mitarbeitender</th>
+                  <th style={{ textAlign: "right", padding: "6px 8px" }}>Jahres-Soll</th>
+                  <th style={{ textAlign: "right", padding: "6px 8px" }}>Verbraucht</th>
+                  <th style={{ textAlign: "right", padding: "6px 8px" }}>Offen</th>
+                  <th style={{ textAlign: "right", padding: "6px 8px" }}>Rest</th>
+                </tr>
+              </thead>
+              <tbody>
+                {quotaRows.map((q) => (
+                  <tr key={q.employeeId} style={{ borderTop: "1px solid var(--color-line, #e5e7eb)" }}>
+                    <td style={{ padding: "6px 8px" }}>{q.employeeName}</td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}>{q.allocated} d</td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}>{q.used} d</td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}>{q.pending} d</td>
+                    <td style={{
+                      padding: "6px 8px",
+                      textAlign: "right",
+                      fontWeight: 600,
+                      color: q.remaining <= 0 ? "var(--color-danger, #b91c1c)" : q.remaining < 5 ? "var(--color-warning, #b45309)" : "inherit"
+                    }}>{q.remaining} d</td>
+                  </tr>
+                ))}
+                {quotaRows.length === 0 && !quotaLoading ? (
+                  <tr><td colSpan={5} style={{ padding: "12px 8px", textAlign: "center", color: "var(--color-muted, #6b7280)" }}>Keine Daten für {quotaYear}</td></tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
       <section className="wide-panel absence-calendar-panel">
         <div className="section-heading">
           <div>
