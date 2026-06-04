@@ -713,11 +713,29 @@ function migrate() {
       created_at TEXT NOT NULL
     );
 
+    -- T-005a Korrektur-Workflow: Mitarbeiter beantragen Time-Entry-Korrekturen,
+    -- Admin genehmigt/lehnt ab (4-Augen).
+    CREATE TABLE IF NOT EXISTS time_entry_corrections (
+      id TEXT PRIMARY KEY,
+      time_entry_id TEXT NOT NULL REFERENCES time_entries(id) ON DELETE CASCADE,
+      employee_id TEXT NOT NULL REFERENCES employees(id),
+      requested_changes_json TEXT NOT NULL,
+      reason TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'open',
+      reviewer_id TEXT REFERENCES employees(id),
+      reviewed_at TEXT,
+      review_note TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE INDEX IF NOT EXISTS idx_time_entries_starts_at ON time_entries(starts_at);
     CREATE INDEX IF NOT EXISTS idx_time_entries_employee ON time_entries(employee_id);
     CREATE INDEX IF NOT EXISTS idx_audit_entity ON audit_events(entity_type, entity_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_source_records_batch ON source_records(import_batch_id);
     CREATE INDEX IF NOT EXISTS idx_sync_conflicts_status ON sync_conflicts(status);
+    CREATE INDEX IF NOT EXISTS idx_corrections_status ON time_entry_corrections(status, created_at);
+    CREATE INDEX IF NOT EXISTS idx_corrections_employee ON time_entry_corrections(employee_id);
   `);
 
   addColumnIfMissing("employees", "email", "TEXT");
@@ -4180,6 +4198,221 @@ function loadPayrollPersonnelNumberMap() {
     map.set(row.employee_id, row.source_id);
   }
   return map;
+}
+
+// T-002 — Shift-Konflikterkennung (claude-chat, 2026-06-04).
+// Erkennt Overlap und Absence-Conflicts für eine geplante oder existierende
+// Schicht. Wird vor jedem Create/Update aufgerufen oder als Preview-Endpoint
+// per /api/shifts/check-conflicts.
+//
+// Input: { id?, startsAt, endsAt, employeeIds: string[] }
+// Output: { conflicts: [{ employeeId, type, detail }] }
+export function detectShiftConflicts(payload) {
+  const startsAt = String(payload?.startsAt || "").trim();
+  const endsAt = String(payload?.endsAt || "").trim();
+  const employeeIds = Array.isArray(payload?.employeeIds) ? payload.employeeIds : [];
+  const excludeShiftId = payload?.id || null;
+  if (!startsAt || !endsAt) {
+    throw new Error("startsAt und endsAt sind Pflicht");
+  }
+  if (Date.parse(startsAt) >= Date.parse(endsAt)) {
+    return {
+      conflicts: [{ employeeId: null, type: "invalid_range", detail: "endsAt muss nach startsAt liegen" }]
+    };
+  }
+  const conflicts = [];
+  for (const employeeId of employeeIds) {
+    // Overlap mit anderer Schicht
+    const overlapRows = db.prepare(`
+      SELECT shifts.id AS shift_id, shifts.starts_at, shifts.ends_at
+      FROM shift_assignments
+      INNER JOIN shifts ON shifts.id = shift_assignments.shift_id
+      WHERE shift_assignments.employee_id = @employeeId
+        AND (@excludeShiftId IS NULL OR shifts.id <> @excludeShiftId)
+        AND shifts.starts_at < @endsAt
+        AND shifts.ends_at > @startsAt
+    `).all({ employeeId, excludeShiftId, startsAt, endsAt });
+    for (const row of overlapRows) {
+      conflicts.push({
+        employeeId,
+        type: "shift_overlap",
+        detail: `bereits eingeplant in Schicht ${row.shift_id} (${row.starts_at}–${row.ends_at})`,
+        conflictingShiftId: row.shift_id
+      });
+    }
+    // Absence-Conflict: vacation oder sick, approved, überlappt
+    const absenceRows = db.prepare(`
+      SELECT id, absence_type, starts_on, ends_on
+      FROM absence_requests
+      WHERE employee_id = @employeeId
+        AND status = 'approved'
+        AND starts_on <= date(@endsAt)
+        AND ends_on >= date(@startsAt)
+    `).all({ employeeId, startsAt, endsAt });
+    for (const row of absenceRows) {
+      conflicts.push({
+        employeeId,
+        type: "absence_conflict",
+        detail: `${row.absence_type} ${row.starts_on}–${row.ends_on} genehmigt`,
+        conflictingAbsenceId: row.id
+      });
+    }
+  }
+  return { conflicts };
+}
+
+// T-005a — Time-Entry-Korrektur-Workflow Backend (claude-chat, 2026-06-04).
+// Mitarbeiter beantragen Korrekturen an einer Time-Entry; Admin entscheidet.
+function newCorrectionId() {
+  return `corr_${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
+}
+
+function recordAuditEvent({ entityType, entityId, actorType, actorId, action, reason, oldValue, newValue }) {
+  db.prepare(`
+    INSERT INTO audit_events (
+      id, entity_type, entity_id, actor_type, actor_id, action, reason, old_value_json, new_value_json, created_at
+    ) VALUES (
+      @id, @entityType, @entityId, @actorType, @actorId, @action, @reason, @oldValue, @newValue, @createdAt
+    )
+  `).run({
+    id: `audit_${Date.now()}_${Math.floor(Math.random() * 1e6)}`,
+    entityType,
+    entityId,
+    actorType: actorType || "system",
+    actorId: actorId ?? null,
+    action,
+    reason: reason ?? null,
+    oldValue: oldValue == null ? null : JSON.stringify(oldValue),
+    newValue: newValue == null ? null : JSON.stringify(newValue),
+    createdAt: new Date().toISOString()
+  });
+}
+
+export function requestTimeEntryCorrection(timeEntryId, payload) {
+  const entry = db.prepare(`SELECT id, employee_id FROM time_entries WHERE id = ?`).get(timeEntryId);
+  if (!entry) throw new Error(`Time-Entry nicht gefunden: ${timeEntryId}`);
+  const requestedChanges = payload?.requestedChanges;
+  const reason = String(payload?.reason || "").trim();
+  if (!requestedChanges || typeof requestedChanges !== "object") {
+    throw new Error("requestedChanges muss ein Objekt sein");
+  }
+  if (!reason) {
+    throw new Error("reason ist Pflicht");
+  }
+  const id = newCorrectionId();
+  db.prepare(`
+    INSERT INTO time_entry_corrections (
+      id, time_entry_id, employee_id, requested_changes_json, reason, status
+    ) VALUES (?, ?, ?, ?, ?, 'open')
+  `).run(id, timeEntryId, entry.employee_id, JSON.stringify(requestedChanges), reason);
+  recordAuditEvent({
+    entityType: "time_entry_correction",
+    entityId: id,
+    actorType: "employee",
+    actorId: entry.employee_id,
+    action: "requested",
+    reason,
+    newValue: { timeEntryId, requestedChanges }
+  });
+  return getCorrection(id);
+}
+
+export function getCorrection(id) {
+  const row = db.prepare(`
+    SELECT id, time_entry_id, employee_id, requested_changes_json, reason, status,
+           reviewer_id, reviewed_at, review_note, created_at, updated_at
+    FROM time_entry_corrections WHERE id = ?
+  `).get(id);
+  if (!row) return null;
+  return {
+    id: row.id,
+    timeEntryId: row.time_entry_id,
+    employeeId: row.employee_id,
+    requestedChanges: JSON.parse(row.requested_changes_json),
+    reason: row.reason,
+    status: row.status,
+    reviewerId: row.reviewer_id,
+    reviewedAt: row.reviewed_at,
+    reviewNote: row.review_note,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  };
+}
+
+export function listPendingCorrections() {
+  const rows = db.prepare(`
+    SELECT id FROM time_entry_corrections WHERE status = 'open' ORDER BY created_at ASC
+  `).all();
+  return rows.map((r) => getCorrection(r.id));
+}
+
+export function approveCorrection(id, reviewerId, note) {
+  const corr = getCorrection(id);
+  if (!corr) throw new Error(`Korrektur nicht gefunden: ${id}`);
+  if (corr.status !== "open") throw new Error(`Korrektur ist nicht offen: ${corr.status}`);
+  if (corr.employeeId === reviewerId) {
+    throw new Error("4-Augen-Prinzip verletzt: Reviewer darf nicht der Antragsteller sein");
+  }
+  const reviewedAt = new Date().toISOString();
+  db.prepare(`
+    UPDATE time_entry_corrections
+    SET status = 'approved', reviewer_id = ?, reviewed_at = ?, review_note = ?, updated_at = ?
+    WHERE id = ?
+  `).run(reviewerId, reviewedAt, note ?? null, reviewedAt, id);
+  // Apply changes to time_entry (whitelist der erlaubten Felder)
+  const oldEntry = db.prepare(`SELECT * FROM time_entries WHERE id = ?`).get(corr.timeEntryId);
+  const changes = corr.requestedChanges;
+  const allowed = ["startsAt", "endsAt", "paidBreakMinutes", "unpaidBreakMinutes", "note"];
+  const setClauses = [];
+  const params = { id: corr.timeEntryId };
+  for (const k of Object.keys(changes)) {
+    if (!allowed.includes(k)) continue;
+    const dbCol = k === "startsAt" ? "starts_at"
+      : k === "endsAt" ? "ends_at"
+      : k === "paidBreakMinutes" ? "paid_break_minutes"
+      : k === "unpaidBreakMinutes" ? "unpaid_break_minutes"
+      : "note";
+    setClauses.push(`${dbCol} = @${k}`);
+    params[k] = changes[k];
+  }
+  if (setClauses.length > 0) {
+    db.prepare(`UPDATE time_entries SET ${setClauses.join(", ")}, updated_at = CURRENT_TIMESTAMP WHERE id = @id`).run(params);
+  }
+  recordAuditEvent({
+    entityType: "time_entry_correction",
+    entityId: id,
+    actorType: "admin",
+    actorId: reviewerId,
+    action: "approved",
+    reason: note,
+    oldValue: oldEntry,
+    newValue: changes
+  });
+  return getCorrection(id);
+}
+
+export function rejectCorrection(id, reviewerId, note) {
+  const corr = getCorrection(id);
+  if (!corr) throw new Error(`Korrektur nicht gefunden: ${id}`);
+  if (corr.status !== "open") throw new Error(`Korrektur ist nicht offen: ${corr.status}`);
+  if (corr.employeeId === reviewerId) {
+    throw new Error("4-Augen-Prinzip verletzt: Reviewer darf nicht der Antragsteller sein");
+  }
+  const reviewedAt = new Date().toISOString();
+  db.prepare(`
+    UPDATE time_entry_corrections
+    SET status = 'rejected', reviewer_id = ?, reviewed_at = ?, review_note = ?, updated_at = ?
+    WHERE id = ?
+  `).run(reviewerId, reviewedAt, note ?? null, reviewedAt, id);
+  recordAuditEvent({
+    entityType: "time_entry_correction",
+    entityId: id,
+    actorType: "admin",
+    actorId: reviewerId,
+    action: "rejected",
+    reason: note
+  });
+  return getCorrection(id);
 }
 
 // T-006 — Urlaubsrest-Kontingent (claude-chat, 2026-06-04).

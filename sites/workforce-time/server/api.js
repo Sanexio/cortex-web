@@ -1,5 +1,6 @@
 import { createServer } from "node:http";
 import {
+  approveCorrection,
   buildPayrollExport,
   calculateAbsenceQuota,
   calculateAbsenceQuotasForAll,
@@ -9,10 +10,15 @@ import {
   createTimeEntry,
   databasePath,
   deleteEmployee,
+  detectShiftConflicts,
   getBootstrap,
+  getCorrection,
   getHealth,
+  listPendingCorrections,
+  rejectCorrection,
   renderPayrollExportCsv,
   renderPayrollExportDatevLodas,
+  requestTimeEntryCorrection,
   runDemoImport,
   runExternalSnapshotImport,
   deleteShift,
@@ -162,6 +168,69 @@ const server = createServer(async (request, response) => {
     if (request.method === "PATCH" && breaksMatch) {
       const payload = await readJson(request);
       sendJson(response, 200, updateTimeEntryBreaks(decodeURIComponent(breaksMatch[1]), payload));
+      return;
+    }
+
+    // T-002 Shift-Konflikt-Preview.
+    if (request.method === "POST" && url.pathname === "/api/shifts/check-conflicts") {
+      const payload = await readJson(request);
+      try {
+        sendJson(response, 200, { ok: true, ...detectShiftConflicts(payload) });
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+      }
+      return;
+    }
+
+    // T-005a Time-Entry-Korrektur-Workflow.
+    const correctionRequestMatch = url.pathname.match(/^\/api\/time-entries\/([^/]+)\/corrections$/);
+    if (request.method === "POST" && correctionRequestMatch) {
+      const payload = await readJson(request);
+      try {
+        const result = requestTimeEntryCorrection(decodeURIComponent(correctionRequestMatch[1]), payload);
+        sendJson(response, 201, { ok: true, correction: result });
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+      }
+      return;
+    }
+    if (request.method === "GET" && url.pathname === "/api/corrections") {
+      const status = (url.searchParams.get("status") || "open").toLowerCase();
+      if (status === "open") {
+        sendJson(response, 200, { ok: true, corrections: listPendingCorrections() });
+      } else {
+        sendJson(response, 400, { ok: false, error: { code: "unsupported_status", message: `nur 'open' aktuell verfügbar, war: ${status}` } });
+      }
+      return;
+    }
+    const correctionApproveMatch = url.pathname.match(/^\/api\/corrections\/([^/]+)\/approve$/);
+    if (request.method === "PATCH" && correctionApproveMatch) {
+      const payload = await readJson(request);
+      try {
+        const result = approveCorrection(
+          decodeURIComponent(correctionApproveMatch[1]),
+          payload?.reviewerId,
+          payload?.note
+        );
+        sendJson(response, 200, { ok: true, correction: result });
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+      }
+      return;
+    }
+    const correctionRejectMatch = url.pathname.match(/^\/api\/corrections\/([^/]+)\/reject$/);
+    if (request.method === "PATCH" && correctionRejectMatch) {
+      const payload = await readJson(request);
+      try {
+        const result = rejectCorrection(
+          decodeURIComponent(correctionRejectMatch[1]),
+          payload?.reviewerId,
+          payload?.note
+        );
+        sendJson(response, 200, { ok: true, correction: result });
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
+      }
       return;
     }
 
