@@ -23,6 +23,10 @@ const domStructure = args.includes("--dom-structure");
 // and whether a scroll container exists. Never inner data values.
 const deepIdx = args.indexOf("--deep");
 const deepPath = deepIdx >= 0 ? args[deepIdx + 1] : null;
+// --picker: open /work-hours, click "Zeitraum wählen", dump the date
+// picker popover STRUCTURE (buttons, nav controls, inputs, aria-labels)
+// so the interactive paging in ordio-delta can drive it. No data values.
+const pickerProbe = args.includes("--picker");
 
 const baseUrl = process.env.ORDIO_BASE_URL;
 if (!baseUrl) {
@@ -62,6 +66,35 @@ try {
     await page.getByRole("button", { name: /^(anmelden|login|sign in)$/i }).first().click();
     await page.waitForLoadState("networkidle", { timeout: 60000 }).catch(() => {});
     await page.waitForTimeout(4000);
+  }
+
+  if (pickerProbe) {
+    await loginPassword();
+    await page.goto(new URL("/work-hours", baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
+    await page.waitForTimeout(3000);
+    const before = await page.evaluate(() => location.href);
+    const btn = page.getByRole("button", { name: /zeitraum.*w[äa]hlen|zeitraum/i });
+    const opened = await btn.count();
+    if (opened) { await btn.first().click().catch(() => {}); await page.waitForTimeout(1500); }
+    const dump = await page.evaluate(() => {
+      const clean = (v) => String(v ?? "").replace(/\s+/g, " ").trim();
+      // Likely popover: a dialog/listbox/grid that appeared. Capture its
+      // interactive controls and labels (NOT data values).
+      const scope = document.querySelector("[role=dialog], [role=listbox], [data-radix-popper-content-wrapper], .popover, [role=menu]") || document.body;
+      return {
+        urlBeforeClick: location.href,
+        pickerOpened: scope !== document.body,
+        buttons: [...scope.querySelectorAll("button, [role=button], [role=menuitem], [role=option]")]
+          .map((b) => clean(b.getAttribute("aria-label") || b.innerText)).filter(Boolean).slice(0, 30),
+        inputs: [...scope.querySelectorAll("input")].map((i) => ({ type: i.type, placeholder: i.placeholder, ariaLabel: i.getAttribute("aria-label") })).slice(0, 10),
+        navHints: [...scope.querySelectorAll("[aria-label]")].map((e) => clean(e.getAttribute("aria-label"))).filter((l) => /woche|week|monat|month|vor|zurück|next|prev|kalender|tag|day|von|bis/i.test(l)).slice(0, 20)
+      };
+    });
+    console.log("--- PICKER (Zeitraum wählen, Struktur) ---");
+    console.log(JSON.stringify(dump, null, 2));
+    await browser.close();
+    process.exit(0);
   }
 
   if (deepPath) {
