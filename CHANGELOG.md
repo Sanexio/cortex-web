@@ -4,6 +4,27 @@ Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](htt
 
 ## Unreleased
 
+### Workforce-Time OSS-Isolation nach adversarialer Review (Stufe 4, 2026-06-05)
+
+- **C6 — echte Praxis-Domain entfernt**: die produktive Subdomain war in
+  5 getrackten Dateien der OSS-App hartcodiert
+  (`deploy/proxy/arbeitszeiten.conf` + `.nginx.conf`,
+  `deploy/systemd/workforce-time.service`, `docs/openapi.yaml`,
+  `tools/deploy-to-subdomain.sh`). Durch neutralen Platzhalter
+  `arbeitszeiten.example.com` ersetzt; die echte Domain kommt zur
+  Deploy-Zeit aus Env/Tenant-Config (`ARBEITSZEITEN_HOST`,
+  `WORKFORCE_PUBLIC_BASE_URL`, certbot-Args).
+- **H12 — Leak-Lint deckt die App ab** (`tools/lint-no-tenant-leaks.sh`):
+  `sites/` war komplett ausgenommen, wodurch die OSS-App ungeprueft blieb
+  („0 Treffer" war fuer sie wertlos). `sites/workforce-time` jetzt explizit
+  in FRAMEWORK_PATHS (restliches `sites/` = Tenant-Hoheit bleibt
+  ausgenommen), `dist/`-Build-Artefakte gefiltert. Verifiziert: Lint wird
+  rot bei eingebautem Leak, gruen nach Bereinigung.
+
+> Hinweis: Git-Historie und repo-uebergreifende Meta-Dateien (CLAUDE.md,
+> PROJECT.md u.a.) nennen die Referenz-Praxis weiterhin — separate
+> Entscheidung (siehe Debrief), kein versehentliches Code-Leck.
+
 ### Workforce-Time Ops/Deployment-Haertung nach adversarialer Review (Stufe 3, 2026-06-05)
 
 `sites/workforce-time/`:

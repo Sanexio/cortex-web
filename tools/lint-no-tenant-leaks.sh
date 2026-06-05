@@ -27,6 +27,10 @@ STRICT=0
 [ "${1:-}" = "--strict" ] && STRICT=1
 
 # Pfade, die Framework sein SOLLTEN (keine Tenant-Daten)
+# Hinweis: sites/ ist generell Tenant-Hoheit (praxis-webseite, juvantis-webseite)
+# und unten ausgenommen — ABER sites/workforce-time/ ist eine generische
+# OSS-Framework-App und MUSS tenant-neutral sein (H12 der Pre-Deploy-Review
+# 2026-06-05), deshalb hier explizit mitgescannt.
 FRAMEWORK_PATHS=(
     "adapters"
     "tools"
@@ -35,6 +39,7 @@ FRAMEWORK_PATHS=(
     "specs"
     "_integration-slots"
     "trunk/schema"
+    "sites/workforce-time"
 )
 
 # Pfade, die Tenant sein DÜRFEN (hier wird nicht gemeckert)
@@ -102,6 +107,7 @@ for fp in "${FRAMEWORK_PATHS[@]}"; do
     # einen anders benannten Spec-Ordner (nicht phase-N, nicht session-N).
     hits=$(grep -rilE "$EGREP" "$ROOT/$fp" 2>/dev/null \
         | grep -v "/node_modules/" \
+        | grep -v "/dist/" \
         | grep -v "/evidence/" \
         | grep -v "/lint-no-tenant-leaks\.sh$" \
         | grep -vE "/specs/phase-[0-9]+/" \

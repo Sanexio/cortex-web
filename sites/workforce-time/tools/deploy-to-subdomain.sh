@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # task-3100b6ea5164 — Deploy der Workforce-Time-App auf eine Hosting-Umgebung
-# (Default-Ziel arbeitszeiten.westend-hausarzt.com).
+# (Ziel-Subdomain via SFTP_WORKFORCE_*-Env, z. B. arbeitszeiten.example.com).
 #
 # Workflow:
 #   1. `bun run build` (oder npm run build) — produziert dist/

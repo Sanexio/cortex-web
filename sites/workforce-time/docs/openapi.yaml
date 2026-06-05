@@ -15,8 +15,8 @@ info:
 servers:
   - url: http://127.0.0.1:5175
     description: Lokaler Dev-Server (Default)
-  - url: https://mitarbeiter.westend-hausarzt.com/api
-    description: Praxis Westend Live (Welle O.8, geplant)
+  - url: https://arbeitszeiten.example.com/api
+    description: Tenant-Subdomain (Platzhalter — echte Domain via Deploy-Config)
   - url: https://{tenant}.workforce.sanexio.de/api
     description: External-Tenant-Hosting (Welle O.9, geplant)
     variables:

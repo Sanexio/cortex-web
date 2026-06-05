@@ -16,7 +16,7 @@
 #     CORTEX_TENANT_DIR=/var/lib/workforce-time/tenant
 
 [Unit]
-Description=Workforce-Time API (arbeitszeiten.westend-hausarzt.com)
+Description=Workforce-Time API (arbeitszeiten.example.com)
 After=network-online.target
 Wants=network-online.target
 
