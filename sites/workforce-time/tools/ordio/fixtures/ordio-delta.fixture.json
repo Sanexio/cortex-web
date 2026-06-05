@@ -1,0 +1,65 @@
+{
+  "sourceSystem": "ordio",
+  "capturedAt": "2026-06-05T10:00:00.000Z",
+  "periodStart": "2026-05-25",
+  "periodEnd": "2026-06-05",
+  "locations": [
+    { "id": "loc-west", "name": "Standort West" }
+  ],
+  "workAreas": [
+    { "id": "area-front", "name": "Empfang" },
+    { "id": "area-lab", "name": "Labor" }
+  ],
+  "employees": [
+    {
+      "id": "emp-001",
+      "displayName": "Fixture Person A",
+      "roleTitle": "MFA",
+      "initials": "FA",
+      "status": "active"
+    },
+    {
+      "id": "emp-002",
+      "displayName": "Fixture Person B",
+      "roleTitle": "MFA",
+      "initials": "FB",
+      "status": "active"
+    }
+  ],
+  "shifts": [
+    {
+      "id": "shift-2026-05-25-front",
+      "date": "2026-05-25",
+      "startTime": "08:00",
+      "endTime": "13:00",
+      "area": "Empfang",
+      "location": "Standort West",
+      "assignments": ["emp-001"]
+    }
+  ],
+  "timeEntries": [
+    {
+      "id": "time-2026-05-25-emp-001",
+      "employeeId": "emp-001",
+      "employeeName": "Fixture Person A",
+      "date": "2026-05-25",
+      "startTime": "08:02",
+      "endTime": "13:04",
+      "area": "Empfang",
+      "location": "Standort West",
+      "breakDuration": 0,
+      "status": "genehmigt"
+    }
+  ],
+  "absences": [
+    {
+      "id": "absence-2026-05-30-emp-002",
+      "employeeId": "emp-002",
+      "employeeName": "Fixture Person B",
+      "startDate": "2026-05-30",
+      "endDate": "2026-05-30",
+      "type": "Urlaub",
+      "status": "genehmigt"
+    }
+  ]
+}

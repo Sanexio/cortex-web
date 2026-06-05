@@ -15,9 +15,11 @@
     "test:auth": "node --test server/auth-smoke.test.mjs",
     "test:smtp": "node --test server/smtp.test.mjs",
     "test:payroll": "node --test server/payroll-export.test.mjs",
+    "test:ordio": "node --test tools/ordio/ordio-delta.test.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "extract-tenant-seed": "node tools/extract-tenant-seed.mjs",
-    "build:handbuch": "node tools/build-handbuch.mjs"
+    "build:handbuch": "node tools/build-handbuch.mjs",
+    "ordio:delta": "node tools/ordio/ordio-delta.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
@@ -28,6 +30,7 @@
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "playwright": "^1.60.0",
     "typescript": "^5.6.3",
     "vite": "^6.0.7"
   }
