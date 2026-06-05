@@ -46,7 +46,7 @@ type ShiftConflictCheckPayload = {
 };
 const ShiftConflictContext = createContext<((payload: ShiftConflictCheckPayload) => Promise<ShiftConflict[]>) | null>(null);
 
-type ViewKey = "dashboard" | "plan" | "time" | "absences" | "approvals" | "employees" | "payroll" | "reports" | "imports" | "settings";
+type ViewKey = "dashboard" | "plan" | "time" | "absences" | "approvals" | "employees" | "payroll" | "reports" | "imports" | "admin" | "settings";
 
 type PayrollDay = {
   date: string;
@@ -882,6 +882,7 @@ const viewMeta: Record<ViewKey, { title: string; eyebrow: string }> = {
   payroll: { title: "Lohnabrechnung", eyebrow: "DATEV-Export · Monatsstunden" },
   reports: { title: "Auswertung", eyebrow: "Soll vs. Ist · Monatsbericht" },
   imports: { title: "Import & Sync", eyebrow: "Migration" },
+  admin: { title: "Benutzer & Rollen", eyebrow: "Rollen-Verwaltung" },
   settings: { title: "Einstellungen", eyebrow: "Rollen & Schutz" }
 };
 
@@ -2037,6 +2038,12 @@ function App() {
         Delta-Sync
       </button>
     ),
+    admin: (
+      <button className="secondary-button" onClick={refresh}>
+        <RefreshCw size={17} />
+        Aktualisieren
+      </button>
+    ),
     settings: (
       <button className="secondary-button" onClick={refresh}>
         <RefreshCw size={17} />
@@ -2178,6 +2185,7 @@ function App() {
             setActiveWeekStart={setActiveWeekStart}
           />
         ) : null}
+        {view === "admin" ? <AdminRolesView request={request} authUser={authUser} /> : null}
         {view === "settings" ? <SettingsView data={data} apiMessage={apiMessage} /> : null}
       </main>
 
@@ -2485,6 +2493,7 @@ function Sidebar({
     { view: "payroll", label: "Lohnabrechnung", icon: Coins },
     { view: "reports", label: "Auswertung", icon: BarChart3 },
     { view: "imports", label: "Import & Sync", icon: Database },
+    { view: "admin", label: "Rollen-Admin", icon: ShieldCheck },
     { view: "settings", label: "Einstellungen", icon: Settings2 }
   ];
   const actions: Array<{ label: string; icon: typeof Home; onClick: () => void }> = [
@@ -6191,6 +6200,163 @@ function ApprovalsView({
               </li>
             ))}
           </ul>
+        )}
+      </section>
+    </div>
+  );
+}
+
+// T-010b — Rollen-Admin-View (claude-chat, 2026-06-05).
+// Listet alle auth_users mit Rolle, erlaubt Rolle-Wechsel via Dropdown
+// (employee/manager/admin) → PATCH /api/admin/users/:id/role.
+type AuthUserRow = {
+  id: number;
+  email: string;
+  employeeId: string | null;
+  displayName: string;
+  role: string;
+  tenantSlug: string | null;
+  lastLoginAt: string | null;
+  disabledAt: string | null;
+  createdAt: string;
+};
+const ROLE_OPTIONS: Array<{ value: string; label: string }> = [
+  { value: "employee", label: "Mitarbeiter" },
+  { value: "manager", label: "Manager" },
+  { value: "admin", label: "Admin" }
+];
+
+function AdminRolesView({
+  request,
+  authUser
+}: {
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  authUser: AuthUser | null;
+}) {
+  const [users, setUsers] = useState<AuthUserRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<number | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await request<{ ok: boolean; users: AuthUserRow[] }>("/api/admin/users");
+      setUsers(Array.isArray(res?.users) ? res.users : []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Benutzerliste nicht ladbar");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function setRole(user: AuthUserRow, newRole: string) {
+    if (newRole === user.role) return;
+    setBusyId(user.id);
+    setError(null);
+    setInfo(null);
+    try {
+      await request(`/api/admin/users/${encodeURIComponent(String(user.id))}/role`, {
+        method: "PATCH",
+        body: JSON.stringify({ role: newRole, actorId: authUser?.id ?? null, note: `via Rollen-Admin-UI` })
+      });
+      setInfo(`${user.email}: Rolle → ${newRole}`);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Rolle konnte nicht gesetzt werden");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  const isAdmin = authUser?.role === "admin";
+
+  return (
+    <div className="admin-roles-view">
+      <section className="wide-panel">
+        <div className="section-heading">
+          <div>
+            <h2>Benutzer & Rollen · {users.length}</h2>
+            <p className="section-eyebrow">
+              {loading
+                ? "Lädt …"
+                : error
+                  ? `Fehler: ${error}`
+                  : info
+                    ? info
+                    : "Rolle bestimmt Sichtbarkeit & Aktionen."}
+            </p>
+          </div>
+          <button className="secondary-button compact-action" type="button" onClick={load} disabled={loading}>
+            <RefreshCw size={14} /> Neu laden
+          </button>
+        </div>
+        {!isAdmin ? (
+          <p style={{ padding: "8px 12px", color: "var(--color-warning, #b45309)", fontSize: "0.9em" }}>
+            Hinweis: Eigenes Profil ist nicht Admin — Server akzeptiert PATCH ggf. nicht.
+          </p>
+        ) : null}
+        {error ? null : (
+          <div className="quota-table-wrap" style={{ overflowX: "auto" }}>
+            <table className="quota-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.92em" }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>E-Mail</th>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>Anzeigename</th>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>Mitarbeiter-ID</th>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>Rolle</th>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>Letzter Login</th>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} style={{ borderTop: "1px solid var(--color-line, #e5e7eb)" }}>
+                    <td style={{ padding: "6px 8px" }}>{user.email}</td>
+                    <td style={{ padding: "6px 8px" }}>{user.displayName ?? "—"}</td>
+                    <td style={{ padding: "6px 8px", fontFamily: "monospace", fontSize: "0.85em" }}>{user.employeeId ?? "—"}</td>
+                    <td style={{ padding: "6px 8px" }}>
+                      <select
+                        value={user.role}
+                        disabled={busyId === user.id || !isAdmin}
+                        onChange={(event) => setRole(user, event.target.value)}
+                        style={{ padding: "4px 6px", borderRadius: 6, border: "1px solid var(--color-line, #e5e7eb)" }}
+                      >
+                        {ROLE_OPTIONS.find((opt) => opt.value === user.role) ? null : (
+                          <option value={user.role}>{user.role}</option>
+                        )}
+                        {ROLE_OPTIONS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td style={{ padding: "6px 8px", color: "var(--color-muted, #6b7280)" }}>
+                      {user.lastLoginAt ?? "nie"}
+                    </td>
+                    <td style={{ padding: "6px 8px" }}>
+                      {user.disabledAt ? (
+                        <span style={{ color: "var(--color-danger, #b91c1c)" }}>deaktiviert</span>
+                      ) : (
+                        <span style={{ color: "var(--color-success, #047857)" }}>aktiv</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {users.length === 0 && !loading ? (
+                  <tr><td colSpan={6} style={{ padding: "12px", textAlign: "center", color: "var(--color-muted, #6b7280)" }}>
+                    Keine Benutzer.
+                  </td></tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
     </div>
