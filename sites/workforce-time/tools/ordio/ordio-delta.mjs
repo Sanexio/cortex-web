@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
+import { extractWorkHoursRowsFromPage, mapWorkHoursRows, parseWorkHoursHtml } from "./ordio-dom.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(here, "../..");
@@ -15,7 +16,7 @@ function usage() {
 
 Options:
   --dry-run              Map and validate only. Does not write or POST.
-  --fixture <path>       Read Ordio-like JSON from a local fixture/export.
+  --fixture <path>       Read Ordio-like JSON or work-hours HTML from a local fixture/export.
   --out <path>           Snapshot file for POST /api/imports/delta-snapshot.
   --post                 POST the written snapshot path to the local API.
   --api-url <url>        API base URL. Default: http://127.0.0.1:5175.
@@ -115,29 +116,44 @@ export function mapOrdioPayload(rawInput, options = {}) {
   const capturedAt = text(raw.capturedAt ?? raw.exportedAt, new Date().toISOString());
   const sourceSystem = text(raw.sourceSystem, "ordio");
   const defaultLocation = text(raw.defaultLocation, "Ordio");
+  const workHours = mapWorkHoursRows(asArray(raw.workHoursRows), {
+    capturedAt,
+    defaultLocation,
+    from: options.from,
+    to: options.to
+  });
 
-  const employees = asArray(raw.employees ?? raw.staff ?? raw.users).map((record, index) => ({
-    sourceId: sourceId(record, "employee", index),
-    displayName: text(record.displayName ?? record.name ?? record.fullName),
-    aliases: asArray(record.aliases),
-    roleTitle: text(record.roleTitle ?? record.role ?? record.position, "Mitarbeiter"),
-    initials: text(record.initials),
-    employmentStatus: text(record.status ?? record.employmentStatus, "active"),
-    employeeNumber: record.employeeNumber ?? record.personnelNumber ?? null,
-    updatedAt: record.updatedAt ?? capturedAt
-  })).filter((record) => record.displayName);
+  const employees = [
+    ...asArray(raw.employees ?? raw.staff ?? raw.users).map((record, index) => ({
+      sourceId: sourceId(record, "employee", index),
+      displayName: text(record.displayName ?? record.name ?? record.fullName),
+      aliases: asArray(record.aliases),
+      roleTitle: text(record.roleTitle ?? record.role ?? record.position, "Mitarbeiter"),
+      initials: text(record.initials),
+      employmentStatus: text(record.status ?? record.employmentStatus, "active"),
+      employeeNumber: record.employeeNumber ?? record.personnelNumber ?? null,
+      updatedAt: record.updatedAt ?? capturedAt
+    })).filter((record) => record.displayName),
+    ...workHours.employees
+  ].filter((record, index, records) => records.findIndex((item) => item.sourceId === record.sourceId) === index);
 
-  const locations = asArray(raw.locations).map((record, index) => ({
-    sourceId: sourceId(record, "location", index),
-    name: text(record.name, defaultLocation),
-    updatedAt: record.updatedAt ?? capturedAt
-  })).filter((record) => record.name);
+  const locations = [
+    ...asArray(raw.locations).map((record, index) => ({
+      sourceId: sourceId(record, "location", index),
+      name: text(record.name, defaultLocation),
+      updatedAt: record.updatedAt ?? capturedAt
+    })).filter((record) => record.name),
+    ...workHours.locations
+  ].filter((record, index, records) => records.findIndex((item) => item.name === record.name) === index);
 
-  const workAreas = asArray(raw.workAreas ?? raw.areas).map((record, index) => ({
-    sourceId: sourceId(record, "area", index),
-    name: text(record.name ?? record.area, "Ohne Bereich"),
-    updatedAt: record.updatedAt ?? capturedAt
-  })).filter((record) => record.name);
+  const workAreas = [
+    ...asArray(raw.workAreas ?? raw.areas).map((record, index) => ({
+      sourceId: sourceId(record, "area", index),
+      name: text(record.name ?? record.area, "Ohne Bereich"),
+      updatedAt: record.updatedAt ?? capturedAt
+    })).filter((record) => record.name),
+    ...workHours.workAreas
+  ].filter((record, index, records) => records.findIndex((item) => item.name === record.name) === index);
 
   const shifts = asArray(raw.shifts).map((record, index) => {
     const startDate = toDate(record.startDate ?? record.date ?? record.startsAt);
@@ -160,7 +176,10 @@ export function mapOrdioPayload(rawInput, options = {}) {
     };
   }).filter(Boolean);
 
-  const timeEntries = asArray(raw.timeEntries ?? raw.times).map((record, index) => {
+  const timeEntries = [
+    ...asArray(raw.timeEntries ?? raw.times),
+    ...workHours.timeEntries
+  ].map((record, index) => {
     const startDate = toDate(record.startDate ?? record.date ?? record.startsAt);
     const startTime = toTime(record.startTime ?? record.startsAt);
     const endTime = toTime(record.endTime ?? record.endsAt);
@@ -258,22 +277,8 @@ async function captureLiveOrdio(options) {
 
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
-  const responses = [];
   try {
     const page = await browser.newPage();
-    page.on("response", async (response) => {
-      const request = response.request();
-      if (request.method() !== "GET") return;
-      if (!/api|graphql|shift|time|absence|employee|staff|user/i.test(response.url())) return;
-      const contentType = response.headers()["content-type"] ?? "";
-      if (!contentType.includes("json")) return;
-      try {
-        responses.push({ url: response.url(), body: await response.json() });
-      } catch {
-        // Ignore non-JSON or streaming responses.
-      }
-    });
-
     await page.goto(process.env.ORDIO_BASE_URL, { waitUntil: "domcontentloaded" });
     // Ordio defaults to magic-link mode (probe 2026-06-05): password login
     // sits behind the mode-switch button "Mit Benutzername & Passwort anmelden".
@@ -294,7 +299,11 @@ async function captureLiveOrdio(options) {
     // Exact-anchored name: avoid matching "Mit Google anmelden" / mode-switch.
     await page.getByRole("button", { name: /^(anmelden|login|sign in)$/i }).first().click();
     await page.waitForLoadState("networkidle");
-    return { sourceSystem: "ordio", capturedAt: new Date().toISOString(), responses };
+    await page.goto(new URL("/work-hours", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
+    await page.waitForSelector("table", { timeout: 30000 });
+    const workHoursRows = await extractWorkHoursRowsFromPage(page);
+    return { sourceSystem: "ordio", capturedAt: new Date().toISOString(), workHoursRows };
   } finally {
     await browser.close();
   }
@@ -320,7 +329,7 @@ async function postImportSnapshot(options) {
 export async function run(options) {
   const raw = options.live
     ? await captureLiveOrdio(options)
-    : JSON.parse(readFileSync(options.fixture, "utf8"));
+    : readFixture(options.fixture);
   const snapshot = mapOrdioPayload(raw, options);
   const validation = validateSnapshot(snapshot);
   const summary = snapshotSummary(snapshot);
@@ -338,6 +347,18 @@ export async function run(options) {
 
   const importResult = options.post ? await postImportSnapshot(options) : null;
   return { dryRun: options.dryRun, wrote: options.dryRun ? null : options.out, posted: Boolean(options.post), summary, importResult };
+}
+
+function readFixture(path) {
+  const content = readFileSync(path, "utf8");
+  if (/\.html?$/i.test(path) || /^\s*<!doctype html/i.test(content) || /^\s*<html[\s>]/i.test(content)) {
+    return {
+      sourceSystem: "ordio",
+      capturedAt: new Date().toISOString(),
+      workHoursRows: parseWorkHoursHtml(content)
+    };
+  }
+  return JSON.parse(content);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

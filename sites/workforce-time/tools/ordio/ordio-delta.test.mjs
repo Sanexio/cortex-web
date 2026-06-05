@@ -9,6 +9,7 @@ import { mapOrdioPayload, parseArgs, run, snapshotSummary, validateSnapshot } fr
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixturePath = join(here, "fixtures/ordio-delta.fixture.json");
+const htmlFixturePath = join(here, "fixtures/work-hours.fixture.html");
 
 test("parseArgs defaults to dry-run fixture mode without credentials", () => {
   const options = parseArgs([]);
@@ -55,4 +56,11 @@ test("run writes snapshot only outside dry-run", async () => {
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
+});
+
+test("run accepts anonymized work-hours HTML fixture", async () => {
+  const result = await run(parseArgs(["--dry-run", "--fixture", htmlFixturePath, "--from", "2026-05-25", "--to", "2026-06-05"]));
+  assert.equal(result.summary.counts.timeEntries, 2);
+  assert.equal(result.summary.counts.employees, 2);
+  assert.equal(result.wrote, null);
 });
