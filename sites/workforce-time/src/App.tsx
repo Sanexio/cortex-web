@@ -46,7 +46,7 @@ type ShiftConflictCheckPayload = {
 };
 const ShiftConflictContext = createContext<((payload: ShiftConflictCheckPayload) => Promise<ShiftConflict[]>) | null>(null);
 
-type ViewKey = "dashboard" | "plan" | "time" | "absences" | "employees" | "payroll" | "reports" | "imports" | "settings";
+type ViewKey = "dashboard" | "plan" | "time" | "absences" | "approvals" | "employees" | "payroll" | "reports" | "imports" | "settings";
 
 type PayrollDay = {
   date: string;
@@ -877,6 +877,7 @@ const viewMeta: Record<ViewKey, { title: string; eyebrow: string }> = {
   plan: { title: "Kalenderwoche", eyebrow: "Schichtplanung" },
   time: { title: "Arbeitszeiten", eyebrow: "Zeit & Reporting" },
   absences: { title: "Urlaub & Abwesenheit", eyebrow: "Anträge & Kalender" },
+  approvals: { title: "Freigaben", eyebrow: "Korrekturen · Tausch · Urlaub" },
   employees: { title: "Mitarbeiter", eyebrow: "Stammdaten" },
   payroll: { title: "Lohnabrechnung", eyebrow: "DATEV-Export · Monatsstunden" },
   reports: { title: "Auswertung", eyebrow: "Soll vs. Ist · Monatsbericht" },
@@ -2006,6 +2007,12 @@ function App() {
         Abwesenheit
       </button>
     ),
+    approvals: (
+      <button className="secondary-button" onClick={refresh}>
+        <RefreshCw size={17} />
+        Aktualisieren
+      </button>
+    ),
     employees: (
       <button className="primary-button" onClick={() => setDialog("employee")}>
         <UserPlus size={18} />
@@ -2147,6 +2154,13 @@ function App() {
             data={data}
             updateStatus={updateAbsenceStatus}
             request={request}
+          />
+        ) : null}
+        {view === "approvals" ? (
+          <ApprovalsView
+            request={request}
+            authUser={authUser}
+            updateAbsenceStatus={updateAbsenceStatus}
           />
         ) : null}
         {view === "employees" ? (
@@ -2466,6 +2480,7 @@ function Sidebar({
     { view: "dashboard", label: "Übersicht", icon: Home },
     { view: "time", label: "Arbeitszeiten", icon: Clock3 },
     { view: "absences", label: "Urlaub", icon: CalendarDays },
+    { view: "approvals", label: "Freigaben", icon: ClipboardCheck },
     { view: "employees", label: "Mitarbeiter", icon: Users },
     { view: "payroll", label: "Lohnabrechnung", icon: Coins },
     { view: "reports", label: "Auswertung", icon: BarChart3 },
@@ -5949,6 +5964,233 @@ function ReportsView({
               </tbody>
             </table>
           </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+// T-007b — Freigabe-View (claude-chat, 2026-06-05).
+// Sammelview für Korrekturen, Tausch-Wünsche und offene Urlaubsanträge.
+// Backend: GET /api/approvals (T-007a). Aktionen via Spezial-Endpoints:
+//   PATCH /api/corrections/:id/approve|reject
+//   PATCH /api/swap-requests/:id/accept|decline
+//   PATCH /api/absences/:id/status (genehmigt|abgelehnt).
+type ApprovalItem = {
+  type: "correction" | "swap_request" | "absence";
+  id: string;
+  employeeId: string | null;
+  createdAt: string;
+  reason: string | null;
+  payload: Record<string, unknown>;
+};
+type ApprovalsResponse = {
+  ok: boolean;
+  total: number;
+  items: ApprovalItem[];
+  breakdown: { corrections: number; swap_requests: number; absences: number };
+};
+
+function describeApproval(item: ApprovalItem): string {
+  const p = item.payload as Record<string, unknown>;
+  if (item.type === "correction") {
+    const proposedStart = p.proposedStartsAt ?? p.proposed_starts_at;
+    const proposedEnd = p.proposedEndsAt ?? p.proposed_ends_at;
+    return `Korrektur: neue Zeit ${proposedStart ?? "—"} – ${proposedEnd ?? "—"}`;
+  }
+  if (item.type === "swap_request") {
+    const fromShift = p.fromShiftId ?? p.from_shift_id;
+    const toEmp = p.targetEmployeeId ?? p.target_employee_id ?? "offen";
+    return `Schichttausch ${fromShift ?? ""} → ${toEmp}`;
+  }
+  if (item.type === "absence") {
+    const startsOn = p.startsOn ?? p.starts_on;
+    const endsOn = p.endsOn ?? p.ends_on;
+    const absenceType = p.absenceType ?? p.absence_type ?? "Urlaub";
+    return `${absenceType} ${startsOn ?? ""} – ${endsOn ?? ""}`;
+  }
+  return "—";
+}
+
+function approvalTypeLabel(type: ApprovalItem["type"]): string {
+  if (type === "correction") return "Korrektur";
+  if (type === "swap_request") return "Tausch";
+  return "Urlaub";
+}
+
+function ApprovalsView({
+  request,
+  authUser,
+  updateAbsenceStatus
+}: {
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  authUser: AuthUser | null;
+  updateAbsenceStatus: (id: string, status: AbsenceStatus) => Promise<void> | void;
+}) {
+  const [items, setItems] = useState<ApprovalItem[]>([]);
+  const [breakdown, setBreakdown] = useState<ApprovalsResponse["breakdown"]>({ corrections: 0, swap_requests: 0, absences: 0 });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"all" | ApprovalItem["type"]>("all");
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await request<ApprovalsResponse>("/api/approvals");
+      setItems(Array.isArray(res?.items) ? res.items : []);
+      setBreakdown(res?.breakdown ?? { corrections: 0, swap_requests: 0, absences: 0 });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Freigabe-Liste nicht ladbar");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const reviewerEmployeeId = authUser?.employeeId ?? null;
+  const visible = filter === "all" ? items : items.filter((i) => i.type === filter);
+
+  async function decide(item: ApprovalItem, decision: "approve" | "reject") {
+    setBusyId(item.id);
+    try {
+      const note = notes[item.id] ?? "";
+      if (item.type === "correction") {
+        const path = `/api/corrections/${encodeURIComponent(item.id)}/${decision}`;
+        await request(path, {
+          method: "PATCH",
+          body: JSON.stringify({ reviewerId: reviewerEmployeeId, note })
+        });
+      } else if (item.type === "swap_request") {
+        const action = decision === "approve" ? "accept" : "decline";
+        const path = `/api/swap-requests/${encodeURIComponent(item.id)}/${action}`;
+        const bodyKey = decision === "approve" ? "accepterEmployeeId" : "declinerEmployeeId";
+        await request(path, {
+          method: "PATCH",
+          body: JSON.stringify({ [bodyKey]: reviewerEmployeeId, note })
+        });
+      } else if (item.type === "absence") {
+        await updateAbsenceStatus(item.id, decision === "approve" ? "genehmigt" : "abgelehnt");
+      }
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Aktion fehlgeschlagen");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  return (
+    <div className="approvals-view">
+      <section className="wide-panel">
+        <div className="section-heading">
+          <div>
+            <h2>Offene Freigaben · {items.length}</h2>
+            <p className="section-eyebrow">
+              {loading
+                ? "Lädt …"
+                : error
+                  ? `Fehler: ${error}`
+                  : `${breakdown.corrections} Korrekturen · ${breakdown.swap_requests} Tausch · ${breakdown.absences} Urlaub`}
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            {(["all", "correction", "swap_request", "absence"] as const).map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setFilter(key)}
+                className={filter === key ? "primary-button compact-action" : "secondary-button compact-action"}
+              >
+                {key === "all" ? "Alle" : approvalTypeLabel(key)}
+              </button>
+            ))}
+          </div>
+        </div>
+        {!reviewerEmployeeId ? (
+          <p style={{ padding: "8px 12px", color: "var(--color-warning, #b45309)", fontSize: "0.9em" }}>
+            Hinweis: Eigene Mitarbeiter-ID fehlt im Auth-Profil — Aktionen ohne reviewerEmployeeId.
+          </p>
+        ) : null}
+        {error ? null : visible.length === 0 && !loading ? (
+          <p style={{ padding: "12px", textAlign: "center", color: "var(--color-muted, #6b7280)" }}>
+            Keine offenen Freigaben in dieser Kategorie.
+          </p>
+        ) : (
+          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            {visible.map((item) => (
+              <li
+                key={`${item.type}-${item.id}`}
+                style={{
+                  borderTop: "1px solid var(--color-line, #e5e7eb)",
+                  padding: "12px",
+                  display: "grid",
+                  gridTemplateColumns: "auto 1fr auto",
+                  gridGap: 12,
+                  alignItems: "center"
+                }}
+              >
+                <span
+                  style={{
+                    background: item.type === "correction"
+                      ? "var(--color-info-soft, #dbeafe)"
+                      : item.type === "swap_request"
+                        ? "var(--color-warning-soft, #fef3c7)"
+                        : "var(--color-success-soft, #dcfce7)",
+                    color: item.type === "correction"
+                      ? "var(--color-info, #1d4ed8)"
+                      : item.type === "swap_request"
+                        ? "var(--color-warning, #b45309)"
+                        : "var(--color-success, #047857)",
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    fontSize: "0.75em",
+                    fontWeight: 600
+                  }}
+                >
+                  {approvalTypeLabel(item.type)}
+                </span>
+                <div>
+                  <strong>{describeApproval(item)}</strong>
+                  <div style={{ fontSize: "0.85em", color: "var(--color-muted, #6b7280)" }}>
+                    Mitarbeitender: {item.employeeId ?? "—"} · gestellt {item.createdAt}
+                    {item.reason ? ` · ${item.reason}` : ""}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Notiz (optional)"
+                    value={notes[item.id] ?? ""}
+                    onChange={(event) => setNotes((n) => ({ ...n, [item.id]: event.target.value }))}
+                    style={{ marginTop: 6, width: "100%", padding: "4px 8px", border: "1px solid var(--color-line, #e5e7eb)", borderRadius: 6, fontSize: "0.9em" }}
+                  />
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <button
+                    type="button"
+                    className="primary-button compact-action"
+                    disabled={busyId === item.id}
+                    onClick={() => decide(item, "approve")}
+                  >
+                    <Check size={14} /> Genehmigen
+                  </button>
+                  <button
+                    type="button"
+                    className="secondary-button compact-action"
+                    disabled={busyId === item.id}
+                    onClick={() => decide(item, "reject")}
+                  >
+                    <X size={14} /> Ablehnen
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
     </div>
