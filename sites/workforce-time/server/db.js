@@ -4456,6 +4456,25 @@ export function listAuthUsersWithRoles() {
   }));
 }
 
+// T-005c — Mail-Helpers (claude-chat, 2026-06-05).
+export function listAdminEmails() {
+  const rows = db.prepare(`
+    SELECT email FROM auth_users
+    WHERE role = 'admin' AND disabled_at IS NULL AND email IS NOT NULL AND email != ''
+  `).all();
+  return rows.map((r) => r.email);
+}
+
+export function getEmailForEmployeeId(employeeId) {
+  if (!employeeId) return null;
+  const row = db.prepare(`
+    SELECT email FROM auth_users
+    WHERE employee_id = ? AND disabled_at IS NULL AND email IS NOT NULL AND email != ''
+    LIMIT 1
+  `).get(employeeId);
+  return row?.email ?? null;
+}
+
 export function updateAuthUserRole(authUserId, newRole, actorId, note) {
   if (!ALLOWED_ROLES.includes(newRole)) {
     throw new Error(`Rolle ungültig. Erlaubt: ${ALLOWED_ROLES.join(", ")}`);

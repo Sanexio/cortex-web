@@ -47,6 +47,7 @@ import {
   updateTimeEntryStatus
 } from "./db.js";
 import { handleAuthRoute, requireWorkforceApiSession } from "./auth.js";
+import { notifyCorrectionRequested, notifyCorrectionDecided } from "./notify-correction.mjs";
 
 const host = process.env.ARBEITSZEITEN_API_HOST ?? "127.0.0.1";
 const port = Number(process.env.ARBEITSZEITEN_API_PORT ?? 5175);
@@ -351,6 +352,9 @@ const server = createServer(async (request, response) => {
       try {
         const result = requestTimeEntryCorrection(decodeURIComponent(correctionRequestMatch[1]), payload);
         sendJson(response, 201, { ok: true, correction: result });
+        notifyCorrectionRequested(result).catch((err) => {
+          console.warn(`[notify-correction] requested mail failed: ${err?.message ?? err}`);
+        });
       } catch (err) {
         sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
       }
@@ -375,6 +379,9 @@ const server = createServer(async (request, response) => {
           payload?.note
         );
         sendJson(response, 200, { ok: true, correction: result });
+        notifyCorrectionDecided(result, "approve").catch((err) => {
+          console.warn(`[notify-correction] approve mail failed: ${err?.message ?? err}`);
+        });
       } catch (err) {
         sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
       }
@@ -390,6 +397,9 @@ const server = createServer(async (request, response) => {
           payload?.note
         );
         sendJson(response, 200, { ok: true, correction: result });
+        notifyCorrectionDecided(result, "reject").catch((err) => {
+          console.warn(`[notify-correction] reject mail failed: ${err?.message ?? err}`);
+        });
       } catch (err) {
         sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
       }

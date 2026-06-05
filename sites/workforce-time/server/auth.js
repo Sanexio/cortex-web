@@ -351,7 +351,7 @@ function smtpConfig() {
   return { host: "127.0.0.1", port: 1025, secure: false, user: "", passwordEnv: "" };
 }
 
-function mailFrom() {
+export function mailFrom() {
   return (
     tenantConfigGet("auth.mail_from", "") ||
     tenantConfigGet("workforce.auth.mail_from", "") ||
@@ -363,7 +363,7 @@ function escapeSmtpLine(value) {
   return String(value).replace(/\r?\n/g, "\r\n").replace(/^\./gm, "..");
 }
 
-function sendSmtpMail({ from, to, subject, text }) {
+export function sendSmtpMail({ from, to, subject, text }) {
   const config = smtpConfig();
   if (config.secure || config.user || config.passwordEnv) {
     if (isDevelopment()) {
