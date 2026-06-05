@@ -4,6 +4,29 @@ Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](htt
 
 ## Unreleased
 
+### Workforce-Time Backup-Konzept + DATEV-Probelauf-Fixes (2026-06-05)
+
+`sites/workforce-time/`:
+
+- **Backup:** Neues `tools/backup-db.sh` (SQLite-Online-Backup mit
+  `PRAGMA integrity_check`-Verifikation, gzip, Retention via
+  `WORKFORCE_BACKUP_KEEP`, `--verify-only`-Modus), systemd-Pair
+  `deploy/systemd/workforce-time-backup.{service,timer}` (taeglich
+  02:30, Persistent=true) und Konzept-Doku `docs/BACKUP.md`
+  (3 Schichten: lokal taeglich / Offsite-Pull / Restore-Probe).
+  Voller Lebenszyklus gegen Staging-DB getestet (Backup, Verify,
+  Retention, Restore mit Zeilenzahl-Abgleich).
+- **Bugfix Payroll-CSV:** Brutto-Stunden-Spalte enthielt netHours
+  statt grossHours (Copy-Paste in `renderPayrollExportCsv`).
+  Regressionstest mit synthetischem Report ergaenzt
+  (`server/payroll-export.test.mjs`).
+- **Security-Hardening systemd:** `workforce-time.service` setzt jetzt
+  `NODE_ENV=production` + `WORKFORCE_AUTH_ENFORCE=1` fest in der Unit —
+  vorher hing das Session-Gate der API am optionalen EnvironmentFile;
+  fehlte die Datei, lief die API ungeschuetzt. Auth-Enforcement
+  end-to-end verifiziert (401 ohne Session, Login inkl. TOTP, 200 mit
+  Session).
+
 ### Workforce-Time Handbuch + In-App-Hilfe (2026-06-05)
 
 `sites/workforce-time/`:

@@ -5248,7 +5248,7 @@ export function renderPayrollExportCsv(report) {
         escapeCsvField(employee.employeeName),
         escapeCsvField(employee.roleTitle),
         escapeCsvField(day.date),
-        escapeCsvField(day.netHours.toFixed(2).replace(".", ",")),
+        escapeCsvField(day.grossHours.toFixed(2).replace(".", ",")),
         escapeCsvField(day.unpaidBreakMinutes),
         escapeCsvField(day.paidBreakMinutes),
         escapeCsvField(day.netHours.toFixed(2).replace(".", ",")),

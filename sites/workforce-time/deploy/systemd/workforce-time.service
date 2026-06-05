@@ -25,6 +25,12 @@ Type=simple
 User=workforce
 Group=workforce
 WorkingDirectory=/var/www/arbeitszeiten/server
+# NODE_ENV gehoert fest in die Unit, nicht nur ins (optionale) EnvironmentFile:
+# ohne production-Modus laeuft die API mit abgeschaltetem Session-Gate
+# (requireWorkforceApiSession enforced nur bei NODE_ENV=production bzw.
+# WORKFORCE_AUTH_ENFORCE=1). Defense-in-Depth: beides setzen.
+Environment=NODE_ENV=production
+Environment=WORKFORCE_AUTH_ENFORCE=1
 EnvironmentFile=-/etc/workforce-time.env
 ExecStart=/usr/bin/node /var/www/arbeitszeiten/server/api.js
 Restart=on-failure

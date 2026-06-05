@@ -1,0 +1,13 @@
+# Workforce-Time — Timer fuer das taegliche DB-Backup (02:30, nachholend).
+
+[Unit]
+Description=Taegliches Workforce-Time DB-Backup
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+# Persistent=true: verpasste Laeufe (Server war aus) werden beim Boot nachgeholt.
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,34 @@
+# Workforce-Time — taegliches DB-Backup (oneshot, getriggert vom .timer).
+#
+# Installation (als root, zusammen mit workforce-time-backup.timer):
+#   cp deploy/systemd/workforce-time-backup.{service,timer} /etc/systemd/system/
+#   systemctl daemon-reload
+#   systemctl enable --now workforce-time-backup.timer
+#   systemctl list-timers workforce-time-backup.timer
+#
+# Manueller Testlauf:
+#   systemctl start workforce-time-backup.service && journalctl -u workforce-time-backup -n 5
+
+[Unit]
+Description=Workforce-Time SQLite-Backup
+# Backup laeuft auch, wenn die API gerade nicht laeuft — die DB-Datei genuegt.
+
+[Service]
+Type=oneshot
+User=workforce
+Group=workforce
+WorkingDirectory=/var/www/arbeitszeiten
+Environment=CORTEX_TENANT_DIR=/var/lib/workforce-time/tenant
+Environment=WORKFORCE_BACKUP_DIR=/var/lib/workforce-time/backups
+Environment=WORKFORCE_BACKUP_KEEP=30
+EnvironmentFile=-/etc/workforce-time.env
+ExecStart=/bin/bash /var/www/arbeitszeiten/tools/backup-db.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=workforce-backup
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/workforce-time

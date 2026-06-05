@@ -79,3 +79,41 @@ test("setPayrollPersonnelNumber rejects unknown employee", async () => {
     await rm(tempDir, { recursive: true, force: true });
   }
 });
+
+test("renderPayrollExportCsv schreibt Brutto- und Netto-Stunden getrennt", async () => {
+  const tempDir = await mkdtemp(join(tmpdir(), "workforce-payroll-csv-"));
+  process.env.NODE_ENV = "test";
+  process.env.ARBEITSZEITEN_DB = join(tempDir, "arbeitszeiten.sqlite");
+
+  try {
+    const { renderPayrollExportCsv } = await import("./db.js");
+    // Synthetic report: 30 min unpaid break => gross 9.55h, net 9.05h.
+    const report = {
+      period: { year: 2026, month: 4 },
+      employees: [
+        {
+          personnelNumber: "1001",
+          employeeName: "Test Person",
+          roleTitle: "MFA",
+          days: [
+            {
+              date: "2026-04-14",
+              grossHours: 9.55,
+              netHours: 9.05,
+              unpaidBreakMinutes: 30,
+              paidBreakMinutes: 0,
+              entryCount: 1
+            }
+          ]
+        }
+      ]
+    };
+    const csv = renderPayrollExportCsv(report);
+    const dataLine = csv.split("\r\n")[1];
+    const fields = dataLine.split(";");
+    assert.equal(fields[4], '"9,55"', "Brutto-Spalte muss grossHours enthalten");
+    assert.equal(fields[7], '"9,05"', "Netto-Spalte muss netHours enthalten");
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});
