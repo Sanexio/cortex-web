@@ -11,7 +11,7 @@ dann in Workforce-Time, wenn der Import explizit ausgelöst wird.
 - Keine Screenshots, HAR-Dateien oder Echtdaten ins Repo schreiben.
 - Secrets werden nicht geloggt. Der Live-Lauf startet nur, wenn
   `~/.cortex/secrets/ordio.env` vorhanden ist und die Laufzeitumgebung
-  `ORDIO_BASE_URL`, `ORDIO_EMAIL`, `ORDIO_PASSWORD` enthält.
+  `ORDIO_BASE_URL`, `ORDIO_EMAIL` (oder `ORDIO_USER`), `ORDIO_PASSWORD` enthält.
 - Stop-Kriterien: unbekannte Login-Hürde, 2FA/CAPTCHA, sichtbare
   Schreibdialoge, unerwartete Ordio-Fehler, Snapshot-Validierungsfehler.
 

@@ -249,9 +249,12 @@ async function captureLiveOrdio(options) {
   if (!existsSync(options.secretsFile)) {
     throw new Error(`Ordio-Credentials nicht verfuegbar: ${options.secretsFile}`);
   }
-  for (const envName of ["ORDIO_BASE_URL", "ORDIO_EMAIL", "ORDIO_PASSWORD"]) {
-    if (!process.env[envName]) throw new Error(`${envName} fehlt in der Laufzeitumgebung`);
-  }
+  // Backwards-compat: the deposited ordio.env template (2026-06-04) uses
+  // ORDIO_USER; newer docs say ORDIO_EMAIL. Accept both.
+  const ordioEmail = process.env.ORDIO_EMAIL || process.env.ORDIO_USER || "";
+  if (!process.env.ORDIO_BASE_URL) throw new Error("ORDIO_BASE_URL fehlt in der Laufzeitumgebung");
+  if (!ordioEmail) throw new Error("ORDIO_EMAIL (oder ORDIO_USER) fehlt in der Laufzeitumgebung");
+  if (!process.env.ORDIO_PASSWORD) throw new Error("ORDIO_PASSWORD fehlt in der Laufzeitumgebung");
 
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
@@ -272,7 +275,7 @@ async function captureLiveOrdio(options) {
     });
 
     await page.goto(process.env.ORDIO_BASE_URL, { waitUntil: "domcontentloaded" });
-    await page.getByLabel(/e-?mail|benutzer|user/i).fill(process.env.ORDIO_EMAIL);
+    await page.getByLabel(/e-?mail|benutzer|user/i).fill(ordioEmail);
     await page.getByLabel(/passwort|password/i).fill(process.env.ORDIO_PASSWORD);
     await page.getByRole("button", { name: /anmelden|login|sign in/i }).click();
     await page.waitForLoadState("networkidle");
