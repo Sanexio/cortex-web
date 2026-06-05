@@ -31,6 +31,9 @@ const pickerProbe = args.includes("--picker");
 // absence-bar, walk ancestors to find the row container + its left
 // row-header (employee). Prints initials + ancestor tag/testid chain.
 const absRows = args.includes("--absrows");
+// --absclick: click the first absence-bar and dump the resulting
+// detail popover/dialog structure (does it expose the employee?).
+const absClick = args.includes("--absclick");
 // --raw <path> <cssSelector>: after login navigate to <path>, scroll,
 // then dump the outerHTML of the first 4 matching elements with all
 // person-name-looking tokens redacted (keep dates/times/numbers/attrs).
@@ -101,6 +104,33 @@ try {
     }, rawSelector);
     console.log(`--- RAW ${rawPath} ${rawSelector} (${dump.length} Elemente, Namen redigiert) ---`);
     dump.forEach((h, i) => console.log(`[${i}] ${h}\n`));
+    await browser.close();
+    process.exit(0);
+  }
+
+  if (absClick) {
+    await loginPassword();
+    await page.goto(new URL("/absences", baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
+    await page.waitForTimeout(3500);
+    const bar = page.locator('div[data-testid^="absence-bar-"]').first();
+    if (!(await bar.count())) { console.log("keine absence-bar gefunden"); await browser.close(); process.exit(0); }
+    await bar.click({ timeout: 5000 }).catch(() => {});
+    await page.waitForTimeout(2000);
+    const dump = await page.evaluate(() => {
+      const redact = (t) => String(t || "")
+        .replace(/\b([A-ZÄÖÜ][a-zäöüß]+),\s*([A-ZÄÖÜ][a-zäöüß]+)\b/g, "NACHNAME, VORNAME")
+        .replace(/\b([A-ZÄÖÜ][a-zäöüß]{2,})\s+([A-ZÄÖÜ][a-zäöüß]{2,})\b/g, "VORNAME NACHNAME");
+      const scope = document.querySelector('[role="dialog"], [data-testid*="detail"], [data-testid*="drawer"], [data-radix-popper-content-wrapper], aside');
+      return {
+        opened: !!scope,
+        scopeTestid: scope?.getAttribute("data-testid") || scope?.getAttribute("role") || "",
+        labels: scope ? [...scope.querySelectorAll('[data-testid], dt, label, [aria-label]')].map((e) => redact(e.getAttribute("data-testid") || e.getAttribute("aria-label") || e.textContent || "").trim().slice(0, 50)).filter(Boolean).slice(0, 30) : [],
+        textSample: scope ? redact(scope.textContent || "").replace(/\s+/g, " ").slice(0, 400) : ""
+      };
+    });
+    console.log("--- ABSCLICK (Detail nach Balken-Klick, redigiert) ---");
+    console.log(JSON.stringify(dump, null, 2));
     await browser.close();
     process.exit(0);
   }
