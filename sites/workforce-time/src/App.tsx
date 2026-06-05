@@ -34,7 +34,7 @@ import {
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
 import { EmployeesView } from "./views/employees";
 
-type ViewKey = "dashboard" | "plan" | "time" | "absences" | "employees" | "payroll" | "imports" | "settings";
+type ViewKey = "dashboard" | "plan" | "time" | "absences" | "employees" | "payroll" | "reports" | "imports" | "settings";
 
 type PayrollDay = {
   date: string;
@@ -867,6 +867,7 @@ const viewMeta: Record<ViewKey, { title: string; eyebrow: string }> = {
   absences: { title: "Urlaub & Abwesenheit", eyebrow: "Anträge & Kalender" },
   employees: { title: "Mitarbeiter", eyebrow: "Stammdaten" },
   payroll: { title: "Lohnabrechnung", eyebrow: "DATEV-Export · Monatsstunden" },
+  reports: { title: "Auswertung", eyebrow: "Soll vs. Ist · Monatsbericht" },
   imports: { title: "Import & Sync", eyebrow: "Migration" },
   settings: { title: "Einstellungen", eyebrow: "Rollen & Schutz" }
 };
@@ -2005,6 +2006,12 @@ function App() {
         Aktualisieren
       </button>
     ),
+    reports: (
+      <button className="secondary-button" onClick={refresh}>
+        <RefreshCw size={17} />
+        Aktualisieren
+      </button>
+    ),
     imports: (
       <button className="primary-button" onClick={runDeltaImport} disabled={busy}>
         <RefreshCw size={18} />
@@ -2124,6 +2131,7 @@ function App() {
           <EmployeesView data={data} request={request} refresh={refresh} />
         ) : null}
         {view === "payroll" ? <PayrollView request={request} employees={data.employees} /> : null}
+        {view === "reports" ? <ReportsView request={request} /> : null}
         {view === "imports" ? (
           <ImportsView
             data={data}
@@ -2437,6 +2445,7 @@ function Sidebar({
     { view: "absences", label: "Urlaub", icon: CalendarDays },
     { view: "employees", label: "Mitarbeiter", icon: Users },
     { view: "payroll", label: "Lohnabrechnung", icon: Coins },
+    { view: "reports", label: "Auswertung", icon: BarChart3 },
     { view: "imports", label: "Import & Sync", icon: Database },
     { view: "settings", label: "Einstellungen", icon: Settings2 }
   ];
@@ -5674,6 +5683,195 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
       <span>{label}</span>
       {children}
     </label>
+  );
+}
+
+// T-009b — Reports-Frontend (claude-chat, 2026-06-05).
+// Soll/Ist-Auswertung pro Mitarbeitendem; Jahres-/Monatswechsler, Tabelle,
+// CSV-Download via /api/reports/team/monthly?format=csv.
+type TeamSollIstRow = {
+  employeeId: string;
+  employeeName: string;
+  year: number;
+  month: number;
+  weeklyTargetHours: number;
+  workingDaysInMonth: number;
+  sollMinutes: number;
+  istMinutes: number;
+  differenceMinutes: number;
+  daysWithEntries: number;
+  overlongDays: Array<{ day: string; minutes: number }>;
+};
+
+function formatMinutesAsHours(minutes: number): string {
+  const sign = minutes < 0 ? "-" : "";
+  const abs = Math.abs(minutes);
+  const hh = Math.floor(abs / 60);
+  const mm = abs % 60;
+  return `${sign}${hh}:${String(mm).padStart(2, "0")} h`;
+}
+
+function ReportsView({
+  request
+}: {
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+}) {
+  const today = new Date();
+  const defaultMonth = today.getMonth() === 0 ? 12 : today.getMonth();
+  const defaultYear = today.getMonth() === 0 ? today.getFullYear() - 1 : today.getFullYear();
+  const [year, setYear] = useState(defaultYear);
+  const [month, setMonth] = useState(defaultMonth);
+  const [rows, setRows] = useState<TeamSollIstRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setErrorMessage(null);
+    request<{ ok: boolean; report: TeamSollIstRow[] }>(
+      `/api/reports/team/monthly?year=${year}&month=${month}`
+    )
+      .then((res) => {
+        if (cancelled) return;
+        setRows(Array.isArray(res?.report) ? res.report : []);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setErrorMessage(err instanceof Error ? err.message : "Auswertung konnte nicht geladen werden");
+        setRows([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [year, month, request]);
+
+  const monthNames = [
+    "Januar", "Februar", "März", "April", "Mai", "Juni",
+    "Juli", "August", "September", "Oktober", "November", "Dezember"
+  ];
+  const yearOptions = [defaultYear + 1, defaultYear, defaultYear - 1, defaultYear - 2];
+
+  const totals = rows.reduce(
+    (acc, r) => {
+      acc.soll += r.sollMinutes;
+      acc.ist += r.istMinutes;
+      acc.diff += r.differenceMinutes;
+      acc.overlong += r.overlongDays.length;
+      return acc;
+    },
+    { soll: 0, ist: 0, diff: 0, overlong: 0 }
+  );
+
+  function csvUrl() {
+    return `/api/reports/team/monthly?year=${year}&month=${month}&format=csv`;
+  }
+
+  return (
+    <div className="payroll-view">
+      <section className="wide-panel">
+        <div className="section-heading">
+          <div>
+            <h2>Soll vs. Ist · {monthNames[month - 1]} {year}</h2>
+            <p className="section-eyebrow">
+              {loading
+                ? "Lädt …"
+                : errorMessage
+                  ? `Fehler: ${errorMessage}`
+                  : `${rows.length} Mitarbeitende · ${totals.overlong} Tage über 10 h`}
+            </p>
+          </div>
+          <div className="payroll-controls" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <Field label="Jahr">
+              <select value={year} onChange={(event) => setYear(Number(event.target.value))}>
+                {yearOptions.map((option) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Monat">
+              <select value={month} onChange={(event) => setMonth(Number(event.target.value))}>
+                {monthNames.map((name, index) => (
+                  <option key={name} value={index + 1}>{name}</option>
+                ))}
+              </select>
+            </Field>
+            <a
+              href={csvUrl()}
+              className="secondary-button"
+              style={{ textDecoration: "none", display: "inline-flex", gap: 6, alignItems: "center" }}
+              download
+            >
+              <Download size={16} />
+              CSV-Export
+            </a>
+          </div>
+        </div>
+
+        {errorMessage ? null : (
+          <div className="quota-table-wrap" style={{ overflowX: "auto" }}>
+            <table className="quota-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.92em" }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>Mitarbeitender</th>
+                  <th style={{ textAlign: "right", padding: "6px 8px" }}>Wochen-Soll</th>
+                  <th style={{ textAlign: "right", padding: "6px 8px" }}>Soll-Monat</th>
+                  <th style={{ textAlign: "right", padding: "6px 8px" }}>Ist-Monat</th>
+                  <th style={{ textAlign: "right", padding: "6px 8px" }}>Differenz</th>
+                  <th style={{ textAlign: "right", padding: "6px 8px" }}>Tage</th>
+                  <th style={{ textAlign: "right", padding: "6px 8px" }}>&gt; 10 h</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.employeeId} style={{ borderTop: "1px solid var(--color-line, #e5e7eb)" }}>
+                    <td style={{ padding: "6px 8px" }}>{r.employeeName}</td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}>{r.weeklyTargetHours} h</td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}>{formatMinutesAsHours(r.sollMinutes)}</td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}>{formatMinutesAsHours(r.istMinutes)}</td>
+                    <td style={{
+                      padding: "6px 8px",
+                      textAlign: "right",
+                      fontWeight: 600,
+                      color: r.differenceMinutes < -60
+                        ? "var(--color-danger, #b91c1c)"
+                        : r.differenceMinutes > 60
+                          ? "var(--color-success, #047857)"
+                          : "inherit"
+                    }}>{formatMinutesAsHours(r.differenceMinutes)}</td>
+                    <td style={{ padding: "6px 8px", textAlign: "right" }}>{r.daysWithEntries} / {r.workingDaysInMonth}</td>
+                    <td style={{
+                      padding: "6px 8px",
+                      textAlign: "right",
+                      color: r.overlongDays.length > 0 ? "var(--color-warning, #b45309)" : "inherit"
+                    }}>{r.overlongDays.length}</td>
+                  </tr>
+                ))}
+                {rows.length === 0 && !loading ? (
+                  <tr><td colSpan={7} style={{ padding: "12px 8px", textAlign: "center", color: "var(--color-muted, #6b7280)" }}>
+                    Keine Daten für {monthNames[month - 1]} {year}
+                  </td></tr>
+                ) : null}
+                {rows.length > 0 ? (
+                  <tr style={{ borderTop: "2px solid var(--color-line, #e5e7eb)", fontWeight: 600 }}>
+                    <td style={{ padding: "8px" }}>Summe</td>
+                    <td></td>
+                    <td style={{ padding: "8px", textAlign: "right" }}>{formatMinutesAsHours(totals.soll)}</td>
+                    <td style={{ padding: "8px", textAlign: "right" }}>{formatMinutesAsHours(totals.ist)}</td>
+                    <td style={{ padding: "8px", textAlign: "right" }}>{formatMinutesAsHours(totals.diff)}</td>
+                    <td></td>
+                    <td style={{ padding: "8px", textAlign: "right" }}>{totals.overlong}</td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
 
