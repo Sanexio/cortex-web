@@ -317,6 +317,20 @@ async function captureLiveOrdio(options) {
     await page.goto(new URL("/e", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(2500);
+    // /e is a virtualized table: without scrolling only ~2 of N rows
+    // render (verified live 2026-06-05, deep probe shows 9 after scroll).
+    // Scroll the page + any inner scroll container to force all rows.
+    for (let i = 0; i < 8; i += 1) {
+      await page.mouse.wheel(0, 4000).catch(() => {});
+      await page.evaluate(() => {
+        for (const el of document.querySelectorAll("*")) {
+          if (el.scrollHeight > el.clientHeight + 200 && /auto|scroll/.test(getComputedStyle(el).overflowY)) {
+            el.scrollTop = el.scrollHeight;
+          }
+        }
+      });
+      await page.waitForTimeout(600);
+    }
     const employeeRows = await extractEmployeeRowsFromPage(page);
 
     const workHoursRows = [];
