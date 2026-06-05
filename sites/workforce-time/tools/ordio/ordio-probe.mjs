@@ -17,6 +17,12 @@ const postLogin = args.includes("--post-login");
 // table/grid STRUCTURE ONLY — table count, header-cell labels, row
 // counts, ARIA roles. Never cell values (no employee names, no hours).
 const domStructure = args.includes("--dom-structure");
+// --deep <path>: after login, navigate to <path>, scroll to force
+// virtualized lists to render, and dump STRUCTURE ONLY of repeated
+// containers — tag, role, data-testid, child field-label hints, count,
+// and whether a scroll container exists. Never inner data values.
+const deepIdx = args.indexOf("--deep");
+const deepPath = deepIdx >= 0 ? args[deepIdx + 1] : null;
 
 const baseUrl = process.env.ORDIO_BASE_URL;
 if (!baseUrl) {
@@ -56,6 +62,49 @@ try {
     await page.getByRole("button", { name: /^(anmelden|login|sign in)$/i }).first().click();
     await page.waitForLoadState("networkidle", { timeout: 60000 }).catch(() => {});
     await page.waitForTimeout(4000);
+  }
+
+  if (deepPath) {
+    await loginPassword();
+    await page.goto(new URL(deepPath, baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
+    await page.waitForTimeout(3500);
+    // Force virtualized lists to render more rows by scrolling the page
+    // and any inner scroll containers.
+    for (let i = 0; i < 6; i += 1) {
+      await page.mouse.wheel(0, 4000).catch(() => {});
+      await page.evaluate(() => {
+        for (const el of document.querySelectorAll("*")) {
+          if (el.scrollHeight > el.clientHeight + 200 && getComputedStyle(el).overflowY !== "visible") el.scrollTop = el.scrollHeight;
+        }
+      });
+      await page.waitForTimeout(800);
+    }
+    const dump = await page.evaluate(() => {
+      const clean = (v) => String(v ?? "").replace(/\s+/g, " ").trim();
+      // Repeated structural containers: group by tag+role+testid-prefix.
+      const groups = {};
+      const sel = "[data-testid], [role=row], [role=listitem], [role=gridcell], tr, li, article";
+      for (const el of document.querySelectorAll(sel)) {
+        const testid = el.getAttribute("data-testid") || "";
+        const key = `${el.tagName.toLowerCase()}|role=${el.getAttribute("role") || ""}|testid=${testid.replace(/[0-9].*$/, "*")}`;
+        groups[key] = (groups[key] || 0) + 1;
+      }
+      const repeated = Object.entries(groups).filter(([, n]) => n >= 3).sort((a, b) => b[1] - a[1]).slice(0, 20);
+      // Field-label hints: any element with a data-field / data-column / aria-label
+      const fieldHints = [...new Set([...document.querySelectorAll("[data-field],[data-column],[aria-colindex],[aria-label]")]
+        .map((el) => el.getAttribute("data-field") || el.getAttribute("data-column") || el.getAttribute("aria-label") || "")
+        .map(clean).filter(Boolean))].slice(0, 30);
+      // Scroll containers
+      const scrollers = [...document.querySelectorAll("*")]
+        .filter((el) => el.scrollHeight > el.clientHeight + 200 && /auto|scroll/.test(getComputedStyle(el).overflowY))
+        .map((el) => `${el.tagName.toLowerCase()}.${(el.className || "").toString().split(" ")[0]}`).slice(0, 8);
+      return { url: location.href, repeatedContainers: repeated, fieldHints, scrollContainers: [...new Set(scrollers)], tableCount: document.querySelectorAll("table").length };
+    });
+    console.log(`--- DEEP ${deepPath} (Struktur, keine Werte) ---`);
+    console.log(JSON.stringify(dump, null, 2));
+    await browser.close();
+    process.exit(0);
   }
 
   if (domStructure) {
