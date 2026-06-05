@@ -13,6 +13,10 @@ const shotPath = shotIdx >= 0 ? args[shotIdx + 1] : null;
 // traffic while walking the main navigation. Prints URLs, methods and
 // top-level payload keys/array sizes ONLY — never field values.
 const postLogin = args.includes("--post-login");
+// --dom-structure: after login, visit the data pages and dump their
+// table/grid STRUCTURE ONLY — table count, header-cell labels, row
+// counts, ARIA roles. Never cell values (no employee names, no hours).
+const domStructure = args.includes("--dom-structure");
 
 const baseUrl = process.env.ORDIO_BASE_URL;
 if (!baseUrl) {
@@ -39,6 +43,55 @@ const { chromium } = await import("playwright");
 const browser = await chromium.launch({ headless: true });
 try {
   const page = await browser.newPage({ viewport: { width: 1680, height: 1050 } });
+
+  async function loginPassword() {
+    const email = process.env.ORDIO_EMAIL || process.env.ORDIO_USER || "";
+    const password = process.env.ORDIO_PASSWORD || "";
+    if (!email || !password) { console.error("Credentials fehlen"); process.exit(1); }
+    await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
+    const pw = page.getByRole("button", { name: /benutzername.*passwort|username.*password/i });
+    if (await pw.count()) await pw.first().click();
+    await page.locator("#e-mail-oder-benutzername").or(page.locator('input[autocomplete="username"]')).first().fill(email);
+    await page.locator("#passwort").or(page.locator('input[type="password"]')).first().fill(password);
+    await page.getByRole("button", { name: /^(anmelden|login|sign in)$/i }).first().click();
+    await page.waitForLoadState("networkidle", { timeout: 60000 }).catch(() => {});
+    await page.waitForTimeout(4000);
+  }
+
+  if (domStructure) {
+    await loginPassword();
+    const pages = ["/e", "/work-hours", "/absences", "/reporting"];
+    const out = [];
+    for (const path of pages) {
+      try {
+        await page.goto(new URL(path, baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
+        await page.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
+        await page.waitForTimeout(3500);
+      } catch { /* still dump what rendered */ }
+      // STRUCTURE ONLY: header labels + row counts + roles. No data cells.
+      const struct = await page.evaluate(() => {
+        const tables = [...document.querySelectorAll("table, [role=table], [role=grid]")].map((t) => ({
+          headers: [...t.querySelectorAll("thead th, [role=columnheader]")].map((h) => (h.innerText || "").trim().slice(0, 40)),
+          bodyRows: t.querySelectorAll("tbody tr, [role=row]").length
+        }));
+        // Common SPA list pattern: repeated role=listitem / data-testid rows
+        const listGroups = {};
+        for (const el of document.querySelectorAll("[data-testid], [role=listitem]")) {
+          const key = el.getAttribute("data-testid") || "role:listitem";
+          listGroups[key] = (listGroups[key] || 0) + 1;
+        }
+        return {
+          tables,
+          repeatedTestIds: Object.entries(listGroups).filter(([, n]) => n > 2).sort((a, b) => b[1] - a[1]).slice(0, 15)
+        };
+      });
+      out.push({ path, urlAfter: page.url(), ...struct });
+    }
+    console.log("--- DOM-STRUKTUR (nur Spaltenlabels + Zeilenzahlen, keine Werte) ---");
+    console.log(JSON.stringify(out, null, 2));
+    await browser.close();
+    process.exit(0);
+  }
 
   if (postLogin) {
     const email = process.env.ORDIO_EMAIL || process.env.ORDIO_USER || "";
