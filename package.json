@@ -1,7 +1,7 @@
 {
   "name": "cortex-web",
   "version": "0.1.0",
-  "description": "Common Trunk für westend-hausarzt.com (WP) und sanexio.eu (Shopify)",
+  "description": "Common Trunk Framework für Tenant-Sites (WordPress + Shopify), Tenant-Daten im privaten Tenant-Repo",
   "private": true,
   "type": "module",
   "scripts": {
