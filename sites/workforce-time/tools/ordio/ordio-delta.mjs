@@ -362,7 +362,14 @@ async function captureLiveOrdio(options) {
     for (const week of isoWeeksInRange(options.from, options.to)) {
       await page.goto(new URL("/work-hours", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
-      await applyWorkHoursPickerRange(page, week.start, week.end);
+      // Picker is best-effort: Ordio's "Zeitraum wählen" is a calendar
+      // day-grid (probe 2026-06-05), not text inputs — if range-setting
+      // fails we must still read the default view, never abort the run.
+      try {
+        await applyWorkHoursPickerRange(page, week.start, week.end);
+      } catch (error) {
+        if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG Picker fuer ${week.label} fehlgeschlagen (${error.message.split("\n")[0]}); Default-Ansicht wird gelesen.`);
+      }
       await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
       await page.waitForTimeout(3500); // let the virtualized table hydrate its rows
       if (process.env.ORDIO_DEBUG) await logWorkHoursDiagnostics(page, week.label);
@@ -393,26 +400,48 @@ async function applyWorkHoursPickerRange(page, from, to) {
   await pickerButton.first().click();
   await page.waitForTimeout(500);
 
+  // Short, visible-only fill with hard timeout so a wrong guess fails
+  // fast instead of hanging 30s on a hidden input.
+  const fillVisible = async (locator, value) => {
+    const el = locator.locator("visible=true").first();
+    if (!(await el.count())) return false;
+    await el.fill(value, { timeout: 4000 });
+    return true;
+  };
+
   const dateInputs = page.locator('input[type="date"]');
+  let filled = false;
   if (await dateInputs.count() >= 2) {
-    await dateInputs.nth(0).fill(from);
-    await dateInputs.nth(1).fill(to);
-  } else {
-    const textInputs = page.locator('input:not([type]), input[type="text"], input[placeholder*="TT"], input[placeholder*="Datum"]');
+    filled = (await fillVisible(dateInputs.nth(0), from)) && (await fillVisible(dateInputs.nth(1), to));
+  }
+  if (!filled) {
+    const textInputs = page.locator('input[type="text"], input[placeholder*="TT"], input[placeholder*="Datum"]');
     const fromDe = toGermanDate(from);
     const toDe = toGermanDate(to);
     if (await textInputs.count() >= 2) {
-      await textInputs.nth(0).fill(fromDe);
-      await textInputs.nth(1).fill(toDe);
-    } else {
-      const candidate = page.getByRole("textbox").first();
-      if (await candidate.count()) {
-        await candidate.fill(`${fromDe} - ${toDe}`);
-      } else {
-        if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker geoeffnet, aber keine Datumsfelder gefunden.");
-        return false;
-      }
+      filled = (await fillVisible(textInputs.nth(0), fromDe)) && (await fillVisible(textInputs.nth(1), toDe));
     }
+  }
+  if (!filled) {
+    // Calendar day-grid fallback: click start then end day button. Only
+    // works within the currently shown month(s); month nav is icon-only
+    // and not yet automated — best-effort, leaves default view if it misses.
+    const dayButton = (iso) => {
+      const day = String(Number(iso.slice(8, 10)));
+      return page.getByRole("button", { name: new RegExp(`^${day}$`) });
+    };
+    try {
+      if (await dayButton(from).count()) await dayButton(from).first().click({ timeout: 3000 });
+      if (await dayButton(to).count()) await dayButton(to).first().click({ timeout: 3000 });
+      filled = true;
+    } catch {
+      filled = false;
+    }
+  }
+  if (!filled) {
+    if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker: weder Datumsfelder noch Tagesraster setzbar; Default-Ansicht.");
+    await page.keyboard.press("Escape").catch(() => {});
+    return false;
   }
 
   const apply = page.getByRole("button", { name: /anwenden|übernehmen|uebernehmen|speichern|ok/i });
