@@ -46,7 +46,7 @@ type ShiftConflictCheckPayload = {
 };
 const ShiftConflictContext = createContext<((payload: ShiftConflictCheckPayload) => Promise<ShiftConflict[]>) | null>(null);
 
-type ViewKey = "dashboard" | "plan" | "time" | "absences" | "approvals" | "employees" | "payroll" | "reports" | "imports" | "admin" | "settings";
+type ViewKey = "dashboard" | "plan" | "time" | "absences" | "approvals" | "employees" | "payroll" | "reports" | "imports" | "stamp" | "admin" | "settings";
 
 type PayrollDay = {
   date: string;
@@ -882,6 +882,7 @@ const viewMeta: Record<ViewKey, { title: string; eyebrow: string }> = {
   payroll: { title: "Lohnabrechnung", eyebrow: "DATEV-Export · Monatsstunden" },
   reports: { title: "Auswertung", eyebrow: "Soll vs. Ist · Monatsbericht" },
   imports: { title: "Import & Sync", eyebrow: "Migration" },
+  stamp: { title: "Stempeluhr", eyebrow: "Kiosk-Modus" },
   admin: { title: "Benutzer & Rollen", eyebrow: "Rollen-Verwaltung" },
   settings: { title: "Einstellungen", eyebrow: "Rollen & Schutz" }
 };
@@ -2038,6 +2039,12 @@ function App() {
         Delta-Sync
       </button>
     ),
+    stamp: (
+      <button className="secondary-button" onClick={refresh}>
+        <RefreshCw size={17} />
+        Aktualisieren
+      </button>
+    ),
     admin: (
       <button className="secondary-button" onClick={refresh}>
         <RefreshCw size={17} />
@@ -2189,6 +2196,7 @@ function App() {
             setActiveWeekStart={setActiveWeekStart}
           />
         ) : null}
+        {view === "stamp" ? <StampKioskView employees={data.employees} request={request} /> : null}
         {view === "admin" ? <AdminRolesView request={request} authUser={authUser} /> : null}
         {view === "settings" ? <SettingsView data={data} apiMessage={apiMessage} /> : null}
       </main>
@@ -2497,6 +2505,7 @@ function Sidebar({
     { view: "payroll", label: "Lohnabrechnung", icon: Coins },
     { view: "reports", label: "Auswertung", icon: BarChart3 },
     { view: "imports", label: "Import & Sync", icon: Database },
+    { view: "stamp", label: "Stempeluhr", icon: QrCode },
     { view: "admin", label: "Rollen-Admin", icon: ShieldCheck },
     { view: "settings", label: "Einstellungen", icon: Settings2 }
   ];
@@ -6500,6 +6509,227 @@ function ApprovalsView({
             ))}
           </ul>
         )}
+      </section>
+    </div>
+  );
+}
+
+// T-004b — Stempeluhr Kiosk (claude-chat, 2026-06-05).
+// Großflächige Touch-Buttons (Start/Ende/Pause-Start/Pause-Ende), Auswahl
+// des aktiven Mitarbeitenden per Dropdown. State-Polling auf
+// GET /api/stamp/state?employeeId=. Offline-Resilience via LocalStorage-Queue:
+// fehlgeschlagene Aktionen werden bei nächstem Klick erneut versucht.
+type StampState = {
+  active: boolean;
+  timeEntryId?: string;
+  startsAt?: string;
+  onBreak?: boolean;
+  breakStartedAt?: string | null;
+  accruedUnpaidBreakMinutes?: number;
+};
+type StampQueueItem = { op: "start" | "end" | "break-start" | "break-end"; employeeId: string; queuedAt: string };
+const STAMP_QUEUE_KEY = "workforce-time:stamp-queue:v1";
+
+function loadStampQueue(): StampQueueItem[] {
+  try {
+    const raw = localStorage.getItem(STAMP_QUEUE_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as StampQueueItem[];
+  } catch {
+    return [];
+  }
+}
+
+function saveStampQueue(items: StampQueueItem[]) {
+  try {
+    localStorage.setItem(STAMP_QUEUE_KEY, JSON.stringify(items));
+  } catch {
+    /* full or blocked */
+  }
+}
+
+function StampKioskView({
+  employees,
+  request
+}: {
+  employees: Employee[];
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+}) {
+  const [employeeId, setEmployeeId] = useState(employees[0]?.id ?? "");
+  const [state, setState] = useState<StampState>({ active: false });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+  const [queueLen, setQueueLen] = useState(loadStampQueue().length);
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  async function fetchState(emp: string) {
+    if (!emp) return;
+    try {
+      const res = await request<StampState>(`/api/stamp/state?employeeId=${encodeURIComponent(emp)}`);
+      setState(res ?? { active: false });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "State-Abruf fehlgeschlagen");
+    }
+  }
+
+  useEffect(() => {
+    fetchState(employeeId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [employeeId]);
+
+  async function flushQueue() {
+    const queue = loadStampQueue();
+    if (queue.length === 0) return;
+    const next: StampQueueItem[] = [];
+    for (const item of queue) {
+      try {
+        await request(`/api/stamp/${item.op}`, {
+          method: "POST",
+          body: JSON.stringify({ employeeId: item.employeeId })
+        });
+      } catch {
+        next.push(item);
+      }
+    }
+    saveStampQueue(next);
+    setQueueLen(next.length);
+  }
+
+  async function doOp(op: StampQueueItem["op"]) {
+    if (!employeeId) {
+      setError("Bitte Mitarbeitenden wählen.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    setInfo(null);
+    try {
+      await flushQueue();
+      await request(`/api/stamp/${op}`, {
+        method: "POST",
+        body: JSON.stringify({ employeeId })
+      });
+      setInfo(`OK: ${op}`);
+      await fetchState(employeeId);
+    } catch (err) {
+      const queue = loadStampQueue();
+      queue.push({ op, employeeId, queuedAt: new Date().toISOString() });
+      saveStampQueue(queue);
+      setQueueLen(queue.length);
+      setError(`Offline-Queue: ${queue.length} Aktion(en) warten auf Sync. Letzter Fehler: ${err instanceof Error ? err.message : "unbekannt"}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const currentEmp = employees.find((e) => e.id === employeeId);
+  const elapsedMs = state.active && state.startsAt ? now - new Date(state.startsAt).getTime() : 0;
+  const elapsedH = Math.floor(elapsedMs / 3_600_000);
+  const elapsedM = Math.floor((elapsedMs % 3_600_000) / 60_000);
+
+  const bigBtnStyle: React.CSSProperties = {
+    padding: "24px 32px",
+    fontSize: "1.2em",
+    fontWeight: 600,
+    borderRadius: 14,
+    border: "1px solid var(--color-line, #e5e7eb)",
+    cursor: "pointer"
+  };
+
+  return (
+    <div className="stamp-kiosk" style={{ display: "flex", flexDirection: "column", gap: 18, padding: 24 }}>
+      <section className="wide-panel" style={{ padding: 20 }}>
+        <div className="section-heading">
+          <div>
+            <h2>Stempeluhr · Kiosk</h2>
+            <p className="section-eyebrow">
+              {currentEmp?.name ?? "—"} · {state.active ? `aktiv seit ${state.startsAt ?? "?"}` : "nicht aktiv"}
+              {queueLen > 0 ? ` · Offline-Queue: ${queueLen}` : ""}
+            </p>
+          </div>
+          <select
+            value={employeeId}
+            onChange={(event) => setEmployeeId(event.target.value)}
+            style={{ padding: "12px 16px", fontSize: "1.05em", borderRadius: 10 }}
+          >
+            <option value="">— Mitarbeitenden wählen —</option>
+            {employees.map((employee) => (
+              <option key={employee.id} value={employee.id}>{employee.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ display: "flex", gap: 16, justifyContent: "center", alignItems: "baseline", marginTop: 24 }}>
+          <div style={{ fontSize: "3.4em", fontWeight: 700, fontFamily: "monospace" }}>
+            {state.active
+              ? `${String(elapsedH).padStart(2, "0")}:${String(elapsedM).padStart(2, "0")}`
+              : "00:00"}
+          </div>
+          <div style={{ color: "var(--color-muted, #6b7280)" }}>
+            {state.onBreak ? "in Pause" : state.active ? "läuft" : "gestoppt"}
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 24 }}>
+          <button
+            type="button"
+            disabled={busy || state.active}
+            onClick={() => doOp("start")}
+            style={{ ...bigBtnStyle, background: "var(--color-success-soft, #dcfce7)", color: "var(--color-success, #047857)" }}
+          >
+            ▶︎ Start
+          </button>
+          <button
+            type="button"
+            disabled={busy || !state.active}
+            onClick={() => doOp("end")}
+            style={{ ...bigBtnStyle, background: "var(--color-danger-soft, #fee2e2)", color: "var(--color-danger, #b91c1c)" }}
+          >
+            ■ Ende
+          </button>
+          <button
+            type="button"
+            disabled={busy || !state.active || !!state.onBreak}
+            onClick={() => doOp("break-start")}
+            style={{ ...bigBtnStyle, background: "var(--color-warning-soft, #fef3c7)", color: "var(--color-warning, #b45309)" }}
+          >
+            ☕︎ Pause beginnen
+          </button>
+          <button
+            type="button"
+            disabled={busy || !state.active || !state.onBreak}
+            onClick={() => doOp("break-end")}
+            style={{ ...bigBtnStyle, background: "var(--color-info-soft, #dbeafe)", color: "var(--color-info, #1d4ed8)" }}
+          >
+            ⏵ Pause beenden
+          </button>
+        </div>
+
+        {error ? (
+          <p style={{ marginTop: 16, color: "var(--color-danger, #b91c1c)" }}>{error}</p>
+        ) : null}
+        {info ? (
+          <p style={{ marginTop: 16, color: "var(--color-success, #047857)" }}>{info}</p>
+        ) : null}
+        {queueLen > 0 ? (
+          <button
+            type="button"
+            onClick={async () => {
+              await flushQueue();
+              await fetchState(employeeId);
+            }}
+            className="secondary-button compact-action"
+            style={{ marginTop: 12 }}
+          >
+            Offline-Queue synchronisieren ({queueLen})
+          </button>
+        ) : null}
       </section>
     </div>
   );
