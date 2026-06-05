@@ -275,9 +275,24 @@ async function captureLiveOrdio(options) {
     });
 
     await page.goto(process.env.ORDIO_BASE_URL, { waitUntil: "domcontentloaded" });
-    await page.getByLabel(/e-?mail|benutzer|user/i).fill(ordioEmail);
-    await page.getByLabel(/passwort|password/i).fill(process.env.ORDIO_PASSWORD);
-    await page.getByRole("button", { name: /anmelden|login|sign in/i }).click();
+    // Ordio defaults to magic-link mode (probe 2026-06-05): password login
+    // sits behind the mode-switch button "Mit Benutzername & Passwort anmelden".
+    const pwModeButton = page.getByRole("button", { name: /benutzername.*passwort|username.*password/i });
+    if (await pwModeButton.count()) {
+      await pwModeButton.first().click();
+    }
+    const userField = page
+      .locator("#e-mail-oder-benutzername")
+      .or(page.locator('input[autocomplete="username"]'))
+      .or(page.getByLabel(/e-?mail|benutzer|user/i));
+    await userField.first().fill(ordioEmail);
+    const passwordField = page
+      .locator("#passwort")
+      .or(page.locator('input[type="password"]'))
+      .or(page.getByLabel(/passwort|password/i));
+    await passwordField.first().fill(process.env.ORDIO_PASSWORD);
+    // Exact-anchored name: avoid matching "Mit Google anmelden" / mode-switch.
+    await page.getByRole("button", { name: /^(anmelden|login|sign in)$/i }).first().click();
     await page.waitForLoadState("networkidle");
     return { sourceSystem: "ordio", capturedAt: new Date().toISOString(), responses };
   } finally {
