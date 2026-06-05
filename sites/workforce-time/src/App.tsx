@@ -2143,6 +2143,8 @@ function App() {
               openShiftDialog(shiftDefaultsFromTemplate(slot, day, data.locations))
             }
             onShowCalculation={setCalculation}
+            request={request}
+            authUser={authUser}
           />
         ) : null}
         {view === "time" ? (
@@ -3282,7 +3284,9 @@ function PlanView({
   setView,
   onEditShift,
   onPlanShift,
-  onShowCalculation
+  onShowCalculation,
+  request,
+  authUser
 }: {
   activeWeekStart: string;
   data: BootstrapPayload;
@@ -3291,7 +3295,12 @@ function PlanView({
   onEditShift: (shift: Shift) => void;
   onPlanShift: (template: ShiftSlotTemplate, day: string) => void;
   onShowCalculation: (details: CalculationDetails) => void;
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  authUser: AuthUser | null;
 }) {
+  // T-003b — Schichttausch
+  const [swapOpen, setSwapOpen] = useState(false);
+  const [swapInfo, setSwapInfo] = useState<string | null>(null);
   const weekStart = activeWeekStart;
   const weekEnd = addDays(weekStart, 6);
   const isCompactPlanner = useMediaQuery("(max-width: 760px)");
@@ -3326,13 +3335,34 @@ function PlanView({
           <h2>{formatShortDate(weekStart)} - {formatShortDate(weekEnd)}</h2>
           <WeekNavigator weekStart={weekStart} onWeekChange={setActiveWeekStart} />
         </div>
-        <MonthHoursCounter
-          employees={data.employees}
-          timeEntries={data.timeEntries}
-          weekStart={weekStart}
-          onShowCalculation={onShowCalculation}
-        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
+          <MonthHoursCounter
+            employees={data.employees}
+            timeEntries={data.timeEntries}
+            weekStart={weekStart}
+            onShowCalculation={onShowCalculation}
+          />
+          <button className="secondary-button compact-action" type="button" onClick={() => setSwapOpen(true)}>
+            <RefreshCw size={14} /> Tausch anfragen
+          </button>
+          {swapInfo ? (
+            <span style={{ fontSize: "0.85em", color: "var(--color-success, #047857)" }}>{swapInfo}</span>
+          ) : null}
+        </div>
       </section>
+      {swapOpen ? (
+        <SwapRequestDialog
+          data={data}
+          authUser={authUser}
+          request={request}
+          weekStart={weekStart}
+          onClose={() => setSwapOpen(false)}
+          onSubmitted={(swapId) => {
+            setSwapOpen(false);
+            setSwapInfo(`Tauschwunsch angelegt (${swapId}). Wartet auf Akzept.`);
+          }}
+        />
+      ) : null}
 
       {isCompactPlanner || canShowWeekend ? (
         <div className="planner-day-controls">
@@ -4618,6 +4648,126 @@ function CorrectionRequestDialog({
           <button type="button" className="secondary-button" onClick={onClose} disabled={busy}>Abbrechen</button>
           <button type="submit" className="primary-button" disabled={busy}>
             {busy ? "Lädt …" : "Antrag stellen"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+// T-003b — Schichttausch-Dialog (claude-chat, 2026-06-05).
+// Antragsteller = authUser.employeeId; wählt eigene Schicht in dieser Woche aus,
+// optional konkreter Tausch-Partner, plus Begründung.
+function SwapRequestDialog({
+  data,
+  authUser,
+  request,
+  weekStart,
+  onClose,
+  onSubmitted
+}: {
+  data: BootstrapPayload;
+  authUser: AuthUser | null;
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  weekStart: string;
+  onClose: () => void;
+  onSubmitted: (swapId: string) => void;
+}) {
+  const requesterEmployeeId = authUser?.employeeId ?? "";
+  const weekEnd = addDays(weekStart, 6);
+  const ownShifts = data.shifts.filter(
+    (shift) =>
+      dateInRange(shift.startDate, weekStart, weekEnd) &&
+      shift.assignments.some((a) => a.id === requesterEmployeeId)
+  );
+  const [requesterShiftId, setRequesterShiftId] = useState(ownShifts[0]?.id ?? "");
+  const [targetEmployeeId, setTargetEmployeeId] = useState("");
+  const [reason, setReason] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!requesterEmployeeId) {
+      setError("Eigene Mitarbeiter-ID fehlt im Auth-Profil.");
+      return;
+    }
+    if (!requesterShiftId) {
+      setError("Bitte eigene Schicht auswählen.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await request<{ ok: boolean; swapRequest: { id: string } }>("/api/swap-requests", {
+        method: "POST",
+        body: JSON.stringify({
+          requesterEmployeeId,
+          requesterShiftId,
+          targetEmployeeId: targetEmployeeId || null,
+          reason: reason.trim() || null
+        })
+      });
+      onSubmitted(res?.swapRequest?.id ?? "");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Tauschwunsch konnte nicht angelegt werden");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const otherEmployees = data.employees.filter((e) => e.id !== requesterEmployeeId);
+
+  return (
+    <div className="dialog-backdrop" role="dialog" aria-modal="true">
+      <form className="dialog" onSubmit={submit}>
+        <header className="dialog-head">
+          <div>
+            <p className="eyebrow">Schichttausch</p>
+            <h2>Tauschwunsch · KW {getCalendarWeek(weekStart)}</h2>
+          </div>
+          <button type="button" className="icon-button" aria-label="Schließen" onClick={onClose}>
+            <X size={18} />
+          </button>
+        </header>
+        {!requesterEmployeeId ? (
+          <p style={{ padding: "0 16px", color: "var(--color-danger, #b91c1c)" }}>
+            Auth-Profil hat keine Mitarbeiter-ID. Tauschwunsch nicht möglich.
+          </p>
+        ) : null}
+        {ownShifts.length === 0 && requesterEmployeeId ? (
+          <p style={{ padding: "0 16px", color: "var(--color-warning, #b45309)" }}>
+            Keine eigenen Schichten in dieser Woche.
+          </p>
+        ) : null}
+        <div className="dialog-body" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }}>
+          <Field label="Meine Schicht">
+            <select value={requesterShiftId} onChange={(e) => setRequesterShiftId(e.target.value)} required>
+              <option value="">— Schicht wählen —</option>
+              {ownShifts.map((shift) => (
+                <option value={shift.id} key={shift.id}>
+                  {formatShortDate(shift.startDate)} · {shift.startTime}–{shift.endTime} · {shift.area} ({shift.location})
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Tausch-Partner (optional)">
+            <select value={targetEmployeeId} onChange={(e) => setTargetEmployeeId(e.target.value)}>
+              <option value="">Offen für alle</option>
+              {otherEmployees.map((employee) => (
+                <option value={employee.id} key={employee.id}>{employee.name}</option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Begründung (optional)">
+            <input type="text" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="z.B. Arzttermin am Vormittag" />
+          </Field>
+        </div>
+        {error ? <p style={{ padding: "0 16px", color: "var(--color-danger, #b91c1c)" }}>{error}</p> : null}
+        <div className="dialog-actions" style={{ display: "flex", gap: 8, justifyContent: "flex-end", padding: 16 }}>
+          <button type="button" className="secondary-button" onClick={onClose} disabled={busy}>Abbrechen</button>
+          <button type="submit" className="primary-button" disabled={busy || !requesterEmployeeId || ownShifts.length === 0}>
+            {busy ? "Lädt …" : "Tauschwunsch posten"}
           </button>
         </div>
       </form>
