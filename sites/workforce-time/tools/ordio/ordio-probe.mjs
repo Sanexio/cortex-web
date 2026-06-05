@@ -27,6 +27,10 @@ const deepPath = deepIdx >= 0 ? args[deepIdx + 1] : null;
 // picker popover STRUCTURE (buttons, nav controls, inputs, aria-labels)
 // so the interactive paging in ordio-delta can drive it. No data values.
 const pickerProbe = args.includes("--picker");
+// --absrows: dump /absences grid row→employee linkage. For each
+// absence-bar, walk ancestors to find the row container + its left
+// row-header (employee). Prints initials + ancestor tag/testid chain.
+const absRows = args.includes("--absrows");
 // --raw <path> <cssSelector>: after login navigate to <path>, scroll,
 // then dump the outerHTML of the first 4 matching elements with all
 // person-name-looking tokens redacted (keep dates/times/numbers/attrs).
@@ -97,6 +101,45 @@ try {
     }, rawSelector);
     console.log(`--- RAW ${rawPath} ${rawSelector} (${dump.length} Elemente, Namen redigiert) ---`);
     dump.forEach((h, i) => console.log(`[${i}] ${h}\n`));
+    await browser.close();
+    process.exit(0);
+  }
+
+  if (absRows) {
+    await loginPassword();
+    await page.goto(new URL("/absences", baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
+    await page.waitForTimeout(3500);
+    const dump = await page.evaluate(() => {
+      const ini = (s) => String(s || "").trim().split(/\s+/).map((w) => w[0] || "").join("").toUpperCase().slice(0, 4);
+      const bars = [...document.querySelectorAll('div[data-testid^="absence-bar-"]')].slice(0, 6);
+      return bars.map((bar) => {
+        const chain = [];
+        let el = bar;
+        for (let i = 0; i < 8 && el; i += 1) {
+          chain.push({
+            tag: el.tagName.toLowerCase(),
+            testid: el.getAttribute("data-testid") || "",
+            role: el.getAttribute("role") || "",
+            dataRow: el.getAttribute("data-row-id") || el.getAttribute("data-employee-id") || el.getAttribute("data-employee") || "",
+            cls: (el.className || "").toString().slice(0, 40)
+          });
+          el = el.parentElement;
+        }
+        // candidate row = nearest ancestor with role=row or data-row*/data-employee*
+        let row = bar.parentElement, hops = 0;
+        while (row && hops < 8 && !(row.getAttribute("role") === "row" || row.getAttribute("data-row-id") || row.getAttribute("data-employee-id") || row.getAttribute("data-employee"))) { row = row.parentElement; hops += 1; }
+        // left row-header text: first descendant text of the row's first cell
+        let headerIni = "";
+        if (row) {
+          const firstCell = row.querySelector('[role="rowheader"], [data-testid*="employee"], [data-testid*="row-label"], a, span');
+          headerIni = ini(firstCell ? firstCell.textContent : "");
+        }
+        return { barTestid: bar.getAttribute("data-testid"), barTop: bar.style.top || "", rowFound: !!row, rowAttrs: row ? { role: row.getAttribute("role") || "", testid: row.getAttribute("data-testid") || "", dataEmp: row.getAttribute("data-employee-id") || row.getAttribute("data-employee") || "" } : null, rowHeaderInitials: headerIni, ancestorChain: chain };
+      });
+    });
+    console.log("--- ABSROWS (/absences Bar→Zeile→Mitarbeiter, Initialen) ---");
+    console.log(JSON.stringify(dump, null, 2));
     await browser.close();
     process.exit(0);
   }
