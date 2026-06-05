@@ -4211,9 +4211,20 @@ function pad2(value) {
   return String(value).padStart(2, "0");
 }
 
-function diffMinutes(startIso, endIso) {
-  const start = new Date(startIso).getTime();
-  const end = new Date(endIso).getTime();
+// H5: timestamps are stored as naive local wall-clock (YYYY-MM-DDTHH:MM[:SS]).
+// `new Date(iso)` interprets them in the host timezone, so a night shift across
+// a DST switch (28.03. 22:00 -> 29.03. 06:00) would compute 7h or 9h instead of
+// 8h. Anchor both ends to UTC by parsing the wall-clock components directly:
+// the (zero) offset is identical for both, so DST never distorts the duration.
+function wallClockToUtcMs(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/.exec(String(iso));
+  if (!m) return NaN;
+  return Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5]), m[6] ? Number(m[6]) : 0);
+}
+
+export function diffMinutes(startIso, endIso) {
+  const start = wallClockToUtcMs(startIso);
+  const end = wallClockToUtcMs(endIso);
   if (Number.isNaN(start) || Number.isNaN(end) || end <= start) return 0;
   return Math.round((end - start) / 60_000);
 }
@@ -4223,7 +4234,14 @@ function dayBucketFromIso(iso) {
 }
 
 function escapeCsvField(value) {
-  const text = value === null || value === undefined ? "" : String(value);
+  let text = value === null || value === undefined ? "" : String(value);
+  // H7: neutralise CSV formula injection. A field starting with = + - @ (or a
+  // leading tab/CR) is executed as a formula by Excel/LibreOffice and can
+  // exfiltrate data or run DDE. Prefix such fields with a single quote so the
+  // spreadsheet treats them as text. Do this before quoting.
+  if (/^[=+\-@\t\r]/.test(text)) {
+    text = `'${text}`;
+  }
   if (/[",;\r\n]/.test(text)) {
     return `"${text.replace(/"/g, '""')}"`;
   }
@@ -5108,11 +5126,41 @@ export function buildPayrollExport({ year, month } = {}) {
 
   const personnelMap = loadPayrollPersonnelNumberMap();
   const perEmployee = new Map();
+  // Data-quality findings surfaced to the operator instead of being silently
+  // swallowed (H6) or under-pausing freigegeben entries (H8, ArbZG §4).
+  const breakExceedsWork = [];
+  const arbzgBreakViolations = [];
 
   for (const row of rows) {
     const grossMinutes = diffMinutes(row.starts_at, row.ends_at);
     const unpaidBreak = Number(row.unpaid_break_minutes) || 0;
     const paidBreak = Number(row.paid_break_minutes) || 0;
+    // H6: clamping a >gross unpaid break to net=0 hides obvious data errors
+    // (e.g. an 874-min break on a 194-min shift). Keep the clamp so the export
+    // never goes negative, but flag the entry so a human reviews it.
+    if (unpaidBreak > grossMinutes) {
+      breakExceedsWork.push({
+        timeEntryId: row.id,
+        employeeId: row.employee_id,
+        employeeName: practiceDisplayName(row.employee_name),
+        date: dayBucketFromIso(row.starts_at),
+        grossMinutes,
+        unpaidBreakMinutes: unpaidBreak
+      });
+    }
+    // H8: ArbZG §4 minimum unpaid breaks — >6h ⇒ 30 min, >9h ⇒ 45 min.
+    const requiredBreak = grossMinutes > 9 * 60 ? 45 : grossMinutes > 6 * 60 ? 30 : 0;
+    if (requiredBreak > 0 && unpaidBreak < requiredBreak) {
+      arbzgBreakViolations.push({
+        timeEntryId: row.id,
+        employeeId: row.employee_id,
+        employeeName: practiceDisplayName(row.employee_name),
+        date: dayBucketFromIso(row.starts_at),
+        grossMinutes,
+        unpaidBreakMinutes: unpaidBreak,
+        requiredBreakMinutes: requiredBreak
+      });
+    }
     const netMinutes = Math.max(0, grossMinutes - unpaidBreak);
     const day = dayBucketFromIso(row.starts_at);
 
@@ -5222,6 +5270,8 @@ export function buildPayrollExport({ year, month } = {}) {
     totals,
     warnings: {
       missingPersonnelNumbers,
+      breakExceedsWork,
+      arbzgBreakViolations,
       onlyApprovedEntriesIncluded: true,
       lohnartCode: "100"
     }
@@ -5260,6 +5310,19 @@ export function renderPayrollExportCsv(report) {
 }
 
 export function renderPayrollExportDatevLodas(report) {
+  // C3: refuse to render rather than silently dropping employees without a
+  // personnel number — they would be paid 0€ unnoticed. Hard-fail so the
+  // operator must assign numbers first.
+  const missing = report.warnings?.missingPersonnelNumbers ?? [];
+  if (missing.length > 0) {
+    const names = missing.map((m) => m.employeeName || m.employeeId).join(", ");
+    const error = new Error(
+      `LODAS-Export abgebrochen: ${missing.length} Mitarbeiter ohne Personalnummer (${names}). ` +
+        `Erst Personalnummern vergeben — sonst fehlen diese Personen im Lohn.`
+    );
+    error.code = "MISSING_PERSONNEL_NUMBERS";
+    throw error;
+  }
   const lohnart = report.warnings.lohnartCode ?? "100";
   const headerLines = [
     "[Allgemein]",

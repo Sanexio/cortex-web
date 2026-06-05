@@ -4,6 +4,51 @@ Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](htt
 
 ## Unreleased
 
+### Workforce-Time Security- & Korrektheits-Fixes nach adversarialer Review (2026-06-05)
+
+Behebt die blockierenden Funde der 4-Achsen-Review (Stufe 1+2). Alle gegen
+die Staging-DB end-to-end verifiziert; Tests ergaenzt.
+
+`sites/workforce-time/` — **Sicherheit/Integritaet:**
+
+- **C1 — Serverseitige Admin-Durchsetzung** (`server/api.js`): neues
+  `requireAdmin`-Gate vor allen Admin-/Lohn-/Mutations-Routen (Payroll,
+  admin/users + Rollen-Change, Employee-CRUD, Shift-CRUD, Imports,
+  Approvals, Corrections, Reports, Absence-Status, Quota-Gesamt). Ein
+  eingeloggter Mitarbeiter erhaelt jetzt 403 statt Vollzugriff und kann
+  sich nicht mehr selbst zum Admin machen (DB-Beleg: Rolle unveraendert).
+- **C2 — Auth fail-closed** (`server/auth.js`): `authEnforcementEnabled()`
+  erzwingt das Session-Gate per Default; nur ein NICHT-Produktions-Prozess
+  mit explizitem `WORKFORCE_AUTH_DISABLE=1` schaltet ab (in Produktion
+  ignoriert). `server/dev.js` setzt das Flag fuer lokale Entwicklung.
+- **H1 — Identitaet aus der Session** (`server/api.js`): Stempeln,
+  Schichttausch-Annahme/Ablehnung/Storno, Korrektur-Reviewer und
+  Rollen-Actor stammen jetzt aus der authentifizierten Session, nicht aus
+  dem Client-Body (DB-Beleg: gefaelschte employeeId wird ignoriert).
+
+`sites/workforce-time/` — **Lohn-/Zeit-Korrektheit:**
+
+- **C3 — LODAS bricht hart ab** (`server/db.js`, `tools/export-datev.mjs`,
+  `server/api.js`): Mitarbeiter ohne Personalnummer werden nicht mehr
+  still aus dem DATEV-Export geloescht — der Renderer wirft
+  `MISSING_PERSONNEL_NUMBERS`, die API liefert 409, das CLI bricht mit
+  Exit 4 ab.
+- **H5 — DST-feste Dauer** (`server/db.js`): `diffMinutes` rechnet
+  Wanduhr-Differenz ueber UTC-Anker; Nachtschichten ueber die
+  Zeitumstellung bleiben 8h (vorher 7h/9h).
+- **H6 — Pausen-Clamp-Maskierung** (`server/db.js`): `unpaidBreak > gross`
+  wird als `warnings.breakExceedsWork` gemeldet statt still auf 0 geklemmt.
+- **H7 — CSV-Formel-Injection** (`server/db.js`): `escapeCsvField`
+  entschaerft fuehrende `= + - @`/Tab mit Apostroph-Prefix.
+- **H8 — ArbZG-Pausenschwelle** (`src/App.tsx`, `server/db.js`):
+  Mindestpause >9h auf 45 min korrigiert (war 60); freigegebene
+  Unterschreitungen werden als `warnings.arbzgBreakViolations` ausgewiesen.
+- Tests: `server/payroll-export.test.mjs` um DST, CSV-Injection und
+  LODAS-Hard-Fail erweitert (7 Tests gruen).
+
+**Offen (separate Stufen):** C4/C5 Ops (ReadWritePaths, WAL), C6/H12
+OSS-Domain-Leak + Lint-Scope, H2-H4/H9-H11 sowie DSGVO Art. 9/17.
+
 ### Workforce-Time Backup-Konzept + DATEV-Probelauf-Fixes (2026-06-05)
 
 `sites/workforce-time/`:

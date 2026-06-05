@@ -1,9 +1,14 @@
 import { spawn } from "node:child_process";
 
+// Local dev convenience: the API gate is fail-closed by default (C2), so we
+// explicitly opt out here. NEVER set this in production — it is ignored when
+// NODE_ENV=production anyway (see authEnforcementEnabled in auth.js).
+const devEnv = { ...process.env, WORKFORCE_AUTH_DISABLE: "1" };
+
 const processes = [
   spawn("node", ["server/api.js"], {
     stdio: "inherit",
-    env: process.env
+    env: devEnv
   }),
   spawn("npx", ["vite", "--host", "127.0.0.1"], {
     stdio: "inherit",

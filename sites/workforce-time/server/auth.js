@@ -1011,15 +1011,27 @@ export async function handleAuthRoute({ request, response, url, readJson, sendJs
   }
 }
 
+// Fail-closed by default (C2). Enforcement is ON unless a NON-production
+// process explicitly opts out with WORKFORCE_AUTH_DISABLE=1 (local dev). In
+// production the gate can never be disabled — a forgotten/typo'd env var must
+// not silently expose the whole database. The legacy WORKFORCE_AUTH_ENFORCE=1
+// still force-enables (redundant now, kept for compatibility).
+export function authEnforcementEnabled() {
+  if (process.env.NODE_ENV === "production") return true;
+  if (process.env.WORKFORCE_AUTH_ENFORCE === "1") return true;
+  if (process.env.WORKFORCE_AUTH_DISABLE === "1") return false;
+  return true;
+}
+
 export function requireWorkforceApiSession(request) {
-  const enforce = process.env.NODE_ENV === "production" || process.env.WORKFORCE_AUTH_ENFORCE === "1";
-  if (!enforce) return { ok: true, session: null };
+  if (!authEnforcementEnabled()) return { ok: true, session: null, enforced: false };
 
   try {
-    return { ok: true, session: requireSession(request, { requireTotp: true }) };
+    return { ok: true, session: requireSession(request, { requireTotp: true }), enforced: true };
   } catch (error) {
     return {
       ok: false,
+      enforced: true,
       status: error?.code === "ADMIN_REQUIRED" ? 403 : 401,
       error: {
         code: error?.code || "SESSION_REQUIRED",

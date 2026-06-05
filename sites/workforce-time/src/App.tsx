@@ -914,8 +914,9 @@ function grossMinutes(entry: TimeEntry) {
 }
 
 function requiredBreakMinutes(entry: TimeEntry) {
+  // ArbZG §4: >6h Arbeit ⇒ 30 min, >9h ⇒ 45 min (nicht 60).
   const gross = grossMinutes(entry);
-  if (gross > 9 * 60) return 60;
+  if (gross > 9 * 60) return 45;
   if (gross > 6 * 60) return 30;
   return 0;
 }
@@ -2905,7 +2906,7 @@ function DashboardView({
             eyebrow: "Kalkulationsgrundlage",
             title: "Pausenprüfung der Woche",
             period: weekPeriod,
-            formula: "Warnung = gebuchte Pause liegt unter der gesetzlichen Mindestpause: > 6h Arbeit 30 Min., > 9h Arbeit 60 Min.",
+            formula: "Warnung = gebuchte Pause liegt unter der gesetzlichen Mindestpause: > 6h Arbeit 30 Min., > 9h Arbeit 45 Min.",
             total: `${breakWarnings.length} Warnungen`,
             rows: breakWarnings.map((entry) => {
               const employee = getEmployee(data.employees, entry.employeeId);
@@ -4571,8 +4572,8 @@ function EntryDetails({
           <button className="secondary-button" onClick={() => onSetBreak(30)}>
             30 Min.
           </button>
-          <button className="secondary-button" onClick={() => onSetBreak(60)}>
-            60 Min.
+          <button className="secondary-button" onClick={() => onSetBreak(45)}>
+            45 Min.
           </button>
         </div>
       </div>

@@ -95,6 +95,28 @@ function notFound(response) {
   sendJson(response, 404, { error: "Nicht gefunden" });
 }
 
+// C1: enforce the admin role server-side. Returns true if the caller may
+// proceed; otherwise writes a 403 and returns false. When the gate is not
+// enforced (local dev, no role system) everything is allowed.
+function requireAdmin(authGate, response) {
+  if (authGate.enforced === false) return true;
+  if (authGate.session?.role === "admin") return true;
+  sendJson(response, 403, {
+    ok: false,
+    error: { code: "ADMIN_REQUIRED", message: "Diese Aktion erfordert Admin-Rechte." }
+  });
+  return false;
+}
+
+// H1: identity for actor-scoped writes must come from the authenticated
+// session, never the client-supplied body. In enforced mode the body value is
+// ignored entirely; in local dev (gate off) we fall back to the body so the
+// existing dev/test workflow keeps working.
+function actorEmployeeId(authGate, bodyFallback) {
+  if (authGate.enforced === false) return bodyFallback ?? null;
+  return authGate.session?.employee_id ?? null;
+}
+
 const server = createServer(async (request, response) => {
   const url = new URL(request.url ?? "/", `http://${host}:${port}`);
 
@@ -131,12 +153,14 @@ const server = createServer(async (request, response) => {
     }
 
     if (request.method === "POST" && url.pathname === "/api/employees") {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       sendJson(response, 201, createEmployee(payload));
       return;
     }
 
     if (request.method === "POST" && url.pathname === "/api/shifts") {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       sendJson(response, 201, createShift(payload));
       return;
@@ -149,11 +173,13 @@ const server = createServer(async (request, response) => {
     }
 
     if (request.method === "POST" && url.pathname === "/api/imports/demo") {
+      if (!requireAdmin(authGate, response)) return;
       sendJson(response, 201, runDemoImport());
       return;
     }
 
     if (request.method === "POST" && url.pathname === "/api/imports/delta-snapshot") {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       sendJson(
         response,
@@ -165,11 +191,13 @@ const server = createServer(async (request, response) => {
 
     const shiftMatch = url.pathname.match(/^\/api\/shifts\/([^/]+)$/);
     if (request.method === "DELETE" && shiftMatch) {
+      if (!requireAdmin(authGate, response)) return;
       sendJson(response, 200, deleteShift(decodeURIComponent(shiftMatch[1])));
       return;
     }
 
     if (request.method === "PATCH" && shiftMatch) {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       sendJson(response, 200, updateShift(decodeURIComponent(shiftMatch[1]), payload));
       return;
@@ -177,6 +205,7 @@ const server = createServer(async (request, response) => {
 
     const statusMatch = url.pathname.match(/^\/api\/time-entries\/([^/]+)\/status$/);
     if (request.method === "PATCH" && statusMatch) {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       sendJson(response, 200, updateTimeEntryStatus(decodeURIComponent(statusMatch[1]), payload.status));
       return;
@@ -184,6 +213,7 @@ const server = createServer(async (request, response) => {
 
     const breaksMatch = url.pathname.match(/^\/api\/time-entries\/([^/]+)\/breaks$/);
     if (request.method === "PATCH" && breaksMatch) {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       sendJson(response, 200, updateTimeEntryBreaks(decodeURIComponent(breaksMatch[1]), payload));
       return;
@@ -204,12 +234,18 @@ const server = createServer(async (request, response) => {
       }
       if (request.method === "POST") {
         const payload = await readJson(request);
+        // H1: stamp for the authenticated employee, not a body-claimed id.
+        // Admins may stamp on behalf of someone (Kiosk) via the body value.
+        const isAdminActor = authGate.enforced === false || authGate.session?.role === "admin";
+        const stampEmployeeId = isAdminActor
+          ? (payload?.employeeId ?? actorEmployeeId(authGate, payload?.employeeId))
+          : actorEmployeeId(authGate, payload?.employeeId);
         try {
           let result;
-          if (op === "start") result = stampStart(payload?.employeeId, payload || {});
-          else if (op === "end") result = stampEnd(payload?.employeeId, payload || {});
-          else if (op === "break-start") result = stampBreakStart(payload?.employeeId, payload || {});
-          else if (op === "break-end") result = stampBreakEnd(payload?.employeeId, payload || {});
+          if (op === "start") result = stampStart(stampEmployeeId, payload || {});
+          else if (op === "end") result = stampEnd(stampEmployeeId, payload || {});
+          else if (op === "break-start") result = stampBreakStart(stampEmployeeId, payload || {});
+          else if (op === "break-end") result = stampBreakEnd(stampEmployeeId, payload || {});
           sendJson(response, 200, result);
         } catch (err) {
           sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
@@ -220,23 +256,26 @@ const server = createServer(async (request, response) => {
 
     // T-007a Freigabe-Aggregator.
     if (request.method === "GET" && url.pathname === "/api/approvals") {
+      if (!requireAdmin(authGate, response)) return;
       sendJson(response, 200, { ok: true, ...listAllPendingApprovals() });
       return;
     }
 
     // T-010a Rollen-Admin.
     if (request.method === "GET" && url.pathname === "/api/admin/users") {
+      if (!requireAdmin(authGate, response)) return;
       sendJson(response, 200, { ok: true, users: listAuthUsersWithRoles() });
       return;
     }
     const roleMatch = url.pathname.match(/^\/api\/admin\/users\/([^/]+)\/role$/);
     if (request.method === "PATCH" && roleMatch) {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       try {
         const result = updateAuthUserRole(
           decodeURIComponent(roleMatch[1]),
           payload?.role,
-          payload?.actorId,
+          actorEmployeeId(authGate, payload?.actorId),
           payload?.note
         );
         sendJson(response, 200, { ok: true, ...result });
@@ -266,7 +305,7 @@ const server = createServer(async (request, response) => {
     if (request.method === "PATCH" && swapAcceptMatch) {
       const payload = await readJson(request);
       try {
-        const result = acceptSwapRequest(decodeURIComponent(swapAcceptMatch[1]), payload?.accepterEmployeeId, payload?.note);
+        const result = acceptSwapRequest(decodeURIComponent(swapAcceptMatch[1]), actorEmployeeId(authGate, payload?.accepterEmployeeId), payload?.note);
         sendJson(response, 200, { ok: true, swapRequest: result });
       } catch (err) {
         sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
@@ -277,7 +316,7 @@ const server = createServer(async (request, response) => {
     if (request.method === "PATCH" && swapDeclineMatch) {
       const payload = await readJson(request);
       try {
-        const result = declineSwapRequest(decodeURIComponent(swapDeclineMatch[1]), payload?.declinerEmployeeId, payload?.note);
+        const result = declineSwapRequest(decodeURIComponent(swapDeclineMatch[1]), actorEmployeeId(authGate, payload?.declinerEmployeeId), payload?.note);
         sendJson(response, 200, { ok: true, swapRequest: result });
       } catch (err) {
         sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
@@ -288,7 +327,7 @@ const server = createServer(async (request, response) => {
     if (request.method === "PATCH" && swapCancelMatch) {
       const payload = await readJson(request);
       try {
-        const result = cancelSwapRequest(decodeURIComponent(swapCancelMatch[1]), payload?.cancellerEmployeeId, payload?.note);
+        const result = cancelSwapRequest(decodeURIComponent(swapCancelMatch[1]), actorEmployeeId(authGate, payload?.cancellerEmployeeId), payload?.note);
         sendJson(response, 200, { ok: true, swapRequest: result });
       } catch (err) {
         sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
@@ -299,6 +338,7 @@ const server = createServer(async (request, response) => {
     // T-009a Reporting.
     const reportEmployeeMatch = url.pathname.match(/^\/api\/reports\/employee\/([^/]+)\/monthly$/);
     if (request.method === "GET" && reportEmployeeMatch) {
+      if (!requireAdmin(authGate, response)) return;
       const year = Number(url.searchParams.get("year") || new Date().getFullYear());
       const month = Number(url.searchParams.get("month") || (new Date().getMonth() + 1));
       try {
@@ -310,6 +350,7 @@ const server = createServer(async (request, response) => {
       return;
     }
     if (request.method === "GET" && url.pathname === "/api/reports/team/monthly") {
+      if (!requireAdmin(authGate, response)) return;
       const year = Number(url.searchParams.get("year") || new Date().getFullYear());
       const month = Number(url.searchParams.get("month") || (new Date().getMonth() + 1));
       const format = (url.searchParams.get("format") || "json").toLowerCase();
@@ -361,6 +402,7 @@ const server = createServer(async (request, response) => {
       return;
     }
     if (request.method === "GET" && url.pathname === "/api/corrections") {
+      if (!requireAdmin(authGate, response)) return;
       const status = (url.searchParams.get("status") || "open").toLowerCase();
       if (status === "open") {
         sendJson(response, 200, { ok: true, corrections: listPendingCorrections() });
@@ -371,11 +413,12 @@ const server = createServer(async (request, response) => {
     }
     const correctionApproveMatch = url.pathname.match(/^\/api\/corrections\/([^/]+)\/approve$/);
     if (request.method === "PATCH" && correctionApproveMatch) {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       try {
         const result = approveCorrection(
           decodeURIComponent(correctionApproveMatch[1]),
-          payload?.reviewerId,
+          actorEmployeeId(authGate, payload?.reviewerId),
           payload?.note
         );
         sendJson(response, 200, { ok: true, correction: result });
@@ -389,11 +432,12 @@ const server = createServer(async (request, response) => {
     }
     const correctionRejectMatch = url.pathname.match(/^\/api\/corrections\/([^/]+)\/reject$/);
     if (request.method === "PATCH" && correctionRejectMatch) {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       try {
         const result = rejectCorrection(
           decodeURIComponent(correctionRejectMatch[1]),
-          payload?.reviewerId,
+          actorEmployeeId(authGate, payload?.reviewerId),
           payload?.note
         );
         sendJson(response, 200, { ok: true, correction: result });
@@ -408,6 +452,7 @@ const server = createServer(async (request, response) => {
 
     // T-006 Urlaubsrest-Kontingent.
     if (request.method === "GET" && url.pathname === "/api/absences/quota") {
+      if (!requireAdmin(authGate, response)) return;
       const year = Number(url.searchParams.get("year") || new Date().getFullYear());
       sendJson(response, 200, { ok: true, quotas: calculateAbsenceQuotasForAll(year), year });
       return;
@@ -425,6 +470,7 @@ const server = createServer(async (request, response) => {
     }
 
     if (request.method === "GET" && url.pathname === "/api/payroll/export") {
+      if (!requireAdmin(authGate, response)) return;
       const year = Number(url.searchParams.get("year"));
       const month = Number(url.searchParams.get("month"));
       const format = (url.searchParams.get("format") ?? "json").toLowerCase();
@@ -445,7 +491,17 @@ const server = createServer(async (request, response) => {
       }
 
       if (format === "datev_lodas" || format === "datev") {
-        const body = renderPayrollExportDatevLodas(report);
+        let body;
+        try {
+          body = renderPayrollExportDatevLodas(report);
+        } catch (err) {
+          // C3: missing personnel numbers must block the export, not pass silently.
+          sendJson(response, 409, {
+            ok: false,
+            error: { code: err?.code || "export_failed", message: err.message }
+          });
+          return;
+        }
         const filename = `payroll-datev-lodas-${report.period.year}-${String(report.period.month).padStart(2, "0")}.csv`;
         response.writeHead(200, {
           "Content-Type": "text/csv; charset=utf-8",
@@ -464,6 +520,7 @@ const server = createServer(async (request, response) => {
 
     const payrollNumberMatch = url.pathname.match(/^\/api\/employees\/([^/]+)\/payroll-number$/);
     if (request.method === "PATCH" && payrollNumberMatch) {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       sendJson(
         response,
@@ -475,17 +532,20 @@ const server = createServer(async (request, response) => {
 
     const employeeMatch = url.pathname.match(/^\/api\/employees\/([^/]+)$/);
     if (request.method === "PATCH" && employeeMatch) {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       sendJson(response, 200, updateEmployee(decodeURIComponent(employeeMatch[1]), payload));
       return;
     }
     if (request.method === "DELETE" && employeeMatch) {
+      if (!requireAdmin(authGate, response)) return;
       sendJson(response, 200, deleteEmployee(decodeURIComponent(employeeMatch[1])));
       return;
     }
 
     const absenceStatusMatch = url.pathname.match(/^\/api\/absences\/([^/]+)\/status$/);
     if (request.method === "PATCH" && absenceStatusMatch) {
+      if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       sendJson(
         response,

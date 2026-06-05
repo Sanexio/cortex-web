@@ -49,6 +49,11 @@ if (employeeFilter) {
     console.error(`Mitarbeitender "${employeeFilter}" nicht im Export-Zeitraum gefunden.`);
     process.exit(3);
   }
+  // Recompute the missing-personnel-number list against the filtered set, so a
+  // single-employee export of someone WITH a number is not blocked by others.
+  report.warnings.missingPersonnelNumbers = report.employees
+    .filter((e) => e.totals.netMinutes > 0 && !e.personnelNumber)
+    .map((e) => ({ employeeId: e.employeeId, employeeName: e.employeeName }));
 }
 
 if (report.warnings?.missingPersonnelNumbers?.length) {
@@ -64,15 +69,22 @@ if (sumIst <= 0) {
 }
 
 let body;
-if (format === "json") {
-  body = JSON.stringify(report, null, 2);
-} else if (format === "csv") {
-  body = renderPayrollExportCsv(report);
-} else if (format === "datev_lodas") {
-  body = renderPayrollExportDatevLodas(report);
-} else {
-  console.error(`Unbekanntes Format: ${format}. Erlaubt: datev_lodas, csv, json.`);
-  process.exit(2);
+try {
+  if (format === "json") {
+    body = JSON.stringify(report, null, 2);
+  } else if (format === "csv") {
+    body = renderPayrollExportCsv(report);
+  } else if (format === "datev_lodas") {
+    body = renderPayrollExportDatevLodas(report);
+  } else {
+    console.error(`Unbekanntes Format: ${format}. Erlaubt: datev_lodas, csv, json.`);
+    process.exit(2);
+  }
+} catch (err) {
+  // C3: a blocked LODAS export (missing personnel numbers) must fail loudly
+  // with a non-zero exit, never write a partial file.
+  console.error(`FEHLER: ${err.message}`);
+  process.exit(4);
 }
 
 if (outPath) {
