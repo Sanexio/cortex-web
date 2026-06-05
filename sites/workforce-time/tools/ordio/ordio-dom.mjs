@@ -24,6 +24,21 @@ function stableHash(value, length = 16) {
   return createHash("sha256").update(String(value)).digest("hex").slice(0, length);
 }
 
+function normalizeName(value) {
+  return displayNameFromOrdioName(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function employeeNumberSourceId(value) {
+  const raw = cleanText(value);
+  const match = raw.match(/\b(?:pnr|personal(?:nummer)?|mitarbeiter(?:nummer)?|employee)?\s*#?\s*([0-9]{1,8})\b/i);
+  return match ? `employee-number-${Number(match[1])}` : null;
+}
+
 function isoDate(value) {
   const raw = cleanText(value);
   const iso = raw.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
@@ -132,6 +147,39 @@ export function parseWorkHoursHtml(html) {
   return best;
 }
 
+export function parseEmployeesHtml(html) {
+  const rows = [];
+  for (const table of tableBlocks(html)) {
+    const headerRow = rowBlocks(table, "thead")[0] ?? rowBlocks(table)[0] ?? "";
+    const headers = cellTexts(headerRow, "th");
+    const normalizedHeaders = headers.map(normalizeKey);
+    const hasName = normalizedHeaders.some((header) => header.includes("name"));
+    const hasNumber = normalizedHeaders.some((header) => header.includes("personal") || header.includes("nummer"));
+    if (!hasName || !hasNumber) continue;
+    for (const rowHtml of rowBlocks(table, "tbody")) {
+      const cells = cellTexts(rowHtml, "t[dh]");
+      const row = { __cells: cells, __rowId: rowId(rowHtml) };
+      headers.forEach((header, index) => {
+        row[normalizeKey(header)] = cells[index] ?? "";
+      });
+      const name = displayNameFromOrdioName(cellFor(row, ["name", "Name"], 0));
+      const number = cellFor(row, ["personalnummer", "personal", "nummer", "Personalnummer"], 1);
+      if (name && number) rows.push({ displayName: name, employeeNumber: cleanText(number), sourceId: employeeNumberSourceId(number) });
+    }
+  }
+
+  if (rows.length) return rows.filter((row) => row.sourceId);
+
+  for (const match of String(html).matchAll(/<(?:li|div|article)\b[^>]*(?:data-testid|role)=["'][^"']*(?:employee|listitem|row)[^"']*["'][^>]*>([\s\S]*?)<\/(?:li|div|article)>/gi)) {
+    const text = cleanText(match[1]);
+    const sourceId = employeeNumberSourceId(text);
+    if (!sourceId) continue;
+    const withoutNumber = text.replace(/\b(?:pnr|personal(?:nummer)?|mitarbeiter(?:nummer)?|employee)?\s*#?\s*[0-9]{1,8}\b/i, "").trim();
+    if (withoutNumber) rows.push({ displayName: displayNameFromOrdioName(withoutNumber), employeeNumber: sourceId.replace("employee-number-", ""), sourceId });
+  }
+  return rows;
+}
+
 export async function extractWorkHoursRowsFromPage(page) {
   return page.evaluate(() => {
     const clean = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
@@ -168,12 +216,91 @@ export async function extractWorkHoursRowsFromPage(page) {
   });
 }
 
+export async function extractEmployeeRowsFromPage(page) {
+  return page.evaluate(() => {
+    const clean = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
+    const normalize = (value) => clean(value)
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+    const numberFrom = (value) => {
+      const match = clean(value).match(/\b(?:pnr|personal(?:nummer)?|mitarbeiter(?:nummer)?|employee)?\s*#?\s*([0-9]{1,8})\b/i);
+      return match ? match[1] : "";
+    };
+
+    for (const table of document.querySelectorAll("table")) {
+      const headers = [...table.querySelectorAll("thead th")].map((cell) => clean(cell.innerText));
+      const keys = headers.map(normalize);
+      const hasName = keys.some((key) => key.includes("name"));
+      const hasNumber = keys.some((key) => key.includes("personal") || key.includes("nummer"));
+      if (!hasName || !hasNumber) continue;
+      return [...table.querySelectorAll("tbody tr")].map((tr) => {
+        const cells = [...tr.querySelectorAll("td, th")].map((cell) => clean(cell.innerText));
+        const row = {};
+        headers.forEach((header, index) => { row[normalize(header)] = cells[index] || ""; });
+        const nameKey = Object.keys(row).find((key) => key.includes("name"));
+        const numberKey = Object.keys(row).find((key) => key.includes("personal") || key.includes("nummer"));
+        const employeeNumber = numberFrom(row[numberKey] || cells.join(" "));
+        return {
+          displayName: row[nameKey] || cells[0] || "",
+          employeeNumber,
+          sourceId: employeeNumber ? `employee-number-${Number(employeeNumber)}` : ""
+        };
+      }).filter((row) => row.displayName && row.sourceId);
+    }
+
+    return [...document.querySelectorAll("[data-testid*='employee'], [role='listitem'], article")]
+      .map((el) => {
+        const text = clean(el.innerText);
+        const employeeNumber = numberFrom(text);
+        return {
+          displayName: employeeNumber ? text.replace(new RegExp(`\\\\b(?:pnr|personal(?:nummer)?|mitarbeiter(?:nummer)?|employee)?\\\\s*#?\\\\s*${employeeNumber}\\\\b`, "i"), "").trim() : "",
+          employeeNumber,
+          sourceId: employeeNumber ? `employee-number-${Number(employeeNumber)}` : ""
+        };
+      })
+      .filter((row) => row.displayName && row.sourceId);
+  });
+}
+
+export function buildEmployeeResolver({ employeeRows = [], existingEmployees = [] } = {}) {
+  const byName = new Map();
+  const byNumber = new Map();
+  const add = (record) => {
+    const displayName = displayNameFromOrdioName(record.displayName ?? record.name ?? "");
+    const sourceId = cleanText(record.sourceId ?? employeeNumberSourceId(record.employeeNumber) ?? "");
+    if (!displayName || !sourceId) return;
+    byName.set(normalizeName(displayName), { sourceId, displayName, match: "name" });
+    const numberId = employeeNumberSourceId(record.employeeNumber ?? sourceId);
+    if (numberId) byNumber.set(numberId, { sourceId, displayName, match: "employee_number" });
+  };
+  existingEmployees.forEach(add);
+  employeeRows.forEach(add);
+  return {
+    resolve(row) {
+      const displayName = displayNameFromOrdioName(cellFor(row, ["name", "Name"], 0));
+      const numberId = employeeNumberSourceId(cellFor(row, ["personalnummer", "personal", "nummer", "Personalnummer"], null));
+      if (numberId && byNumber.has(numberId)) return byNumber.get(numberId);
+      const nameKey = normalizeName(displayName);
+      if (nameKey && byName.has(nameKey)) return byName.get(nameKey);
+      return { sourceId: null, displayName, match: "unresolved" };
+    }
+  };
+}
+
 export function mapWorkHoursRows(rows, options = {}) {
   const capturedAt = options.capturedAt ?? new Date().toISOString();
-  const employeesByName = new Map();
+  const resolver = options.employeeResolver ?? buildEmployeeResolver({
+    employeeRows: options.employeeRows ?? [],
+    existingEmployees: options.existingEmployees ?? []
+  });
+  const employeesBySourceId = new Map();
   const locationNames = new Set();
   const areaNames = new Set();
   const timeEntries = [];
+  const unresolvedEmployees = new Map();
 
   for (const row of rows) {
     const employeeName = displayNameFromOrdioName(cellFor(row, ["name", "Name"], 0));
@@ -184,7 +311,8 @@ export function mapWorkHoursRows(rows, options = {}) {
     if (options.from && startDate < options.from) continue;
     if (options.to && startDate > options.to) continue;
 
-    const employeeSourceId = `employee_${stableHash(employeeName)}`;
+    const resolvedEmployee = resolver.resolve(row);
+    const employeeSourceId = resolvedEmployee.sourceId;
     const area = cleanText(cellFor(row, ["bereich", "Bereich"], 8)) || "Ohne Bereich";
     const location = cleanText(cellFor(row, ["standort", "Standort"], 9)) || options.defaultLocation || "Ordio";
     const violationRaw = cleanText(cellFor(row, ["verstoss", "verstoß", "Verstoss", "Verstoß"], 10));
@@ -192,19 +320,25 @@ export function mapWorkHoursRows(rows, options = {}) {
     const rowKey = cleanText(row.__rowId);
     const sourceId = rowKey || `time_${stableHash(`${employeeName}|${startDate}|${startTime}|${endTime}`)}`;
 
-    employeesByName.set(employeeName, {
-      sourceId: employeeSourceId,
-      displayName: employeeName,
-      roleTitle: "Mitarbeiter",
-      initials: employeeName.split(/\s+/).map((part) => part[0]).join("").slice(0, 3).toUpperCase(),
-      employmentStatus: "active",
-      updatedAt: capturedAt
-    });
+    if (employeeSourceId) {
+      employeesBySourceId.set(employeeSourceId, {
+        sourceId: employeeSourceId,
+        displayName: resolvedEmployee.displayName || employeeName,
+        roleTitle: "Mitarbeiter",
+        initials: employeeName.split(/\s+/).map((part) => part[0]).join("").slice(0, 3).toUpperCase(),
+        employmentStatus: "active",
+        updatedAt: capturedAt
+      });
+    } else {
+      unresolvedEmployees.set(employeeName, { displayName: employeeName, reason: "no_employee_source_id_match" });
+    }
+    const unresolvedNote = employeeSourceId ? "" : "UNRESOLVED_EMPLOYEE: keine bestehende employee-source_id gefunden";
+    const note = [violation ? `Ordio-Verstoss: ${violation}` : "", unresolvedNote].filter(Boolean).join(" | ") || null;
     areaNames.add(area);
     locationNames.add(location);
-    timeEntries.push({
+    const entry = {
       sourceId,
-      employeeSourceId,
+      employeeSourceId: employeeSourceId ?? null,
       employeeName,
       startDate,
       startTime,
@@ -215,13 +349,16 @@ export function mapWorkHoursRows(rows, options = {}) {
       status: cleanText(cellFor(row, ["status", "Status"], 7)) || "erfasst",
       paidBreakMinutes: 0,
       unpaidBreakMinutes: minutes(cellFor(row, ["pause", "Pause"], 5)),
-      note: violation ? `Ordio-Verstoss: ${violation}` : null,
+      note,
       updatedAt: capturedAt
-    });
+    };
+    if (!timeEntries.some((existing) => existing.sourceId === entry.sourceId)) {
+      timeEntries.push(entry);
+    }
   }
 
   return {
-    employees: [...employeesByName.values()],
+    employees: [...employeesBySourceId.values()],
     locations: [...locationNames].map((name) => ({
       sourceId: `location_${stableHash(name)}`,
       name,
@@ -232,6 +369,7 @@ export function mapWorkHoursRows(rows, options = {}) {
       name,
       updatedAt: capturedAt
     })),
-    timeEntries
+    timeEntries,
+    unresolvedEmployees: [...unresolvedEmployees.values()]
   };
 }

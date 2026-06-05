@@ -35,7 +35,8 @@ test("mapOrdioPayload creates import snapshot shape expected by db import", () =
     employees: 1,
     shifts: 1,
     timeEntries: 1,
-    absences: 1
+    absences: 1,
+    unresolvedEmployees: 0
   });
   assert.equal(snapshot.timeEntries[0].employeeSourceId, "e1");
   assert.equal(snapshot.periodStart, "2026-05-25");

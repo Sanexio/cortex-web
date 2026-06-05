@@ -4,8 +4,8 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { mapWorkHoursRows, parseWorkHoursHtml } from "./ordio-dom.mjs";
-import { mapOrdioPayload, snapshotSummary, validateSnapshot } from "./ordio-delta.mjs";
+import { buildEmployeeResolver, mapWorkHoursRows, parseEmployeesHtml, parseWorkHoursHtml } from "./ordio-dom.mjs";
+import { isoWeeksInRange, mapOrdioPayload, snapshotSummary, validateSnapshot } from "./ordio-delta.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -22,17 +22,42 @@ test("parseWorkHoursHtml extracts synthetic Ordio table rows without real data",
 test("work-hours DOM rows map to snapshot time_entries with stable source ids", async () => {
   const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
   const rows = parseWorkHoursHtml(html);
-  const mapped = mapWorkHoursRows(rows, { capturedAt: "2026-06-05T12:00:00.000Z" });
+  const employeeRows = parseEmployeesHtml(html);
+  const mapped = mapWorkHoursRows(rows, { capturedAt: "2026-06-05T12:00:00.000Z", employeeRows });
 
   assert.equal(mapped.employees.length, 2);
   assert.equal(mapped.timeEntries.length, 2);
   assert.equal(mapped.timeEntries[0].sourceId, "row-alpha-2026-05-25");
+  assert.equal(mapped.timeEntries[0].employeeSourceId, "employee-number-101");
+  assert.equal(mapped.timeEntries[1].employeeSourceId, "employee-number-102");
   assert.match(mapped.timeEntries[1].sourceId, /^time_[a-f0-9]{16}$/);
   assert.equal(mapped.timeEntries[0].employeeName, "Ada Alpha");
   assert.equal(mapped.timeEntries[0].startDate, "2026-05-25");
   assert.equal(mapped.timeEntries[0].unpaidBreakMinutes, 15);
   assert.equal(mapped.timeEntries[1].unpaidBreakMinutes, 30);
   assert.equal(mapped.timeEntries[1].note, "Ordio-Verstoss: Pausenregel");
+});
+
+test("unresolved employees are marked without creating synthetic employee records", async () => {
+  const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
+  const rows = parseWorkHoursHtml(html);
+  const mapped = mapWorkHoursRows(rows, { capturedAt: "2026-06-05T12:00:00.000Z" });
+
+  assert.equal(mapped.employees.length, 0);
+  assert.equal(mapped.unresolvedEmployees.length, 2);
+  assert.equal(mapped.timeEntries[0].employeeSourceId, null);
+  assert.match(mapped.timeEntries[0].note, /UNRESOLVED_EMPLOYEE/);
+});
+
+test("employee resolver prefers employee number and falls back to name match", () => {
+  const resolver = buildEmployeeResolver({
+    employeeRows: [{ displayName: "Ada Alpha", employeeNumber: "101", sourceId: "employee-number-101" }],
+    existingEmployees: [{ displayName: "Ben Beta", sourceId: "employee-number-102" }]
+  });
+
+  assert.equal(resolver.resolve({ name: "Alpha, Ada", personalnummer: "101", __cells: [] }).sourceId, "employee-number-101");
+  assert.equal(resolver.resolve({ name: "Beta, Ben", __cells: [] }).sourceId, "employee-number-102");
+  assert.equal(resolver.resolve({ name: "Gamma, Gia", __cells: [] }).match, "unresolved");
 });
 
 test("HTML fixture can flow through existing ordio snapshot mapper", async () => {
@@ -42,6 +67,7 @@ test("HTML fixture can flow through existing ordio snapshot mapper", async () =>
     {
       sourceSystem: "ordio",
       capturedAt: "2026-06-05T12:00:00.000Z",
+      employeeRows: parseEmployeesHtml(html),
       workHoursRows: rows
     },
     { from: "2026-05-25", to: "2026-06-05" }
@@ -54,6 +80,12 @@ test("HTML fixture can flow through existing ordio snapshot mapper", async () =>
     employees: 2,
     shifts: 0,
     timeEntries: 2,
-    absences: 0
+    absences: 0,
+    unresolvedEmployees: 0
   });
+});
+
+test("isoWeeksInRange covers every week touched by from/to", () => {
+  assert.deepEqual(isoWeeksInRange("2026-05-25", "2026-06-05"), ["2026-W22", "2026-W23"]);
+  assert.deepEqual(isoWeeksInRange("2026-06-05", "2026-06-05"), ["2026-W23"]);
 });

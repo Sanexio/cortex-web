@@ -3,7 +3,13 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
-import { extractWorkHoursRowsFromPage, mapWorkHoursRows, parseWorkHoursHtml } from "./ordio-dom.mjs";
+import {
+  extractEmployeeRowsFromPage,
+  extractWorkHoursRowsFromPage,
+  mapWorkHoursRows,
+  parseEmployeesHtml,
+  parseWorkHoursHtml
+} from "./ordio-dom.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(here, "../..");
@@ -116,15 +122,18 @@ export function mapOrdioPayload(rawInput, options = {}) {
   const capturedAt = text(raw.capturedAt ?? raw.exportedAt, new Date().toISOString());
   const sourceSystem = text(raw.sourceSystem, "ordio");
   const defaultLocation = text(raw.defaultLocation, "Ordio");
+  const rawEmployees = asArray(raw.employees ?? raw.staff ?? raw.users);
   const workHours = mapWorkHoursRows(asArray(raw.workHoursRows), {
     capturedAt,
     defaultLocation,
     from: options.from,
-    to: options.to
+    to: options.to,
+    employeeRows: asArray(raw.employeeRows),
+    existingEmployees: rawEmployees
   });
 
   const employees = [
-    ...asArray(raw.employees ?? raw.staff ?? raw.users).map((record, index) => ({
+    ...rawEmployees.map((record, index) => ({
       sourceId: sourceId(record, "employee", index),
       displayName: text(record.displayName ?? record.name ?? record.fullName),
       aliases: asArray(record.aliases),
@@ -231,6 +240,7 @@ export function mapOrdioPayload(rawInput, options = {}) {
     shifts,
     timeEntries,
     absences,
+    unresolvedEmployees: workHours.unresolvedEmployees,
     note: "Ordio-Delta-Snapshot read-only erfasst; Import erfolgt ueber /api/imports/delta-snapshot."
   };
 }
@@ -247,7 +257,8 @@ export function snapshotSummary(snapshot) {
       employees: snapshot.employees.length,
       shifts: snapshot.shifts.length,
       timeEntries: snapshot.timeEntries.length,
-      absences: snapshot.absences.length
+      absences: snapshot.absences.length,
+      unresolvedEmployees: asArray(snapshot.unresolvedEmployees).length
     }
   };
 }
@@ -302,30 +313,78 @@ async function captureLiveOrdio(options) {
     // Exact-anchored name: avoid matching "Mit Google anmelden" / mode-switch.
     await page.getByRole("button", { name: /^(anmelden|login|sign in)$/i }).first().click();
     await page.waitForLoadState("networkidle");
-    await page.goto(new URL("/work-hours", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
+
+    await page.goto(new URL("/e", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
-    await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
-    await page.waitForTimeout(3500); // let the virtualized table hydrate its rows
-    if (process.env.ORDIO_DEBUG) {
-      const diag = await page.evaluate(() => {
-        const norm = (v) => String(v ?? "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
-        return {
-          url: location.href,
-          tableCount: document.querySelectorAll("table").length,
-          tables: [...document.querySelectorAll("table")].map((t) => ({
-            headers: [...t.querySelectorAll("thead th")].map((h) => norm(h.innerText)),
-            tbodyRows: t.querySelectorAll("tbody tr").length
-          }))
-        };
-      });
-      console.error("ORDIO_DEBUG diag:", JSON.stringify(diag, null, 2));
+    await page.waitForTimeout(2500);
+    const employeeRows = await extractEmployeeRowsFromPage(page);
+
+    const workHoursRows = [];
+    for (const week of isoWeeksInRange(options.from, options.to)) {
+      const url = new URL("/work-hours", process.env.ORDIO_BASE_URL);
+      url.searchParams.set("period", week);
+      await page.goto(url.href, { waitUntil: "domcontentloaded" });
+      await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
+      await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
+      await page.waitForTimeout(3500); // let the virtualized table hydrate its rows
+      if (process.env.ORDIO_DEBUG) await logWorkHoursDiagnostics(page, week);
+      workHoursRows.push(...await extractWorkHoursRowsFromPage(page));
     }
-    const workHoursRows = await extractWorkHoursRowsFromPage(page);
-    if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG extrahierte Zeilen: ${workHoursRows.length}`);
-    return { sourceSystem: "ordio", capturedAt: new Date().toISOString(), workHoursRows };
+    if (process.env.ORDIO_DEBUG) {
+      console.error(`ORDIO_DEBUG Mitarbeiterzeilen: ${employeeRows.length}`);
+      console.error(`ORDIO_DEBUG Arbeitszeitzeilen vor Dedupe: ${workHoursRows.length}`);
+    }
+    return { sourceSystem: "ordio", capturedAt: new Date().toISOString(), employeeRows, workHoursRows };
   } finally {
     await browser.close();
   }
+}
+
+async function logWorkHoursDiagnostics(page, week) {
+  const diag = await page.evaluate(() => {
+    const norm = (v) => String(v ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+    return {
+      url: location.href,
+      tableCount: document.querySelectorAll("table").length,
+      tables: [...document.querySelectorAll("table")].map((t) => ({
+        headers: [...t.querySelectorAll("thead th")].map((h) => norm(h.innerText)),
+        tbodyRows: t.querySelectorAll("tbody tr").length
+      }))
+    };
+  });
+  console.error(`ORDIO_DEBUG week ${week}:`, JSON.stringify(diag, null, 2));
+}
+
+export function isoWeeksInRange(from, to) {
+  const start = mondayOfIsoWeekContaining(from);
+  const end = mondayOfIsoWeekContaining(to);
+  const weeks = [];
+  for (let cursor = start; cursor <= end; cursor = addDays(cursor, 7)) {
+    weeks.push(isoWeekLabel(cursor));
+  }
+  return weeks;
+}
+
+function mondayOfIsoWeekContaining(dateString) {
+  const date = new Date(`${dateString}T12:00:00Z`);
+  const day = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() - day + 1);
+  return date.toISOString().slice(0, 10);
+}
+
+function addDays(dateString, days) {
+  const date = new Date(`${dateString}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function isoWeekLabel(dateString) {
+  const date = new Date(`${dateString}T12:00:00Z`);
+  const day = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1, 12));
+  const week = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  return `${date.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
 }
 
 async function postImportSnapshot(options) {
@@ -374,6 +433,7 @@ function readFixture(path) {
     return {
       sourceSystem: "ordio",
       capturedAt: new Date().toISOString(),
+      employeeRows: parseEmployeesHtml(content),
       workHoursRows: parseWorkHoursHtml(content)
     };
   }
