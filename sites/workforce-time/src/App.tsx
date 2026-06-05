@@ -13,6 +13,7 @@ import {
   Database,
   Download,
   Filter,
+  HelpCircle,
   Home,
   KeyRound,
   LogOut,
@@ -33,6 +34,8 @@ import {
 } from "lucide-react";
 import { FormEvent, ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
 import { EmployeesView } from "./views/employees";
+import { HelpPanel } from "./views/help";
+import { helpChapterForView } from "./help";
 
 // T-002b — Shift-Konflikt-Context. PlanView/ShiftCalendarCard rufen
 // `/api/shifts/check-conflicts` on-demand (Hover/Klick) auf und cachen das
@@ -1633,6 +1636,7 @@ function App() {
   ));
   const [totpCode, setTotpCode] = useState("");
   const [totpSetup, setTotpSetup] = useState<TotpEnrollmentPayload | null>(null);
+  const [helpChapterId, setHelpChapterId] = useState<string | null>(null);
   const visibleWeekStart = activeWeekStart ?? getPrototypeWeekStart(data);
 
   function navigateView(nextView: ViewKey) {
@@ -2061,7 +2065,9 @@ function App() {
 
   if (authStatus !== "authenticated" && authStatus !== "offline") {
     return (
+      <>
       <AuthShell
+        onHelp={() => setHelpChapterId("anmeldung")}
         status={authStatus}
         email={loginEmail}
         token={magicToken}
@@ -2083,6 +2089,15 @@ function App() {
           setAuthMessage("Login erforderlich");
         }}
       />
+      {helpChapterId ? (
+        <HelpPanel
+          chapterId={helpChapterId}
+          role="employee"
+          onSelect={setHelpChapterId}
+          onClose={() => setHelpChapterId(null)}
+        />
+      ) : null}
+      </>
     );
   }
 
@@ -2114,6 +2129,15 @@ function App() {
           </div>
           <div className="topbar-actions">
             {authUser ? <UserPill user={authUser} /> : null}
+            <button
+              className="icon-button"
+              type="button"
+              aria-label="Hilfe"
+              title="Hilfe zu diesem Bereich"
+              onClick={() => setHelpChapterId(helpChapterForView[view] ?? "einfuehrung")}
+            >
+              <HelpCircle size={17} />
+            </button>
             {authUser ? (
               <button className="icon-button" type="button" aria-label="Abmelden" onClick={logout} disabled={busy}>
                 <LogOut size={17} />
@@ -2306,6 +2330,15 @@ function App() {
       {calculation ? (
         <CalculationDetailDialog details={calculation} onClose={() => setCalculation(null)} />
       ) : null}
+
+      {helpChapterId ? (
+        <HelpPanel
+          chapterId={helpChapterId}
+          role={authUser?.role === "admin" ? "admin" : "employee"}
+          onSelect={setHelpChapterId}
+          onClose={() => setHelpChapterId(null)}
+        />
+      ) : null}
     </div>
     </ShiftConflictContext.Provider>
   );
@@ -2325,7 +2358,8 @@ function AuthShell({
   onRequestLink,
   onVerifyToken,
   onConfirmTotp,
-  onRestart
+  onRestart,
+  onHelp
 }: {
   status: AuthStatus;
   email: string;
@@ -2341,6 +2375,7 @@ function AuthShell({
   onVerifyToken: (event: FormEvent<HTMLFormElement>) => void;
   onConfirmTotp: (event: FormEvent<HTMLFormElement>) => void;
   onRestart: () => void;
+  onHelp: () => void;
 }) {
   const showTokenForm = status === "magic_sent" || status === "token_pending";
   const showTotpSetup = status === "totp_enroll";
@@ -2466,6 +2501,11 @@ function AuthShell({
             </form>
           </div>
         ) : null}
+
+        <button className="auth-help-link" type="button" onClick={onHelp}>
+          <HelpCircle size={15} />
+          Hilfe zur Anmeldung
+        </button>
       </section>
     </main>
   );

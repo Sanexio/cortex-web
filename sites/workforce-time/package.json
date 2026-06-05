@@ -12,7 +12,8 @@
     "test:auth": "node --test server/auth-smoke.test.mjs",
     "test:payroll": "node --test server/payroll-export.test.mjs",
     "preview": "vite preview --host 127.0.0.1",
-    "extract-tenant-seed": "node tools/extract-tenant-seed.mjs"
+    "extract-tenant-seed": "node tools/extract-tenant-seed.mjs",
+    "build:handbuch": "node tools/build-handbuch.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

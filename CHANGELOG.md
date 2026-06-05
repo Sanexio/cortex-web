@@ -4,6 +4,26 @@ Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](htt
 
 ## Unreleased
 
+### Workforce-Time Handbuch + In-App-Hilfe (2026-06-05)
+
+`sites/workforce-time/`:
+
+- Neues Benutzerhandbuch als 14 Markdown-Kapitel unter
+  `src/help/content/` (Mitarbeiter- + Admin-Teil, tenant-neutral).
+  Single-Source: dieselben Dateien speisen die In-App-Hilfe und das
+  generierte Druck-Handbuch `docs/HANDBUCH.md`
+  (`bun run build:handbuch` / `tools/build-handbuch.mjs`).
+- In-App-Hilfe-Panel `src/views/help.tsx`: Kapitel-Navigation
+  (rollengefiltert, Admin-Badge), kontextsensitiver `?`-Button in der
+  Topbar (oeffnet das zum aktiven View passende Kapitel via
+  `helpChapterForView`), „Hilfe zur Anmeldung"-Link im AuthShell,
+  Esc schliesst. Markdown-Rendering als kleiner In-House-Parser
+  (Headings, Listen, Tabellen, Blockquotes, Bold/Code) — bewusst ohne
+  neue Dependency.
+- `src/help/index.ts` Registry (Kapitel, Rollen, View-Mapping),
+  `src/help/raw-md.d.ts` fuer Vite-`?raw`-Importe, Help-Styles in
+  `src/styles.css` (Designsystem-Variablen, responsive).
+
 ### task-3100b6ea5164 (2026-06-05) — Workforce-Time Subdomain-Deploy + Auth-Seed
 
 `sites/workforce-time/`:
