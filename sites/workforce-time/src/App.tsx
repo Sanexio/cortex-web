@@ -31,8 +31,20 @@ import {
   Users,
   X
 } from "lucide-react";
-import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
+import { FormEvent, ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
 import { EmployeesView } from "./views/employees";
+
+// T-002b — Shift-Konflikt-Context. PlanView/ShiftCalendarCard rufen
+// `/api/shifts/check-conflicts` on-demand (Hover/Klick) auf und cachen das
+// Ergebnis pro Shift-ID. Provider lebt im App-Root mit Zugriff auf `request`.
+type ShiftConflict = { employeeId: string | null; type: string; detail: string };
+type ShiftConflictCheckPayload = {
+  id?: string;
+  startsAt: string;
+  endsAt: string;
+  employeeIds: string[];
+};
+const ShiftConflictContext = createContext<((payload: ShiftConflictCheckPayload) => Promise<ShiftConflict[]>) | null>(null);
 
 type ViewKey = "dashboard" | "plan" | "time" | "absences" | "employees" | "payroll" | "reports" | "imports" | "settings";
 
@@ -2055,7 +2067,17 @@ function App() {
 
   const meta = viewMeta[view];
 
+  // T-002b: Shift-Konflikt-Provider mit ID-basiertem In-Memory-Cache.
+  const checkShiftConflicts = async (payload: ShiftConflictCheckPayload): Promise<ShiftConflict[]> => {
+    const result = await request<{ ok: boolean; conflicts: ShiftConflict[] }>(
+      "/api/shifts/check-conflicts",
+      { method: "POST", body: JSON.stringify(payload) }
+    );
+    return Array.isArray(result?.conflicts) ? result.conflicts : [];
+  };
+
   return (
+    <ShiftConflictContext.Provider value={checkShiftConflicts}>
     <div className="app-shell">
       <Sidebar
         activeView={view}
@@ -2251,6 +2273,7 @@ function App() {
         <CalculationDetailDialog details={calculation} onClose={() => setCalculation(null)} />
       ) : null}
     </div>
+    </ShiftConflictContext.Provider>
   );
 }
 
@@ -3834,13 +3857,48 @@ function ShiftCalendarCard({
   const visibleNote = shift.note.startsWith("Praxisregel:") ? "" : shift.note;
   const marker = slot.segmentId === "early" ? "F" : "S";
   const assignmentTitle = shift.assignments.map((employee) => employee.name).join(", ") || "Unbesetzt";
+  // T-002b — Konflikt-Pill: on-demand bei Hover/Klick.
+  const checkConflicts = useContext(ShiftConflictContext);
+  const [conflicts, setConflicts] = useState<ShiftConflict[] | null>(null);
+  const [checkingConflicts, setCheckingConflicts] = useState(false);
+  async function loadConflicts() {
+    if (conflicts !== null || checkingConflicts || !checkConflicts) return;
+    if (shift.assignments.length === 0) return;
+    setCheckingConflicts(true);
+    try {
+      const list = await checkConflicts({
+        id: shift.id,
+        startsAt: `${shift.startDate}T${shift.startTime}:00`,
+        endsAt: `${shift.endDate}T${shift.endTime}:00`,
+        employeeIds: shift.assignments.map((employee) => employee.id)
+      });
+      setConflicts(list);
+    } catch {
+      // still render card, just skip pill
+    } finally {
+      setCheckingConflicts(false);
+    }
+  }
+  const conflictText = conflicts && conflicts.length > 0
+    ? conflicts
+        .map((conflict) => {
+          const who = shift.assignments.find((employee) => employee.id === conflict.employeeId)?.name
+            || conflict.employeeId
+            || "—";
+          return `${who}: ${conflict.detail}`;
+        })
+        .join("\n")
+    : null;
   return (
     <button
       className="calendar-shift-card"
       type="button"
-      title={assignmentTitle}
+      title={conflictText ? `Konflikt: ${conflictText}` : assignmentTitle}
+      onMouseEnter={loadConflicts}
+      onFocus={loadConflicts}
       onClick={(event) => {
         event.stopPropagation();
+        loadConflicts();
         onEdit(shift);
       }}
       aria-label={`${shift.area} am ${formatShortDate(shift.startDate)} bearbeiten`}
@@ -3858,6 +3916,28 @@ function ShiftCalendarCard({
         {shift.assignments.length}/{shift.requiredStaff}
       </span>
       {customTime ? <small className="shift-time compact">{shift.startTime}-{shift.endTime}</small> : null}
+      {conflictText ? (
+        <span
+          className="shift-conflict-pill"
+          title={conflictText}
+          aria-label={`Konflikt: ${conflictText}`}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            padding: "2px 6px",
+            borderRadius: 999,
+            fontSize: "0.72em",
+            fontWeight: 600,
+            background: "var(--color-warning-soft, #fef3c7)",
+            color: "var(--color-warning, #b45309)",
+            lineHeight: 1
+          }}
+        >
+          <AlertTriangle size={12} />
+          {conflicts && conflicts.length > 1 ? `${conflicts.length} Konflikte` : "Konflikt"}
+        </span>
+      ) : null}
       {visibleNote ? <p className="note-box compact">{visibleNote}</p> : null}
     </button>
   );
