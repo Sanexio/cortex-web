@@ -27,6 +27,12 @@ const deepPath = deepIdx >= 0 ? args[deepIdx + 1] : null;
 // picker popover STRUCTURE (buttons, nav controls, inputs, aria-labels)
 // so the interactive paging in ordio-delta can drive it. No data values.
 const pickerProbe = args.includes("--picker");
+// --raw <path> <cssSelector>: after login navigate to <path>, scroll,
+// then dump the outerHTML of the first 4 matching elements with all
+// person-name-looking tokens redacted (keep dates/times/numbers/attrs).
+const rawIdx = args.indexOf("--raw");
+const rawPath = rawIdx >= 0 ? args[rawIdx + 1] : null;
+const rawSelector = rawIdx >= 0 ? args[rawIdx + 2] : null;
 
 const baseUrl = process.env.ORDIO_BASE_URL;
 if (!baseUrl) {
@@ -66,6 +72,33 @@ try {
     await page.getByRole("button", { name: /^(anmelden|login|sign in)$/i }).first().click();
     await page.waitForLoadState("networkidle", { timeout: 60000 }).catch(() => {});
     await page.waitForTimeout(4000);
+  }
+
+  if (rawPath && rawSelector) {
+    await loginPassword();
+    await page.goto(new URL(rawPath, baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
+    await page.waitForTimeout(3500);
+    for (let i = 0; i < 4; i += 1) {
+      await page.evaluate(() => {
+        for (const el of document.querySelectorAll("*")) {
+          if (el.scrollHeight > el.clientHeight + 200 && /auto|scroll/.test(getComputedStyle(el).overflowY)) el.scrollTop = el.scrollHeight;
+        }
+      });
+      await page.waitForTimeout(500);
+    }
+    const dump = await page.evaluate((sel) => {
+      const els = [...document.querySelectorAll(sel)].slice(0, 4);
+      // Redact capitalised name-like word pairs but keep dates/times/numbers.
+      const redact = (html) => html
+        .replace(/\b([A-ZÄÖÜ][a-zäöüß]+),\s*([A-ZÄÖÜ][a-zäöüß]+)\b/g, "NACHNAME, VORNAME")
+        .replace(/\b([A-ZÄÖÜ][a-zäöüß]{2,})\s+([A-ZÄÖÜ][a-zäöüß]{2,})\b/g, "VORNAME NACHNAME");
+      return els.map((el) => redact(el.outerHTML).slice(0, 700));
+    }, rawSelector);
+    console.log(`--- RAW ${rawPath} ${rawSelector} (${dump.length} Elemente, Namen redigiert) ---`);
+    dump.forEach((h, i) => console.log(`[${i}] ${h}\n`));
+    await browser.close();
+    process.exit(0);
   }
 
   if (pickerProbe) {
