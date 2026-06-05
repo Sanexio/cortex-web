@@ -63,6 +63,26 @@ try {
       });
     });
 
+    // Broad channel sniffer: every response of any data-ish content type,
+    // logged by host + path + type + byte size (no bodies). Reveals
+    // GraphQL/tRPC/RSC/streaming endpoints the JSON-GET filter misses.
+    const channelLog = [];
+    page.on("response", async (response) => {
+      const ct = response.headers()["content-type"] ?? "";
+      if (!/json|graphql|text\/x-component|event-stream|octet-stream|protobuf|grpc/i.test(ct)) return;
+      let size = null;
+      try { size = (await response.body()).length; } catch { /* streamed */ }
+      const u = new URL(response.url());
+      channelLog.push({
+        method: response.request().method(),
+        status: response.status(),
+        host: u.host,
+        path: u.pathname + (u.search ? "?…" : ""),
+        ct: ct.split(";")[0],
+        bytes: size
+      });
+    });
+
     await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
     const pwModeButton = page.getByRole("button", { name: /benutzername.*passwort|username.*password/i });
     if (await pwModeButton.count()) await pwModeButton.first().click();
@@ -116,6 +136,16 @@ try {
 
     console.log("--- REQUEST-LOG (alle api/graphql-Requests) ---");
     console.log(JSON.stringify([...reqLog], null, 2));
+
+    console.log("--- CHANNEL-LOG (alle Daten-Responses, Host+Pfad+Typ+Bytes) ---");
+    // Dedupe by host+path+method, keep max bytes seen
+    const byKey = new Map();
+    for (const e of channelLog) {
+      const k = `${e.method} ${e.host}${e.path}`;
+      const prev = byKey.get(k);
+      if (!prev || (e.bytes ?? 0) > (prev.bytes ?? 0)) byKey.set(k, e);
+    }
+    console.log(JSON.stringify([...byKey.values()].sort((a, b) => (b.bytes ?? 0) - (a.bytes ?? 0)), null, 2));
 
     console.log("--- API-INVENTAR (URLs + Strukturschluessel, keine Werte) ---");
     console.log(JSON.stringify(apiLog, null, 2));
