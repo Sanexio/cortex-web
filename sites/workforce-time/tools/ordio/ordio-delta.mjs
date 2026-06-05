@@ -306,7 +306,22 @@ async function captureLiveOrdio(options) {
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
     await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(3500); // let the virtualized table hydrate its rows
+    if (process.env.ORDIO_DEBUG) {
+      const diag = await page.evaluate(() => {
+        const norm = (v) => String(v ?? "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+        return {
+          url: location.href,
+          tableCount: document.querySelectorAll("table").length,
+          tables: [...document.querySelectorAll("table")].map((t) => ({
+            headers: [...t.querySelectorAll("thead th")].map((h) => norm(h.innerText)),
+            tbodyRows: t.querySelectorAll("tbody tr").length
+          }))
+        };
+      });
+      console.error("ORDIO_DEBUG diag:", JSON.stringify(diag, null, 2));
+    }
     const workHoursRows = await extractWorkHoursRowsFromPage(page);
+    if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG extrahierte Zeilen: ${workHoursRows.length}`);
     return { sourceSystem: "ordio", capturedAt: new Date().toISOString(), workHoursRows };
   } finally {
     await browser.close();
