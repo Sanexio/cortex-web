@@ -51,6 +51,30 @@ try {
   });
 
   console.log(JSON.stringify(summary, null, 2));
+
+  // Step 2: Ordio hides password login behind a mode-switch button.
+  const pwButton = page.getByRole("button", { name: /benutzername.*passwort|username.*password/i });
+  if (await pwButton.count()) {
+    await pwButton.first().click();
+    await page.waitForTimeout(2500);
+    const step2 = await page.evaluate(() => ({
+      url: location.href,
+      inputs: [...document.querySelectorAll("input")].map((el) => ({
+        type: el.getAttribute("type"),
+        name: el.getAttribute("name"),
+        id: el.id || null,
+        placeholder: el.getAttribute("placeholder"),
+        autocomplete: el.getAttribute("autocomplete"),
+        visible: !!(el.offsetWidth || el.offsetHeight)
+      })),
+      buttons: [...document.querySelectorAll("button, [role=button], input[type=submit]")]
+        .map((b) => ({ text: (b.innerText || b.value || "").trim().slice(0, 60), visible: !!(b.offsetWidth || b.offsetHeight) }))
+        .filter((b) => b.text)
+    }));
+    console.log("--- STEP2 (nach Klick auf Passwort-Login) ---");
+    console.log(JSON.stringify(step2, null, 2));
+  }
+
   if (shotPath) {
     await page.screenshot({ path: shotPath, fullPage: false });
     console.log(`screenshot: ${shotPath}`);
