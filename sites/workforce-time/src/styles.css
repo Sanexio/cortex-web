@@ -4209,6 +4209,10 @@ tbody tr:hover,
 .help-layout {
   display: grid;
   grid-template-columns: 240px 1fr;
+  /* minmax(0, …) + min-height:0 on the items: without it, grid items
+     refuse to shrink below their content height and the dialog clips
+     the chapter instead of scrolling it. */
+  grid-template-rows: minmax(0, 1fr);
   min-height: 0;
   flex: 1;
 }
@@ -4218,6 +4222,7 @@ tbody tr:hover,
   flex-direction: column;
   gap: 2px;
   padding: 14px 10px;
+  min-height: 0;
   overflow-y: auto;
   border-right: 1px solid var(--line);
   background: var(--surface-muted);
@@ -4262,6 +4267,7 @@ tbody tr:hover,
 
 .help-content {
   padding: 20px 28px 28px;
+  min-height: 0;
   overflow-y: auto;
   font-size: 14px;
   line-height: 1.65;
@@ -4353,6 +4359,7 @@ tbody tr:hover,
 @media (max-width: 760px) {
   .help-layout {
     grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
   }
 
   .help-toc {
