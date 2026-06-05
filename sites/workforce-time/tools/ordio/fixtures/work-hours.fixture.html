@@ -27,24 +27,34 @@
     <section aria-label="Abwesenheiten">
       <div
         data-testid="absence-bar-fixture-1"
-        data-type="Urlaub"
         data-status="genehmigt"
-        aria-label="Zeitraum für Alpha, Ada am 27.05.2026 auswählen"
+        aria-label="Urlaub
+27.05.2026 - 28.05.2026
+2 Alpha, Ada"
       >
         Urlaub genehmigt
       </div>
     </section>
     <section aria-label="Plan">
-      <div
-        data-testid="shift-fixture-1"
-        data-date="2026-05-28"
-        data-start="09:00"
-        data-end="12:00"
-        data-area="Empfang"
-        data-location="Standort A"
-        data-employee="Alpha, Ada"
-      >
-        Schicht Empfang
+      <div role="grid" data-testid="plan-grid">
+        <div role="columnheader" data-date="2026-05-25">Mo 25.05.</div>
+        <div role="columnheader" data-date="2026-05-26">Di 26.05.</div>
+        <div role="columnheader" data-date="2026-05-27">Mi 27.05.</div>
+        <div role="columnheader" data-date="2026-05-28">Do 28.05.</div>
+        <div role="columnheader" data-date="2026-05-29">Fr 29.05.</div>
+        <div role="columnheader" data-date="2026-05-30">Sa 30.05.</div>
+        <div role="columnheader" data-date="2026-05-31">So 31.05.</div>
+        <div class="day-column" data-date="2026-05-28">
+          <div
+            data-testid="shift-card-fixture-1"
+            data-shift-id="shift-fixture-1"
+          >
+            09:00 - 12:00
+            Empfang
+            Standort A
+            Alpha, Ada
+          </div>
+        </div>
       </div>
     </section>
     <main>

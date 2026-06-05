@@ -604,7 +604,7 @@ async function capturePlan(page, options) {
     await page.goto(new URL(`/plan/9405/${week.label}`, process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(3500);
-    rows.push(...await extractPlanRowsFromPage(page));
+    rows.push(...await extractPlanRowsFromPage(page, { label: week.label, days: isoWeekDays(week.label) }));
   }
   return rows;
 }
@@ -660,6 +660,18 @@ function isoWeekLabel(dateString) {
   return `${date.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
 }
 
+function isoWeekDays(label) {
+  const match = String(label).match(/^(\d{4})-W(\d{2})$/);
+  if (!match) return [];
+  const year = Number(match[1]);
+  const week = Number(match[2]);
+  const jan4 = new Date(Date.UTC(year, 0, 4, 12));
+  const jan4Day = jan4.getUTCDay() || 7;
+  jan4.setUTCDate(jan4.getUTCDate() - jan4Day + 1 + (week - 1) * 7);
+  const monday = jan4.toISOString().slice(0, 10);
+  return Array.from({ length: 7 }, (_, index) => addDays(monday, index));
+}
+
 async function postImportSnapshot(options) {
   const cookieEnv = process.env.WORKFORCE_SESSION_COOKIE;
   const response = await fetch(`${options.apiUrl}/api/imports/delta-snapshot`, {
@@ -687,6 +699,14 @@ export async function run(options) {
   if (process.env.ORDIO_DEBUG && snapshot.unresolvedEmployees?.length) {
     const initials = snapshot.unresolvedEmployees.map((entry) => entry.initials || "?").filter(Boolean);
     console.error(`ORDIO_DEBUG unaufgeloeste Mitarbeiter-Initialen: ${[...new Set(initials)].join(", ")}`);
+  }
+  if (process.env.ORDIO_DEBUG && snapshot.unresolvedAreas?.length) {
+    const names = snapshot.unresolvedAreas.map((entry) => entry.name).filter(Boolean);
+    console.error(`ORDIO_DEBUG unaufgeloeste Bereiche: ${[...new Set(names)].join(", ")}`);
+  }
+  if (process.env.ORDIO_DEBUG && snapshot.unresolvedLocations?.length) {
+    const names = snapshot.unresolvedLocations.map((entry) => entry.name).filter(Boolean);
+    console.error(`ORDIO_DEBUG unaufgeloeste Standorte: ${[...new Set(names)].join(", ")}`);
   }
   if (process.env.ORDIO_DEBUG && snapshot.debugStats) {
     console.error("ORDIO_DEBUG Mapping-Stats:", JSON.stringify(snapshot.debugStats, null, 2));

@@ -101,6 +101,8 @@ test("absences DOM rows map through employee reconciliation", async () => {
   assert.equal(mapped.absences.length, 1);
   assert.equal(mapped.absences[0].employeeSourceId, "employee-number-101");
   assert.equal(mapped.absences[0].startsOn, "2026-05-27");
+  assert.equal(mapped.absences[0].endsOn, "2026-05-28");
+  assert.equal(mapped.absences[0].sourceId, "absence-bar-fixture-1");
   assert.equal(mapped.absences[0].type, "Urlaub");
 });
 
@@ -111,6 +113,7 @@ test("plan DOM rows map to shifts with assignments", async () => {
 
   assert.equal(mapped.shifts.length, 1);
   assert.equal(mapped.shifts[0].assignmentSourceIds[0], "employee-number-101");
+  assert.equal(mapped.shifts[0].sourceId, "shift-fixture-1");
   assert.equal(mapped.shifts[0].startDate, "2026-05-28");
   assert.equal(mapped.shifts[0].area, "Empfang");
 });
