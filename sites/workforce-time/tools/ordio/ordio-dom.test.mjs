@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   buildEmployeeResolver,
+  buildNameResolver,
   mapAbsenceRows,
   mapPlanRows,
   mapWorkHoursRows,
@@ -70,6 +71,28 @@ test("employee resolver prefers employee number and falls back to name match", (
   assert.equal(resolver.resolve({ name: "Gamma, Gia", __cells: [] }).match, "unresolved");
 });
 
+test("area and location resolver maps aliases to canonical names", async () => {
+  const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
+  const mapped = mapWorkHoursRows(parseWorkHoursHtml(html), {
+    capturedAt: "2026-06-05T12:00:00.000Z",
+    employeeRows: parseEmployeesHtml(html),
+    canonicalWorkAreas: ["Rezeption", "Labor"],
+    workAreaAliases: { Rezeption: ["Empfang"] },
+    canonicalLocations: ["Standort Alpha"],
+    locationAliases: { "Standort Alpha": ["Standort A"] },
+    defaultLocation: "Standort Alpha"
+  });
+
+  assert.equal(mapped.timeEntries[0].area, "Rezeption");
+  assert.equal(mapped.timeEntries[0].location, "Standort Alpha");
+  assert.equal(mapped.unresolvedAreas.length, 0);
+  assert.equal(mapped.unresolvedLocations.length, 1);
+  assert.equal(mapped.unresolvedLocations[0].name, "Standort B");
+
+  const resolver = buildNameResolver({ knownNames: ["Rezeption"], aliases: { Rezeption: ["Empfang"] } });
+  assert.deepEqual(resolver.resolve("Empfang"), { name: "Rezeption", resolved: true, raw: "Empfang" });
+});
+
 test("absences DOM rows map through employee reconciliation", async () => {
   const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
   const employeeRows = parseEmployeesHtml(html);
@@ -115,7 +138,9 @@ test("HTML fixture can flow through existing ordio snapshot mapper", async () =>
     shifts: 1,
     timeEntries: 2,
     absences: 1,
-    unresolvedEmployees: 0
+    unresolvedEmployees: 0,
+    unresolvedAreas: 0,
+    unresolvedLocations: 0
   });
 });
 

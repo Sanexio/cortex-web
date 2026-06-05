@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
 import {
@@ -123,19 +123,68 @@ function normalizeEntityCollections(raw) {
   return raw ?? {};
 }
 
+function tenantConfigPath() {
+  if (process.env.CORTEX_TENANT_DIR) return join(process.env.CORTEX_TENANT_DIR, "tenant.config.json");
+  const tenantFile = join(homedir(), ".cortex", "tenant-path");
+  if (!existsSync(tenantFile)) return null;
+  const tenantDir = readFileSync(tenantFile, "utf8").split("\n")[0]?.trim();
+  return tenantDir ? join(tenantDir, "tenant.config.json") : null;
+}
+
+function loadTenantReconciliationConfig() {
+  const path = tenantConfigPath();
+  if (!path || !existsSync(path)) {
+    return {};
+  }
+  try {
+    const config = JSON.parse(readFileSync(path, "utf8"));
+    const workforce = config.workforce ?? {};
+    const categories = workforce.work_area_categories ?? {};
+    const workAreaAliases = {};
+    for (const [canonical, values] of Object.entries(categories)) {
+      workAreaAliases[canonical] = Array.isArray(values) ? values : [values];
+    }
+    return {
+      canonicalLocations: Array.isArray(workforce.locations) ? workforce.locations : [],
+      canonicalWorkAreas: [
+        ...Object.keys(categories),
+        ...Object.values(categories).flatMap((value) => Array.isArray(value) ? value : [value])
+      ],
+      workAreaAliases,
+      defaultLocation: workforce.default_location_name,
+      defaultWorkArea: workforce.default_work_area_name
+    };
+  } catch (error) {
+    if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG tenant.config konnte nicht gelesen werden: ${error.message}`);
+    return {};
+  }
+}
+
 export function mapOrdioPayload(rawInput, options = {}) {
   const raw = normalizeEntityCollections(rawInput);
+  const tenantReconciliation = raw.reconciliation ?? loadTenantReconciliationConfig();
   const capturedAt = text(raw.capturedAt ?? raw.exportedAt, new Date().toISOString());
   const sourceSystem = text(raw.sourceSystem, "ordio");
-  const defaultLocation = text(raw.defaultLocation, "Ordio");
+  const defaultLocation = text(raw.defaultLocation ?? tenantReconciliation.defaultLocation, "Ordio");
   const rawEmployees = asArray(raw.employees ?? raw.staff ?? raw.users);
   const commonResolverOptions = {
     capturedAt,
     defaultLocation,
+    defaultWorkArea: tenantReconciliation.defaultWorkArea,
     from: options.from,
     to: options.to,
     employeeRows: asArray(raw.employeeRows),
-    existingEmployees: rawEmployees
+    existingEmployees: rawEmployees,
+    canonicalLocations: [
+      ...asArray(raw.locations).map((record) => text(record.name)).filter(Boolean),
+      ...asArray(tenantReconciliation.canonicalLocations)
+    ],
+    canonicalWorkAreas: [
+      ...asArray(raw.workAreas ?? raw.areas).map((record) => text(record.name ?? record.area)).filter(Boolean),
+      ...asArray(tenantReconciliation.canonicalWorkAreas)
+    ],
+    locationAliases: tenantReconciliation.locationAliases ?? {},
+    workAreaAliases: tenantReconciliation.workAreaAliases ?? {}
   };
   const workHours = mapWorkHoursRows(asArray(raw.workHoursRows), {
     ...commonResolverOptions
@@ -266,6 +315,19 @@ export function mapOrdioPayload(rawInput, options = {}) {
       ...absencesFromDom.unresolvedEmployees,
       ...plan.unresolvedEmployees
     ].filter((record, index, records) => records.findIndex((item) => item.initials === record.initials && item.reason === record.reason) === index),
+    unresolvedAreas: [
+      ...asArray(workHours.unresolvedAreas),
+      ...asArray(plan.unresolvedAreas)
+    ].filter((record, index, records) => records.findIndex((item) => item.name === record.name && item.reason === record.reason) === index),
+    unresolvedLocations: [
+      ...asArray(workHours.unresolvedLocations),
+      ...asArray(plan.unresolvedLocations)
+    ].filter((record, index, records) => records.findIndex((item) => item.name === record.name && item.reason === record.reason) === index),
+    debugStats: {
+      workHours: workHours.stats,
+      absences: absencesFromDom.stats,
+      plan: plan.stats
+    },
     note: "Ordio-Delta-Snapshot read-only erfasst; Import erfolgt ueber /api/imports/delta-snapshot."
   };
 }
@@ -283,7 +345,9 @@ export function snapshotSummary(snapshot) {
       shifts: snapshot.shifts.length,
       timeEntries: snapshot.timeEntries.length,
       absences: snapshot.absences.length,
-      unresolvedEmployees: asArray(snapshot.unresolvedEmployees).length
+      unresolvedEmployees: asArray(snapshot.unresolvedEmployees).length,
+      unresolvedAreas: asArray(snapshot.unresolvedAreas).length,
+      unresolvedLocations: asArray(snapshot.unresolvedLocations).length
     }
   };
 }
@@ -358,19 +422,21 @@ async function captureLiveOrdio(options) {
     }
     const employeeRows = await extractEmployeeRowsFromPage(page);
 
-    // Work-hours: read Ordio's DEFAULT view ONCE. Verified live 2026-06-05:
-    // merely OPENING the "Zeitraum wählen" picker empties the table (33→0),
-    // and ?period= is ignored. Until month-aware day-grid navigation is
-    // built (T-098e), the default view reliably covers the recent period
-    // (~33 rows); the from/to filter in mapWorkHoursRows trims to range.
-    // Iterating weeks here only re-read the same view, so do it once.
     const workHoursRows = [];
-    await page.goto(new URL("/work-hours", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
-    await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
-    await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
-    await page.waitForTimeout(3500); // let the virtualized table hydrate its rows
-    if (process.env.ORDIO_DEBUG) await logWorkHoursDiagnostics(page, "default-view");
-    workHoursRows.push(...await extractWorkHoursRowsFromPage(page));
+    for (const range of isoWeeksInRange(options.from, options.to)) {
+      await page.goto(new URL("/work-hours", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
+      await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
+      await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
+      await page.waitForTimeout(2000);
+      const defaultRows = await extractWorkHoursRowsFromPage(page);
+      const pickerSet = await applyWorkHoursPickerRange(page, range.start, range.end);
+      const pickedRows = pickerSet ? await extractWorkHoursRowsFromPage(page) : [];
+      if (process.env.ORDIO_DEBUG) {
+        await logWorkHoursDiagnostics(page, `${range.label}:${range.start}-${range.end}`);
+        console.error(`ORDIO_DEBUG Picker ${range.label}: default=${defaultRows.length}, picked=${pickedRows.length}, used=${pickedRows.length || defaultRows.length}`);
+      }
+      workHoursRows.push(...(pickedRows.length > 0 ? pickedRows : defaultRows));
+    }
     const absenceRows = await captureAbsences(page, options);
     const planRows = await capturePlan(page, options);
     if (process.env.ORDIO_DEBUG) {
@@ -399,10 +465,13 @@ async function applyWorkHoursPickerRange(page, from, to) {
   // Short, visible-only fill with hard timeout so a wrong guess fails
   // fast instead of hanging 30s on a hidden input.
   const fillVisible = async (locator, value) => {
-    const el = locator.locator("visible=true").first();
-    if (!(await el.count())) return false;
-    await el.fill(value, { timeout: 4000 });
-    return true;
+    for (let index = 0; index < await locator.count(); index += 1) {
+      const el = locator.nth(index);
+      if (!await el.isVisible().catch(() => false)) continue;
+      await el.fill(value, { timeout: 4000 });
+      return true;
+    }
+    return false;
   };
 
   const dateInputs = page.locator('input[type="date"]');
@@ -419,14 +488,12 @@ async function applyWorkHoursPickerRange(page, from, to) {
     }
   }
   if (!filled) {
-    // NOTE: blindly clicking calendar day buttons ("25" then "5") sets a
-    // nonsensical range and empties the work-hours table (verified live
-    // 2026-06-05: 33→0). Until month-aware day-grid navigation is built,
-    // do NOT manipulate the day grid — close the picker and read Ordio's
-    // default view, which reliably shows the recent period (~33 rows).
-    if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker: keine Datumsfelder (Tagesraster nicht automatisiert); Default-Ansicht wird gelesen.");
-    await page.keyboard.press("Escape").catch(() => {});
-    return false;
+    filled = await selectDateRangeInCalendarGrid(page, from, to);
+    if (!filled) {
+      if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker: Kalendernavigation gescheitert; Default-Ansicht wird gelesen.");
+      await page.keyboard.press("Escape").catch(() => {});
+      return false;
+    }
   }
 
   const apply = page.getByRole("button", { name: /anwenden|übernehmen|uebernehmen|speichern|ok/i });
@@ -435,6 +502,88 @@ async function applyWorkHoursPickerRange(page, from, to) {
   await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
   await page.waitForTimeout(1200);
   return true;
+}
+
+async function selectDateRangeInCalendarGrid(page, from, to) {
+  const dialog = page.getByRole("dialog").last();
+  const scope = await dialog.count() ? dialog : page.locator("body");
+  for (const date of [from, to]) {
+    if (!await navigateCalendarToMonth(page, scope, date)) return false;
+    if (!await clickCalendarDay(scope, date)) return false;
+    await page.waitForTimeout(300);
+  }
+  return true;
+}
+
+async function navigateCalendarToMonth(page, scope, dateString) {
+  const target = monthIndex(dateString);
+  for (let step = 0; step < 24; step += 1) {
+    const current = monthIndexFromText(await scope.innerText({ timeout: 3000 }).catch(() => ""));
+    if (current === target) return true;
+    const buttons = await visibleButtonBoxes(scope);
+    if (!buttons.length) return false;
+    const sorted = buttons.sort((left, right) => left.x - right.x);
+    const button = current === null || current < target ? sorted.at(-1) : sorted[0];
+    await button.locator.click({ timeout: 4000 });
+    await page.waitForTimeout(250);
+  }
+  return false;
+}
+
+async function clickCalendarDay(scope, dateString) {
+  const day = String(Number(dateString.slice(8, 10)));
+  const buttons = scope.getByRole("button", { name: new RegExp(`^${day}$`) });
+  const count = await buttons.count();
+  for (let index = 0; index < count; index += 1) {
+    const button = buttons.nth(index);
+    if (!await button.isVisible().catch(() => false)) continue;
+    if (await button.isDisabled().catch(() => false)) continue;
+    await button.click({ timeout: 4000 });
+    return true;
+  }
+  return false;
+}
+
+async function visibleButtonBoxes(scope) {
+  const buttons = scope.locator("button");
+  const out = [];
+  for (let index = 0; index < await buttons.count(); index += 1) {
+    const locator = buttons.nth(index);
+    if (!await locator.isVisible().catch(() => false)) continue;
+    const text = (await locator.innerText().catch(() => "")).trim();
+    const box = await locator.boundingBox().catch(() => null);
+    if (!box) continue;
+    if (text && /^\d{1,2}$/.test(text)) continue;
+    out.push({ locator, x: box.x, y: box.y });
+  }
+  return out;
+}
+
+function monthIndex(dateString) {
+  const [year, month] = dateString.split("-").map(Number);
+  return year * 12 + month - 1;
+}
+
+function monthIndexFromText(value) {
+  const textValue = String(value ?? "").toLowerCase();
+  const months = [
+    ["januar", "jan"],
+    ["februar", "feb"],
+    ["märz", "maerz", "mär", "mar"],
+    ["april", "apr"],
+    ["mai"],
+    ["juni", "jun"],
+    ["juli", "jul"],
+    ["august", "aug"],
+    ["september", "sep"],
+    ["oktober", "okt", "oct"],
+    ["november", "nov"],
+    ["dezember", "dez", "dec"]
+  ];
+  const year = textValue.match(/\b(20\d{2})\b/)?.[1];
+  if (!year) return null;
+  const month = months.findIndex((names) => names.some((name) => textValue.includes(name)));
+  return month >= 0 ? Number(year) * 12 + month : null;
 }
 
 function toGermanDate(dateString) {
@@ -538,6 +687,9 @@ export async function run(options) {
   if (process.env.ORDIO_DEBUG && snapshot.unresolvedEmployees?.length) {
     const initials = snapshot.unresolvedEmployees.map((entry) => entry.initials || "?").filter(Boolean);
     console.error(`ORDIO_DEBUG unaufgeloeste Mitarbeiter-Initialen: ${[...new Set(initials)].join(", ")}`);
+  }
+  if (process.env.ORDIO_DEBUG && snapshot.debugStats) {
+    console.error("ORDIO_DEBUG Mapping-Stats:", JSON.stringify(snapshot.debugStats, null, 2));
   }
 
   if (!validation.ok) {

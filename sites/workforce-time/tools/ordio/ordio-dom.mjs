@@ -33,6 +33,15 @@ function normalizeName(value) {
     .trim();
 }
 
+function normalizeLookup(value) {
+  return cleanText(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
 function nameTokens(value) {
   const stopwords = new Set(["von", "van", "de", "del", "der", "den", "zu", "zur", "zum"]);
   return normalizeName(value).split(" ").filter((token) => token.length > 1 && !stopwords.has(token));
@@ -60,6 +69,31 @@ function isoDate(value) {
   if (!de) return null;
   const year = de[3].length === 2 ? `20${de[3]}` : de[3];
   return `${year}-${de[2].padStart(2, "0")}-${de[1].padStart(2, "0")}`;
+}
+
+function isoDateFromText(value, fallbackYear = null) {
+  const direct = isoDate(value);
+  if (direct) return direct;
+  const raw = cleanText(value).toLowerCase();
+  const months = {
+    januar: "01",
+    februar: "02",
+    maerz: "03",
+    märz: "03",
+    april: "04",
+    mai: "05",
+    juni: "06",
+    juli: "07",
+    august: "08",
+    september: "09",
+    oktober: "10",
+    november: "11",
+    dezember: "12"
+  };
+  const match = raw.match(/\b(\d{1,2})\.?\s+(januar|februar|maerz|märz|april|mai|juni|juli|august|september|oktober|november|dezember)(?:\s+(\d{4}))?\b/i);
+  if (!match) return null;
+  const year = match[3] || fallbackYear;
+  return year ? `${year}-${months[match[2]]}-${match[1].padStart(2, "0")}` : null;
 }
 
 function addDays(dateString, days) {
@@ -98,6 +132,38 @@ function displayNameFromOrdioName(value) {
 function sourceIdFromRecord(record, fallbackPrefix, fallbackValue) {
   const existing = cleanText(record.sourceId ?? record.id ?? record.uuid ?? record.__rowId ?? "");
   return existing || `${fallbackPrefix}_${stableHash(fallbackValue)}`;
+}
+
+export function buildNameResolver({ knownNames = [], aliases = {}, fallbackName = "" } = {}) {
+  const byKey = new Map();
+  for (const name of knownNames) {
+    const clean = cleanText(name);
+    if (clean) byKey.set(normalizeLookup(clean), clean);
+  }
+  for (const [canonical, values] of Object.entries(aliases || {})) {
+    const canonicalName = byKey.get(normalizeLookup(canonical)) || cleanText(canonical);
+    if (!canonicalName) continue;
+    byKey.set(normalizeLookup(canonicalName), canonicalName);
+    for (const value of Array.isArray(values) ? values : [values]) {
+      const alias = normalizeLookup(value);
+      if (alias) byKey.set(alias, canonicalName);
+    }
+  }
+  return {
+    resolve(value) {
+      const raw = cleanText(value);
+      if (!raw) return { name: fallbackName, resolved: false, raw };
+      const exact = byKey.get(normalizeLookup(raw));
+      if (exact) return { name: exact, resolved: true, raw };
+      if (byKey.size === 0) return { name: raw, resolved: true, raw };
+      const tokens = normalizeLookup(raw).split(" ").filter(Boolean);
+      const fuzzy = [...byKey.entries()].find(([key]) =>
+        tokens.length > 0 && tokens.every((token) => key.includes(token))
+      )?.[1];
+      if (fuzzy) return { name: fuzzy, resolved: true, raw };
+      return { name: fallbackName || raw, resolved: false, raw };
+    }
+  };
 }
 
 function cellFor(row, names, fallbackIndex = null) {
@@ -223,8 +289,8 @@ export function parseAbsencesHtml(html) {
       const text = cleanText(block);
       const match = aria.match(/Zeitraum\s+f(?:ü|ue)r\s+(.+?)\s+am\s+(\d{1,2}\.\d{1,2}\.\d{2,4})/i);
       const employeeName = match ? displayNameFromOrdioName(match[1]) : displayNameFromOrdioName(attrValue(block, "data-employee") || text);
-      const startDate = isoDate(attrValue(block, "data-start") || attrValue(block, "data-date") || match?.[2] || text);
-      const endDate = isoDate(attrValue(block, "data-end")) || startDate;
+      const startDate = isoDateFromText(attrValue(block, "data-start") || attrValue(block, "data-date") || match?.[2] || text);
+      const endDate = isoDateFromText(attrValue(block, "data-end"), startDate?.slice(0, 4)) || startDate;
       const type = attrValue(block, "data-type") || text.match(/\b(Urlaub|Krank|Fortbildung|Abwesenheit|Fehltag)\b/i)?.[1] || "Abwesenheit";
       const status = attrValue(block, "data-status") || text.match(/\b(genehmigt|abgelehnt|offen|beantragt)\b/i)?.[1] || "offen";
       return { __rowId: testId, employeeName, startsOn: startDate, endsOn: endDate, type, status, rawText: text };
@@ -238,7 +304,7 @@ export function parsePlanHtml(html) {
     .map((block) => {
       const text = cleanText(block);
       const testId = attrValue(block, "data-testid") || rowId(block);
-      const date = isoDate(attrValue(block, "data-date") || text);
+      const date = isoDateFromText(attrValue(block, "data-date") || text);
       const startTime = hhmm(attrValue(block, "data-start") || text);
       const endTime = hhmm(attrValue(block, "data-end") || text.replace(startTime || "", ""));
       const area = attrValue(block, "data-area") || text.match(/\b(?:Bereich|Area):?\s*([^|,;]+)\b/i)?.[1] || "Ohne Bereich";
@@ -359,13 +425,14 @@ export async function extractPlanRowsFromPage(page) {
     [...document.querySelectorAll('[data-testid*="shift"], [data-testid*="plan"], tr')]
       .map((el) => ({
         __rowId: el.getAttribute("data-testid") || el.getAttribute("data-row-key") || el.id || "",
+        ariaLabel: el.getAttribute("aria-label") || "",
         date: el.getAttribute("data-date") || "",
         startTime: el.getAttribute("data-start") || "",
         endTime: el.getAttribute("data-end") || "",
         area: el.getAttribute("data-area") || "",
         location: el.getAttribute("data-location") || "",
         employeeName: el.getAttribute("data-employee") || "",
-        rawText: String(el.innerText || "").replace(/\s+/g, " ").trim()
+        rawText: String(el.innerText || el.getAttribute("aria-label") || "").replace(/\s+/g, " ").trim()
       }))
   );
 }
@@ -452,10 +519,22 @@ export function mapWorkHoursRows(rows, options = {}) {
     existingEmployees: options.existingEmployees ?? []
   });
   const employeesBySourceId = new Map();
-  const locationNames = new Set();
-  const areaNames = new Set();
+  const locationsByName = new Map();
+  const areasByName = new Map();
+  const locationResolver = options.locationResolver ?? buildNameResolver({
+    knownNames: options.canonicalLocations ?? [],
+    aliases: options.locationAliases ?? {},
+    fallbackName: options.defaultLocation || "Ordio"
+  });
+  const areaResolver = options.areaResolver ?? buildNameResolver({
+    knownNames: options.canonicalWorkAreas ?? [],
+    aliases: options.workAreaAliases ?? {},
+    fallbackName: options.defaultWorkArea || "Ohne Bereich"
+  });
   const timeEntries = [];
   const unresolvedEmployees = new Map();
+  const unresolvedAreas = new Map();
+  const unresolvedLocations = new Map();
 
   for (const row of rows) {
     const employeeName = displayNameFromOrdioName(cellFor(row, ["name", "Name"], 0));
@@ -468,8 +547,12 @@ export function mapWorkHoursRows(rows, options = {}) {
 
     const resolved = mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees);
     const employeeSourceId = resolved.employeeSourceId;
-    const area = cleanText(cellFor(row, ["bereich", "Bereich"], 8)) || "Ohne Bereich";
-    const location = cleanText(cellFor(row, ["standort", "Standort"], 9)) || options.defaultLocation || "Ordio";
+    const areaResolved = areaResolver.resolve(cellFor(row, ["bereich", "Bereich"], 8) || "Ohne Bereich");
+    const locationResolved = locationResolver.resolve(cellFor(row, ["standort", "Standort"], 9) || options.defaultLocation || "Ordio");
+    if (!areaResolved.resolved) unresolvedAreas.set(areaResolved.raw, { name: areaResolved.raw, mappedTo: areaResolved.name, reason: "no_work_area_match" });
+    if (!locationResolved.resolved) unresolvedLocations.set(locationResolved.raw, { name: locationResolved.raw, mappedTo: locationResolved.name, reason: "no_location_match" });
+    const area = areaResolved.name;
+    const location = locationResolved.name;
     const violationRaw = cleanText(cellFor(row, ["verstoss", "verstoß", "Verstoss", "Verstoß"], 10));
     const violation = violationRaw === "-" || violationRaw === "—" ? "" : violationRaw;
     const rowKey = cleanText(row.__rowId);
@@ -480,8 +563,8 @@ export function mapWorkHoursRows(rows, options = {}) {
     }
     const unresolvedNote = employeeSourceId ? "" : "UNRESOLVED_EMPLOYEE: keine bestehende employee-source_id gefunden";
     const note = [violation ? `Ordio-Verstoss: ${violation}` : "", unresolvedNote].filter(Boolean).join(" | ") || null;
-    areaNames.add(area);
-    locationNames.add(location);
+    areasByName.set(area, { sourceId: `area_${stableHash(area)}`, name: area, updatedAt: capturedAt });
+    locationsByName.set(location, { sourceId: `location_${stableHash(location)}`, name: location, updatedAt: capturedAt });
     const entry = {
       sourceId,
       employeeSourceId: employeeSourceId ?? null,
@@ -505,18 +588,18 @@ export function mapWorkHoursRows(rows, options = {}) {
 
   return {
     employees: [...employeesBySourceId.values()],
-    locations: [...locationNames].map((name) => ({
-      sourceId: `location_${stableHash(name)}`,
-      name,
-      updatedAt: capturedAt
-    })),
-    workAreas: [...areaNames].map((name) => ({
-      sourceId: `area_${stableHash(name)}`,
-      name,
-      updatedAt: capturedAt
-    })),
+    locations: [...locationsByName.values()],
+    workAreas: [...areasByName.values()],
     timeEntries,
-    unresolvedEmployees: [...unresolvedEmployees.values()]
+    unresolvedEmployees: [...unresolvedEmployees.values()],
+    unresolvedAreas: [...unresolvedAreas.values()],
+    unresolvedLocations: [...unresolvedLocations.values()],
+    stats: {
+      extracted: rows.length,
+      afterDateFilter: timeEntries.length,
+      afterResolve: timeEntries.filter((entry) => entry.employeeSourceId).length,
+      mapped: timeEntries.length
+    }
   };
 }
 
@@ -529,17 +612,20 @@ export function mapAbsenceRows(rows, options = {}) {
   const employeesBySourceId = new Map();
   const unresolvedEmployees = new Map();
   const absences = [];
+  const stats = { extracted: rows.length, afterDateFilter: 0, afterResolve: 0, mapped: 0 };
   for (const row of rows) {
     const aria = cleanText(row.ariaLabel ?? "");
     const ariaMatch = aria.match(/Zeitraum\s+f(?:ü|ue)r\s+(.+?)\s+am\s+(\d{1,2}\.\d{1,2}\.\d{2,4})/i);
     const employeeName = displayNameFromOrdioName(row.employeeName || ariaMatch?.[1] || row.rawText || "");
-    const startsOn = isoDate(row.startsOn || ariaMatch?.[2] || row.rawText);
-    const endsOn = isoDate(row.endsOn) || startsOn;
+    const startsOn = isoDateFromText(row.startsOn || ariaMatch?.[2] || row.rawText);
+    const endsOn = isoDateFromText(row.endsOn, startsOn?.slice(0, 4)) || startsOn;
     if (!employeeName || !startsOn || !endsOn) continue;
     if (options.from && endsOn < options.from) continue;
     if (options.to && startsOn > options.to) continue;
+    stats.afterDateFilter += 1;
     const resolved = mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees);
     if (resolved.employee) employeesBySourceId.set(resolved.employeeSourceId, resolved.employee);
+    if (resolved.employeeSourceId) stats.afterResolve += 1;
     const sourceId = sourceIdFromRecord(row, "absence", `${employeeName}|${startsOn}|${endsOn}|${row.type ?? ""}`);
     const unresolvedNote = resolved.employeeSourceId ? "" : "UNRESOLVED_EMPLOYEE: keine bestehende employee-source_id gefunden";
     absences.push({
@@ -553,8 +639,9 @@ export function mapAbsenceRows(rows, options = {}) {
       note: unresolvedNote || null,
       updatedAt: capturedAt
     });
+    stats.mapped += 1;
   }
-  return { employees: [...employeesBySourceId.values()], absences, unresolvedEmployees: [...unresolvedEmployees.values()] };
+  return { employees: [...employeesBySourceId.values()], absences, unresolvedEmployees: [...unresolvedEmployees.values()], stats };
 }
 
 export function mapPlanRows(rows, options = {}) {
@@ -564,17 +651,31 @@ export function mapPlanRows(rows, options = {}) {
     existingEmployees: options.existingEmployees ?? []
   });
   const employeesBySourceId = new Map();
-  const areaNames = new Set();
-  const locationNames = new Set();
+  const areasByName = new Map();
+  const locationsByName = new Map();
+  const areaResolver = options.areaResolver ?? buildNameResolver({
+    knownNames: options.canonicalWorkAreas ?? [],
+    aliases: options.workAreaAliases ?? {},
+    fallbackName: options.defaultWorkArea || "Ohne Bereich"
+  });
+  const locationResolver = options.locationResolver ?? buildNameResolver({
+    knownNames: options.canonicalLocations ?? [],
+    aliases: options.locationAliases ?? {},
+    fallbackName: options.defaultLocation || "Ordio"
+  });
   const unresolvedEmployees = new Map();
+  const unresolvedAreas = new Map();
+  const unresolvedLocations = new Map();
   const shifts = [];
+  const stats = { extracted: rows.length, afterDateFilter: 0, afterResolve: 0, mapped: 0 };
   for (const row of rows) {
-    const date = isoDate(row.date || row.rawText);
+    const date = isoDateFromText(row.date || row.ariaLabel || row.rawText, options.from?.slice(0, 4));
     const startTime = hhmm(row.startTime || row.rawText);
     const endTime = hhmm(row.endTime || String(row.rawText ?? "").replace(startTime || "", ""));
     if (!date || !startTime || !endTime) continue;
     if (options.from && date < options.from) continue;
     if (options.to && date > options.to) continue;
+    stats.afterDateFilter += 1;
     const assignmentNames = (row.assignmentNames?.length ? row.assignmentNames : [row.employeeName]).filter(Boolean);
     const assignmentSourceIds = [];
     for (const name of assignmentNames) {
@@ -585,10 +686,15 @@ export function mapPlanRows(rows, options = {}) {
         assignmentSourceIds.push(resolved.employeeSourceId);
       }
     }
-    const area = cleanText(row.area) || "Ohne Bereich";
-    const location = cleanText(row.location) || options.defaultLocation || "Ordio";
-    areaNames.add(area);
-    locationNames.add(location);
+    if (assignmentNames.length === 0 || assignmentSourceIds.length > 0) stats.afterResolve += 1;
+    const areaResolved = areaResolver.resolve(row.area || "Ohne Bereich");
+    const locationResolved = locationResolver.resolve(row.location || options.defaultLocation || "Ordio");
+    if (!areaResolved.resolved) unresolvedAreas.set(areaResolved.raw, { name: areaResolved.raw, mappedTo: areaResolved.name, reason: "no_work_area_match" });
+    if (!locationResolved.resolved) unresolvedLocations.set(locationResolved.raw, { name: locationResolved.raw, mappedTo: locationResolved.name, reason: "no_location_match" });
+    const area = areaResolved.name;
+    const location = locationResolved.name;
+    areasByName.set(area, { sourceId: `area_${stableHash(area)}`, name: area, updatedAt: capturedAt });
+    locationsByName.set(location, { sourceId: `location_${stableHash(location)}`, name: location, updatedAt: capturedAt });
     shifts.push({
       sourceId: sourceIdFromRecord(row, "shift", `${date}|${startTime}|${endTime}|${area}|${assignmentSourceIds.join(",")}`),
       startDate: date,
@@ -603,12 +709,16 @@ export function mapPlanRows(rows, options = {}) {
       assignmentNames,
       updatedAt: capturedAt
     });
+    stats.mapped += 1;
   }
   return {
     employees: [...employeesBySourceId.values()],
-    workAreas: [...areaNames].map((name) => ({ sourceId: `area_${stableHash(name)}`, name, updatedAt: capturedAt })),
-    locations: [...locationNames].map((name) => ({ sourceId: `location_${stableHash(name)}`, name, updatedAt: capturedAt })),
+    workAreas: [...areasByName.values()],
+    locations: [...locationsByName.values()],
     shifts,
-    unresolvedEmployees: [...unresolvedEmployees.values()]
+    unresolvedEmployees: [...unresolvedEmployees.values()],
+    unresolvedAreas: [...unresolvedAreas.values()],
+    unresolvedLocations: [...unresolvedLocations.values()],
+    stats
   };
 }
