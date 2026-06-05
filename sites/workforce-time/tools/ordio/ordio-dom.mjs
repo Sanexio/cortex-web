@@ -154,7 +154,9 @@ export function parseEmployeesHtml(html) {
     const headers = cellTexts(headerRow, "th");
     const normalizedHeaders = headers.map(normalizeKey);
     const hasName = normalizedHeaders.some((header) => header.includes("name"));
-    const hasNumber = normalizedHeaders.some((header) => header.includes("personal") || header.includes("nummer"));
+    // Ordio's personnel-number column header is "PNr." (→ "pnr"), not
+    // "Personalnummer" (verified live 2026-06-05 via deep probe).
+    const hasNumber = normalizedHeaders.some((header) => header.includes("personal") || header.includes("nummer") || header === "pnr" || header.includes("pnr"));
     if (!hasName || !hasNumber) continue;
     for (const rowHtml of rowBlocks(table, "tbody")) {
       const cells = cellTexts(rowHtml, "t[dh]");
@@ -163,7 +165,7 @@ export function parseEmployeesHtml(html) {
         row[normalizeKey(header)] = cells[index] ?? "";
       });
       const name = displayNameFromOrdioName(cellFor(row, ["name", "Name"], 0));
-      const number = cellFor(row, ["personalnummer", "personal", "nummer", "Personalnummer"], 1);
+      const number = cellFor(row, ["pnr", "personalnummer", "personal", "nummer", "Personalnummer"], 1);
       if (name && number) rows.push({ displayName: name, employeeNumber: cleanText(number), sourceId: employeeNumberSourceId(number) });
     }
   }
@@ -230,18 +232,21 @@ export async function extractEmployeeRowsFromPage(page) {
       return match ? match[1] : "";
     };
 
+    // Ordio's personnel-number column header is "PNr." (→ "pnr"), not
+    // "Personalnummer" (verified live 2026-06-05).
+    const isNumberKey = (key) => key.includes("personal") || key.includes("nummer") || key.includes("pnr");
     for (const table of document.querySelectorAll("table")) {
       const headers = [...table.querySelectorAll("thead th")].map((cell) => clean(cell.innerText));
       const keys = headers.map(normalize);
       const hasName = keys.some((key) => key.includes("name"));
-      const hasNumber = keys.some((key) => key.includes("personal") || key.includes("nummer"));
+      const hasNumber = keys.some(isNumberKey);
       if (!hasName || !hasNumber) continue;
-      return [...table.querySelectorAll("tbody tr")].map((tr) => {
+      const rows = [...table.querySelectorAll("tbody tr")].map((tr) => {
         const cells = [...tr.querySelectorAll("td, th")].map((cell) => clean(cell.innerText));
         const row = {};
         headers.forEach((header, index) => { row[normalize(header)] = cells[index] || ""; });
         const nameKey = Object.keys(row).find((key) => key.includes("name"));
-        const numberKey = Object.keys(row).find((key) => key.includes("personal") || key.includes("nummer"));
+        const numberKey = Object.keys(row).find(isNumberKey);
         const employeeNumber = numberFrom(row[numberKey] || cells.join(" "));
         return {
           displayName: row[nameKey] || cells[0] || "",
@@ -249,6 +254,7 @@ export async function extractEmployeeRowsFromPage(page) {
           sourceId: employeeNumber ? `employee-number-${Number(employeeNumber)}` : ""
         };
       }).filter((row) => row.displayName && row.sourceId);
+      if (rows.length) return rows;
     }
 
     return [...document.querySelectorAll("[data-testid*='employee'], [role='listitem'], article")]
