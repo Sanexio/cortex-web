@@ -358,23 +358,19 @@ async function captureLiveOrdio(options) {
     }
     const employeeRows = await extractEmployeeRowsFromPage(page);
 
+    // Work-hours: read Ordio's DEFAULT view ONCE. Verified live 2026-06-05:
+    // merely OPENING the "Zeitraum wählen" picker empties the table (33→0),
+    // and ?period= is ignored. Until month-aware day-grid navigation is
+    // built (T-098e), the default view reliably covers the recent period
+    // (~33 rows); the from/to filter in mapWorkHoursRows trims to range.
+    // Iterating weeks here only re-read the same view, so do it once.
     const workHoursRows = [];
-    for (const week of isoWeeksInRange(options.from, options.to)) {
-      await page.goto(new URL("/work-hours", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
-      await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
-      // Picker is best-effort: Ordio's "Zeitraum wählen" is a calendar
-      // day-grid (probe 2026-06-05), not text inputs — if range-setting
-      // fails we must still read the default view, never abort the run.
-      try {
-        await applyWorkHoursPickerRange(page, week.start, week.end);
-      } catch (error) {
-        if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG Picker fuer ${week.label} fehlgeschlagen (${error.message.split("\n")[0]}); Default-Ansicht wird gelesen.`);
-      }
-      await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
-      await page.waitForTimeout(3500); // let the virtualized table hydrate its rows
-      if (process.env.ORDIO_DEBUG) await logWorkHoursDiagnostics(page, week.label);
-      workHoursRows.push(...await extractWorkHoursRowsFromPage(page));
-    }
+    await page.goto(new URL("/work-hours", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
+    await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
+    await page.waitForTimeout(3500); // let the virtualized table hydrate its rows
+    if (process.env.ORDIO_DEBUG) await logWorkHoursDiagnostics(page, "default-view");
+    workHoursRows.push(...await extractWorkHoursRowsFromPage(page));
     const absenceRows = await captureAbsences(page, options);
     const planRows = await capturePlan(page, options);
     if (process.env.ORDIO_DEBUG) {
