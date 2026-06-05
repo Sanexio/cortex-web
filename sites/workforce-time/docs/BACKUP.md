@@ -67,20 +67,48 @@ systemctl stop workforce-time
 # 2. Backup prüfen (geht auch jederzeit ohne Stopp):
 tools/backup-db.sh --verify-only backups/arbeitszeiten-YYYYMMDD-HHMMSS.sqlite.gz
 
-# 3. Einspielen
-gunzip -k backups/arbeitszeiten-YYYYMMDD-HHMMSS.sqlite.gz
-mv $DB $DB.broken-$(date +%s)
-mv backups/arbeitszeiten-YYYYMMDD-HHMMSS.sqlite $DB
+# 3. Restore trocken prüfen
+tools/restore-db.sh --backup backups/arbeitszeiten-YYYYMMDD-HHMMSS.sqlite.gz \
+  --db /var/lib/workforce-time/db/arbeitszeiten.sqlite
 
-# 4. Verifizieren + starten
+# 4. Einspielen
+tools/restore-db.sh --backup backups/arbeitszeiten-YYYYMMDD-HHMMSS.sqlite.gz \
+  --db /var/lib/workforce-time/db/arbeitszeiten.sqlite \
+  --apply --keep-current
+
+# 5. Verifizieren + starten
 sqlite3 $DB "PRAGMA integrity_check;"
 systemctl start workforce-time
 ```
 
-**Restore-Probe quartalsweise:** Schritt 2–4 gegen eine Kopie in einem
-Temp-Verzeichnis durchspielen und einmal die App dagegen starten
-(`ARBEITSZEITEN_DB=<temp-pfad> node server/api.js`). Ein Backup gilt
-erst als Backup, wenn ein Restore daraus bewiesen wurde.
+`tools/restore-db.sh` ist absichtlich zweistufig: ohne `--apply` wird
+nur entpackt/kopiert, `PRAGMA integrity_check` ausgeführt und geprüft,
+dass die Pflichttabellen (`employees`, `shifts`, `time_entries`,
+`auth_users`) vorhanden sind. Erst `--apply` ersetzt die Ziel-DB. Mit
+`--keep-current` bleibt der vorherige Stand als
+`arbeitszeiten.sqlite.pre-restore-<timestamp>` liegen; ohne diese Option
+wird die Sicherheitskopie nach erfolgreichem Restore wieder entfernt.
+
+**Restore-Probe quartalsweise:** gegen eine Kopie in einem
+Temp-Verzeichnis durchspielen und einmal die App dagegen starten:
+
+```bash
+TMP=$(mktemp -d)
+tools/restore-db.sh --backup backups/arbeitszeiten-YYYYMMDD-HHMMSS.sqlite.gz \
+  --db "$TMP/arbeitszeiten.sqlite" --apply
+ARBEITSZEITEN_DB="$TMP/arbeitszeiten.sqlite" WORKFORCE_AUTH_DISABLE=1 node server/api.js
+```
+
+Ein Backup gilt erst als Backup, wenn ein Restore daraus bewiesen wurde.
+
+## Operative Runbooks
+
+| Anlass | Ablauf |
+|---|---|
+| Vor Ordio-Import | `tools/backup-db.sh`, anschließend `tools/backup-db.sh --verify-only <backup>` |
+| Fehlgeschlagener Import | API stoppen, jüngstes geprüftes Backup mit `tools/restore-db.sh --apply --keep-current` einspielen, API starten, `/api/health` prüfen |
+| Servermigration | Backup auf Zielsystem kopieren, Restore-Dry-Run ausführen, erst danach echten Restore |
+| Quartalsprobe | Restore in Temp-DB, API gegen Temp-DB starten, danach Temp-Verzeichnis löschen |
 
 ## Was NICHT über dieses Konzept gesichert wird
 
