@@ -2120,6 +2120,7 @@ function App() {
         setView={navigateView}
         setDialog={setDialog}
         onOpenShift={() => openShiftDialogForWeek()}
+        onHelp={() => setHelpChapterId(helpChapterForView[view] ?? "einfuehrung")}
       />
       <main className="workspace">
         <header className="topbar">
@@ -2527,12 +2528,14 @@ function Sidebar({
   activeView,
   setView,
   setDialog,
-  onOpenShift
+  onOpenShift,
+  onHelp
 }: {
   activeView: ViewKey;
   setView: (view: ViewKey) => void;
   setDialog: (dialog: "time" | "employee" | "absence") => void;
   onOpenShift: () => void;
+  onHelp: () => void;
 }) {
   const [actionsOpen, setActionsOpen] = useState(false);
   const items: Array<{ view: ViewKey; label: string; icon: typeof Home }> = [
@@ -2555,7 +2558,8 @@ function Sidebar({
     { label: "Urlaub eintragen", icon: CalendarDays, onClick: () => setDialog("absence") },
     { label: "Mitarbeiter anlegen", icon: UserPlus, onClick: () => setDialog("employee") },
     { label: "Import & Sync", icon: Database, onClick: () => setView("imports") },
-    { label: "Einstellungen", icon: Settings2, onClick: () => setView("settings") }
+    { label: "Einstellungen", icon: Settings2, onClick: () => setView("settings") },
+    { label: "Hilfe & Handbuch", icon: HelpCircle, onClick: onHelp }
   ];
 
   useEffect(() => {
@@ -2624,6 +2628,10 @@ function Sidebar({
           );
         })}
       </nav>
+      <button className="nav-item sidebar-help" type="button" onClick={onHelp}>
+        <HelpCircle size={18} />
+        Hilfe & Handbuch
+      </button>
     </aside>
   );
 }

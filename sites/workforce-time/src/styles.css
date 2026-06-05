@@ -4362,3 +4362,10 @@ tbody tr:hover,
     border-bottom: 1px solid var(--line);
   }
 }
+
+.sidebar-help {
+  margin-top: auto;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  padding-top: 14px;
+}
