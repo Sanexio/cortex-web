@@ -2,6 +2,40 @@
 
 Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/). Versionierung: SemVer.
 
+## Unreleased
+
+### task-3100b6ea5164 (2026-06-05) — Workforce-Time Subdomain-Deploy + Auth-Seed
+
+`sites/workforce-time/`:
+
+- `server/auth.js` liest jetzt `workforce.auth.users[]` aus der
+  Tenant-Config als bevorzugte Quelle; Legacy-Pfad
+  `workforce.team_members` bleibt als Fallback. E-Mail-Duplikate werden
+  zugunsten von `workforce.auth.users` aufgeloest.
+- Neues Deployment-Skript `tools/deploy-to-subdomain.sh`. Default
+  `--dry-run`; `--commit` schaltet realen SFTP-Upload (via lftp) auf das
+  Hosting der Subdomain frei. Credentials kommen ausschliesslich aus
+  `.env` (`SFTP_WORKFORCE_HOST`, `SFTP_WORKFORCE_USERNAME`,
+  `SFTP_WORKFORCE_PASSWORD`, `SFTP_WORKFORCE_REMOTE_PATH`,
+  optional `SFTP_WORKFORCE_PORT`). Whitelist statt rekursivem rsync:
+  `dist/`, `server/`, `deploy/`, `package.json`, `package-lock.json`.
+- Reverse-Proxy-Templates `deploy/proxy/arbeitszeiten.conf` (Caddy v2,
+  Default) und `deploy/proxy/arbeitszeiten.nginx.conf` (Alternative).
+  Beide routen statisches SPA-Build + `/api/*` an `127.0.0.1:5175`,
+  Security-Header (HSTS, X-Content-Type-Options, Referrer-Policy,
+  Permissions-Policy).
+- Process-Supervision: `deploy/systemd/workforce-time.service`
+  (Hardened: NoNewPrivileges, ProtectSystem=strict, ProtectHome,
+  RestrictAddressFamilies, MemoryDenyWriteExecute) +
+  `deploy/pm2.config.cjs` als Fallback fuer Hoster ohne systemd.
+
+Folge-Voraussetzungen (Stracke-Owner, vor Live):
+
+1. DNS A-Record `arbeitszeiten.westend-hausarzt.com` → Server-IP.
+2. SSL-Zertifikat (Caddy ACME automatisch oder certbot fuer nginx).
+3. SFTP/SSH-Zugang als `SFTP_WORKFORCE_*`-Werte im `.env`.
+4. Initial-Mitarbeiterliste (weitere `users[]`-Eintraege im Tenant-Repo).
+
 ## [0.7.1] — 2026-05-31
 
 ### Welle 1.3+1.5b — Tenant-Migration-Konsolidierung (nach §10.9-Entscheidung)

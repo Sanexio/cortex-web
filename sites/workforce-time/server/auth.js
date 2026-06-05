@@ -222,18 +222,32 @@ function tenantSlug() {
 }
 
 function configuredTeamMembers() {
-  const raw = tenantConfigGet("workforce.team_members", []) ?? [];
-  if (!Array.isArray(raw)) return [];
-
-  return raw
-    .filter((member) => member && typeof member === "object")
-    .map((member) => ({
-      email: normalizeEmail(member.email),
+  // task-3100b6ea5164: bevorzugte Quelle ist workforce.auth.users (kanonischer
+  // Auth-Seed), Legacy-Quelle workforce.team_members bleibt als Fallback.
+  // Beide Listen werden gemergt; bei E-Mail-Duplikaten gewinnt der Eintrag
+  // aus workforce.auth.users.
+  const authUsers = tenantConfigGet("workforce.auth.users", []) ?? [];
+  const legacy = tenantConfigGet("workforce.team_members", []) ?? [];
+  const combined = [
+    ...(Array.isArray(authUsers) ? authUsers : []),
+    ...(Array.isArray(legacy) ? legacy : [])
+  ];
+  const seen = new Set();
+  const result = [];
+  for (const member of combined) {
+    if (!member || typeof member !== "object") continue;
+    const email = normalizeEmail(member.email);
+    if (!isValidEmail(email)) continue;
+    if (seen.has(email)) continue;
+    seen.add(email);
+    result.push({
+      email,
       employeeId: String(member.employee_id ?? member.employeeId ?? "").trim() || null,
       displayName: String(member.display_name ?? member.displayName ?? member.name ?? "").trim(),
       role: normalizeRole(member.role)
-    }))
-    .filter((member) => isValidEmail(member.email));
+    });
+  }
+  return result;
 }
 
 function demoMemberForEmail(email) {

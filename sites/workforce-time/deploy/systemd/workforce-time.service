@@ -1,0 +1,51 @@
+# task-3100b6ea5164 — systemd-Unit fuer den Node-Process der Workforce-Time-API.
+#
+# Installation (als root auf dem Hosting-Server):
+#   cp deploy/systemd/workforce-time.service /etc/systemd/system/
+#   systemctl daemon-reload
+#   systemctl enable --now workforce-time.service
+#   systemctl status workforce-time.service
+#
+# Voraussetzungen:
+#   - Node.js 22+ (oder Bun 1.3+) als /usr/bin/node installiert
+#   - User 'workforce' (oder anpassbar via User=) existiert
+#   - /var/lib/workforce-time/ als Home + db-Verzeichnis
+#   - /var/lib/workforce-time/tenant/ enthaelt das deployte Tenant-Snippet
+#     (mindestens tenant.config.json mit workforce.auth-Block)
+#   - .env mit ARBEITSZEITEN_API_HOST=127.0.0.1, ARBEITSZEITEN_API_PORT=5175,
+#     CORTEX_TENANT_DIR=/var/lib/workforce-time/tenant
+
+[Unit]
+Description=Workforce-Time API (arbeitszeiten.westend-hausarzt.com)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=workforce
+Group=workforce
+WorkingDirectory=/var/www/arbeitszeiten/server
+EnvironmentFile=-/etc/workforce-time.env
+ExecStart=/usr/bin/node /var/www/arbeitszeiten/server/api.js
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=workforce-time
+
+# Sandbox-Hardening.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/workforce-time
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target
