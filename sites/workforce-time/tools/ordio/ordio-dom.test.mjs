@@ -106,10 +106,14 @@ test("location resolver matches und/ampersand spelling variants", () => {
 test("absences DOM rows map through employee reconciliation", async () => {
   const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
   const employeeRows = parseEmployeesHtml(html);
-  const mapped = mapAbsenceRows(parseAbsencesHtml(html), { capturedAt: "2026-06-05T12:00:00.000Z", employeeRows });
+  const absenceRows = parseAbsencesHtml(html);
+  const mapped = mapAbsenceRows(absenceRows, { capturedAt: "2026-06-05T12:00:00.000Z", employeeRows });
 
+  assert.equal(absenceRows[0].rowEmployee, "Ada Alpha");
+  assert.notEqual(absenceRows[0].employeeName, "Tag");
   assert.equal(mapped.absences.length, 1);
   assert.equal(mapped.absences[0].employeeSourceId, "employee-number-101");
+  assert.equal(mapped.absences[0].employeeName, "Ada Alpha");
   assert.equal(mapped.absences[0].startsOn, "2026-05-27");
   assert.equal(mapped.absences[0].endsOn, "2026-05-28");
   assert.equal(mapped.absences[0].sourceId, "absence-bar-fixture-1");
@@ -119,7 +123,8 @@ test("absences DOM rows map through employee reconciliation", async () => {
 test("absences resolve employees from snake_case existing seed records", () => {
   const rows = [{
     __rowId: "absence-bar-fixture-2",
-    ariaLabel: "Krankheit\n03.06.2026 - 03.06.2026\n1 Ada Alpha",
+    ariaLabel: "Krankheit\n03.06.2026 - 03.06.2026\n1 Tag",
+    rowEmployee: "Ada Alpha",
     rawText: "Krankheit"
   }];
   const mapped = mapAbsenceRows(rows, {
@@ -132,6 +137,22 @@ test("absences resolve employees from snake_case existing seed records", () => {
   assert.equal(mapped.stats.afterDateFilter, 1);
   assert.equal(mapped.stats.afterResolve, 1);
   assert.equal(mapped.absences[0].employeeSourceId, "employee-number-101");
+  assert.equal(mapped.absences[0].employeeName, "Ada Alpha");
+  assert.equal(mapped.unresolvedEmployees.length, 0);
+});
+
+test("absence duration labels are not treated as employees", () => {
+  const mapped = mapAbsenceRows([{
+    __rowId: "absence-bar-duration-only",
+    ariaLabel: "Krankheit\n03.06.2026 - 03.06.2026\n1 Tag",
+    rawText: "Krankheit"
+  }], {
+    capturedAt: "2026-06-05T12:00:00.000Z",
+    existingEmployees: [{ display_name: "Ada Alpha", source_id: "employee-number-101" }]
+  });
+
+  assert.equal(mapped.stats.afterDateFilter, 0);
+  assert.equal(mapped.absences.length, 0);
   assert.equal(mapped.unresolvedEmployees.length, 0);
 });
 

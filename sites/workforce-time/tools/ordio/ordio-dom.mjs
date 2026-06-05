@@ -311,20 +311,37 @@ function parseDateRangeLine(value) {
   return startsOn && endsOn ? { startsOn, endsOn } : null;
 }
 
+function isDurationLine(value) {
+  return /^\d+(?:[,.]\d+)?\s+(?:tag|tage|day|days|std\.?|stunden|hour|hours)\b/i.test(cleanText(value));
+}
+
+function isAbsenceTypeLine(value) {
+  return /^(?:urlaub|krankheit|krank|feiertagsausgleich|fortbildung|abwesenheit|fehltag|frei)$/i.test(cleanText(value));
+}
+
+function isDateLikeLine(value) {
+  const line = cleanText(value);
+  return Boolean(isoDateFromText(line) || parseDateRangeLine(line) || /^(?:mo|di|mi|do|fr|sa|so|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)\b/i.test(line));
+}
+
+function personNameFromLines(lines) {
+  const candidates = lines
+    .map((line) => cleanText(line).replace(/^\d+\s+(?!tag(?:e)?\b|day(?:s)?\b)/i, ""))
+    .filter((line) => line && !isDurationLine(line) && !isAbsenceTypeLine(line) && !isDateLikeLine(line));
+  const withComma = candidates.find((line) => line.includes(","));
+  if (withComma) return displayNameFromOrdioName(withComma);
+  const twoWords = candidates.find((line) => normalizeName(line).split(" ").filter(Boolean).length >= 2);
+  return twoWords ? displayNameFromOrdioName(twoWords) : "";
+}
+
 function parseAbsenceLabel(label, fallbackText = "") {
   const lines = cleanLines(label);
   const rangeLine = lines.find((line) => parseDateRangeLine(line));
   const range = parseDateRangeLine(rangeLine ?? "");
-  const employeeLine = [...lines].reverse().find((line) => {
-    if (line === rangeLine) return false;
-    return /^\d+\s+.+/.test(line) || line.includes(",");
-  });
-  const employeeName = employeeLine
-    ? displayNameFromOrdioName(employeeLine.replace(/^\d+\s+/, ""))
-    : "";
-  const firstLine = lines.find((line) => line !== rangeLine && line !== employeeLine) ?? "";
+  const employeeName = personNameFromLines([...lines].reverse().filter((line) => line !== rangeLine));
+  const firstLine = lines.find((line) => line !== rangeLine && !isDurationLine(line)) ?? "";
   const firstLineLooksLikeEmployee = employeeName && normalizeName(firstLine) === normalizeName(employeeName);
-  const type = firstLine && !firstLineLooksLikeEmployee ? firstLine : "";
+  const type = firstLine && !firstLineLooksLikeEmployee && !isDurationLine(firstLine) ? firstLine : "";
   const legacy = cleanText(label || fallbackText).match(/Zeitraum\s+f(?:ü|ue)r\s+(.+?)\s+am\s+(\d{1,2}\.\d{1,2}\.\d{2,4})/i);
   return {
     employeeName: employeeName || (legacy ? displayNameFromOrdioName(legacy[1]) : ""),
@@ -332,6 +349,27 @@ function parseAbsenceLabel(label, fallbackText = "") {
     endsOn: range?.endsOn || isoDateFromText(legacy?.[2] || ""),
     type
   };
+}
+
+function absenceElementMatches(html) {
+  return [...String(html).matchAll(/<div\b[^>]*data-testid=["']absence-bar-[^"']*["'][\s\S]*?<\/div>/gi)]
+    .map((match) => ({ block: match[0], index: match.index ?? 0 }));
+}
+
+function absenceRowEmployeeFromContext(html, index) {
+  const source = String(html);
+  const rowStart = Math.max(
+    source.lastIndexOf("<tr", index),
+    source.lastIndexOf('role="row"', index),
+    source.lastIndexOf("role='row'", index),
+    source.lastIndexOf("data-employee", index)
+  );
+  const context = source.slice(Math.max(0, rowStart > -1 ? rowStart : index - 3000), index);
+  const employeeAttr = attrValue(context, "data-employee");
+  const employeeNumber = attrValue(context, "data-pnr") || attrValue(context, "data-employee-number") || attrValue(context, "data-personnel-number");
+  const rowHeader = context.match(/<(?:th|div|span)\b[^>]*(?:role=["']rowheader["']|data-testid=["'][^"']*(?:employee|row-header|name)[^"']*["'])[^>]*>([\s\S]*?)<\/(?:th|div|span)>/i)?.[1];
+  const rowEmployee = displayNameFromOrdioName(employeeAttr || personNameFromLines(cleanLines(rowHeader || context)));
+  return { rowEmployee, rowEmployeeNumber: cleanText(employeeNumber) };
 }
 
 function shiftElementMatches(html) {
@@ -376,18 +414,19 @@ function parsePlanTextFields(value) {
 }
 
 export function parseAbsencesHtml(html) {
-  return elementBlocks(html, /<div\b[^>]*data-testid=["']absence-bar-[^"']*["'][\s\S]*?<\/div>/gi)
-    .map((block) => {
+  return absenceElementMatches(html)
+    .map(({ block, index }) => {
       const aria = rawAttrValue(block, "aria-label");
       const testId = attrValue(block, "data-testid");
       const text = cleanText(block);
       const parsed = parseAbsenceLabel(aria, text);
-      const employeeName = displayNameFromOrdioName(attrValue(block, "data-employee") || parsed.employeeName || text);
+      const row = absenceRowEmployeeFromContext(html, index);
+      const employeeName = displayNameFromOrdioName(attrValue(block, "data-employee") || row.rowEmployee || parsed.employeeName || "");
       const startDate = isoDateFromText(attrValue(block, "data-start") || attrValue(block, "data-date")) || parsed.startsOn || isoDateFromText(text);
       const endDate = isoDateFromText(attrValue(block, "data-end"), startDate?.slice(0, 4)) || parsed.endsOn || startDate;
       const type = attrValue(block, "data-type") || parsed.type || text.match(/\b(Urlaub|Krankheit|Krank|Feiertagsausgleich|Fortbildung|Abwesenheit|Fehltag)\b/i)?.[1] || "Abwesenheit";
       const status = attrValue(block, "data-status") || text.match(/\b(genehmigt|abgelehnt|offen|beantragt)\b/i)?.[1] || "offen";
-      return { __rowId: testId, employeeName, startsOn: startDate, endsOn: endDate, type, status, rawText: text };
+      return { __rowId: testId, rowEmployee: row.rowEmployee, rowEmployeeNumber: row.rowEmployeeNumber, employeeName, startsOn: startDate, endsOn: endDate, type, status, rawText: text };
     })
     .filter((row) => row.employeeName && row.startsOn && row.endsOn);
 }
@@ -502,18 +541,67 @@ export async function extractEmployeeRowsFromPage(page) {
 }
 
 export async function extractAbsenceRowsFromPage(page) {
-  return page.evaluate(() =>
-    [...document.querySelectorAll('div[data-testid^="absence-bar-"]')].map((el) => ({
-      __rowId: el.getAttribute("data-testid") || "",
-      ariaLabel: el.getAttribute("aria-label") || "",
-      employeeName: el.getAttribute("data-employee") || "",
-      startsOn: el.getAttribute("data-start") || el.getAttribute("data-date") || "",
-      endsOn: el.getAttribute("data-end") || "",
-      type: el.getAttribute("data-type") || "",
-      status: el.getAttribute("data-status") || "",
-      rawText: String(el.innerText || "").replace(/\s+/g, " ").trim()
-    }))
-  );
+  return page.evaluate(() => {
+    const clean = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
+    const normalizeName = (value) => clean(value)
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+    const numberFrom = (value) => clean(value).match(/\b(?:pnr|personal(?:nummer)?|mitarbeiter(?:nummer)?|employee)?\s*#?\s*([0-9]{1,8})\b/i)?.[1] || "";
+    const lines = (value) => String(value ?? "").split(/\r?\n/).map(clean).filter(Boolean);
+    const isDuration = (value) => /^\d+(?:[,.]\d+)?\s+(?:tag|tage|day|days|std\.?|stunden|hour|hours)\b/i.test(clean(value));
+    const isType = (value) => /^(?:urlaub|krankheit|krank|feiertagsausgleich|fortbildung|abwesenheit|fehltag|frei)$/i.test(clean(value));
+    const isDateLike = (value) => /\b\d{1,2}\.\d{1,2}\.(?:\d{2,4})\b/.test(clean(value))
+      || /^(?:mo|di|mi|do|fr|sa|so|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)\b/i.test(clean(value));
+    const personFrom = (value) => {
+      const candidates = lines(value)
+        .map((line) => line.replace(/^\d+\s+(?!tag(?:e)?\b|day(?:s)?\b)/i, ""))
+        .filter((line) => line && !isDuration(line) && !isType(line) && !isDateLike(line));
+      const withComma = candidates.find((line) => line.includes(","));
+      const candidate = withComma || candidates.find((line) => normalizeName(line).split(" ").filter(Boolean).length >= 2) || "";
+      if (!candidate) return "";
+      if (!candidate.includes(",")) return candidate;
+      const [last, first] = candidate.split(",", 2).map((part) => part.trim()).filter(Boolean);
+      return [first, last].filter(Boolean).join(" ");
+    };
+    const rowEmployeeFor = (bar) => {
+      const explicit = bar.getAttribute("data-employee") || "";
+      if (explicit) return { rowEmployee: explicit, rowEmployeeNumber: bar.getAttribute("data-pnr") || bar.getAttribute("data-employee-number") || "" };
+      for (let current = bar.parentElement; current && current !== document.body; current = current.parentElement) {
+        const attrEmployee = current.getAttribute("data-employee") || current.getAttribute("data-name") || "";
+        const attrNumber = current.getAttribute("data-pnr") || current.getAttribute("data-employee-number") || current.getAttribute("data-personnel-number") || "";
+        if (attrEmployee) return { rowEmployee: attrEmployee, rowEmployeeNumber: attrNumber || numberFrom(attrEmployee) };
+        const header = current.querySelector('[role="rowheader"], th, [data-testid*="row-header"], [data-testid*="employee"], [data-testid*="name"]');
+        const headerText = header && !header.matches('div[data-testid^="absence-bar-"]') ? clean(header.innerText || header.getAttribute("aria-label") || "") : "";
+        const fromHeader = personFrom(headerText);
+        if (fromHeader) return { rowEmployee: fromHeader, rowEmployeeNumber: attrNumber || numberFrom(headerText) };
+        if (current.getAttribute("role") === "row" || current.tagName === "TR") {
+          const clone = current.cloneNode(true);
+          clone.querySelectorAll('div[data-testid^="absence-bar-"], button, [role="gridcell"]').forEach((node) => node.remove());
+          const fromRow = personFrom(clone.innerText || clone.getAttribute("aria-label") || "");
+          if (fromRow) return { rowEmployee: fromRow, rowEmployeeNumber: attrNumber || numberFrom(clone.innerText || "") };
+        }
+      }
+      return { rowEmployee: "", rowEmployeeNumber: "" };
+    };
+    return [...document.querySelectorAll('div[data-testid^="absence-bar-"]')].map((el) => {
+      const row = rowEmployeeFor(el);
+      return {
+        __rowId: el.getAttribute("data-testid") || "",
+        ariaLabel: el.getAttribute("aria-label") || "",
+        rowEmployee: row.rowEmployee,
+        rowEmployeeNumber: row.rowEmployeeNumber,
+        employeeName: el.getAttribute("data-employee") || "",
+        startsOn: el.getAttribute("data-start") || el.getAttribute("data-date") || "",
+        endsOn: el.getAttribute("data-end") || "",
+        type: el.getAttribute("data-type") || "",
+        status: el.getAttribute("data-status") || "",
+        rawText: clean(el.innerText || "")
+      };
+    });
+  });
 }
 
 export async function extractPlanRowsFromPage(page, week = {}) {
@@ -644,22 +732,25 @@ export function buildEmployeeResolver({ employeeRows = [], existingEmployees = [
 
 function mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees) {
   const resolved = resolver.resolve(employeeName);
+  const displayName = typeof employeeName === "string"
+    ? displayNameFromOrdioName(employeeName)
+    : displayNameFromOrdioName(employeeName?.name ?? employeeName?.displayName ?? employeeName?.display_name ?? "");
   if (resolved.sourceId) {
     return {
       employeeSourceId: resolved.sourceId,
       employee: {
         sourceId: resolved.sourceId,
-        displayName: resolved.displayName || employeeName,
+        displayName: resolved.displayName || displayName,
         roleTitle: "Mitarbeiter",
-        initials: nameInitials(employeeName).slice(0, 3),
+        initials: nameInitials(displayName).slice(0, 3),
         employmentStatus: "active",
         updatedAt: capturedAt
       }
     };
   }
-  unresolvedEmployees.set(employeeName, {
-    displayName: employeeName,
-    initials: nameInitials(employeeName),
+  unresolvedEmployees.set(displayName, {
+    displayName,
+    initials: nameInitials(displayName),
     reason: "no_employee_source_id_match"
   });
   return { employeeSourceId: null, employee: null };
@@ -768,14 +859,17 @@ export function mapAbsenceRows(rows, options = {}) {
   const stats = { extracted: rows.length, afterDateFilter: 0, afterResolve: 0, mapped: 0 };
   for (const row of rows) {
     const parsed = parseAbsenceLabel(row.ariaLabel ?? "", row.rawText ?? "");
-    const employeeName = displayNameFromOrdioName(row.employeeName || parsed.employeeName || row.rawText || "");
+    const employeeName = displayNameFromOrdioName(row.rowEmployee || row.employeeName || parsed.employeeName || "");
     const startsOn = isoDateFromText(row.startsOn) || parsed.startsOn || isoDateFromText(row.rawText);
     const endsOn = isoDateFromText(row.endsOn, startsOn?.slice(0, 4)) || parsed.endsOn || startsOn;
     if (!employeeName || !startsOn || !endsOn) continue;
     if (options.from && endsOn < options.from) continue;
     if (options.to && startsOn > options.to) continue;
     stats.afterDateFilter += 1;
-    const resolved = mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees);
+    const employeeInput = row.rowEmployeeNumber
+      ? { name: employeeName, pnr: row.rowEmployeeNumber, __cells: [] }
+      : employeeName;
+    const resolved = mapResolvedEmployee(resolver, employeeInput, capturedAt, unresolvedEmployees);
     if (resolved.employee) employeesBySourceId.set(resolved.employeeSourceId, resolved.employee);
     if (resolved.employeeSourceId) stats.afterResolve += 1;
     const sourceId = sourceIdFromRecord(row, "absence", `${employeeName}|${startsOn}|${endsOn}|${row.type ?? ""}`);
