@@ -92,7 +92,7 @@ function text(value, fallback = "") {
 }
 
 function sourceId(record, fallbackPrefix, index) {
-  return text(record.sourceId ?? record.id ?? record.uuid ?? record.employeeId ?? record.employee_id, `${fallbackPrefix}-${index + 1}`);
+  return text(record.sourceId ?? record.source_id ?? record.id ?? record.uuid ?? record.employeeId ?? record.employee_id, `${fallbackPrefix}-${index + 1}`);
 }
 
 function toDate(value) {
@@ -195,13 +195,13 @@ export function mapOrdioPayload(rawInput, options = {}) {
   const employees = [
     ...rawEmployees.map((record, index) => ({
       sourceId: sourceId(record, "employee", index),
-      displayName: text(record.displayName ?? record.name ?? record.fullName),
+      displayName: text(record.displayName ?? record.display_name ?? record.name ?? record.fullName),
       aliases: asArray(record.aliases),
-      roleTitle: text(record.roleTitle ?? record.role ?? record.position, "Mitarbeiter"),
+      roleTitle: text(record.roleTitle ?? record.role_title ?? record.role ?? record.position, "Mitarbeiter"),
       initials: text(record.initials),
-      employmentStatus: text(record.status ?? record.employmentStatus, "active"),
-      employeeNumber: record.employeeNumber ?? record.personnelNumber ?? null,
-      updatedAt: record.updatedAt ?? capturedAt
+      employmentStatus: text(record.status ?? record.employmentStatus ?? record.employment_status, "active"),
+      employeeNumber: record.employeeNumber ?? record.employee_number ?? record.personnelNumber ?? record.personnel_number ?? null,
+      updatedAt: record.updatedAt ?? record.updated_at ?? capturedAt
     })).filter((record) => record.displayName),
     ...workHours.employees,
     ...absencesFromDom.employees,

@@ -62,7 +62,7 @@ test("unresolved employees are marked without creating synthetic employee record
 test("employee resolver prefers employee number and falls back to name match", () => {
   const resolver = buildEmployeeResolver({
     employeeRows: [{ displayName: "Ada Alpha", employeeNumber: "101", sourceId: "employee-number-101" }],
-    existingEmployees: [{ displayName: "Ben Beta", sourceId: "employee-number-102" }]
+    existingEmployees: [{ display_name: "Ben Beta", source_id: "employee-number-102" }]
   });
 
   assert.equal(resolver.resolve({ name: "Alpha, Ada", personalnummer: "101", __cells: [] }).sourceId, "employee-number-101");
@@ -93,6 +93,16 @@ test("area and location resolver maps aliases to canonical names", async () => {
   assert.deepEqual(resolver.resolve("Empfang"), { name: "Rezeption", resolved: true, raw: "Empfang" });
 });
 
+test("location resolver matches und/ampersand spelling variants", () => {
+  const resolver = buildNameResolver({ knownNames: ["Praxis Beispiel und Partner"] });
+
+  assert.deepEqual(resolver.resolve("Praxis Beispiel & Partner"), {
+    name: "Praxis Beispiel und Partner",
+    resolved: true,
+    raw: "Praxis Beispiel & Partner"
+  });
+});
+
 test("absences DOM rows map through employee reconciliation", async () => {
   const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
   const employeeRows = parseEmployeesHtml(html);
@@ -106,6 +116,25 @@ test("absences DOM rows map through employee reconciliation", async () => {
   assert.equal(mapped.absences[0].type, "Urlaub");
 });
 
+test("absences resolve employees from snake_case existing seed records", () => {
+  const rows = [{
+    __rowId: "absence-bar-fixture-2",
+    ariaLabel: "Krankheit\n03.06.2026 - 03.06.2026\n1 Ada Alpha",
+    rawText: "Krankheit"
+  }];
+  const mapped = mapAbsenceRows(rows, {
+    capturedAt: "2026-06-05T12:00:00.000Z",
+    from: "2026-06-01",
+    to: "2026-06-05",
+    existingEmployees: [{ display_name: "Ada Alpha", source_id: "employee-number-101" }]
+  });
+
+  assert.equal(mapped.stats.afterDateFilter, 1);
+  assert.equal(mapped.stats.afterResolve, 1);
+  assert.equal(mapped.absences[0].employeeSourceId, "employee-number-101");
+  assert.equal(mapped.unresolvedEmployees.length, 0);
+});
+
 test("plan DOM rows map to shifts with assignments", async () => {
   const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
   const employeeRows = parseEmployeesHtml(html);
@@ -116,6 +145,30 @@ test("plan DOM rows map to shifts with assignments", async () => {
   assert.equal(mapped.shifts[0].sourceId, "shift-fixture-1");
   assert.equal(mapped.shifts[0].startDate, "2026-05-28");
   assert.equal(mapped.shifts[0].area, "Empfang");
+});
+
+test("plan mapper does not import resolvable employee names as work areas", () => {
+  const mapped = mapPlanRows([{
+    sourceId: "shift-fixture-employee-area",
+    date: "2026-05-28",
+    startTime: "09:00",
+    endTime: "12:00",
+    area: "Ada Alpha",
+    location: "Praxis Beispiel & Partner",
+    assignmentNames: []
+  }], {
+    capturedAt: "2026-06-05T12:00:00.000Z",
+    existingEmployees: [{ display_name: "Ada Alpha", source_id: "employee-number-101" }],
+    canonicalLocations: ["Praxis Beispiel und Partner"],
+    defaultWorkArea: "Ohne Bereich"
+  });
+
+  assert.equal(mapped.stats.afterResolve, 1);
+  assert.equal(mapped.shifts[0].assignmentSourceIds[0], "employee-number-101");
+  assert.equal(mapped.shifts[0].area, "Ohne Bereich");
+  assert.equal(mapped.unresolvedAreas.length, 0);
+  assert.equal(mapped.shifts[0].location, "Praxis Beispiel und Partner");
+  assert.equal(mapped.unresolvedLocations.length, 0);
 });
 
 test("HTML fixture can flow through existing ordio snapshot mapper", async () => {

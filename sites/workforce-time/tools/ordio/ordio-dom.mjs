@@ -38,6 +38,8 @@ function normalizeLookup(value) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, " ")
+    .replace(/\b(?:und|and)\b/g, " ")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 }
@@ -600,14 +602,14 @@ export function buildEmployeeResolver({ employeeRows = [], existingEmployees = [
     else if (current.sourceId !== value.sourceId) map.set(key, { ...current, ambiguous: true });
   };
   const add = (record) => {
-    const displayName = displayNameFromOrdioName(record.displayName ?? record.name ?? "");
-    const sourceId = cleanText(record.sourceId ?? employeeNumberSourceId(record.employeeNumber) ?? "");
+    const displayName = displayNameFromOrdioName(record.displayName ?? record.display_name ?? record.name ?? "");
+    const sourceId = cleanText(record.sourceId ?? record.source_id ?? employeeNumberSourceId(record.employeeNumber ?? record.employee_number) ?? "");
     if (!displayName || !sourceId) return;
     const value = { sourceId, displayName, match: "name" };
     addUnique(byName, normalizeName(displayName), value);
     addUnique(bySignature, nameSignature(displayName), { ...value, match: "name_signature" });
     addUnique(byInitials, nameInitials(displayName), { ...value, match: "initials" });
-    const numberId = employeeNumberSourceId(record.employeeNumber ?? sourceId);
+    const numberId = employeeNumberSourceId(record.employeeNumber ?? record.employee_number ?? sourceId);
     if (numberId) byNumber.set(numberId, { sourceId, displayName, match: "employee_number" });
   };
   existingEmployees.forEach(add);
@@ -827,6 +829,14 @@ export function mapPlanRows(rows, options = {}) {
     if (options.to && date > options.to) continue;
     stats.afterDateFilter += 1;
     const assignmentNames = (row.assignmentNames?.length ? row.assignmentNames : [row.employeeName]).filter(Boolean);
+    let areaCandidate = cleanText(row.area || "");
+    const areaAsEmployee = areaCandidate ? resolver.resolve(areaCandidate) : null;
+    if (areaAsEmployee?.sourceId) {
+      if (!assignmentNames.some((name) => normalizeName(name) === normalizeName(areaCandidate))) {
+        assignmentNames.push(areaCandidate);
+      }
+      areaCandidate = options.defaultWorkArea || "Ohne Bereich";
+    }
     const assignmentSourceIds = [];
     for (const name of assignmentNames) {
       const employeeName = displayNameFromOrdioName(name);
@@ -837,7 +847,7 @@ export function mapPlanRows(rows, options = {}) {
       }
     }
     if (assignmentNames.length === 0 || assignmentSourceIds.length > 0) stats.afterResolve += 1;
-    const areaResolved = areaResolver.resolve(row.area || "Ohne Bereich");
+    const areaResolved = areaResolver.resolve(areaCandidate || "Ohne Bereich");
     const locationResolved = locationResolver.resolve(row.location || options.defaultLocation || "Ordio");
     if (!areaResolved.resolved) unresolvedAreas.set(areaResolved.raw, { name: areaResolved.raw, mappedTo: areaResolved.name, reason: "no_work_area_match" });
     if (!locationResolved.resolved) unresolvedLocations.set(locationResolved.raw, { name: locationResolved.raw, mappedTo: locationResolved.name, reason: "no_location_match" });
