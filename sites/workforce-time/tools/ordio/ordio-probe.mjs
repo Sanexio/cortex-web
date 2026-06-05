@@ -81,13 +81,30 @@ try {
     console.log("--- NAV nach Login ---");
     console.log(JSON.stringify({ url: page.url(), nav }, null, 2));
 
-    for (const path of nav.map((l) => l.href)) {
+    // Also log every request URL (any type) so non-JSON/graphql data
+    // channels become visible too. URL + method only.
+    const reqLog = new Set();
+    page.on("request", (request) => {
+      const url = request.url();
+      if (/app\.ordio\.com\/(api|graphql)/i.test(url)) {
+        reqLog.add(`${request.method()} ${url.length > 150 ? url.slice(0, 150) + "…" : url}`);
+      }
+    });
+
+    // SPA-internal navigation (clicks) instead of full reloads — reloads
+    // re-bootstrap the shell and serve route data from cache.
+    for (const link of nav) {
       try {
-        await page.goto(new URL(path, baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
-        await page.waitForLoadState("networkidle", { timeout: 20000 }).catch(() => {});
-        await page.waitForTimeout(1500);
+        const target = page.locator(`a[href="${link.href}"]`).first();
+        if (!(await target.count())) continue;
+        await target.click({ timeout: 10000 });
+        await page.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
+        await page.waitForTimeout(3000);
       } catch { /* continue walking */ }
     }
+
+    console.log("--- REQUEST-LOG (alle api/graphql-Requests) ---");
+    console.log(JSON.stringify([...reqLog], null, 2));
 
     console.log("--- API-INVENTAR (URLs + Strukturschluessel, keine Werte) ---");
     console.log(JSON.stringify(apiLog, null, 2));
