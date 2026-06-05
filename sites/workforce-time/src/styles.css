@@ -476,6 +476,40 @@ h2 {
   color: #ffffff;
 }
 
+.tenant-login-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+.tenant-login-badge span,
+.tenant-login-badge small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tenant-login-badge span {
+  font-weight: 900;
+}
+
+.tenant-login-badge small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.tenant-login-badge.warn {
+  border-color: #f3d08a;
+  background: var(--amber-soft);
+}
+
 .auth-message,
 .auth-progress,
 .user-pill {

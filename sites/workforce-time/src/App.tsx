@@ -237,9 +237,18 @@ type AuthUser = {
   displayName: string;
   employeeId: string | null;
   role: "admin" | "employee" | string;
+  tenantSlug?: string;
   totpEnrolled: boolean;
   totpVerified: boolean;
   permissions: string[];
+};
+
+type TenantMeta = {
+  slug: string;
+  displayName: string;
+  isDemo: boolean;
+  host: string | null;
+  hostAccepted: boolean;
 };
 
 type AuthStatus = "checking" | "anonymous" | "magic_sent" | "token_pending" | "totp_enroll" | "authenticated" | "offline";
@@ -256,10 +265,12 @@ type AuthEnvelope<T> = {
 type AuthMePayload = {
   authenticated: boolean;
   user: AuthUser | null;
+  tenant?: TenantMeta;
 };
 
 type MagicLinkPayload = {
   message: string;
+  tenant?: TenantMeta;
   delivery?: {
     delivered?: boolean;
     stdout?: boolean;
@@ -269,6 +280,7 @@ type MagicLinkPayload = {
 
 type MagicLinkVerifyPayload = {
   user: AuthUser | null;
+  tenant?: TenantMeta;
   enroll_totp: boolean;
 };
 
@@ -1630,6 +1642,7 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [tenantMeta, setTenantMeta] = useState<TenantMeta | null>(null);
   const [authMessage, setAuthMessage] = useState("Session wird geprüft");
   const [loginEmail, setLoginEmail] = useState("");
   const [magicToken, setMagicToken] = useState(() => (
@@ -1699,6 +1712,7 @@ function App() {
   async function checkAuth() {
     try {
       const payload = await authRequest<AuthMePayload>("/api/auth/me");
+      if (payload.tenant) setTenantMeta(payload.tenant);
       if (payload.authenticated && payload.user?.totpVerified) {
         setAuthUser(payload.user);
         setAuthStatus("authenticated");
@@ -1750,6 +1764,7 @@ function App() {
         method: "POST",
         body: JSON.stringify({ email: loginEmail })
       });
+      if (payload.tenant) setTenantMeta(payload.tenant);
       setAuthStatus("magic_sent");
       setAuthMessage(payload.delivery?.delivered ? "Login-Link verschickt" : "Login-Link lokal erzeugt");
     } catch (error) {
@@ -1774,6 +1789,7 @@ function App() {
         method: "POST",
         body: JSON.stringify({ token: magicToken, totp: totpCode || undefined })
       });
+      if (payload.tenant) setTenantMeta(payload.tenant);
       setAuthUser(payload.user);
       setTotpCode("");
 
@@ -2070,6 +2086,7 @@ function App() {
       <AuthShell
         onHelp={() => setHelpChapterId("anmeldung")}
         status={authStatus}
+        tenant={tenantMeta}
         email={loginEmail}
         token={magicToken}
         totpCode={totpCode}
@@ -2348,6 +2365,7 @@ function App() {
 
 function AuthShell({
   status,
+  tenant,
   email,
   token,
   totpCode,
@@ -2364,6 +2382,7 @@ function AuthShell({
   onHelp
 }: {
   status: AuthStatus;
+  tenant: TenantMeta | null;
   email: string;
   token: string;
   totpCode: string;
@@ -2394,6 +2413,13 @@ function AuthShell({
             <h1>Mitarbeiter-Login</h1>
           </div>
         </div>
+
+        {tenant ? (
+          <div className={tenant.hostAccepted ? "tenant-login-badge" : "tenant-login-badge warn"}>
+            <span>{tenant.displayName}</span>
+            <small>{tenant.slug}</small>
+          </div>
+        ) : null}
 
         <span className={message.includes("Fehler") || message.includes("ung") ? "auth-message warn" : "auth-message"}>
           <KeyRound size={16} />

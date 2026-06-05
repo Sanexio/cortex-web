@@ -9,7 +9,7 @@ import {
 import net from "node:net";
 import tls from "node:tls";
 import { databasePath, db } from "./db.js";
-import { tenantConfigGet, tenantIsDemo } from "./tenant.js";
+import { tenantConfigGet, tenantDescribe, tenantIsDemo } from "./tenant.js";
 
 const SESSION_COOKIE = "workforce_session";
 const MAGIC_LINK_TTL_SECONDS = 15 * 60;
@@ -81,6 +81,75 @@ function getOriginBaseUrl(request) {
   const proto = request.headers["x-forwarded-proto"] || "http";
   const host = request.headers.host || "127.0.0.1:5175";
   return `${proto}://${host}`;
+}
+
+function requestHost(request) {
+  return String(request.headers["x-forwarded-host"] || request.headers.host || "")
+    .split(",")[0]
+    .trim()
+    .toLowerCase();
+}
+
+function hostFromUrl(value) {
+  try {
+    return new URL(String(value)).host.toLowerCase();
+  } catch {
+    return "";
+  }
+}
+
+function tenantDisplayName() {
+  return String(
+    tenantConfigGet("workforce.tenant.display_name", "") ||
+      tenantConfigGet("workforce.display_name", "") ||
+      tenantConfigGet("display_name", "") ||
+      (tenantIsDemo() ? "Workforce-Time Demo" : "Workforce-Time")
+  );
+}
+
+function tenantAllowedHosts() {
+  const configured =
+    tenantConfigGet("workforce.tenant.allowed_hosts", null) ??
+    tenantConfigGet("workforce.auth.allowed_hosts", null) ??
+    tenantConfigGet("auth.allowed_hosts", null) ??
+    [];
+  const publicHost = hostFromUrl(
+    process.env.WORKFORCE_PUBLIC_BASE_URL ||
+      tenantConfigGet("workforce.auth.public_base_url", "") ||
+      tenantConfigGet("auth.public_base_url", "")
+  );
+  return [
+    ...(Array.isArray(configured) ? configured : []),
+    publicHost
+  ]
+    .map((host) => String(host ?? "").trim().toLowerCase())
+    .filter(Boolean)
+    .filter((host, index, hosts) => hosts.indexOf(host) === index);
+}
+
+function tenantAuthContext(request = null) {
+  const host = request ? requestHost(request) : "";
+  const allowedHosts = tenantAllowedHosts();
+  return {
+    slug: tenantSlug(),
+    displayName: tenantDisplayName(),
+    isDemo: tenantIsDemo(),
+    source: tenantDescribe(),
+    host: host || null,
+    allowedHosts,
+    hostAccepted: !host || allowedHosts.length === 0 || allowedHosts.includes(host)
+  };
+}
+
+function assertTenantHost(request) {
+  const context = tenantAuthContext(request);
+  if (!context.hostAccepted) {
+    throw authError(
+      "TENANT_HOST_MISMATCH",
+      "Diese Login-Domain ist fuer diesen Workforce-Time-Tenant nicht freigeschaltet."
+    );
+  }
+  return context;
 }
 
 function parseCookies(request) {
@@ -702,6 +771,7 @@ function sessionFromRequest(request) {
         auth_users.display_name,
         auth_users.role,
         auth_users.employee_id,
+        auth_users.tenant_slug,
         auth_users.totp_enrolled_at,
         auth_users.disabled_at
       FROM auth_sessions
@@ -738,6 +808,7 @@ function publicUser(session) {
     displayName: session.display_name,
     employeeId: session.employee_id,
     role: session.role,
+    tenantSlug: session.tenant_slug ?? tenantSlug(),
     totpEnrolled: Boolean(session.totp_enrolled_at),
     totpVerified: Boolean(session.totp_verified_at),
     permissions: session.role === "admin" ? ["admin", "employee"] : ["employee"]
@@ -745,6 +816,7 @@ function publicUser(session) {
 }
 
 async function requestMagicLink(request, payload) {
+  const tenant = assertTenantHost(request);
   const email = normalizeEmail(payload.email);
   const user = ensureAuthUser(email);
   assertMagicLinkRateLimit(user.id);
@@ -760,10 +832,11 @@ async function requestMagicLink(request, payload) {
   insertAudit("magic_link_requested", { userId: user.id, request });
 
   const delivery = await sendMagicLinkMail(request, user, token);
-  return { message: "Login-Link wurde verschickt.", delivery };
+  return { message: "Login-Link wurde verschickt.", delivery, tenant };
 }
 
 function consumeMagicLink(request, payload) {
+  const tenant = assertTenantHost(request);
   const token = String(payload.token ?? "").trim();
   if (!token) throw authError("TOKEN_REQUIRED", "Magic-Link-Token fehlt.");
 
@@ -774,6 +847,7 @@ function consumeMagicLink(request, payload) {
         auth_users.email,
         auth_users.display_name,
         auth_users.role,
+        auth_users.tenant_slug,
         auth_users.totp_enrolled_at,
         auth_users.disabled_at
       FROM auth_magic_links
@@ -824,6 +898,7 @@ function consumeMagicLink(request, payload) {
       sessionId,
       data: {
         user: session ? publicUser(session) : null,
+        tenant,
         enroll_totp: !row.totp_enrolled_at
       }
     };
@@ -1006,6 +1081,11 @@ export async function handleAuthRoute({ request, response, url, readJson, sendJs
       return true;
     }
 
+    if (request.method === "GET" && url.pathname === "/api/auth/tenant") {
+      jsonOk(sendJson, response, { tenant: tenantAuthContext(request) });
+      return true;
+    }
+
     if (request.method === "POST" && url.pathname === "/api/auth/magic-link/verify") {
       const result = consumeMagicLink(request, await readJson(request));
       jsonOk(sendJson, response, result.data, { "Set-Cookie": sessionCookie(result.sessionId) });
@@ -1045,7 +1125,11 @@ export async function handleAuthRoute({ request, response, url, readJson, sendJs
 
     if (request.method === "GET" && url.pathname === "/api/auth/me") {
       const session = sessionFromRequest(request);
-      jsonOk(sendJson, response, { authenticated: Boolean(session), user: session ? publicUser(session) : null });
+      jsonOk(sendJson, response, {
+        authenticated: Boolean(session),
+        user: session ? publicUser(session) : null,
+        tenant: tenantAuthContext(request)
+      });
       return true;
     }
 
