@@ -1,0 +1,47 @@
+{
+  "id": "workforce-time",
+  "name": "Workforce-Time",
+  "version": "0.1.0",
+  "kind": "cortex-web-site",
+  "trunkPath": "sites/workforce-time",
+  "tenantPaths": [
+    "trunk/workforce/",
+    "trunk/workforce/db/",
+    "trunk/workforce/imports/"
+  ],
+  "tenantConfigKeys": {
+    "workforce.slug": "stable tenant slug used in auth_users.tenant_slug",
+    "workforce.tenant.display_name": "tenant label shown on login",
+    "workforce.tenant.allowed_hosts": "hostnames accepted by the login layer",
+    "workforce.paths.db_dir": "SQLite directory relative to tenant root",
+    "workforce.paths.imports_dir": "snapshot import directory relative to tenant root",
+    "workforce.paths.seed_file": "initial seed file relative to tenant root",
+    "workforce.auth.users": "allowed login identities",
+    "workforce.auth.public_base_url": "absolute URL used in magic links",
+    "workforce.auth.smtp": "SMTP config; password only via password_env"
+  },
+  "commands": {
+    "setupWizard": "node sites/workforce-time/tools/setup-workforce-tenant.mjs --help",
+    "dev": "npm --prefix sites/workforce-time run dev",
+    "build": "npm --prefix sites/workforce-time run build",
+    "backup": "bash sites/workforce-time/tools/backup-db.sh"
+  },
+  "hooks": {
+    "afterAdd": [
+      "node sites/workforce-time/tools/setup-workforce-tenant.mjs --tenant-dir <tenant-root> --slug <slug> --tenant-name <name> --host <host> --admin-email <email>"
+    ],
+    "beforeImport": [
+      "bash sites/workforce-time/tools/backup-db.sh",
+      "npm --prefix sites/workforce-time run ordio:delta -- --dry-run"
+    ]
+  },
+  "secrets": [
+    "WORKFORCE_TOTP_KEY",
+    "SMTP password env named by workforce.auth.smtp.password_env"
+  ],
+  "notes": [
+    "Tenant SQLite databases, imports and backups must stay outside Cortex-Web git.",
+    "Live Ordio credentials are intentionally not part of this manifest.",
+    "A future cortex add workforce-time command can consume this manifest directly."
+  ]
+}
