@@ -20,6 +20,7 @@ npm run dev
 
 - Browser-UI: `http://127.0.0.1:5174`
 - Lokale API: `http://127.0.0.1:5175`
+- Lokale Subdomain mit Caddy + Mailpit: siehe `docs/LOCAL_CADDY_MAILPIT.md`
 
 Nur die API:
 

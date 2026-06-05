@@ -1,0 +1,30 @@
+# T-101 — local Workforce-Time subdomain proxy.
+#
+# Start from sites/workforce-time with:
+#   caddy run --config deploy/local/Caddyfile --adapter caddyfile
+#
+# Defaults assume:
+#   npm run dev       -> UI  127.0.0.1:5174, API 127.0.0.1:5175
+#   mailpit           -> UI  127.0.0.1:8025
+
+{
+	auto_https off
+}
+
+{$WORKFORCE_LOCAL_HOST:arbeitszeiten.localhost} {
+	encode zstd gzip
+
+	@api path /api/*
+	handle @api {
+		reverse_proxy {$ARBEITSZEITEN_API:127.0.0.1:5175}
+	}
+
+	handle {
+		reverse_proxy {$ARBEITSZEITEN_WEB:127.0.0.1:5174}
+	}
+}
+
+{$WORKFORCE_MAILPIT_HOST:mail.arbeitszeiten.localhost} {
+	encode zstd gzip
+	reverse_proxy {$MAILPIT_UI:127.0.0.1:8025}
+}
