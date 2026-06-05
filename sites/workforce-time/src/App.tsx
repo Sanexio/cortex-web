@@ -2153,6 +2153,8 @@ function App() {
             updateEntryStatus={updateEntryStatus}
             updateEntryBreaks={updateEntryBreaks}
             setDialog={setDialog}
+            request={request}
+            authUser={authUser}
           />
         ) : null}
         {view === "absences" ? (
@@ -3973,7 +3975,9 @@ function TimeView({
   setActiveWeekStart,
   updateEntryStatus,
   updateEntryBreaks,
-  setDialog
+  setDialog,
+  request,
+  authUser
 }: {
   data: BootstrapPayload;
   activeWeekStart: string;
@@ -3981,7 +3985,12 @@ function TimeView({
   updateEntryStatus: (id: string, status: Status) => void;
   updateEntryBreaks: (id: string, unpaidBreakMinutes: number, paidBreakMinutes?: number) => void;
   setDialog: (dialog: "time") => void;
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  authUser: AuthUser | null;
 }) {
+  // T-005b — Korrektur-Modal
+  const [correctionEntry, setCorrectionEntry] = useState<TimeEntry | null>(null);
+  const [correctionInfo, setCorrectionInfo] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"all" | "requests">("all");
   const [search, setSearch] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(true);
@@ -4119,6 +4128,7 @@ function TimeView({
             employees={data.employees}
             onMarkConflict={() => updateEntryStatus(selectedEntry.id, "konflikt")}
             onSetBreak={(minutes) => updateEntryBreaks(selectedEntry.id, minutes)}
+            onRequestCorrection={() => setCorrectionEntry(selectedEntry)}
           />
         ) : (
           <Panel title="Detail" icon={Clock3}>
@@ -4129,7 +4139,25 @@ function TimeView({
           <Plus size={18} />
           Arbeitszeit hinzufügen
         </button>
+        {correctionInfo ? (
+          <p style={{ marginTop: 8, padding: "8px 12px", background: "var(--color-success-soft, #dcfce7)", color: "var(--color-success, #047857)", borderRadius: 6, fontSize: "0.9em" }}>
+            {correctionInfo}
+          </p>
+        ) : null}
       </aside>
+      {correctionEntry ? (
+        <CorrectionRequestDialog
+          entry={correctionEntry}
+          employees={data.employees}
+          authUser={authUser}
+          request={request}
+          onClose={() => setCorrectionEntry(null)}
+          onSubmitted={(corrId) => {
+            setCorrectionEntry(null);
+            setCorrectionInfo(`Korrekturantrag angelegt (${corrId}). Wartet auf Freigabe.`);
+          }}
+        />
+      ) : null}
     </section>
   );
 }
@@ -4380,12 +4408,14 @@ function EntryDetails({
   entry,
   employees,
   onMarkConflict,
-  onSetBreak
+  onSetBreak,
+  onRequestCorrection
 }: {
   entry: TimeEntry;
   employees: Employee[];
   onMarkConflict: () => void;
   onSetBreak: (minutes: number) => void;
+  onRequestCorrection?: () => void;
 }) {
   const employee = getEmployee(employees, entry.employeeId);
   const requiredBreak = requiredBreakMinutes(entry);
@@ -4471,8 +4501,127 @@ function EntryDetails({
           <AlertTriangle size={17} />
           Prüfen
         </button>
+        {onRequestCorrection ? (
+          <button className="secondary-button" onClick={onRequestCorrection}>
+            <Mail size={17} />
+            Korrektur
+          </button>
+        ) : null}
       </div>
     </Panel>
+  );
+}
+
+// T-005b — Korrekturantrag-Dialog (claude-chat, 2026-06-05).
+// Fields gemäß Backend-Whitelist: startsAt, endsAt, paidBreakMinutes,
+// unpaidBreakMinutes, note. Plus Pflicht-Feld reason.
+function CorrectionRequestDialog({
+  entry,
+  employees,
+  authUser,
+  request,
+  onClose,
+  onSubmitted
+}: {
+  entry: TimeEntry;
+  employees: Employee[];
+  authUser: AuthUser | null;
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  onClose: () => void;
+  onSubmitted: (correctionId: string) => void;
+}) {
+  const employee = getEmployee(employees, entry.employeeId);
+  const [startsAt, setStartsAt] = useState(`${entry.startDate}T${entry.startTime}`);
+  const [endsAt, setEndsAt] = useState(`${entry.endDate}T${entry.endTime}`);
+  const [unpaidBreakMinutes, setUnpaidBreakMinutes] = useState(entry.unpaidBreakMinutes);
+  const [paidBreakMinutes, setPaidBreakMinutes] = useState(entry.paidBreakMinutes);
+  const [note, setNote] = useState(entry.note ?? "");
+  const [reason, setReason] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!reason.trim()) {
+      setError("Begründung ist Pflicht.");
+      return;
+    }
+    const requestedChanges: Record<string, unknown> = {};
+    const origStart = `${entry.startDate}T${entry.startTime}`;
+    const origEnd = `${entry.endDate}T${entry.endTime}`;
+    if (startsAt !== origStart) requestedChanges.startsAt = `${startsAt}:00`;
+    if (endsAt !== origEnd) requestedChanges.endsAt = `${endsAt}:00`;
+    if (unpaidBreakMinutes !== entry.unpaidBreakMinutes) requestedChanges.unpaidBreakMinutes = unpaidBreakMinutes;
+    if (paidBreakMinutes !== entry.paidBreakMinutes) requestedChanges.paidBreakMinutes = paidBreakMinutes;
+    if (note !== (entry.note ?? "")) requestedChanges.note = note;
+    if (Object.keys(requestedChanges).length === 0) {
+      setError("Keine Änderung erkannt.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await request<{ ok: boolean; correction: { id: string } }>(
+        `/api/time-entries/${encodeURIComponent(entry.id)}/corrections`,
+        { method: "POST", body: JSON.stringify({ requestedChanges, reason: reason.trim() }) }
+      );
+      onSubmitted(res?.correction?.id ?? "");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Antrag konnte nicht angelegt werden");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="dialog-backdrop" role="dialog" aria-modal="true">
+      <form className="dialog" onSubmit={submit}>
+        <header className="dialog-head">
+          <div>
+            <p className="eyebrow">Korrekturantrag</p>
+            <h2>{employee.name} · {formatDate(entry.startDate)}</h2>
+          </div>
+          <button type="button" className="icon-button" aria-label="Schließen" onClick={onClose}>
+            <X size={18} />
+          </button>
+        </header>
+        <p style={{ fontSize: "0.85em", color: "var(--color-muted, #6b7280)", padding: "0 16px" }}>
+          Antragsteller: {authUser?.displayName ?? "—"} ({authUser?.email ?? "?"}). Reviewer
+          darf nicht der Antragsteller sein (4-Augen-Prinzip).
+        </p>
+        <div className="dialog-body" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <Field label="Start">
+            <input type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} />
+          </Field>
+          <Field label="Ende">
+            <input type="datetime-local" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} />
+          </Field>
+          <Field label="Unbezahlte Pause (Min.)">
+            <input type="number" min={0} max={480} value={unpaidBreakMinutes}
+              onChange={(e) => setUnpaidBreakMinutes(Number(e.target.value))} />
+          </Field>
+          <Field label="Bezahlte Pause (Min.)">
+            <input type="number" min={0} max={480} value={paidBreakMinutes}
+              onChange={(e) => setPaidBreakMinutes(Number(e.target.value))} />
+          </Field>
+          <Field label="Notiz">
+            <input type="text" value={note} onChange={(e) => setNote(e.target.value)} />
+          </Field>
+          <Field label="Begründung (Pflicht)">
+            <input type="text" value={reason} onChange={(e) => setReason(e.target.value)} required />
+          </Field>
+        </div>
+        {error ? (
+          <p style={{ padding: "0 16px", color: "var(--color-danger, #b91c1c)" }}>{error}</p>
+        ) : null}
+        <div className="dialog-actions" style={{ display: "flex", gap: 8, justifyContent: "flex-end", padding: 16 }}>
+          <button type="button" className="secondary-button" onClick={onClose} disabled={busy}>Abbrechen</button>
+          <button type="submit" className="primary-button" disabled={busy}>
+            {busy ? "Lädt …" : "Antrag stellen"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 
