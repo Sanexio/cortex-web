@@ -91,18 +91,26 @@ function rowId(rowHtml) {
   return attr ? cleanText(attr[1]) : "";
 }
 
+// The /work-hours page renders THREE tables (probe 2026-06-05): the real
+// 14-column time table plus two empty summary tables whose headers also
+// contain "Name" + "Datum". Require the time-specific columns (start AND
+// ende) so the empty Differenz/Zeit tables are skipped, and among matches
+// keep the one with the most data rows.
+function isWorkHoursHeaders(normalizedHeaders) {
+  const has = (needle) => normalizedHeaders.some((header) => header.includes(needle));
+  return has("name") && has("datum") && has("start") && has("ende");
+}
+
 export function parseWorkHoursHtml(html) {
   const tables = tableBlocks(html);
+  let best = [];
   for (const table of tables) {
     const headerRow = rowBlocks(table, "thead")[0] ?? rowBlocks(table)[0] ?? "";
     const headers = cellTexts(headerRow, "th");
     const normalizedHeaders = headers.map(normalizeKey);
-    if (!normalizedHeaders.some((header) => header.includes("name")) || !normalizedHeaders.some((header) => header.includes("datum"))) {
-      continue;
-    }
+    if (!isWorkHoursHeaders(normalizedHeaders)) continue;
 
-    const bodyRows = rowBlocks(table, "tbody");
-    return bodyRows
+    const rows = rowBlocks(table, "tbody")
       .map((rowHtml) => {
         const cells = cellTexts(rowHtml, "t[dh]");
         const row = { __cells: cells, __rowId: rowId(rowHtml) };
@@ -112,8 +120,9 @@ export function parseWorkHoursHtml(html) {
         return row;
       })
       .filter((row) => row.__cells.some(Boolean));
+    if (rows.length > best.length) best = rows;
   }
-  return [];
+  return best;
 }
 
 export async function extractWorkHoursRowsFromPage(page) {
@@ -126,12 +135,16 @@ export async function extractWorkHoursRowsFromPage(page) {
       .replace(/[^a-z0-9]+/g, "_")
       .replace(/^_+|_+$/g, "");
 
+    // Three tables render on /work-hours; require start+ende and keep the
+    // one with the most rows (the empty summary tables also have name+datum).
+    let best = [];
     for (const table of document.querySelectorAll("table")) {
       const headers = [...table.querySelectorAll("thead th")].map((cell) => clean(cell.innerText));
       const keys = headers.map(normalize);
-      if (!keys.some((key) => key.includes("name")) || !keys.some((key) => key.includes("datum"))) continue;
+      const has = (needle) => keys.some((key) => key.includes(needle));
+      if (!(has("name") && has("datum") && has("start") && has("ende"))) continue;
 
-      return [...table.querySelectorAll("tbody tr")].map((tr) => {
+      const rows = [...table.querySelectorAll("tbody tr")].map((tr) => {
         const cells = [...tr.querySelectorAll("td, th")].map((cell) => clean(cell.innerText));
         const row = {
           __cells: cells,
@@ -142,8 +155,9 @@ export async function extractWorkHoursRowsFromPage(page) {
         });
         return row;
       }).filter((row) => row.__cells.some(Boolean));
+      if (rows.length > best.length) best = rows;
     }
-    return [];
+    return best;
   });
 }
 

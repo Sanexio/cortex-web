@@ -278,7 +278,10 @@ async function captureLiveOrdio(options) {
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
   try {
-    const page = await browser.newPage();
+    // Wide viewport: at the default 1280px Ordio collapses /work-hours
+    // into a responsive card layout without a <table> (verified 2026-06-05,
+    // probe at 1680px renders the 14-column table with all rows).
+    const page = await browser.newPage({ viewport: { width: 1680, height: 1050 } });
     await page.goto(process.env.ORDIO_BASE_URL, { waitUntil: "domcontentloaded" });
     // Ordio defaults to magic-link mode (probe 2026-06-05): password login
     // sits behind the mode-switch button "Mit Benutzername & Passwort anmelden".
@@ -301,7 +304,8 @@ async function captureLiveOrdio(options) {
     await page.waitForLoadState("networkidle");
     await page.goto(new URL("/work-hours", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
-    await page.waitForSelector("table", { timeout: 30000 });
+    await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
+    await page.waitForTimeout(3500); // let the virtualized table hydrate its rows
     const workHoursRows = await extractWorkHoursRowsFromPage(page);
     return { sourceSystem: "ordio", capturedAt: new Date().toISOString(), workHoursRows };
   } finally {
