@@ -38,7 +38,7 @@ function describePayload(value) {
 const { chromium } = await import("playwright");
 const browser = await chromium.launch({ headless: true });
 try {
-  const page = await browser.newPage();
+  const page = await browser.newPage({ viewport: { width: 1680, height: 1050 } });
 
   if (postLogin) {
     const email = process.env.ORDIO_EMAIL || process.env.ORDIO_USER || "";
@@ -91,17 +91,28 @@ try {
       }
     });
 
-    // SPA-internal navigation (clicks) instead of full reloads — reloads
-    // re-bootstrap the shell and serve route data from cache.
+    // SPA-internal navigation (clicks) with per-step diagnostics; falls
+    // back to goto when the link is not clickable (collapsed sidebar etc.).
+    const walk = [];
     for (const link of nav) {
+      const before = apiLog.length;
+      let how = "click";
       try {
-        const target = page.locator(`a[href="${link.href}"]`).first();
-        if (!(await target.count())) continue;
-        await target.click({ timeout: 10000 });
-        await page.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
-        await page.waitForTimeout(3000);
-      } catch { /* continue walking */ }
+        await page.locator(`a[href="${link.href}"]`).first().click({ timeout: 8000 });
+      } catch {
+        how = "goto";
+        try {
+          await page.goto(new URL(link.href, baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
+        } catch {
+          how = "failed";
+        }
+      }
+      await page.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
+      await page.waitForTimeout(3000);
+      walk.push({ href: link.href, how, urlAfter: page.url(), newApiResponses: apiLog.length - before });
     }
+    console.log("--- WALK-DIAGNOSE ---");
+    console.log(JSON.stringify(walk, null, 2));
 
     console.log("--- REQUEST-LOG (alle api/graphql-Requests) ---");
     console.log(JSON.stringify([...reqLog], null, 2));
