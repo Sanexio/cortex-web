@@ -423,23 +423,12 @@ async function applyWorkHoursPickerRange(page, from, to) {
     }
   }
   if (!filled) {
-    // Calendar day-grid fallback: click start then end day button. Only
-    // works within the currently shown month(s); month nav is icon-only
-    // and not yet automated — best-effort, leaves default view if it misses.
-    const dayButton = (iso) => {
-      const day = String(Number(iso.slice(8, 10)));
-      return page.getByRole("button", { name: new RegExp(`^${day}$`) });
-    };
-    try {
-      if (await dayButton(from).count()) await dayButton(from).first().click({ timeout: 3000 });
-      if (await dayButton(to).count()) await dayButton(to).first().click({ timeout: 3000 });
-      filled = true;
-    } catch {
-      filled = false;
-    }
-  }
-  if (!filled) {
-    if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker: weder Datumsfelder noch Tagesraster setzbar; Default-Ansicht.");
+    // NOTE: blindly clicking calendar day buttons ("25" then "5") sets a
+    // nonsensical range and empties the work-hours table (verified live
+    // 2026-06-05: 33→0). Until month-aware day-grid navigation is built,
+    // do NOT manipulate the day grid — close the picker and read Ordio's
+    // default view, which reliably shows the recent period (~33 rows).
+    if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker: keine Datumsfelder (Tagesraster nicht automatisiert); Default-Ansicht wird gelesen.");
     await page.keyboard.press("Escape").catch(() => {});
     return false;
   }
