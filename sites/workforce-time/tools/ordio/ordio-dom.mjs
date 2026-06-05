@@ -62,9 +62,16 @@ function displayNameFromOrdioName(value) {
 }
 
 function cellFor(row, names, fallbackIndex = null) {
+  const dataKeys = Object.keys(row).filter((key) => key !== "__cells" && key !== "__rowId");
   for (const name of names) {
     const key = normalizeKey(name);
+    // Exact header match first.
     if (row[key]) return row[key];
+    // Then substring match — real Ordio headers are compound, e.g. the
+    // name column is "name_nachname_vorname", not bare "name" (verified
+    // live 2026-06-05). Match the first column key containing the needle.
+    const hit = dataKeys.find((candidate) => candidate.includes(key) && row[candidate]);
+    if (hit) return row[hit];
   }
   if (fallbackIndex !== null) return row.__cells?.[fallbackIndex] ?? "";
   return "";
