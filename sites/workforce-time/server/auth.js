@@ -7,6 +7,7 @@ import {
   timingSafeEqual
 } from "node:crypto";
 import net from "node:net";
+import tls from "node:tls";
 import { databasePath, db } from "./db.js";
 import { tenantConfigGet, tenantIsDemo } from "./tenant.js";
 
@@ -352,17 +353,31 @@ function assertMagicLinkRateLimit(userId) {
 }
 
 function smtpConfig() {
+  // Default relay differs by environment: dev expects Mailpit on :1025, prod
+  // expects a local submission MTA (Postfix) on :25. A fully external provider
+  // is configured via the tenant's auth.smtp block (host/port/secure/user/...).
+  const prodDefaultPort = 25;
   const configured = tenantConfigGet("auth.smtp", null) ?? tenantConfigGet("workforce.auth.smtp", null);
   if (configured && typeof configured === "object") {
     return {
       host: configured.host ?? "127.0.0.1",
-      port: Number(configured.port ?? 1025),
+      port: Number(configured.port ?? (isDevelopment() ? 1025 : prodDefaultPort)),
       secure: Boolean(configured.secure),
+      requireTls: Boolean(configured.require_tls ?? configured.starttls),
+      allowSelfSigned: Boolean(configured.allow_self_signed),
       user: configured.user ? String(configured.user) : "",
       passwordEnv: configured.password_env ? String(configured.password_env) : ""
     };
   }
-  return { host: "127.0.0.1", port: 1025, secure: false, user: "", passwordEnv: "" };
+  return {
+    host: "127.0.0.1",
+    port: isDevelopment() ? 1025 : prodDefaultPort,
+    secure: false,
+    requireTls: false,
+    allowSelfSigned: false,
+    user: "",
+    passwordEnv: ""
+  };
 }
 
 export function mailFrom() {
@@ -377,65 +392,125 @@ function escapeSmtpLine(value) {
   return String(value).replace(/\r?\n/g, "\r\n").replace(/^\./gm, "..");
 }
 
-export function sendSmtpMail({ from, to, subject, text }) {
-  const config = smtpConfig();
-  if (config.secure || config.user || config.passwordEnv) {
-    if (isDevelopment()) {
-      return Promise.resolve({ delivered: false, skipped: "smtp_auth_not_supported_in_dev" });
+// Line-based SMTP reply reader. SMTP replies are one or more lines; the final
+// line has a space after the 3-digit code ("250 OK"), continuations a hyphen
+// ("250-PIPELINING"). Resolves one complete reply per read().
+function smtpReader(socket) {
+  let buffer = "";
+  let acc = [];
+  const replies = [];
+  const waiters = [];
+  const pump = () => {
+    while (waiters.length && replies.length) waiters.shift().resolve(replies.shift());
+  };
+  const failAll = (error) => {
+    while (waiters.length) waiters.shift().reject(error);
+  };
+  socket.setEncoding("utf8");
+  socket.on("data", (chunk) => {
+    buffer += chunk;
+    let nl;
+    while ((nl = buffer.indexOf("\r\n")) >= 0) {
+      const line = buffer.slice(0, nl);
+      buffer = buffer.slice(nl + 2);
+      acc.push(line);
+      if (/^\d{3} /.test(line)) {
+        replies.push({ code: Number(line.slice(0, 3)), text: acc.join("\n") });
+        acc = [];
+        pump();
+      }
     }
-    return Promise.reject(new Error("SMTP mit Auth/TLS ist in dieser lokalen O.4-Implementierung noch nicht verdrahtet."));
+  });
+  socket.on("error", failAll);
+  socket.on("timeout", () => failAll(new Error("SMTP timeout")));
+  socket.on("close", () => failAll(new Error("SMTP-Verbindung vorzeitig geschlossen")));
+  return {
+    read: () => new Promise((resolve, reject) => { waiters.push({ resolve, reject }); pump(); })
+  };
+}
+
+export async function sendSmtpMail(mail) {
+  return deliverViaSmtp(smtpConfig(), mail);
+}
+
+// Exported for tests: the SMTP delivery core with an explicit config so the
+// plain / STARTTLS+AUTH paths can be exercised against a mock server.
+export async function deliverViaSmtp(config, { from, to, subject, text }) {
+  const password = config.passwordEnv ? (process.env[config.passwordEnv] ?? "") : "";
+  if (config.user && !password) {
+    throw new Error(`SMTP-Passwort fehlt: Umgebungsvariable ${config.passwordEnv} ist nicht gesetzt.`);
   }
 
+  const ehloName = "workforce-time.local";
   const message = [
     `From: ${from}`,
     `To: ${to}`,
     `Subject: ${subject}`,
+    "MIME-Version: 1.0",
     "Content-Type: text/plain; charset=utf-8",
     "",
     escapeSmtpLine(text)
   ].join("\r\n");
 
-  const commands = [
-    "EHLO workforce-time.local\r\n",
-    `MAIL FROM:<${from}>\r\n`,
-    `RCPT TO:<${to}>\r\n`,
-    "DATA\r\n",
-    `${message}\r\n.\r\n`,
-    "QUIT\r\n"
-  ];
+  // Implicit TLS (e.g. :465) connects via tls; otherwise plain with optional
+  // opportunistic STARTTLS upgrade.
+  let socket = config.secure
+    ? tls.connect({ host: config.host, port: config.port, servername: config.host, rejectUnauthorized: !config.allowSelfSigned })
+    : net.createConnection({ host: config.host, port: config.port });
+  socket.setTimeout(8000);
 
-  return new Promise((resolve, reject) => {
-    const socket = net.createConnection({ host: config.host, port: config.port });
-    let commandIndex = 0;
-    let settled = false;
+  await new Promise((resolve, reject) => {
+    socket.once(config.secure ? "secureConnect" : "connect", resolve);
+    socket.once("error", reject);
+  });
 
-    function finish(error, result) {
-      if (settled) return;
-      settled = true;
-      socket.destroy();
-      if (error) reject(error);
-      else resolve(result);
+  let reader = smtpReader(socket);
+  const expect = async (line, okCodes) => {
+    if (line !== null) socket.write(line + "\r\n");
+    const reply = await reader.read();
+    if (!okCodes.includes(reply.code)) {
+      throw new Error(`SMTP ${reply.code}: ${reply.text.trim()}`);
+    }
+    return reply;
+  };
+
+  try {
+    await expect(null, [220]); // greeting
+    let ehlo = await expect(`EHLO ${ehloName}`, [250]);
+
+    // Opportunistic STARTTLS when not already on TLS and either the server
+    // advertises it together with credentials, or the tenant requires it.
+    if (!config.secure && /STARTTLS/i.test(ehlo.text) && (config.user || config.requireTls)) {
+      await expect("STARTTLS", [220]);
+      socket = tls.connect({ socket, servername: config.host, rejectUnauthorized: !config.allowSelfSigned });
+      socket.setTimeout(8000);
+      await new Promise((resolve, reject) => {
+        socket.once("secureConnect", resolve);
+        socket.once("error", reject);
+      });
+      reader = smtpReader(socket);
+      ehlo = await expect(`EHLO ${ehloName}`, [250]);
+    } else if (!config.secure && config.requireTls) {
+      throw new Error("SMTP-Server bietet kein STARTTLS, require_tls ist aber gesetzt.");
     }
 
-    socket.setTimeout(2500);
-    socket.on("timeout", () => finish(new Error("SMTP timeout")));
-    socket.on("error", (error) => finish(error));
-    socket.on("data", (chunk) => {
-      const textChunk = chunk.toString("utf8");
-      const code = Number(textChunk.slice(0, 3));
-      if (!Number.isFinite(code)) return;
-      if (code >= 400) {
-        finish(new Error(`SMTP rejected command: ${textChunk.trim()}`));
-        return;
-      }
-      if (commandIndex < commands.length) {
-        socket.write(commands[commandIndex]);
-        commandIndex += 1;
-        return;
-      }
-      finish(null, { delivered: true, host: config.host, port: config.port });
-    });
-  });
+    if (config.user) {
+      await expect("AUTH LOGIN", [334]);
+      await expect(Buffer.from(config.user, "utf8").toString("base64"), [334]);
+      await expect(Buffer.from(password, "utf8").toString("base64"), [235]);
+    }
+
+    await expect(`MAIL FROM:<${from}>`, [250]);
+    await expect(`RCPT TO:<${to}>`, [250]);
+    await expect("DATA", [354]);
+    await expect(`${message}\r\n.`, [250]);
+    socket.write("QUIT\r\n");
+    socket.end();
+    return { delivered: true, host: config.host, port: config.port, tls: config.secure || (config.user && true) };
+  } catch (error) {
+    socket.destroy();
+    throw error;
+  }
 }
 
 async function sendMagicLinkMail(request, user, token) {
@@ -1042,3 +1117,19 @@ export function requireWorkforceApiSession(request) {
 }
 
 ensureAuthSchema();
+
+// H10: fail-fast in production. The TOTP encryption key is otherwise only read
+// lazily during enroll/verify — a missing key would let the API boot "green"
+// and silently break the first 2FA login. Crash loudly at startup instead so
+// systemd (Restart=on-failure) makes it visible immediately.
+if (process.env.NODE_ENV === "production") {
+  try {
+    encryptionKey();
+  } catch (error) {
+    console.error(`[workforce-auth] FATALER START-FEHLER: ${error.message}`);
+    console.error(
+      "WORKFORCE_TOTP_KEY (bzw. der in auth.totp_encryption_key_env konfigurierte Name) muss gesetzt sein — sonst ist kein 2FA-Login moeglich."
+    );
+    process.exit(1);
+  }
+}

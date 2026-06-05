@@ -43,8 +43,18 @@ export const migrationBaselinePath =
 mkdirSync(dirname(databasePath), { recursive: true });
 
 export const db = new DatabaseSync(databasePath);
+// C5: WAL lets concurrent readers run alongside a single writer, so the
+// synchronous DatabaseSync driver no longer serialises every reader behind a
+// writer and stops freezing the single Node event loop under load (8 staff +
+// Kiosk). WAL also makes the online .backup unobtrusive. NOTE: WAL creates
+// sidecar files <db>-wal and <db>-shm next to the DB — the deployment's
+// writable path (systemd ReadWritePaths) must cover that directory, and a
+// restore must account for them. busy_timeout raised to 10s.
 db.exec(`
-  PRAGMA busy_timeout = 5000;
+  PRAGMA journal_mode = WAL;
+  PRAGMA synchronous = NORMAL;
+  PRAGMA wal_autocheckpoint = 1000;
+  PRAGMA busy_timeout = 10000;
   PRAGMA foreign_keys = ON;
 `);
 

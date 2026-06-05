@@ -4,12 +4,16 @@
   "description": "Workforce-Time-App (Arbeitszeiten + Schichtplanung). Generisch im Trunk, Tenant-Daten via CORTEX_TENANT_DIR + tools/lib/tenant-{path,config}.mjs.",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "api": "node server/api.js",
     "dev": "node server/dev.js",
     "dev:web": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
     "test:auth": "node --test server/auth-smoke.test.mjs",
+    "test:smtp": "node --test server/smtp.test.mjs",
     "test:payroll": "node --test server/payroll-export.test.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "extract-tenant-seed": "node tools/extract-tenant-seed.mjs",

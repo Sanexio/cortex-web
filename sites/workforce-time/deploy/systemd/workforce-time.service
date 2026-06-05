@@ -31,6 +31,12 @@ WorkingDirectory=/var/www/arbeitszeiten/server
 # WORKFORCE_AUTH_ENFORCE=1). Defense-in-Depth: beides setzen.
 Environment=NODE_ENV=production
 Environment=WORKFORCE_AUTH_ENFORCE=1
+# C4: pin the DB explicitly UNDER the writable root below, instead of relying
+# on CORTEX_TENANT_DIR resolving somewhere ProtectSystem=strict has made
+# read-only. WAL adds <db>-wal/<db>-shm sidecars in the same directory, so the
+# whole db/ folder must be writable (covered by ReadWritePaths). The tenant
+# config (read-only is fine) still comes via CORTEX_TENANT_DIR in the env file.
+Environment=ARBEITSZEITEN_DB=/var/lib/workforce-time/db/arbeitszeiten.sqlite
 EnvironmentFile=-/etc/workforce-time.env
 ExecStart=/usr/bin/node /var/www/arbeitszeiten/server/api.js
 Restart=on-failure

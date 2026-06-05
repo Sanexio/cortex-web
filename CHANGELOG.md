@@ -4,6 +4,37 @@ Alle nennenswerten Änderungen an diesem Projekt. Format: [Keep a Changelog](htt
 
 ## Unreleased
 
+### Workforce-Time Ops/Deployment-Haertung nach adversarialer Review (Stufe 3, 2026-06-05)
+
+`sites/workforce-time/`:
+
+- **C5 — WAL** (`server/db.js`): `journal_mode=WAL`, `synchronous=NORMAL`,
+  `wal_autocheckpoint=1000`, `busy_timeout=10000`. Gleichzeitige
+  Leser/Schreiber (8 MA + Kiosk) ohne `SQLITE_BUSY`/Event-Loop-Freeze.
+  Verifiziert: `PRAGMA journal_mode` ⇒ `wal`, Sidecars angelegt.
+- **H9 — echter SMTP-Client** (`server/auth.js`): ersetzt die naive
+  Plain-Socket-Variante durch einen zeilenbasierten Client mit
+  mehrzeiligem-Reply-Reader, implizitem TLS (:465), opportunistischem
+  STARTTLS und AUTH LOGIN. Prod-Default-Relay `127.0.0.1:25`. Login per
+  Magic-Link ist damit produktiv zustellbar. Kern als `deliverViaSmtp`
+  exportiert; `server/smtp.test.mjs` (Mock-Server: plain + AUTH + fehlendes
+  Passwort) gruen.
+- **H10 — TOTP-Key fail-fast** (`server/auth.js`): in Produktion bricht der
+  Boot hart ab, wenn `WORKFORCE_TOTP_KEY` fehlt (vorher lazy, Login brach
+  erst beim ersten 2FA still). Verifiziert: ohne Key exit 1, mit Key
+  bootet die API (health 200).
+- **C4 — systemd** (`deploy/systemd/workforce-time.service`): `ARBEITSZEITEN_DB`
+  fest unter den schreibbaren `ReadWritePaths`-Pfad gepinnt (vorher Risiko,
+  dass der via `CORTEX_TENANT_DIR` aufgeloeste DB-Pfad read-only war).
+- **Node-Pin** (`package.json`): `engines.node >=24` — `node:sqlite` ist erst
+  ab Node 24 ohne Flag verfuegbar.
+- Neue Ops-Doku `docs/DEPLOYMENT.md` (Env-Pflichtvariablen, SMTP-Pfade,
+  WAL, Reverse-Proxy, verifizierter Boot-Smoke).
+
+**Offen (separate Stufe):** C6/H12 OSS-Domain-Leak + Lint-Scope; Offsite-Backup
+automatisieren (H11, Stracke); H2-H4 (TOTP-Rate-Limit, Token-Logging);
+DSGVO Art. 9/17.
+
 ### Workforce-Time Security- & Korrektheits-Fixes nach adversarialer Review (2026-06-05)
 
 Behebt die blockierenden Funde der 4-Achsen-Review (Stufe 1+2). Alle gegen
