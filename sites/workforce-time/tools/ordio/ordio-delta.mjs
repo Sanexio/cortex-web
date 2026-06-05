@@ -4,10 +4,16 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
 import {
+  extractAbsenceRowsFromPage,
   extractEmployeeRowsFromPage,
+  extractPlanRowsFromPage,
   extractWorkHoursRowsFromPage,
+  mapAbsenceRows,
+  mapPlanRows,
   mapWorkHoursRows,
+  parseAbsencesHtml,
   parseEmployeesHtml,
+  parsePlanHtml,
   parseWorkHoursHtml
 } from "./ordio-dom.mjs";
 
@@ -123,14 +129,19 @@ export function mapOrdioPayload(rawInput, options = {}) {
   const sourceSystem = text(raw.sourceSystem, "ordio");
   const defaultLocation = text(raw.defaultLocation, "Ordio");
   const rawEmployees = asArray(raw.employees ?? raw.staff ?? raw.users);
-  const workHours = mapWorkHoursRows(asArray(raw.workHoursRows), {
+  const commonResolverOptions = {
     capturedAt,
     defaultLocation,
     from: options.from,
     to: options.to,
     employeeRows: asArray(raw.employeeRows),
     existingEmployees: rawEmployees
+  };
+  const workHours = mapWorkHoursRows(asArray(raw.workHoursRows), {
+    ...commonResolverOptions
   });
+  const absencesFromDom = mapAbsenceRows(asArray(raw.absenceRows), commonResolverOptions);
+  const plan = mapPlanRows(asArray(raw.planRows), commonResolverOptions);
 
   const employees = [
     ...rawEmployees.map((record, index) => ({
@@ -143,7 +154,9 @@ export function mapOrdioPayload(rawInput, options = {}) {
       employeeNumber: record.employeeNumber ?? record.personnelNumber ?? null,
       updatedAt: record.updatedAt ?? capturedAt
     })).filter((record) => record.displayName),
-    ...workHours.employees
+    ...workHours.employees,
+    ...absencesFromDom.employees,
+    ...plan.employees
   ].filter((record, index, records) => records.findIndex((item) => item.sourceId === record.sourceId) === index);
 
   const locations = [
@@ -152,7 +165,8 @@ export function mapOrdioPayload(rawInput, options = {}) {
       name: text(record.name, defaultLocation),
       updatedAt: record.updatedAt ?? capturedAt
     })).filter((record) => record.name),
-    ...workHours.locations
+    ...workHours.locations,
+    ...plan.locations
   ].filter((record, index, records) => records.findIndex((item) => item.name === record.name) === index);
 
   const workAreas = [
@@ -161,10 +175,14 @@ export function mapOrdioPayload(rawInput, options = {}) {
       name: text(record.name ?? record.area, "Ohne Bereich"),
       updatedAt: record.updatedAt ?? capturedAt
     })).filter((record) => record.name),
-    ...workHours.workAreas
+    ...workHours.workAreas,
+    ...plan.workAreas
   ].filter((record, index, records) => records.findIndex((item) => item.name === record.name) === index);
 
-  const shifts = asArray(raw.shifts).map((record, index) => {
+  const shifts = [
+    ...asArray(raw.shifts),
+    ...plan.shifts
+  ].map((record, index) => {
     const startDate = toDate(record.startDate ?? record.date ?? record.startsAt);
     const startTime = toTime(record.startTime ?? record.startsAt);
     const endTime = toTime(record.endTime ?? record.endsAt);
@@ -211,7 +229,10 @@ export function mapOrdioPayload(rawInput, options = {}) {
     };
   }).filter(Boolean);
 
-  const absences = asArray(raw.absences ?? raw.leaveRequests).map((record, index) => {
+  const absences = [
+    ...asArray(raw.absences ?? raw.leaveRequests),
+    ...absencesFromDom.absences
+  ].map((record, index) => {
     const startsOn = toDate(record.startsOn ?? record.startDate ?? record.date);
     const endsOn = toDate(record.endsOn ?? record.endDate ?? record.startDate ?? record.date);
     if (!startsOn || !endsOn) return null;
@@ -240,7 +261,11 @@ export function mapOrdioPayload(rawInput, options = {}) {
     shifts,
     timeEntries,
     absences,
-    unresolvedEmployees: workHours.unresolvedEmployees,
+    unresolvedEmployees: [
+      ...workHours.unresolvedEmployees,
+      ...absencesFromDom.unresolvedEmployees,
+      ...plan.unresolvedEmployees
+    ].filter((record, index, records) => records.findIndex((item) => item.initials === record.initials && item.reason === record.reason) === index),
     note: "Ordio-Delta-Snapshot read-only erfasst; Import erfolgt ueber /api/imports/delta-snapshot."
   };
 }
@@ -335,23 +360,90 @@ async function captureLiveOrdio(options) {
 
     const workHoursRows = [];
     for (const week of isoWeeksInRange(options.from, options.to)) {
-      const url = new URL("/work-hours", process.env.ORDIO_BASE_URL);
-      url.searchParams.set("period", week);
-      await page.goto(url.href, { waitUntil: "domcontentloaded" });
+      await page.goto(new URL("/work-hours", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
+      await applyWorkHoursPickerRange(page, week.start, week.end);
       await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
       await page.waitForTimeout(3500); // let the virtualized table hydrate its rows
-      if (process.env.ORDIO_DEBUG) await logWorkHoursDiagnostics(page, week);
+      if (process.env.ORDIO_DEBUG) await logWorkHoursDiagnostics(page, week.label);
       workHoursRows.push(...await extractWorkHoursRowsFromPage(page));
     }
+    const absenceRows = await captureAbsences(page, options);
+    const planRows = await capturePlan(page, options);
     if (process.env.ORDIO_DEBUG) {
       console.error(`ORDIO_DEBUG Mitarbeiterzeilen: ${employeeRows.length}`);
       console.error(`ORDIO_DEBUG Arbeitszeitzeilen vor Dedupe: ${workHoursRows.length}`);
+      console.error(`ORDIO_DEBUG Abwesenheitszeilen: ${absenceRows.length}`);
+      console.error(`ORDIO_DEBUG Planzeilen: ${planRows.length}`);
     }
-    return { sourceSystem: "ordio", capturedAt: new Date().toISOString(), employeeRows, workHoursRows };
+    return { sourceSystem: "ordio", capturedAt: new Date().toISOString(), employeeRows, workHoursRows, absenceRows, planRows };
   } finally {
     await browser.close();
   }
+}
+
+async function applyWorkHoursPickerRange(page, from, to) {
+  const pickerButton = page
+    .getByRole("button", { name: /zeitraum\s*w(?:ä|ae)hlen/i })
+    .or(page.getByLabel(/zeitraum\s*w(?:ä|ae)hlen/i));
+  if (!(await pickerButton.count())) {
+    if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker nicht gefunden; Tabelle bleibt im Ordio-Default.");
+    return false;
+  }
+  await pickerButton.first().click();
+  await page.waitForTimeout(500);
+
+  const dateInputs = page.locator('input[type="date"]');
+  if (await dateInputs.count() >= 2) {
+    await dateInputs.nth(0).fill(from);
+    await dateInputs.nth(1).fill(to);
+  } else {
+    const textInputs = page.locator('input:not([type]), input[type="text"], input[placeholder*="TT"], input[placeholder*="Datum"]');
+    const fromDe = toGermanDate(from);
+    const toDe = toGermanDate(to);
+    if (await textInputs.count() >= 2) {
+      await textInputs.nth(0).fill(fromDe);
+      await textInputs.nth(1).fill(toDe);
+    } else {
+      const candidate = page.getByRole("textbox").first();
+      if (await candidate.count()) {
+        await candidate.fill(`${fromDe} - ${toDe}`);
+      } else {
+        if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker geoeffnet, aber keine Datumsfelder gefunden.");
+        return false;
+      }
+    }
+  }
+
+  const apply = page.getByRole("button", { name: /anwenden|übernehmen|uebernehmen|speichern|ok/i });
+  if (await apply.count()) await apply.first().click();
+  else await page.keyboard.press("Enter");
+  await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
+  await page.waitForTimeout(1200);
+  return true;
+}
+
+function toGermanDate(dateString) {
+  const [year, month, day] = dateString.split("-");
+  return `${day}.${month}.${year}`;
+}
+
+async function captureAbsences(page, options) {
+  await page.goto(new URL("/absences", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
+  await page.waitForTimeout(2500);
+  return extractAbsenceRowsFromPage(page);
+}
+
+async function capturePlan(page, options) {
+  const rows = [];
+  for (const week of isoWeeksInRange(options.from, options.to)) {
+    await page.goto(new URL(`/plan/9405/${week.label}`, process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
+    await page.waitForTimeout(3500);
+    rows.push(...await extractPlanRowsFromPage(page));
+  }
+  return rows;
 }
 
 async function logWorkHoursDiagnostics(page, week) {
@@ -374,7 +466,11 @@ export function isoWeeksInRange(from, to) {
   const end = mondayOfIsoWeekContaining(to);
   const weeks = [];
   for (let cursor = start; cursor <= end; cursor = addDays(cursor, 7)) {
-    weeks.push(isoWeekLabel(cursor));
+    weeks.push({
+      label: isoWeekLabel(cursor),
+      start: cursor < from ? from : cursor,
+      end: addDays(cursor, 6) > to ? to : addDays(cursor, 6)
+    });
   }
   return weeks;
 }
@@ -425,6 +521,10 @@ export async function run(options) {
   const snapshot = mapOrdioPayload(raw, options);
   const validation = validateSnapshot(snapshot);
   const summary = snapshotSummary(snapshot);
+  if (process.env.ORDIO_DEBUG && snapshot.unresolvedEmployees?.length) {
+    const initials = snapshot.unresolvedEmployees.map((entry) => entry.initials || "?").filter(Boolean);
+    console.error(`ORDIO_DEBUG unaufgeloeste Mitarbeiter-Initialen: ${[...new Set(initials)].join(", ")}`);
+  }
 
   if (!validation.ok) {
     const error = new Error(`Snapshot-Validierung fehlgeschlagen: ${validation.errors.join("; ")}`);
@@ -448,7 +548,9 @@ function readFixture(path) {
       sourceSystem: "ordio",
       capturedAt: new Date().toISOString(),
       employeeRows: parseEmployeesHtml(content),
-      workHoursRows: parseWorkHoursHtml(content)
+      workHoursRows: parseWorkHoursHtml(content),
+      absenceRows: parseAbsencesHtml(content),
+      planRows: parsePlanHtml(content)
     };
   }
   return JSON.parse(content);

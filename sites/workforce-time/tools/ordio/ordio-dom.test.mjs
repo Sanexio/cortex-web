@@ -4,7 +4,16 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { buildEmployeeResolver, mapWorkHoursRows, parseEmployeesHtml, parseWorkHoursHtml } from "./ordio-dom.mjs";
+import {
+  buildEmployeeResolver,
+  mapAbsenceRows,
+  mapPlanRows,
+  mapWorkHoursRows,
+  parseAbsencesHtml,
+  parseEmployeesHtml,
+  parsePlanHtml,
+  parseWorkHoursHtml
+} from "./ordio-dom.mjs";
 import { isoWeeksInRange, mapOrdioPayload, snapshotSummary, validateSnapshot } from "./ordio-delta.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -57,7 +66,30 @@ test("employee resolver prefers employee number and falls back to name match", (
 
   assert.equal(resolver.resolve({ name: "Alpha, Ada", personalnummer: "101", __cells: [] }).sourceId, "employee-number-101");
   assert.equal(resolver.resolve({ name: "Beta, Ben", __cells: [] }).sourceId, "employee-number-102");
+  assert.equal(resolver.resolve({ name: "Ada von Alpha", __cells: [] }).sourceId, "employee-number-101");
   assert.equal(resolver.resolve({ name: "Gamma, Gia", __cells: [] }).match, "unresolved");
+});
+
+test("absences DOM rows map through employee reconciliation", async () => {
+  const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
+  const employeeRows = parseEmployeesHtml(html);
+  const mapped = mapAbsenceRows(parseAbsencesHtml(html), { capturedAt: "2026-06-05T12:00:00.000Z", employeeRows });
+
+  assert.equal(mapped.absences.length, 1);
+  assert.equal(mapped.absences[0].employeeSourceId, "employee-number-101");
+  assert.equal(mapped.absences[0].startsOn, "2026-05-27");
+  assert.equal(mapped.absences[0].type, "Urlaub");
+});
+
+test("plan DOM rows map to shifts with assignments", async () => {
+  const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
+  const employeeRows = parseEmployeesHtml(html);
+  const mapped = mapPlanRows(parsePlanHtml(html), { capturedAt: "2026-06-05T12:00:00.000Z", employeeRows });
+
+  assert.equal(mapped.shifts.length, 1);
+  assert.equal(mapped.shifts[0].assignmentSourceIds[0], "employee-number-101");
+  assert.equal(mapped.shifts[0].startDate, "2026-05-28");
+  assert.equal(mapped.shifts[0].area, "Empfang");
 });
 
 test("HTML fixture can flow through existing ordio snapshot mapper", async () => {
@@ -68,7 +100,9 @@ test("HTML fixture can flow through existing ordio snapshot mapper", async () =>
       sourceSystem: "ordio",
       capturedAt: "2026-06-05T12:00:00.000Z",
       employeeRows: parseEmployeesHtml(html),
-      workHoursRows: rows
+      workHoursRows: rows,
+      absenceRows: parseAbsencesHtml(html),
+      planRows: parsePlanHtml(html)
     },
     { from: "2026-05-25", to: "2026-06-05" }
   );
@@ -78,14 +112,19 @@ test("HTML fixture can flow through existing ordio snapshot mapper", async () =>
     locations: 2,
     workAreas: 2,
     employees: 2,
-    shifts: 0,
+    shifts: 1,
     timeEntries: 2,
-    absences: 0,
+    absences: 1,
     unresolvedEmployees: 0
   });
 });
 
 test("isoWeeksInRange covers every week touched by from/to", () => {
-  assert.deepEqual(isoWeeksInRange("2026-05-25", "2026-06-05"), ["2026-W22", "2026-W23"]);
-  assert.deepEqual(isoWeeksInRange("2026-06-05", "2026-06-05"), ["2026-W23"]);
+  assert.deepEqual(isoWeeksInRange("2026-05-25", "2026-06-05"), [
+    { label: "2026-W22", start: "2026-05-25", end: "2026-05-31" },
+    { label: "2026-W23", start: "2026-06-01", end: "2026-06-05" }
+  ]);
+  assert.deepEqual(isoWeeksInRange("2026-06-05", "2026-06-05"), [
+    { label: "2026-W23", start: "2026-06-05", end: "2026-06-05" }
+  ]);
 });

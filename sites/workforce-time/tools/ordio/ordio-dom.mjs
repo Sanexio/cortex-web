@@ -33,6 +33,19 @@ function normalizeName(value) {
     .trim();
 }
 
+function nameTokens(value) {
+  const stopwords = new Set(["von", "van", "de", "del", "der", "den", "zu", "zur", "zum"]);
+  return normalizeName(value).split(" ").filter((token) => token.length > 1 && !stopwords.has(token));
+}
+
+function nameSignature(value) {
+  return [...new Set(nameTokens(value))].sort().join(" ");
+}
+
+function nameInitials(value) {
+  return nameTokens(value).map((token) => token[0]?.toUpperCase()).filter(Boolean).join("");
+}
+
 function employeeNumberSourceId(value) {
   const raw = cleanText(value);
   const match = raw.match(/\b(?:pnr|personal(?:nummer)?|mitarbeiter(?:nummer)?|employee)?\s*#?\s*([0-9]{1,8})\b/i);
@@ -47,6 +60,12 @@ function isoDate(value) {
   if (!de) return null;
   const year = de[3].length === 2 ? `20${de[3]}` : de[3];
   return `${year}-${de[2].padStart(2, "0")}-${de[1].padStart(2, "0")}`;
+}
+
+function addDays(dateString, days) {
+  const date = new Date(`${dateString}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
 }
 
 function hhmm(value) {
@@ -74,6 +93,11 @@ function displayNameFromOrdioName(value) {
   if (!name.includes(",")) return name;
   const [last, first] = name.split(",", 2).map((part) => part.trim()).filter(Boolean);
   return [first, last].filter(Boolean).join(" ");
+}
+
+function sourceIdFromRecord(record, fallbackPrefix, fallbackValue) {
+  const existing = cleanText(record.sourceId ?? record.id ?? record.uuid ?? record.__rowId ?? "");
+  return existing || `${fallbackPrefix}_${stableHash(fallbackValue)}`;
 }
 
 function cellFor(row, names, fallbackIndex = null) {
@@ -182,6 +206,50 @@ export function parseEmployeesHtml(html) {
   return rows;
 }
 
+function elementBlocks(html, pattern) {
+  return [...String(html).matchAll(pattern)].map((match) => match[0]);
+}
+
+function attrValue(html, name) {
+  const match = String(html).match(new RegExp(`\\b${name}=["']([^"']*)["']`, "i"));
+  return match ? cleanText(match[1]) : "";
+}
+
+export function parseAbsencesHtml(html) {
+  return elementBlocks(html, /<div\b[^>]*data-testid=["']absence-bar-[^"']*["'][\s\S]*?<\/div>/gi)
+    .map((block) => {
+      const aria = attrValue(block, "aria-label");
+      const testId = attrValue(block, "data-testid");
+      const text = cleanText(block);
+      const match = aria.match(/Zeitraum\s+f(?:ü|ue)r\s+(.+?)\s+am\s+(\d{1,2}\.\d{1,2}\.\d{2,4})/i);
+      const employeeName = match ? displayNameFromOrdioName(match[1]) : displayNameFromOrdioName(attrValue(block, "data-employee") || text);
+      const startDate = isoDate(attrValue(block, "data-start") || attrValue(block, "data-date") || match?.[2] || text);
+      const endDate = isoDate(attrValue(block, "data-end")) || startDate;
+      const type = attrValue(block, "data-type") || text.match(/\b(Urlaub|Krank|Fortbildung|Abwesenheit|Fehltag)\b/i)?.[1] || "Abwesenheit";
+      const status = attrValue(block, "data-status") || text.match(/\b(genehmigt|abgelehnt|offen|beantragt)\b/i)?.[1] || "offen";
+      return { __rowId: testId, employeeName, startsOn: startDate, endsOn: endDate, type, status, rawText: text };
+    })
+    .filter((row) => row.employeeName && row.startsOn && row.endsOn);
+}
+
+export function parsePlanHtml(html) {
+  const blocks = elementBlocks(html, /<[^>]+\bdata-testid=["'][^"']*(?:shift|plan)[^"']*["'][\s\S]*?<\/(?:div|article|li|tr)>/gi);
+  return blocks
+    .map((block) => {
+      const text = cleanText(block);
+      const testId = attrValue(block, "data-testid") || rowId(block);
+      const date = isoDate(attrValue(block, "data-date") || text);
+      const startTime = hhmm(attrValue(block, "data-start") || text);
+      const endTime = hhmm(attrValue(block, "data-end") || text.replace(startTime || "", ""));
+      const area = attrValue(block, "data-area") || text.match(/\b(?:Bereich|Area):?\s*([^|,;]+)\b/i)?.[1] || "Ohne Bereich";
+      const location = attrValue(block, "data-location") || text.match(/\b(?:Standort|Location):?\s*([^|,;]+)\b/i)?.[1] || "Ordio";
+      const employeeRaw = attrValue(block, "data-employee") || text.match(/\b(?:Mitarbeiter|Name):?\s*([^|,;]+)\b/i)?.[1] || "";
+      const assignmentNames = employeeRaw ? [displayNameFromOrdioName(employeeRaw)] : [];
+      return { __rowId: testId, date, startTime, endTime, area: cleanText(area), location: cleanText(location), assignmentNames };
+    })
+    .filter((row) => row.date && row.startTime && row.endTime);
+}
+
 export async function extractWorkHoursRowsFromPage(page) {
   return page.evaluate(() => {
     const clean = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
@@ -271,29 +339,110 @@ export async function extractEmployeeRowsFromPage(page) {
   });
 }
 
+export async function extractAbsenceRowsFromPage(page) {
+  return page.evaluate(() =>
+    [...document.querySelectorAll('div[data-testid^="absence-bar-"]')].map((el) => ({
+      __rowId: el.getAttribute("data-testid") || "",
+      ariaLabel: el.getAttribute("aria-label") || "",
+      employeeName: el.getAttribute("data-employee") || "",
+      startsOn: el.getAttribute("data-start") || el.getAttribute("data-date") || "",
+      endsOn: el.getAttribute("data-end") || "",
+      type: el.getAttribute("data-type") || "",
+      status: el.getAttribute("data-status") || "",
+      rawText: String(el.innerText || "").replace(/\s+/g, " ").trim()
+    }))
+  );
+}
+
+export async function extractPlanRowsFromPage(page) {
+  return page.evaluate(() =>
+    [...document.querySelectorAll('[data-testid*="shift"], [data-testid*="plan"], tr')]
+      .map((el) => ({
+        __rowId: el.getAttribute("data-testid") || el.getAttribute("data-row-key") || el.id || "",
+        date: el.getAttribute("data-date") || "",
+        startTime: el.getAttribute("data-start") || "",
+        endTime: el.getAttribute("data-end") || "",
+        area: el.getAttribute("data-area") || "",
+        location: el.getAttribute("data-location") || "",
+        employeeName: el.getAttribute("data-employee") || "",
+        rawText: String(el.innerText || "").replace(/\s+/g, " ").trim()
+      }))
+  );
+}
+
 export function buildEmployeeResolver({ employeeRows = [], existingEmployees = [] } = {}) {
   const byName = new Map();
+  const bySignature = new Map();
+  const byInitials = new Map();
   const byNumber = new Map();
+  const addUnique = (map, key, value) => {
+    if (!key) return;
+    const current = map.get(key);
+    if (!current) map.set(key, value);
+    else if (current.sourceId !== value.sourceId) map.set(key, { ...current, ambiguous: true });
+  };
   const add = (record) => {
     const displayName = displayNameFromOrdioName(record.displayName ?? record.name ?? "");
     const sourceId = cleanText(record.sourceId ?? employeeNumberSourceId(record.employeeNumber) ?? "");
     if (!displayName || !sourceId) return;
-    byName.set(normalizeName(displayName), { sourceId, displayName, match: "name" });
+    const value = { sourceId, displayName, match: "name" };
+    addUnique(byName, normalizeName(displayName), value);
+    addUnique(bySignature, nameSignature(displayName), { ...value, match: "name_signature" });
+    addUnique(byInitials, nameInitials(displayName), { ...value, match: "initials" });
     const numberId = employeeNumberSourceId(record.employeeNumber ?? sourceId);
     if (numberId) byNumber.set(numberId, { sourceId, displayName, match: "employee_number" });
   };
   existingEmployees.forEach(add);
   employeeRows.forEach(add);
   return {
-    resolve(row) {
-      const displayName = displayNameFromOrdioName(cellFor(row, ["name", "Name"], 0));
-      const numberId = employeeNumberSourceId(cellFor(row, ["personalnummer", "personal", "nummer", "Personalnummer"], null));
+    resolve(rowOrName) {
+      const displayName = typeof rowOrName === "string"
+        ? displayNameFromOrdioName(rowOrName)
+        : displayNameFromOrdioName(cellFor(rowOrName, ["name", "Name"], 0));
+      const numberId = typeof rowOrName === "string"
+        ? null
+        : employeeNumberSourceId(cellFor(rowOrName, ["pnr", "personalnummer", "personal", "nummer", "Personalnummer"], null));
       if (numberId && byNumber.has(numberId)) return byNumber.get(numberId);
       const nameKey = normalizeName(displayName);
-      if (nameKey && byName.has(nameKey)) return byName.get(nameKey);
+      const signatureKey = nameSignature(displayName);
+      const initialsKey = nameInitials(displayName);
+      for (const candidate of [byName.get(nameKey), bySignature.get(signatureKey), byInitials.get(initialsKey)]) {
+        if (candidate && !candidate.ambiguous) return candidate;
+      }
+      const tokens = nameTokens(displayName);
+      const fuzzy = [...bySignature.entries()].find(([signature, value]) =>
+        !value.ambiguous && tokens.length >= 2 && tokens.every((token) => signature.includes(token))
+      )?.[1];
+      if (fuzzy) return { ...fuzzy, match: "name_fuzzy" };
       return { sourceId: null, displayName, match: "unresolved" };
+    },
+    initialsFor(value) {
+      return nameInitials(value);
     }
   };
+}
+
+function mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees) {
+  const resolved = resolver.resolve(employeeName);
+  if (resolved.sourceId) {
+    return {
+      employeeSourceId: resolved.sourceId,
+      employee: {
+        sourceId: resolved.sourceId,
+        displayName: resolved.displayName || employeeName,
+        roleTitle: "Mitarbeiter",
+        initials: nameInitials(employeeName).slice(0, 3),
+        employmentStatus: "active",
+        updatedAt: capturedAt
+      }
+    };
+  }
+  unresolvedEmployees.set(employeeName, {
+    displayName: employeeName,
+    initials: nameInitials(employeeName),
+    reason: "no_employee_source_id_match"
+  });
+  return { employeeSourceId: null, employee: null };
 }
 
 export function mapWorkHoursRows(rows, options = {}) {
@@ -317,8 +466,8 @@ export function mapWorkHoursRows(rows, options = {}) {
     if (options.from && startDate < options.from) continue;
     if (options.to && startDate > options.to) continue;
 
-    const resolvedEmployee = resolver.resolve(row);
-    const employeeSourceId = resolvedEmployee.sourceId;
+    const resolved = mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees);
+    const employeeSourceId = resolved.employeeSourceId;
     const area = cleanText(cellFor(row, ["bereich", "Bereich"], 8)) || "Ohne Bereich";
     const location = cleanText(cellFor(row, ["standort", "Standort"], 9)) || options.defaultLocation || "Ordio";
     const violationRaw = cleanText(cellFor(row, ["verstoss", "verstoß", "Verstoss", "Verstoß"], 10));
@@ -327,16 +476,7 @@ export function mapWorkHoursRows(rows, options = {}) {
     const sourceId = rowKey || `time_${stableHash(`${employeeName}|${startDate}|${startTime}|${endTime}`)}`;
 
     if (employeeSourceId) {
-      employeesBySourceId.set(employeeSourceId, {
-        sourceId: employeeSourceId,
-        displayName: resolvedEmployee.displayName || employeeName,
-        roleTitle: "Mitarbeiter",
-        initials: employeeName.split(/\s+/).map((part) => part[0]).join("").slice(0, 3).toUpperCase(),
-        employmentStatus: "active",
-        updatedAt: capturedAt
-      });
-    } else {
-      unresolvedEmployees.set(employeeName, { displayName: employeeName, reason: "no_employee_source_id_match" });
+      employeesBySourceId.set(employeeSourceId, resolved.employee);
     }
     const unresolvedNote = employeeSourceId ? "" : "UNRESOLVED_EMPLOYEE: keine bestehende employee-source_id gefunden";
     const note = [violation ? `Ordio-Verstoss: ${violation}` : "", unresolvedNote].filter(Boolean).join(" | ") || null;
@@ -376,6 +516,99 @@ export function mapWorkHoursRows(rows, options = {}) {
       updatedAt: capturedAt
     })),
     timeEntries,
+    unresolvedEmployees: [...unresolvedEmployees.values()]
+  };
+}
+
+export function mapAbsenceRows(rows, options = {}) {
+  const capturedAt = options.capturedAt ?? new Date().toISOString();
+  const resolver = options.employeeResolver ?? buildEmployeeResolver({
+    employeeRows: options.employeeRows ?? [],
+    existingEmployees: options.existingEmployees ?? []
+  });
+  const employeesBySourceId = new Map();
+  const unresolvedEmployees = new Map();
+  const absences = [];
+  for (const row of rows) {
+    const aria = cleanText(row.ariaLabel ?? "");
+    const ariaMatch = aria.match(/Zeitraum\s+f(?:ü|ue)r\s+(.+?)\s+am\s+(\d{1,2}\.\d{1,2}\.\d{2,4})/i);
+    const employeeName = displayNameFromOrdioName(row.employeeName || ariaMatch?.[1] || row.rawText || "");
+    const startsOn = isoDate(row.startsOn || ariaMatch?.[2] || row.rawText);
+    const endsOn = isoDate(row.endsOn) || startsOn;
+    if (!employeeName || !startsOn || !endsOn) continue;
+    if (options.from && endsOn < options.from) continue;
+    if (options.to && startsOn > options.to) continue;
+    const resolved = mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees);
+    if (resolved.employee) employeesBySourceId.set(resolved.employeeSourceId, resolved.employee);
+    const sourceId = sourceIdFromRecord(row, "absence", `${employeeName}|${startsOn}|${endsOn}|${row.type ?? ""}`);
+    const unresolvedNote = resolved.employeeSourceId ? "" : "UNRESOLVED_EMPLOYEE: keine bestehende employee-source_id gefunden";
+    absences.push({
+      sourceId,
+      employeeSourceId: resolved.employeeSourceId,
+      employeeName,
+      startsOn,
+      endsOn,
+      type: cleanText(row.type) || "Abwesenheit",
+      status: cleanText(row.status) || "offen",
+      note: unresolvedNote || null,
+      updatedAt: capturedAt
+    });
+  }
+  return { employees: [...employeesBySourceId.values()], absences, unresolvedEmployees: [...unresolvedEmployees.values()] };
+}
+
+export function mapPlanRows(rows, options = {}) {
+  const capturedAt = options.capturedAt ?? new Date().toISOString();
+  const resolver = options.employeeResolver ?? buildEmployeeResolver({
+    employeeRows: options.employeeRows ?? [],
+    existingEmployees: options.existingEmployees ?? []
+  });
+  const employeesBySourceId = new Map();
+  const areaNames = new Set();
+  const locationNames = new Set();
+  const unresolvedEmployees = new Map();
+  const shifts = [];
+  for (const row of rows) {
+    const date = isoDate(row.date || row.rawText);
+    const startTime = hhmm(row.startTime || row.rawText);
+    const endTime = hhmm(row.endTime || String(row.rawText ?? "").replace(startTime || "", ""));
+    if (!date || !startTime || !endTime) continue;
+    if (options.from && date < options.from) continue;
+    if (options.to && date > options.to) continue;
+    const assignmentNames = (row.assignmentNames?.length ? row.assignmentNames : [row.employeeName]).filter(Boolean);
+    const assignmentSourceIds = [];
+    for (const name of assignmentNames) {
+      const employeeName = displayNameFromOrdioName(name);
+      const resolved = mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees);
+      if (resolved.employee) {
+        employeesBySourceId.set(resolved.employeeSourceId, resolved.employee);
+        assignmentSourceIds.push(resolved.employeeSourceId);
+      }
+    }
+    const area = cleanText(row.area) || "Ohne Bereich";
+    const location = cleanText(row.location) || options.defaultLocation || "Ordio";
+    areaNames.add(area);
+    locationNames.add(location);
+    shifts.push({
+      sourceId: sourceIdFromRecord(row, "shift", `${date}|${startTime}|${endTime}|${area}|${assignmentSourceIds.join(",")}`),
+      startDate: date,
+      startTime,
+      endDate: endTime <= startTime ? addDays(date, 1) : date,
+      endTime,
+      area,
+      location,
+      requiredStaff: Math.max(1, assignmentSourceIds.length || assignmentNames.length || Number(row.requiredStaff ?? 1) || 1),
+      note: cleanText(row.note) || null,
+      assignmentSourceIds,
+      assignmentNames,
+      updatedAt: capturedAt
+    });
+  }
+  return {
+    employees: [...employeesBySourceId.values()],
+    workAreas: [...areaNames].map((name) => ({ sourceId: `area_${stableHash(name)}`, name, updatedAt: capturedAt })),
+    locations: [...locationNames].map((name) => ({ sourceId: `location_${stableHash(name)}`, name, updatedAt: capturedAt })),
+    shifts,
     unresolvedEmployees: [...unresolvedEmployees.values()]
   };
 }
