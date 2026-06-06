@@ -139,9 +139,21 @@ try {
     console.log(`--- ABSEMBED (barId=${barId}, payload ${html.length} bytes) ---`);
     if (barId) {
       const idx = html.indexOf(barId);
-      // Wide window BEFORE the bar to reveal the per-employee wrapper.
-      const before = html.slice(Math.max(0, idx - 2200), idx);
-      console.log("Kontext VOR barId (Mitarbeiter-Gruppierung):\n" + redact(before).replace(/\\"/g, '"').slice(-1600));
+      // Search backwards for the employee-row wrapper: the nearest key that
+      // opens a row/group with an employee id+label before this bar.
+      const before = html.slice(Math.max(0, idx - 9000), idx);
+      const rowMarkers = [...before.matchAll(/"(employeeId|employee_id|userId|resourceId|rowId|row|resource|staff)"\s*:/gi)].map((m) => m[1]);
+      console.log("Row/Employee-Marker im 9k-Fenster vor der Bar:", JSON.stringify([...new Set(rowMarkers)]));
+      // The structural opener of the array containing this bar: find the
+      // last `"<key>":[{` before idx that is NOT another bar.
+      const opener = before.match(/"(\w+)"\s*:\s*\[\s*\{[^}]*?"id"/g);
+      console.log("Letzte Array-Opener-Keys vor der Bar:", JSON.stringify((opener || []).map((s) => s.match(/"(\w+)"/)[1]).slice(-6)));
+      // Show the 600 chars right before the FIRST bar-object opening, to
+      // reveal what wraps the bars list (the employee row header).
+      const firstBarObj = before.search(/\{\s*"id"\s*:\s*"\d+"\s*,\s*"label"/);
+      if (firstBarObj > 0) {
+        console.log("Wrapper unmittelbar vor erstem Bar-Objekt:\n" + redact(before.slice(Math.max(0, firstBarObj - 600), firstBarObj)).replace(/\\"/g, '"'));
+      }
     }
     // Also: keys near "absence" occurrences
     const sample = [...html.matchAll(/[\{,]"(\w*(?:absence|employee|start|end|type|date|user|staff)\w*)":/gi)].map((m) => m[1].toLowerCase());
