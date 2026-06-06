@@ -39,6 +39,9 @@ const absClick = args.includes("--absclick");
 // value TYPES) — string values shown as "str", never the value itself.
 const apiIdx = args.indexOf("--apijson");
 const apiPath = apiIdx >= 0 ? args[apiIdx + 1] : null;
+// --abssniff: load /absences and report which request(s) actually return
+// absence records (method+url+whether body has dates/employee refs).
+const absSniff = args.includes("--abssniff");
 // --raw <path> <cssSelector>: after login navigate to <path>, scroll,
 // then dump the outerHTML of the first 4 matching elements with all
 // person-name-looking tokens redacted (keep dates/times/numbers/attrs).
@@ -109,6 +112,35 @@ try {
     }, rawSelector);
     console.log(`--- RAW ${rawPath} ${rawSelector} (${dump.length} Elemente, Namen redigiert) ---`);
     dump.forEach((h, i) => console.log(`[${i}] ${h}\n`));
+    await browser.close();
+    process.exit(0);
+  }
+
+  if (absSniff) {
+    await loginPassword();
+    const hits = [];
+    page.on("response", async (res) => {
+      try {
+        const req = res.request();
+        const url = res.url();
+        if (!/ordio\.com\/(api|absences)/i.test(url)) return;
+        let body = "";
+        try { body = (await res.body()).toString("utf8"); } catch { return; }
+        const low = body.toLowerCase();
+        // absence record markers: a date + absence-type/employee reference
+        const hasDate = /\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4}/.test(body);
+        const hasAbs = /absence|urlaub|krank|abwesen|holiday|disease|vacation/i.test(low);
+        const hasEmp = /employee|user_id|staff|"label"/i.test(low);
+        if (hasDate && hasAbs) {
+          hits.push({ method: req.method(), url: url.replace(/^https:\/\/app\.ordio\.com/, "").slice(0, 120), ct: (res.headers()["content-type"] || "").split(";")[0], bytes: body.length, hasEmp, sampleKeys: (() => { try { const j = JSON.parse(body); return Array.isArray(j) ? `array(${j.length})` : Object.keys(j).slice(0, 12); } catch { return "non-json(rsc?)"; } })() });
+        }
+      } catch { /* ignore */ }
+    });
+    await page.goto(new URL("/absences", baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
+    await page.waitForTimeout(4000);
+    console.log("--- ABSSNIFF (Requests mit Datum+Abwesenheit) ---");
+    console.log(JSON.stringify(hits, null, 2));
     await browser.close();
     process.exit(0);
   }
