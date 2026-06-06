@@ -139,11 +139,9 @@ try {
     console.log(`--- ABSEMBED (barId=${barId}, payload ${html.length} bytes) ---`);
     if (barId) {
       const idx = html.indexOf(barId);
-      // Try to find the record that contains this id with surrounding fields
-      for (const re of [new RegExp(`.{0,400}${barId}.{0,400}`, "s")]) {
-        const m = html.match(re);
-        if (m) console.log("Kontext um barId:\n" + redact(m[0]).replace(/\\"/g, '"').slice(0, 900));
-      }
+      // Wide window BEFORE the bar to reveal the per-employee wrapper.
+      const before = html.slice(Math.max(0, idx - 2200), idx);
+      console.log("Kontext VOR barId (Mitarbeiter-Gruppierung):\n" + redact(before).replace(/\\"/g, '"').slice(-1600));
     }
     // Also: keys near "absence" occurrences
     const sample = [...html.matchAll(/[\{,]"(\w*(?:absence|employee|start|end|type|date|user|staff)\w*)":/gi)].map((m) => m[1].toLowerCase());
