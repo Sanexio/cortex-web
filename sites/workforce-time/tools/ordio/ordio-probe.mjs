@@ -131,16 +131,30 @@ try {
         }
         return typeof v;
       };
+      const summarize = (status, method, body) => {
+        const flat = JSON.stringify(body).toLowerCase();
+        const hints = ["absence", "urlaub", "krank", "abwesen", "starts_on", "startson", "start_date", "from", "employee_id", "employeeid", "user_id", "type_id"].filter((h) => flat.includes(h));
+        return { status, method, hints, structure: shape(body) };
+      };
       const out = {};
       for (const path of paths) {
         try {
           const res = await fetch(path, { headers: { accept: "application/json" } });
           const ct = res.headers.get("content-type") || "";
-          if (!ct.includes("json")) { out[path] = { status: res.status, note: "kein JSON" }; continue; }
-          const body = await res.json();
-          const flat = JSON.stringify(body).toLowerCase();
-          const hints = ["absence", "urlaub", "krank", "abwesen", "starts_on", "startson", "start_date", "from", "employee_id", "employeeid", "user_id"].filter((h) => flat.includes(h));
-          out[path] = { status: res.status, hints, structure: shape(body) };
+          if (ct.includes("json")) { out[path] = summarize(res.status, "GET", await res.json()); continue; }
+          if (res.status === 405) {
+            // Retry as POST with a date-range body (several common shapes).
+            const m = path.match(/[?&](?:from|start)=(\d{4}-\d{2}-\d{2})/);
+            const m2 = path.match(/[?&](?:to|end)=(\d{4}-\d{2}-\d{2})/);
+            const from = m?.[1] || "2026-05-25", to = m2?.[1] || "2026-06-05";
+            const url = path.split("?")[0];
+            const payload = { from, to, start: from, end: to, startDate: from, endDate: to, start_date: from, end_date: to };
+            const pres = await fetch(url, { method: "POST", headers: { "content-type": "application/json", accept: "application/json" }, body: JSON.stringify(payload) });
+            const pct = pres.headers.get("content-type") || "";
+            out[path] = pct.includes("json") ? summarize(pres.status, "POST", await pres.json()) : { status: pres.status, method: "POST", note: "kein JSON" };
+          } else {
+            out[path] = { status: res.status, method: "GET", note: "kein JSON" };
+          }
         } catch (e) { out[path] = { error: String(e) }; }
       }
       return out;
