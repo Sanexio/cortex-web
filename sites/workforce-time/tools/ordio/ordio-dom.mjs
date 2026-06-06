@@ -411,6 +411,15 @@ function rowsFromAbsencePayload(root, employeeMap = new Map()) {
       const rowEmployee = displayNameFromOrdioName(context.employeeName || employeeMap.get(context.employeeId) || "");
       const label = cleanText(value.label);
       const labelIsEmployee = rowEmployee && normalizeName(label) === normalizeName(rowEmployee);
+      // Ordio-Timeline (verifiziert 2026-06-06): Balken sind eine FLACHE
+      // Liste ohne Employee-Wrapper. Das `label` ist bei Urlaub der
+      // MITARBEITERNAME, bei Spezial-Typen (Krankheit/Feiertagsausgleich/…)
+      // der TYP. Bei Typ-Bars ist der Mitarbeiter in keiner erreichbaren
+      // Datenquelle → Eintrag wird mangels Mitarbeiter verworfen (NICHT
+      // die Dauer „1 Tag" aus tooltip[3] als Name nehmen).
+      const labelIsKnownType = /\b(urlaub|krank|krankheit|feiertag|feiertagsausgleich|fortbildung|abwesen|^frei$|elternzeit|mutterschutz|sonderurlaub|gleitzeit|berufsschule|schule|unbezahlt|bildungsurlaub|kur|reha|pflege|home\s?office|dienstreise|seminar)\b/i.test(label);
+      const labelLooksLikeName = label && !labelIsKnownType && !isDurationLine(label) && !parseDateRangeLine(label) && /[A-Za-zÀ-ÿ].*(?:\s|,).*[A-Za-zÀ-ÿ]/.test(label);
+      const resolvedEmployeeName = displayNameFromOrdioName(rowEmployee || (labelLooksLikeName ? label : "") || (labelIsEmployee ? label : ""));
       if (!seen.has(sourceId)) {
         seen.add(sourceId);
         rows.push({
@@ -419,12 +428,14 @@ function rowsFromAbsencePayload(root, employeeMap = new Map()) {
           id: sourceId,
           rowEmployee,
           rowEmployeeId: context.employeeId || "",
-          employeeName: displayNameFromOrdioName(rowEmployee || parsed.employeeName || ""),
+          employeeName: resolvedEmployeeName,
           startsOn: parsed.startsOn,
           endsOn: parsed.endsOn,
-          type: label && !labelIsEmployee && !isDurationLine(label) && !parseDateRangeLine(label)
+          type: labelIsKnownType && label && !isDurationLine(label) && !parseDateRangeLine(label)
             ? label
-            : parsed.type || "Abwesenheit",
+            : (labelLooksLikeName
+                ? (tooltipLines[0] && normalizeName(tooltipLines[0]) !== normalizeName(label) && !isDurationLine(tooltipLines[0]) && !parseDateRangeLine(tooltipLines[0]) ? tooltipLines[0] : "Urlaub")
+                : (parsed.type || "Abwesenheit")),
           status: absenceStatusFrom(tooltipLines[3], Boolean(value.isPending)),
           rawText: cleanText(value.tooltip),
           ariaLabel: String(value.tooltip ?? "")
@@ -1037,7 +1048,12 @@ export function mapAbsenceRows(rows, options = {}) {
   const stats = { extracted: rows.length, afterDateFilter: 0, afterResolve: 0, mapped: 0 };
   for (const row of rows) {
     const parsed = parseAbsenceLabel(row.ariaLabel ?? "", row.rawText ?? "");
-    const employeeName = displayNameFromOrdioName(row.rowEmployee || row.employeeName || parsed.employeeName || "");
+    // NICHT auf parsed.employeeName zurueckfallen: bei Ordios flacher
+    // Timeline ist tooltip[3] die Dauer („1 Tag"), kein Name. Mitarbeiter
+    // nur aus rowEmployee (DOM-Row) oder row.employeeName (label-als-Name
+    // bei Urlaub-Bars, gesetzt in rowsFromAbsencePayload). Typ-Bars ohne
+    // erreichbaren Mitarbeiter fallen mangels employeeName sauber raus.
+    const employeeName = displayNameFromOrdioName(row.rowEmployee || row.employeeName || "");
     const startsOn = isoDateFromText(row.startsOn) || parsed.startsOn || isoDateFromText(row.rawText);
     const endsOn = isoDateFromText(row.endsOn, startsOn?.slice(0, 4)) || parsed.endsOn || startsOn;
     if (!employeeName || !startsOn || !endsOn) continue;
