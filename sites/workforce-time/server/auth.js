@@ -137,7 +137,10 @@ function tenantAuthContext(request = null) {
     source: tenantDescribe(),
     host: host || null,
     allowedHosts,
-    hostAccepted: !host || allowedHosts.length === 0 || allowedHosts.includes(host)
+    // Das Tenant-Host-Gate (T-203) ist eine Produktions-Sicherung gegen
+    // fremde Login-Domains. Im Dev-Modus (lokales Testen, vite-Proxy mit
+    // wechselnden 127.0.0.1-Ports) wird es übersprungen.
+    hostAccepted: isDevelopment() || !host || allowedHosts.length === 0 || allowedHosts.includes(host)
   };
 }
 
