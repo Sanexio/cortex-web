@@ -283,15 +283,22 @@ function attrValue(html, name) {
   return match ? cleanText(match[1]) : "";
 }
 
+function decodeHtmlEntities(value) {
+  return String(value ?? "")
+    .replace(/&quot;/g, '"')
+    .replace(/&#34;/g, '"')
+    .replace(/&#x22;/gi, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x27;/gi, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
 function rawAttrValue(html, name) {
   const match = String(html).match(new RegExp(`\\b${name}=["']([^"']*)["']`, "i"));
-  return match
-    ? String(match[1])
-      .replace(/&nbsp;/g, " ")
-      .replace(/&amp;/g, "&")
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
-    : "";
+  return match ? decodeHtmlEntities(match[1]) : "";
 }
 
 function cleanLines(value) {
@@ -349,6 +356,162 @@ function parseAbsenceLabel(label, fallbackText = "") {
     endsOn: range?.endsOn || isoDateFromText(legacy?.[2] || ""),
     type
   };
+}
+
+function absenceStatusFrom(value, pending = false) {
+  const raw = cleanText(value);
+  if (raw) return raw;
+  return pending ? "Beantragt" : "Genehmigt";
+}
+
+function sourceIdFromAbsenceId(value) {
+  const id = cleanText(value);
+  if (!id) return "";
+  return id.startsWith("absence-bar-") ? id : `absence-bar-${id}`;
+}
+
+function isAbsencePayloadBar(value) {
+  return Boolean(
+    value
+    && typeof value === "object"
+    && !Array.isArray(value)
+    && value.id != null
+    && value.tooltip
+    && value.startDayIndex != null
+    && value.endDayIndex != null
+  );
+}
+
+function employeeLabelFromRecord(record, employeeMap) {
+  if (!record || typeof record !== "object") return "";
+  const id = cleanText(record.employeeId ?? record.employee_id ?? record.userId ?? record.user_id ?? record.id ?? "");
+  const mapped = id ? employeeMap.get(id) : "";
+  return cleanText(mapped || record.employeeLabel || record.employeeName || record.displayName || record.display_name || record.name || record.label || "");
+}
+
+function employeeIdFromRecord(record) {
+  if (!record || typeof record !== "object") return "";
+  return cleanText(record.employeeId ?? record.employee_id ?? record.userId ?? record.user_id ?? record.id ?? "");
+}
+
+function rowsFromAbsencePayload(root, employeeMap = new Map()) {
+  const rows = [];
+  const seen = new Set();
+  const visit = (value, context = {}) => {
+    if (!value || typeof value !== "object") return;
+    if (Array.isArray(value)) {
+      for (const item of value) visit(item, context);
+      return;
+    }
+
+    if (isAbsencePayloadBar(value)) {
+      const parsed = parseAbsenceLabel(value.tooltip ?? "", value.label ?? "");
+      const tooltipLines = cleanLines(value.tooltip ?? "");
+      const sourceId = sourceIdFromAbsenceId(value.id);
+      const rowEmployee = displayNameFromOrdioName(context.employeeName || employeeMap.get(context.employeeId) || "");
+      const label = cleanText(value.label);
+      const labelIsEmployee = rowEmployee && normalizeName(label) === normalizeName(rowEmployee);
+      if (!seen.has(sourceId)) {
+        seen.add(sourceId);
+        rows.push({
+          __rowId: sourceId,
+          sourceId,
+          id: sourceId,
+          rowEmployee,
+          rowEmployeeId: context.employeeId || "",
+          employeeName: displayNameFromOrdioName(rowEmployee || parsed.employeeName || ""),
+          startsOn: parsed.startsOn,
+          endsOn: parsed.endsOn,
+          type: label && !labelIsEmployee && !isDurationLine(label) && !parseDateRangeLine(label)
+            ? label
+            : parsed.type || "Abwesenheit",
+          status: absenceStatusFrom(tooltipLines[3], Boolean(value.isPending)),
+          rawText: cleanText(value.tooltip),
+          ariaLabel: String(value.tooltip ?? "")
+        });
+      }
+      return;
+    }
+
+    const ownEmployeeId = employeeIdFromRecord(value);
+    const ownEmployeeName = employeeLabelFromRecord(value, employeeMap);
+    const nextContext = ownEmployeeName || employeeMap.get(ownEmployeeId)
+      ? { employeeId: ownEmployeeId || context.employeeId || "", employeeName: ownEmployeeName || employeeMap.get(ownEmployeeId) || context.employeeName || "" }
+      : context;
+
+    for (const [key, child] of Object.entries(value)) {
+      if (key === "employees" && Array.isArray(child)) {
+        for (const employee of child) visit(employee, {
+          employeeId: employeeIdFromRecord(employee),
+          employeeName: employeeLabelFromRecord(employee, employeeMap)
+        });
+      } else if (/^(?:bars|absences|items|records|rows|children|lanes)$/i.test(key)) {
+        visit(child, nextContext);
+      } else {
+        visit(child, nextContext);
+      }
+    }
+  };
+  visit(root);
+  return rows;
+}
+
+function extractJsonCandidatesFromHtml(html) {
+  const decoded = decodeHtmlEntities(html);
+  const candidates = [];
+  for (const match of decoded.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)) {
+    const body = match[1]?.trim();
+    if (body) candidates.push(body);
+  }
+  for (const match of decoded.matchAll(/<script\b[^>]*type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    const body = match[1]?.trim();
+    if (body) candidates.push(body);
+  }
+  if (/^\s*[\[{]/.test(decoded)) candidates.push(decoded);
+  return [...new Set(candidates)];
+}
+
+function parseJsonCandidate(value) {
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+  for (const candidate of [
+    raw,
+    raw.replace(/^self\.__next_f\.push\(\s*/, "").replace(/\s*\)\s*;?$/, ""),
+    raw.match(/=\s*({[\s\S]*})\s*;?$/)?.[1] || ""
+  ]) {
+    if (!candidate) continue;
+    try {
+      return JSON.parse(candidate);
+    } catch {
+      // Try the next shape.
+    }
+  }
+  return null;
+}
+
+function employeeMapFromAbsencesApi(apiPayload = {}) {
+  const employees = Array.isArray(apiPayload?.employees) ? apiPayload.employees : [];
+  return new Map(employees
+    .map((employee) => [cleanText(employee.id), cleanText(employee.label ?? employee.name ?? employee.displayName)])
+    .filter(([id, label]) => id && label));
+}
+
+export function parseAbsencePayloadHtml(html, apiPayload = {}) {
+  const employeeMap = employeeMapFromAbsencesApi(apiPayload);
+  const rows = [];
+  const seen = new Set();
+  for (const candidate of extractJsonCandidatesFromHtml(html)) {
+    const parsed = parseJsonCandidate(candidate);
+    if (!parsed) continue;
+    for (const row of rowsFromAbsencePayload(parsed, employeeMap)) {
+      const key = row.sourceId || row.__rowId;
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        rows.push(row);
+      }
+    }
+  }
+  return rows;
 }
 
 function absenceElementMatches(html) {
@@ -414,6 +577,8 @@ function parsePlanTextFields(value) {
 }
 
 export function parseAbsencesHtml(html) {
+  const payloadRows = parseAbsencePayloadHtml(html);
+  if (payloadRows.length) return payloadRows;
   return absenceElementMatches(html)
     .map(({ block, index }) => {
       const aria = rawAttrValue(block, "aria-label");
@@ -541,6 +706,19 @@ export async function extractEmployeeRowsFromPage(page) {
 }
 
 export async function extractAbsenceRowsFromPage(page) {
+  const html = await page.content();
+  const apiPayload = await page.evaluate(async () => {
+    try {
+      const response = await fetch("/api/absences", { credentials: "include" });
+      if (!response.ok) return {};
+      return await response.json();
+    } catch {
+      return {};
+    }
+  }).catch(() => ({}));
+  const payloadRows = parseAbsencePayloadHtml(html, apiPayload);
+  if (payloadRows.length) return payloadRows;
+
   return page.evaluate(() => {
     const clean = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
     const normalizeName = (value) => clean(value)

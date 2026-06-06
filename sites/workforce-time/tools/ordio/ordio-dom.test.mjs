@@ -10,6 +10,7 @@ import {
   mapAbsenceRows,
   mapPlanRows,
   mapWorkHoursRows,
+  parseAbsencePayloadHtml,
   parseAbsencesHtml,
   parseEmployeesHtml,
   parsePlanHtml,
@@ -154,6 +155,84 @@ test("absence duration labels are not treated as employees", () => {
   assert.equal(mapped.stats.afterDateFilter, 0);
   assert.equal(mapped.absences.length, 0);
   assert.equal(mapped.unresolvedEmployees.length, 0);
+});
+
+test("embedded absences payload maps bars through employee group and api map", () => {
+  const html = `<!doctype html>
+    <script type="application/json" id="ordio-fixture">
+      {
+        "employees": [
+          {
+            "id": "api-employee-101",
+            "rows": [
+              {
+                "bars": [
+                  {
+                    "id": "1576057",
+                    "label": "Krankheit",
+                    "startDayIndex": 146,
+                    "endDayIndex": 146,
+                    "tooltip": "Krankheit\\n03.06.2026 - 03.06.2026\\n1 Tag\\nGenehmigt",
+                    "isPending": false,
+                    "lane": 0
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    </script>`;
+  const rows = parseAbsencePayloadHtml(html, {
+    employees: [{ id: "api-employee-101", label: "Ada Alpha" }]
+  });
+  const mapped = mapAbsenceRows(rows, {
+    capturedAt: "2026-06-06T12:00:00.000Z",
+    from: "2026-06-01",
+    to: "2026-06-05",
+    existingEmployees: [{ display_name: "Ada Alpha", source_id: "employee-number-101" }]
+  });
+
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].sourceId, "absence-bar-1576057");
+  assert.equal(rows[0].rowEmployee, "Ada Alpha");
+  assert.equal(rows[0].type, "Krankheit");
+  assert.equal(rows[0].status, "Genehmigt");
+  assert.equal(mapped.stats.afterDateFilter, 1);
+  assert.equal(mapped.stats.afterResolve, 1);
+  assert.equal(mapped.absences[0].sourceId, "absence-bar-1576057");
+  assert.equal(mapped.absences[0].employeeSourceId, "employee-number-101");
+});
+
+test("embedded absences payload treats employee label as name, not type", () => {
+  const html = `<!doctype html>
+    <script type="application/json">
+      {
+        "employees": [
+          {
+            "id": "api-employee-101",
+            "bars": [
+              {
+                "id": "1576058",
+                "label": "Ada Alpha",
+                "startDayIndex": 147,
+                "endDayIndex": 147,
+                "tooltip": "Krankheit\\n04.06.2026 - 04.06.2026\\n1 Tag\\nBeantragt",
+                "isPending": true,
+                "lane": 0
+              }
+            ]
+          }
+        ]
+      }
+    </script>`;
+  const rows = parseAbsencePayloadHtml(html, {
+    employees: [{ id: "api-employee-101", label: "Ada Alpha" }]
+  });
+
+  assert.equal(rows[0].employeeName, "Ada Alpha");
+  assert.equal(rows[0].type, "Krankheit");
+  assert.equal(rows[0].status, "Beantragt");
 });
 
 test("plan DOM rows map to shifts with assignments", async () => {
