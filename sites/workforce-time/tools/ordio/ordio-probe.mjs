@@ -42,6 +42,9 @@ const apiPath = apiIdx >= 0 ? args[apiIdx + 1] : null;
 // --abssniff: load /absences and report which request(s) actually return
 // absence records (method+url+whether body has dates/employee refs).
 const absSniff = args.includes("--abssniff");
+// --absembed: fetch /absences page payload and dump redacted fragments
+// around embedded absence records to reveal the id↔employee↔date shape.
+const absEmbed = args.includes("--absembed");
 // --raw <path> <cssSelector>: after login navigate to <path>, scroll,
 // then dump the outerHTML of the first 4 matching elements with all
 // person-name-looking tokens redacted (keep dates/times/numbers/attrs).
@@ -112,6 +115,39 @@ try {
     }, rawSelector);
     console.log(`--- RAW ${rawPath} ${rawSelector} (${dump.length} Elemente, Namen redigiert) ---`);
     dump.forEach((h, i) => console.log(`[${i}] ${h}\n`));
+    await browser.close();
+    process.exit(0);
+  }
+
+  if (absEmbed) {
+    await loginPassword();
+    let html = "";
+    page.on("response", async (res) => {
+      if (res.url().endsWith("/absences") && (res.headers()["content-type"] || "").includes("html")) {
+        try { html = (await res.body()).toString("utf8"); } catch { /* */ }
+      }
+    });
+    await page.goto(new URL("/absences", baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.waitForLoadState("networkidle", { timeout: 25000 }).catch(() => {});
+    await page.waitForTimeout(3000);
+    if (!html) html = await page.content();
+    // Find a real absence-bar id from the DOM, then locate it in the payload
+    const barId = await page.evaluate(() => (document.querySelector('div[data-testid^="absence-bar-"]')?.getAttribute("data-testid") || "").replace("absence-bar-", ""));
+    const redact = (t) => String(t)
+      .replace(/\b([A-ZÄÖÜ][a-zäöüß]+),\s*([A-ZÄÖÜ][a-zäöüß]+)\b/g, "NACHNAME,VORNAME")
+      .replace(/\b([A-ZÄÖÜ][a-zäöüß]{2,})\s+([A-ZÄÖÜ][a-zäöüß]{2,})\b/g, "V N");
+    console.log(`--- ABSEMBED (barId=${barId}, payload ${html.length} bytes) ---`);
+    if (barId) {
+      const idx = html.indexOf(barId);
+      // Try to find the record that contains this id with surrounding fields
+      for (const re of [new RegExp(`.{0,400}${barId}.{0,400}`, "s")]) {
+        const m = html.match(re);
+        if (m) console.log("Kontext um barId:\n" + redact(m[0]).replace(/\\"/g, '"').slice(0, 900));
+      }
+    }
+    // Also: keys near "absence" occurrences
+    const sample = [...html.matchAll(/[\{,]"(\w*(?:absence|employee|start|end|type|date|user|staff)\w*)":/gi)].map((m) => m[1].toLowerCase());
+    console.log("Feld-Namen (absence/employee/date-nahe):", JSON.stringify([...new Set(sample)].slice(0, 40)));
     await browser.close();
     process.exit(0);
   }
