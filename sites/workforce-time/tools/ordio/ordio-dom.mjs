@@ -587,7 +587,62 @@ function parsePlanTextFields(value) {
   };
 }
 
+// Original-Migrations-Methode (verifiziert 2026-06-06 gegen die echte
+// archivierte /absences-Seite: 37/37 Records, 37/37 Mitarbeiter korrekt).
+// /absences ist pro Mitarbeiter gruppiert: Zeilen-Header (Name im
+// `<p class="...font-medium...">`) gefolgt von den Abwesenheits-Balken.
+// Mitarbeiter = naechster vorausgehender Header in Dokument-Reihenfolge.
+export function parseAbsencesByRowHtml(html) {
+  const source = String(html ?? "");
+  const events = [];
+  for (const m of source.matchAll(/<p[^>]*font-medium[^>]*>([^<]{2,60})<\/p>/gi)) {
+    const name = cleanText(m[1]);
+    if (/^[A-Za-zÀ-ÿ][\wÀ-ÿ.'-]*(?:\s+[A-Za-zÀ-ÿ][\wÀ-ÿ.'-]*)+$/.test(name)
+        && !/abwesenheit|urlaub|krank|genehmigt|mitarbeiter|monat|quartal|reporting|payroll/i.test(name)) {
+      events.push({ pos: m.index, kind: "emp", value: name });
+    }
+  }
+  for (const m of source.matchAll(/data-testid="absence-bar-(\d+)"[^>]*?aria-label="([^"]*)"/gi)) {
+    events.push({ pos: m.index, kind: "bar", id: m[1], aria: m[2] });
+  }
+  for (const m of source.matchAll(/aria-label="([^"]*)"[^>]*?data-testid="absence-bar-(\d+)"/gi)) {
+    if (!events.some((e) => e.kind === "bar" && e.id === m[2])) {
+      events.push({ pos: m.index, kind: "bar", id: m[2], aria: m[1] });
+    }
+  }
+  events.sort((a, b) => a.pos - b.pos);
+
+  const decodeAria = (s) => String(s).replace(/&amp;/g, "&").replace(/&#10;|&#x0?a;/gi, "\n").replace(/&quot;/g, '"');
+  const rows = [];
+  const seen = new Set();
+  let currentEmp = "";
+  for (const ev of events) {
+    if (ev.kind === "emp") { currentEmp = ev.value; continue; }
+    if (!currentEmp || seen.has(ev.id)) continue;
+    seen.add(ev.id);
+    const lines = cleanLines(decodeAria(ev.aria));
+    const range = lines.map(parseDateRangeLine).find(Boolean);
+    const typeLine = lines.find((l) => !parseDateRangeLine(l) && !isDurationLine(l) && !/genehmigt|beantragt|abgelehnt|offen/i.test(l));
+    rows.push({
+      __rowId: `absence-bar-${ev.id}`,
+      sourceId: `absence-${ev.id}`,
+      rowEmployee: currentEmp,
+      employeeName: currentEmp,
+      startsOn: range?.startsOn || "",
+      endsOn: range?.endsOn || range?.startsOn || "",
+      type: typeLine || "Abwesenheit",
+      status: lines.find((l) => /genehmigt|beantragt|abgelehnt|offen/i.test(l)) || "",
+      ariaLabel: decodeAria(ev.aria),
+      rawText: decodeAria(ev.aria)
+    });
+  }
+  return rows;
+}
+
 export function parseAbsencesHtml(html) {
+  // Zuerst die row-basierte Methode (Original, robust gegen Spezial-Typen).
+  const rowBased = parseAbsencesByRowHtml(html);
+  if (rowBased.length) return rowBased;
   const payloadRows = parseAbsencePayloadHtml(html);
   if (payloadRows.length) return payloadRows;
   return absenceElementMatches(html)

@@ -11,6 +11,7 @@ import {
   mapPlanRows,
   mapWorkHoursRows,
   parseAbsencePayloadHtml,
+  parseAbsencesByRowHtml,
   parseAbsencesHtml,
   parseEmployeesHtml,
   parsePlanHtml,
@@ -308,4 +309,21 @@ test("isoWeeksInRange covers every week touched by from/to", () => {
   assert.deepEqual(isoWeeksInRange("2026-06-05", "2026-06-05"), [
     { label: "2026-W23", start: "2026-06-05", end: "2026-06-05" }
   ]);
+});
+
+test("parseAbsencesByRowHtml attributes bars to the preceding employee row header", () => {
+  const html = `<div><p class="text-x truncate font-medium">Ada Alpha</p></div>`
+    + `<div data-testid="absence-bar-9001" aria-label="Krankheit&#10;03.06.2026 - 03.06.2026&#10;1 Tag&#10;Genehmigt"></div>`
+    + `<div data-testid="absence-bar-9002" aria-label="Feiertagsausgleich&#10;04.06.2026 - 04.06.2026&#10;1 Tag&#10;Genehmigt"></div>`
+    + `<div><p class="font-medium">Ben Beta</p></div>`
+    + `<div data-testid="absence-bar-9003" aria-label="Bezahlter Urlaub&#10;05.06.2026 - 06.06.2026&#10;2 Tage&#10;Beantragt"></div>`;
+  const rows = parseAbsencesByRowHtml(html);
+  assert.equal(rows.length, 3);
+  assert.equal(rows[0].employeeName, "Ada Alpha");
+  assert.equal(rows[0].type, "Krankheit");
+  assert.equal(rows[1].employeeName, "Ada Alpha");
+  assert.equal(rows[1].type, "Feiertagsausgleich");
+  assert.equal(rows[2].employeeName, "Ben Beta");
+  assert.equal(rows[2].startsOn, "2026-06-05");
+  assert.equal(rows[2].endsOn, "2026-06-06");
 });

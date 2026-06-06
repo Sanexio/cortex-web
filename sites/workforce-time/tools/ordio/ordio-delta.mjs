@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
 import {
   extractAbsenceRowsFromPage,
+  parseAbsencesByRowHtml,
   extractEmployeeRowsFromPage,
   extractPlanRowsFromPage,
   extractWorkHoursRowsFromPage,
@@ -594,7 +595,17 @@ function toGermanDate(dateString) {
 async function captureAbsences(page, options) {
   await page.goto(new URL("/absences", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
-  await page.waitForTimeout(2500);
+  await page.waitForTimeout(3500);
+  // Original-Methode (verifiziert 2026-06-06): /absences ist pro
+  // Mitarbeiter gruppiert (Zeilen-Header → Bars). parseAbsencesByRowHtml
+  // ordnet jeden Bar dem vorausgehenden Mitarbeiter-Header zu — loest auch
+  // Spezial-Typen (Krankheit/Feiertagsausgleich) korrekt auf.
+  const content = await page.content();
+  const rowBased = parseAbsencesByRowHtml(content);
+  if (rowBased.length) {
+    if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG Absences row-based: ${rowBased.length} Bars mit Mitarbeiter-Header`);
+    return rowBased;
+  }
   return extractAbsenceRowsFromPage(page);
 }
 
