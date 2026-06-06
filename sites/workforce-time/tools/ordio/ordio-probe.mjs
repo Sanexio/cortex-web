@@ -118,7 +118,8 @@ try {
     // Make sure the SPA/session cookies are warm.
     await page.goto(new URL("/absences", baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
     await page.waitForLoadState("networkidle", { timeout: 20000 }).catch(() => {});
-    const result = await page.evaluate(async (path) => {
+    const result = await page.evaluate(async (rawPaths) => {
+      const paths = rawPaths.split(",").map((p) => p.trim()).filter(Boolean);
       // structure-only: keys, array lengths, value types; never raw strings
       const shape = (v, depth = 0) => {
         if (Array.isArray(v)) return { array: v.length, of: v.length ? shape(v[0], depth + 1) : "empty" };
@@ -130,18 +131,21 @@ try {
         }
         return typeof v;
       };
-      try {
-        const res = await fetch(path, { headers: { accept: "application/json" } });
-        const ct = res.headers.get("content-type") || "";
-        if (!ct.includes("json")) return { status: res.status, contentType: ct, note: "kein JSON" };
-        const body = await res.json();
-        // also: do any keys mention absence/vacation/urlaub?
-        const flat = JSON.stringify(body).toLowerCase();
-        const hints = ["absence", "absences", "vacation", "urlaub", "krank", "abwesen", "leave", "timeoff", "time_off", "employee", "staff", "user", "personnel", "pnr"].filter((h) => flat.includes(h));
-        return { status: res.status, hints, structure: shape(body) };
-      } catch (e) { return { error: String(e) }; }
+      const out = {};
+      for (const path of paths) {
+        try {
+          const res = await fetch(path, { headers: { accept: "application/json" } });
+          const ct = res.headers.get("content-type") || "";
+          if (!ct.includes("json")) { out[path] = { status: res.status, note: "kein JSON" }; continue; }
+          const body = await res.json();
+          const flat = JSON.stringify(body).toLowerCase();
+          const hints = ["absence", "urlaub", "krank", "abwesen", "starts_on", "startson", "start_date", "from", "employee_id", "employeeid", "user_id"].filter((h) => flat.includes(h));
+          out[path] = { status: res.status, hints, structure: shape(body) };
+        } catch (e) { out[path] = { error: String(e) }; }
+      }
+      return out;
     }, apiPath);
-    console.log(`--- APIJSON ${apiPath} (Struktur, keine Werte) ---`);
+    console.log(`--- APIJSON (${apiPath}, Struktur, keine Werte) ---`);
     console.log(JSON.stringify(result, null, 2));
     await browser.close();
     process.exit(0);
