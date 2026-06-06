@@ -775,14 +775,29 @@ export async function extractAbsenceRowsFromPage(page) {
       }
       return { rowEmployee: "", rowEmployeeNumber: "" };
     };
+    // Ordio-Timeline (verifiziert 2026-06-06): flache Bar-Liste ohne
+    // Employee-Row. Das Bar-LABEL (= aria-label Zeile 1 / sichtbarer Text)
+    // ist bei Urlaub der Mitarbeitername, bei Spezial-Typen der Typ.
+    const labelKnownType = (v) => /\b(urlaub|krank|krankheit|feiertag|feiertagsausgleich|fortbildung|abwesen|elternzeit|mutterschutz|sonderurlaub|gleitzeit|berufsschule|schule|unbezahlt|bildungsurlaub|kur|reha|pflege|home\s?office|dienstreise|seminar)\b/i.test(clean(v)) || isType(v);
+    const employeeFromLabel = (label) => {
+      const l = clean(label);
+      if (!l || labelKnownType(l) || isDuration(l) || isDateLike(l)) return "";
+      // Name-like: mind. zwei Wort-Token oder Komma.
+      if (l.includes(",") || normalizeName(l).split(" ").filter(Boolean).length >= 2) {
+        if (l.includes(",")) { const [last, first] = l.split(",", 2).map((p) => p.trim()); return [first, last].filter(Boolean).join(" "); }
+        return l;
+      }
+      return "";
+    };
     return [...document.querySelectorAll('div[data-testid^="absence-bar-"]')].map((el) => {
       const row = rowEmployeeFor(el);
+      const label = clean((el.getAttribute("aria-label") || "").split(/\r?\n/)[0] || el.innerText || "");
       return {
         __rowId: el.getAttribute("data-testid") || "",
         ariaLabel: el.getAttribute("aria-label") || "",
         rowEmployee: row.rowEmployee,
         rowEmployeeNumber: row.rowEmployeeNumber,
-        employeeName: el.getAttribute("data-employee") || "",
+        employeeName: el.getAttribute("data-employee") || employeeFromLabel(label) || "",
         startsOn: el.getAttribute("data-start") || el.getAttribute("data-date") || "",
         endsOn: el.getAttribute("data-end") || "",
         type: el.getAttribute("data-type") || "",
