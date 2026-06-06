@@ -34,6 +34,11 @@ const absRows = args.includes("--absrows");
 // --absclick: click the first absence-bar and dump the resulting
 // detail popover/dialog structure (does it expose the employee?).
 const absClick = args.includes("--absclick");
+// --apijson <path>: after login, fetch a same-origin JSON API path in the
+// authenticated page context and dump its STRUCTURE (keys, array sizes,
+// value TYPES) — string values shown as "str", never the value itself.
+const apiIdx = args.indexOf("--apijson");
+const apiPath = apiIdx >= 0 ? args[apiIdx + 1] : null;
 // --raw <path> <cssSelector>: after login navigate to <path>, scroll,
 // then dump the outerHTML of the first 4 matching elements with all
 // person-name-looking tokens redacted (keep dates/times/numbers/attrs).
@@ -104,6 +109,40 @@ try {
     }, rawSelector);
     console.log(`--- RAW ${rawPath} ${rawSelector} (${dump.length} Elemente, Namen redigiert) ---`);
     dump.forEach((h, i) => console.log(`[${i}] ${h}\n`));
+    await browser.close();
+    process.exit(0);
+  }
+
+  if (apiPath) {
+    await loginPassword();
+    // Make sure the SPA/session cookies are warm.
+    await page.goto(new URL("/absences", baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.waitForLoadState("networkidle", { timeout: 20000 }).catch(() => {});
+    const result = await page.evaluate(async (path) => {
+      // structure-only: keys, array lengths, value types; never raw strings
+      const shape = (v, depth = 0) => {
+        if (Array.isArray(v)) return { array: v.length, of: v.length ? shape(v[0], depth + 1) : "empty" };
+        if (v && typeof v === "object") {
+          if (depth > 4) return "object";
+          const o = {};
+          for (const k of Object.keys(v).slice(0, 40)) o[k] = shape(v[k], depth + 1);
+          return o;
+        }
+        return typeof v;
+      };
+      try {
+        const res = await fetch(path, { headers: { accept: "application/json" } });
+        const ct = res.headers.get("content-type") || "";
+        if (!ct.includes("json")) return { status: res.status, contentType: ct, note: "kein JSON" };
+        const body = await res.json();
+        // also: do any keys mention absence/vacation/urlaub?
+        const flat = JSON.stringify(body).toLowerCase();
+        const hints = ["absence", "absences", "vacation", "urlaub", "krank", "abwesen", "leave", "timeoff", "time_off", "employee", "staff", "user", "personnel", "pnr"].filter((h) => flat.includes(h));
+        return { status: res.status, hints, structure: shape(body) };
+      } catch (e) { return { error: String(e) }; }
+    }, apiPath);
+    console.log(`--- APIJSON ${apiPath} (Struktur, keine Werte) ---`);
+    console.log(JSON.stringify(result, null, 2));
     await browser.close();
     process.exit(0);
   }
