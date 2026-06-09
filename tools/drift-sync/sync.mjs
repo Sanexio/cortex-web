@@ -78,6 +78,16 @@ function trunkPath(relPath) {
   return resolve(TENANT_ROOT, relPath);
 }
 
+function writeTrunkDir(scopeName, scopeConfig) {
+  const envWriteDir = process.env.DRIFT_SYNC_WRITE_DIR;
+  const configuredWriteDir = envWriteDir
+    ? (envWriteDir.includes("{scope}") ? envWriteDir.replaceAll("{scope}", scopeName) : join(envWriteDir, scopeName))
+    : scopeConfig.praxis_target.staging_write_dir;
+
+  if (!configuredWriteDir) return trunkPath(scopeConfig.praxis_target.trunk_dir);
+  return resolve(REPO_ROOT, configuredWriteDir);
+}
+
 function displayPath(absPath) {
   const normalized = absPath.replace(/\\/g, "/");
   for (const root of [TENANT_ROOT, REPO_ROOT]) {
@@ -145,6 +155,9 @@ async function handleNewOrUpdated({
   repoRoot
 }) {
   const sourceType = drift.source_type;
+  const sourceTrunkDir = trunkPath(scopeConfig.praxis_target.trunk_dir);
+  const targetTrunkDir = writeTrunkDir(scopeName, scopeConfig);
+  const writesToSourceTrunk = sourceTrunkDir === targetTrunkDir;
 
   // Curation-Pipeline aufrufen
   const curate = sourceType === "product"
@@ -177,13 +190,16 @@ async function handleNewOrUpdated({
   // Lokale Praxis-Felder erhalten.
   let finalTrunk;
   if (drift.status === "UPDATED" && drift.trunk_path) {
-    const existingPath = resolve(TENANT_ROOT, drift.trunk_path);
+    const existingPath = drift.trunk_abs_path || resolve(TENANT_ROOT, drift.trunk_path);
     const existingContent = await readFile(existingPath, "utf8");
     const existing = yaml.load(existingContent);
 
-    // Backup vor Modifikation
-    const backupRel = await backupTrunkYaml(existingPath);
-    log(`  💾 Backup: ${backupRel}`);
+    // Backup nur beim Schreiben in den echten Source-Trunk. Staging-Sandboxen
+    // lesen bestehende YAMLs als Merge-Basis, ohne Tenant-Quellen zu archivieren.
+    if (writesToSourceTrunk) {
+      const backupRel = await backupTrunkYaml(existingPath);
+      log(`  💾 Backup: ${backupRel}`);
+    }
 
     // Merge: neue Curation als Basis, Praxis-Lokal-Felder aus existing übernehmen
     finalTrunk = {
@@ -210,7 +226,7 @@ async function handleNewOrUpdated({
   finalTrunk.upstream_source = provenance;
 
   // Trunk-Pfad bestimmen
-  const trunkDir = trunkPath(scopeConfig.praxis_target.trunk_dir);
+  const trunkDir = targetTrunkDir;
   const filename = `${source.handle}.yaml`;
   const targetPath = resolve(trunkDir, filename);
 
@@ -284,7 +300,7 @@ async function main() {
     const sourceById = new Map(sources.map((s) => [s.id, s]));
 
     // Trunk walken
-    const trunkDir = trunkPath(scopeConfig.praxis_target.trunk_dir);
+    const trunkDir = writeTrunkDir(scopeName, scopeConfig);
     const walkedTrunk = await walkTrunkDir(trunkDir);
     const trunkInScope = walkedTrunk.filter((f) => f.upstream_source?.scope === scopeName);
 
@@ -304,7 +320,8 @@ async function main() {
         handle: src.handle,
         trunk_path: trunkMatch?.filePath
           ? displayPath(trunkMatch.filePath)
-          : null
+          : null,
+        trunk_abs_path: trunkMatch?.filePath || null
       };
 
       if (cmp.status === "CLEAN" || cmp.status === "FROZEN" || cmp.status === "LOCAL_ONLY") continue;
@@ -343,7 +360,9 @@ async function main() {
       log(`  🗑  REMOVED: ${t.upstream_source.handle} — Sanexio nicht mehr da`);
       summary.removed++;
       if (!args.dryRun) {
-        const removedDir = resolve(TENANT_ROOT, "_archive", "drift-sync", "removed");
+        const removedDir = trunkDir === trunkPath(scopeConfig.praxis_target.trunk_dir)
+          ? resolve(TENANT_ROOT, "_archive", "drift-sync", "removed")
+          : resolve(trunkDir, "_removed");
         await mkdir(removedDir, { recursive: true });
         const targetPath = join(removedDir, basename(t.filePath));
         await rename(t.filePath, targetPath);

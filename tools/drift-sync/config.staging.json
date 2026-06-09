@@ -13,6 +13,7 @@
       "praxis_target": {
         "page_template": "template-page-hub.php",
         "trunk_dir": "trunk/content/pages/_shared",
+        "staging_write_dir": "_archive/drift-sync/staging-trunk/staging-ueber-uns",
         "page_status_default": "draft"
       },
       "auto_publish_allowed": false
@@ -24,6 +25,7 @@
       "praxis_target": {
         "page_template": "template-detail-page.php",
         "trunk_dir": "trunk/content/products/bluttests",
+        "staging_write_dir": "_archive/drift-sync/staging-trunk/staging-labor",
         "wp_parent_slug": "labor",
         "page_status_default": "draft"
       },

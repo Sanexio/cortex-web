@@ -15,8 +15,8 @@
 // Usage:
 //   bun tools/drift-sync/backfill.mjs [--scope=<name>] [--dry-run]
 
-import { readFile, writeFile } from "node:fs/promises";
-import { resolve, dirname, join } from "node:path";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { resolve, dirname, join, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import yaml from "js-yaml";
 
@@ -65,6 +65,16 @@ function trunkPath(relPath) {
   return resolve(TENANT_ROOT, relPath);
 }
 
+function writeTrunkDir(scopeName, scopeConfig) {
+  const envWriteDir = process.env.DRIFT_SYNC_WRITE_DIR;
+  const configuredWriteDir = envWriteDir
+    ? (envWriteDir.includes("{scope}") ? envWriteDir.replaceAll("{scope}", scopeName) : join(envWriteDir, scopeName))
+    : scopeConfig.praxis_target.staging_write_dir;
+
+  if (!configuredWriteDir) return trunkPath(scopeConfig.praxis_target.trunk_dir);
+  return resolve(REPO_ROOT, configuredWriteDir);
+}
+
 function displayPath(absPath) {
   const normalized = absPath.replace(/\\/g, "/");
   for (const root of [TENANT_ROOT, REPO_ROOT]) {
@@ -85,8 +95,9 @@ function dumpYaml(obj) {
 }
 
 async function backfillScope({ client, scopeName, scopeConfig, dryRun }) {
-  const trunkDir = trunkPath(scopeConfig.praxis_target.trunk_dir);
-  const walked = await walkTrunkDir(trunkDir);
+  const sourceTrunkDir = trunkPath(scopeConfig.praxis_target.trunk_dir);
+  const targetTrunkDir = writeTrunkDir(scopeName, scopeConfig);
+  const walked = await walkTrunkDir(sourceTrunkDir);
 
   // Sanexio-Sources holen
   let sources = [];
@@ -169,18 +180,21 @@ async function backfillScope({ client, scopeName, scopeConfig, dryRun }) {
 
     // YAML mit upstream_source erweitern
     const updated = { ...trunkObj, upstream_source: provenanceBlock };
+    const targetPath = resolve(targetTrunkDir, basename(t.filePath));
 
     matched++;
     matchActions.push({
-      file: displayPath(t.filePath),
+      file: displayPath(targetPath),
+      source_file: displayPath(t.filePath),
       handle: candidate.handle,
       via: matchVia,
       resource_id: candidate.id
     });
 
     if (!dryRun) {
+      await mkdir(targetTrunkDir, { recursive: true });
       const yamlString = dumpYaml(updated);
-      await writeFile(t.filePath, yamlString);
+      await writeFile(targetPath, yamlString);
     }
   }
 
