@@ -120,7 +120,7 @@ export async function curateProductForPraxis({ product, scope, scopeConfig }) {
   const trunkObject = {
     id: product.handle,
     sku: product.variants?.[0]?.sku || `JVT-${product.id}`,
-    category: scope === "labor" ? "bluttests" : "untersuchungen",
+    category: scope === "labor" || scope === "staging-labor" ? "bluttests" : "untersuchungen",
     status: "active",
     parameters: [
       // Stub — manuelle Pflege erforderlich (Schema-konform mit Platzhalter "—")
@@ -131,12 +131,12 @@ export async function curateProductForPraxis({ product, scope, scopeConfig }) {
     },
     views: {
       // C1: Preise raus für Praxis-View
-      juvantis: {
+      shop: {
         show_price: true,
         cta_label: { de: "Jetzt buchen" },
         cta_url: `https://${tenantConfigGet("shop.public_domain")}/products/${product.handle}`
       },
-      praxis: {
+      practice: {
         show_price: false,
         cta_label: { de: "Termin vereinbaren" },
         cta_url: "/service/terminanfrage/"  // C3: CTA-Override

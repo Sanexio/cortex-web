@@ -16,6 +16,18 @@
         "page_status_default": "draft"
       },
       "auto_publish_allowed": false
+    },
+    "staging-labor": {
+      "_note": "Dev-Store seed for collection drift verification. Mirrors prod labor scope handle=laboruntersuchung without touching prod config.",
+      "type": "collection",
+      "collection_handle": "laboruntersuchung",
+      "praxis_target": {
+        "page_template": "template-detail-page.php",
+        "trunk_dir": "trunk/content/products/bluttests",
+        "wp_parent_slug": "labor",
+        "page_status_default": "draft"
+      },
+      "auto_publish_allowed": false
     }
   }
 }
