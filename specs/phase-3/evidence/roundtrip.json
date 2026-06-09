@@ -14,8 +14,8 @@
       "step": "adapter-run",
       "exit": 0,
       "stdout_tail": [
-        "  \"updated_at\": \"2026-04-22T22:23:27+02:00\",",
-        "  \"admin_url\": \"https://juvantis.myshopify.com/admin/products/10940942844171\"",
+        "  \"updated_at\": \"2026-06-09T15:31:25-04:00\",",
+        "  \"admin_url\": \"https://cortex-staging.myshopify.com/admin/products/10298050740504\"",
         "}",
         "sync-shopify: OK"
       ]
@@ -26,5 +26,5 @@
       "published_at": null
     }
   ],
-  "timestamp": "2026-04-22T20:23:16.082Z"
+  "timestamp": "2026-06-09T19:31:20.017Z"
 }

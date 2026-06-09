@@ -15,6 +15,7 @@
 // cross-site-transfer Phase C2, 2026-04-22.
 
 import { createClient } from "./lib/shopify-rest-client.mjs";
+import { resolveThemeId } from "./lib/theme-id.mjs";
 
 function die(code, msg) {
   process.stderr.write(`EXTRACT_ERROR: ${msg}\n`);
@@ -32,19 +33,17 @@ if (!tmplArg) die(1, "usage: bun extract-template.mjs <template-name-without-.js
 
 const store = env("SHOPIFY_STORE");
 const token = env("SHOPIFY_ADMIN_TOKEN");
-const themeIdOverride = process.env.SHOPIFY_THEME_ID;
 
 const client = createClient({ store, token });
 
 // 1. Resolve theme id.
 let themeId;
-if (themeIdOverride) {
-  themeId = Number(themeIdOverride);
-} else {
-  const themesRes = await client.get(`/themes.json`).catch((e) => die(2, `themes lookup failed: ${e.message}`));
-  const live = (themesRes?.themes || []).find((t) => t.role === "main");
-  if (!live) die(2, "no theme with role=main");
-  themeId = live.id;
+let themeIdSource;
+try {
+  ({ themeId, source: themeIdSource } = await resolveThemeId(client));
+} catch (err) {
+  const code = /must be numeric/.test(err.message || "") ? 1 : 2;
+  die(code, `theme id resolve failed: ${err.message}`);
 }
 
 // 2. Fetch asset.
@@ -87,6 +86,7 @@ const proto = {
   _extracted_at: new Date().toISOString(),
   _source: `shopify.template@${store}`,
   _theme_id: themeId,
+  _theme_id_source: themeIdSource,
   _asset_key: assetKey,
   _asset_size: asset.size,
   _asset_updated_at: asset.updated_at,

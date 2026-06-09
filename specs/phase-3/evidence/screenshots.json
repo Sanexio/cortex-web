@@ -2,13 +2,13 @@
   "wp_ok": true,
   "shopify_ok": true,
   "side_ok": true,
-  "wp_page_png": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/specs/phase-3/evidence/wp-page-9668.png",
-  "wp_page_png_bytes": 11447,
-  "shopify_preview_png": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/specs/phase-3/evidence/shopify-body-preview.png",
-  "shopify_preview_png_bytes": 45439,
-  "side_by_side_html": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/specs/phase-3/evidence/side-by-side.html",
-  "side_by_side_png": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/specs/phase-3/evidence/side-by-side.png",
-  "side_by_side_png_bytes": 79574,
+  "wp_page_png": "/Users/clusteradm/Cortex/projects/Cortex-Web/specs/phase-3/evidence/wp-page-9668.png",
+  "wp_page_png_bytes": 111790,
+  "shopify_preview_png": "/Users/clusteradm/Cortex/projects/Cortex-Web/specs/phase-3/evidence/shopify-body-preview.png",
+  "shopify_preview_png_bytes": 45388,
+  "side_by_side_html": "/Users/clusteradm/Cortex/projects/Cortex-Web/specs/phase-3/evidence/side-by-side.html",
+  "side_by_side_png": "/Users/clusteradm/Cortex/projects/Cortex-Web/specs/phase-3/evidence/side-by-side.png",
+  "side_by_side_png_bytes": 141142,
   "errors": [],
-  "timestamp": "2026-04-22T20:23:16.082Z"
+  "timestamp": "2026-06-09T19:31:20.017Z"
 }

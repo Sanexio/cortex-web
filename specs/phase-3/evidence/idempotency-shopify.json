@@ -2,26 +2,26 @@
   "ok": true,
   "run1": {
     "action": "update",
-    "id": 10940942844171,
+    "id": 10298050740504,
     "handle": "basic-check",
     "status": "draft",
     "published_at": null,
-    "updated_at": "2026-04-19T09:26:38+02:00",
-    "admin_url": "https://juvantis.myshopify.com/admin/products/10940942844171"
+    "updated_at": "2026-06-09T15:15:37-04:00",
+    "admin_url": "https://cortex-staging.myshopify.com/admin/products/10298050740504"
   },
   "run2": {
     "action": "update",
-    "id": 10940942844171,
+    "id": 10298050740504,
     "handle": "basic-check",
     "status": "draft",
     "published_at": null,
-    "updated_at": "2026-04-19T09:26:38+02:00",
-    "admin_url": "https://juvantis.myshopify.com/admin/products/10940942844171"
+    "updated_at": "2026-06-09T15:15:37-04:00",
+    "admin_url": "https://cortex-staging.myshopify.com/admin/products/10298050740504"
   },
   "run1_exit": 0,
   "run2_exit": 0,
   "same_id": true,
   "same_handle": true,
   "run2_action": "update",
-  "timestamp": "2026-04-22T20:23:16.082Z"
+  "timestamp": "2026-06-09T19:31:20.017Z"
 }

@@ -30,6 +30,7 @@
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 import { createClient } from "./lib/shopify-rest-client.mjs";
+import { resolveThemeId } from "./lib/theme-id.mjs";
 
 const REPO_ROOT = resolve(import.meta.dir, "../..");
 
@@ -88,30 +89,21 @@ try {
   die(2, `local asset.value is not valid JSON after header strip: ${err.message}`);
 }
 
-// --- Step B: resolve live theme id ---
+// --- Step B: resolve theme id ---
 
 const store = env("SHOPIFY_STORE");
 const token = env("SHOPIFY_ADMIN_TOKEN");
-const themeIdOverride = process.env.SHOPIFY_THEME_ID;
 const formatJson = process.env.FORMAT === "json";
 
 const client = createClient({ store, token });
 
 let themeId;
-if (themeIdOverride) {
-  themeId = Number(themeIdOverride);
-  if (!Number.isFinite(themeId)) die(1, `SHOPIFY_THEME_ID must be numeric, got "${themeIdOverride}"`);
-} else {
-  let themesRes;
-  try {
-    themesRes = await client.get(`/themes.json`);
-  } catch (err) {
-    die(2, `themes lookup failed (need read_themes scope): ${err.message}`);
-  }
-  const themes = themesRes?.themes || [];
-  const live = themes.find((t) => t.role === "main");
-  if (!live) die(2, `no theme with role=main found among ${themes.length} themes`);
-  themeId = live.id;
+let themeIdSource;
+try {
+  ({ themeId, source: themeIdSource } = await resolveThemeId(client));
+} catch (err) {
+  const code = /must be numeric/.test(err.message || "") ? 1 : 2;
+  die(code, `theme id resolve failed: ${err.message}`);
 }
 
 // --- Step C: fetch the live asset ---
@@ -206,6 +198,7 @@ if (!liveAsset) {
   };
 } else {
   result.live.theme_id = themeId;
+  result.live.theme_id_source = themeIdSource;
   result.live.size = liveAsset.size ?? null;
   result.live.updated_at = liveAsset.updated_at ?? null;
 
@@ -276,6 +269,7 @@ if (formatJson) {
     out.push(`live_asset       : ABSENT (push would CREATE)`);
   } else {
     out.push(`live_theme_id    : ${result.live.theme_id}`);
+    out.push(`theme_id_source  : ${result.live.theme_id_source}`);
     out.push(`live_asset       : exists (size ${result.live.size} bytes, updated ${result.live.updated_at})`);
 
     const sc = result.fields.section_count;

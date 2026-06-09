@@ -2,23 +2,29 @@
   "ok": true,
   "run1": {
     "action": "update",
-    "id": 9668,
+    "id": 18,
     "slug": "basic-check",
     "status": "publish",
-    "link": "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/",
-    "modified_gmt": "2026-04-22T20:23:23"
+    "link": "http://127.0.0.1:8920/basic-check/",
+    "parent": 0,
+    "template": "",
+    "modified_gmt": "2026-06-09T19:31:21",
+    "backup_path": "/Users/clusteradm/Cortex/projects/Cortex-Web/adapters/wordpress/.backups/2026-06-09T19-31-21-212Z_basic-check_18.json"
   },
   "run2": {
     "action": "update",
-    "id": 9668,
+    "id": 18,
     "slug": "basic-check",
     "status": "publish",
-    "link": "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/",
-    "modified_gmt": "2026-04-22T20:23:23"
+    "link": "http://127.0.0.1:8920/basic-check/",
+    "parent": 0,
+    "template": "",
+    "modified_gmt": "2026-06-09T19:31:21",
+    "backup_path": "/Users/clusteradm/Cortex/projects/Cortex-Web/adapters/wordpress/.backups/2026-06-09T19-31-21-490Z_basic-check_18.json"
   },
   "run1_exit": 0,
   "run2_exit": 0,
   "same_id": true,
   "run2_action": "update",
-  "timestamp": "2026-04-22T20:23:16.082Z"
+  "timestamp": "2026-06-09T19:31:20.017Z"
 }

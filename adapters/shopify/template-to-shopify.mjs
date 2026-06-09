@@ -20,6 +20,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createClient } from "./lib/shopify-rest-client.mjs";
+import { resolveThemeId } from "./lib/theme-id.mjs";
 
 const REPO_ROOT = resolve(import.meta.dir, "../..");
 
@@ -46,7 +47,6 @@ async function readStdinJson() {
 
 const store = env("SHOPIFY_STORE");
 const token = env("SHOPIFY_ADMIN_TOKEN");
-const themeIdOverride = process.env.SHOPIFY_THEME_ID;
 
 const payload = await readStdinJson();
 if (!payload.asset?.key || typeof payload.asset.value !== "string") {
@@ -55,22 +55,34 @@ if (!payload.asset?.key || typeof payload.asset.value !== "string") {
 
 const client = createClient({ store, token });
 
-// 1. Resolve theme id (live unless overridden).
-let themeId;
-if (themeIdOverride) {
-  themeId = Number(themeIdOverride);
-  if (!Number.isFinite(themeId)) die(1, `SHOPIFY_THEME_ID must be numeric, got "${themeIdOverride}"`);
-} else {
-  let themesRes;
+async function themeWriteAccessHint() {
   try {
-    themesRes = await client.get(`/themes.json`);
-  } catch (err) {
-    die(2, `themes lookup failed (need read_themes scope): ${err.message}`);
+    const res = await fetch(`https://${store}/admin/oauth/access_scopes.json`, {
+      headers: {
+        "X-Shopify-Access-Token": token,
+        "Accept": "application/json"
+      }
+    });
+    if (!res.ok) return "";
+    const scopesRes = await res.json();
+    const scopes = (scopesRes?.access_scopes || []).map((s) => s.handle);
+    if (scopes.includes("write_themes")) {
+      return " Token has write_themes, so this 404 likely means the app lacks Shopify's additional theme-file write exemption.";
+    }
+    return ` Token scopes do not include write_themes (scopes: ${scopes.join(", ")}).`;
+  } catch {
+    return "";
   }
-  const themes = themesRes?.themes || [];
-  const live = themes.find((t) => t.role === "main");
-  if (!live) die(2, `no theme with role=main found among ${themes.length} themes`);
-  themeId = live.id;
+}
+
+// 1. Resolve theme id: ENV override, optional tenant config fallback, then live theme.
+let themeId;
+let themeIdSource;
+try {
+  ({ themeId, source: themeIdSource } = await resolveThemeId(client));
+} catch (err) {
+  const code = /must be numeric/.test(err.message || "") ? 1 : 2;
+  die(code, `theme id resolve failed: ${err.message}`);
 }
 
 // 2. Read existing asset (for backup).
@@ -105,11 +117,13 @@ try {
   });
   result = resp?.asset || null;
 } catch (err) {
-  die(2, `asset PUT failed: ${err.message}`);
+  const hint = /\b404\b/.test(err.message || "") ? await themeWriteAccessHint() : "";
+  die(2, `asset PUT failed: ${err.message}${hint}`);
 }
 
 const summary = {
   theme_id: themeId,
+  theme_id_source: themeIdSource,
   asset_key: result?.key || payload.asset.key,
   size_bytes: result?.size ?? payload.asset.value.length,
   public_url: result?.public_url ?? null,

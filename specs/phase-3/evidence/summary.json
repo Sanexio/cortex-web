@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-04-22T20:23:16.082Z",
-  "trunk_source": "trunk/content/products/bluttests/basic-check.yaml",
-  "wp_page_id": 9668,
-  "shopify_product_id": 10940942844171,
+  "timestamp": "2026-06-09T19:31:20.017Z",
+  "trunk_source": "/Users/clusteradm/Cortex/projects/Sanexio-Tenant/trunk/content/products/bluttests/basic-check.yaml",
+  "wp_page_id": 18,
+  "shopify_product_id": 10298050740504,
   "score": "11/11",
   "all_green": true,
   "results": [
@@ -14,12 +14,12 @@
         "validate_exit": 0,
         "validate_shopify_exit": 0,
         "validate_tail": [
-          "validate: trunk/content/products/bluttests/basic-check.yaml",
-          "validate: OK (1 file(s))"
+          "validate: media: OK (1)",
+          "validate: OK (72 object(s))"
         ],
         "validate_shopify_tail": [
-          "validate: shopify OK (juvantis.myshopify.com, HTTP 200)",
-          "validate: OK (1 file(s))"
+          "validate: shopify connectivity check (/shop.json)",
+          "validate: shopify OK (cortex-staging.myshopify.com, HTTP 200)"
         ]
       }
     },
@@ -28,8 +28,8 @@
       "name": "WP-Content-Parität",
       "ok": true,
       "details": {
-        "page_id": 9668,
-        "link": "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/",
+        "page_id": 18,
+        "link": "http://127.0.0.1:8920/basic-check/",
         "lookup_count": 1,
         "headline_expected": "Laborcheck Basis — Informationen",
         "checks": {
@@ -50,7 +50,7 @@
       "name": "Shopify-Content-Parität",
       "ok": true,
       "details": {
-        "product_id": 10940942844171,
+        "product_id": 10298050740504,
         "handle": "basic-check",
         "lookup_count": 1,
         "checks": {
@@ -62,20 +62,20 @@
           "sku": true
         },
         "product": {
-          "id": 10940942844171,
+          "id": 10298050740504,
           "title": "Basis-Bluttest",
           "body_html": "<p class=\"cw-tagline\">Der kompakte Gesundheitscheck.</p>\n<p class=\"cw-beschreibung\">Kleiner Laborcheck mit 15 Parametern. Abnahme in der Praxis,<br>Ergebnis innerhalb von 48 Stunden.<br></p>\n<h3>Laborparameter</h3>\n<table class=\"cw-laborparameter\">\n<thead><tr>\n<th>Code</th>\n<th>Einheit</th>\n</tr></thead>\n<tbody>\n<tr>\n<td>HGB</td>\n<td>g/dl</td>\n</tr>\n<tr>\n<td>WBC</td>\n<td>/µl</td>\n</tr>\n<tr>\n<td>RBC</td>\n<td>T/l</td>\n</tr>\n<tr>\n<td>HCT</td>\n<td>%</td>\n</tr>\n<tr>\n<td>MCV</td>\n<td>fl</td>\n</tr>\n<tr>\n<td>MCH</td>\n<td>pg</td>\n</tr>\n<tr>\n<td>MCHC</td>\n<td>g/dl</td>\n</tr>\n<tr>\n<td>PLT</td>\n<td>G/l</td>\n</tr>\n<tr>\n<td>Na</td>\n<td>mmol/l</td>\n</tr>\n<tr>\n<td>K</td>\n<td>mmol/l</td>\n</tr>\n<tr>\n<td>Krea</td>\n<td>mg/dl</td>\n</tr>\n<tr>\n<td>GFR</td>\n<td>ml/min</td>\n</tr>\n<tr>\n<td>GOT</td>\n<td>U/l</td>\n</tr>\n<tr>\n<td>GPT</td>\n<td>U/l</td>\n</tr>\n<tr>\n<td>CRP</td>\n<td>mg/l</td>\n</tr>\n</tbody>\n</table>",
           "vendor": "Sanexio",
           "product_type": "bluttests",
           "handle": "basic-check",
-          "updated_at": "2026-04-19T09:26:38+02:00",
+          "updated_at": "2026-06-09T15:15:37-04:00",
           "published_at": null,
           "tags": "bluttests, cortex-web",
           "status": "draft",
           "variants": [
             {
-              "id": 53059328934155,
-              "product_id": 10940942844171,
+              "id": 52162414346520,
+              "product_id": 10298050740504,
               "title": "Default",
               "price": "99.00",
               "position": 1,
@@ -84,8 +84,8 @@
               "option1": "Default",
               "option2": null,
               "option3": null,
-              "created_at": "2026-04-19T00:06:51+02:00",
-              "updated_at": "2026-04-19T00:06:51+02:00",
+              "created_at": "2026-06-09T15:15:29-04:00",
+              "updated_at": "2026-06-09T15:15:30-04:00",
               "taxable": true,
               "barcode": null,
               "fulfillment_service": "manual",
@@ -94,11 +94,11 @@
               "requires_shipping": false,
               "sku": "JVT-BLD-001",
               "weight": 0,
-              "weight_unit": "kg",
-              "inventory_item_id": 55057110597899,
+              "weight_unit": "lb",
+              "inventory_item_id": 54232130388248,
               "inventory_quantity": 0,
               "old_inventory_quantity": 0,
-              "admin_graphql_api_id": "gid://shopify/ProductVariant/53059328934155",
+              "admin_graphql_api_id": "gid://shopify/ProductVariant/52162414346520",
               "image_id": null
             }
           ]
@@ -111,8 +111,8 @@
       "name": "HWG-Compliance",
       "ok": true,
       "details": {
-        "page_id": 9668,
-        "link": "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/",
+        "page_id": 18,
+        "link": "http://127.0.0.1:8920/basic-check/",
         "forbidden": [
           {
             "token": "€",
@@ -158,7 +158,7 @@
       "name": "Juvantis-Commerce",
       "ok": true,
       "details": {
-        "product_id": 10940942844171,
+        "product_id": 10298050740504,
         "handle": "basic-check",
         "title": "Basis-Bluttest",
         "variant_count": 1,
@@ -186,19 +186,25 @@
       "details": {
         "run1": {
           "action": "update",
-          "id": 9668,
+          "id": 18,
           "slug": "basic-check",
           "status": "publish",
-          "link": "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/",
-          "modified_gmt": "2026-04-22T20:23:23"
+          "link": "http://127.0.0.1:8920/basic-check/",
+          "parent": 0,
+          "template": "",
+          "modified_gmt": "2026-06-09T19:31:21",
+          "backup_path": "/Users/clusteradm/Cortex/projects/Cortex-Web/adapters/wordpress/.backups/2026-06-09T19-31-21-212Z_basic-check_18.json"
         },
         "run2": {
           "action": "update",
-          "id": 9668,
+          "id": 18,
           "slug": "basic-check",
           "status": "publish",
-          "link": "https://gpmedicalcenterwestend-7ded2f4ae8c4343d2029-202604.local/basic-check/",
-          "modified_gmt": "2026-04-22T20:23:23"
+          "link": "http://127.0.0.1:8920/basic-check/",
+          "parent": 0,
+          "template": "",
+          "modified_gmt": "2026-06-09T19:31:21",
+          "backup_path": "/Users/clusteradm/Cortex/projects/Cortex-Web/adapters/wordpress/.backups/2026-06-09T19-31-21-490Z_basic-check_18.json"
         },
         "run1_exit": 0,
         "run2_exit": 0,
@@ -213,21 +219,21 @@
       "details": {
         "run1": {
           "action": "update",
-          "id": 10940942844171,
+          "id": 10298050740504,
           "handle": "basic-check",
           "status": "draft",
           "published_at": null,
-          "updated_at": "2026-04-19T09:26:38+02:00",
-          "admin_url": "https://juvantis.myshopify.com/admin/products/10940942844171"
+          "updated_at": "2026-06-09T15:15:37-04:00",
+          "admin_url": "https://cortex-staging.myshopify.com/admin/products/10298050740504"
         },
         "run2": {
           "action": "update",
-          "id": 10940942844171,
+          "id": 10298050740504,
           "handle": "basic-check",
           "status": "draft",
           "published_at": null,
-          "updated_at": "2026-04-19T09:26:38+02:00",
-          "admin_url": "https://juvantis.myshopify.com/admin/products/10940942844171"
+          "updated_at": "2026-06-09T15:15:37-04:00",
+          "admin_url": "https://cortex-staging.myshopify.com/admin/products/10298050740504"
         },
         "run1_exit": 0,
         "run2_exit": 0,
@@ -241,7 +247,7 @@
       "name": "Trunk-Master-Roundtrip",
       "ok": true,
       "details": {
-        "product_id": 10940942844171,
+        "product_id": 10298050740504,
         "status_before": "draft",
         "status_after_adapter": "draft",
         "steps": [
@@ -258,8 +264,8 @@
             "step": "adapter-run",
             "exit": 0,
             "stdout_tail": [
-              "  \"updated_at\": \"2026-04-22T22:23:27+02:00\",",
-              "  \"admin_url\": \"https://juvantis.myshopify.com/admin/products/10940942844171\"",
+              "  \"updated_at\": \"2026-06-09T15:31:25-04:00\",",
+              "  \"admin_url\": \"https://cortex-staging.myshopify.com/admin/products/10298050740504\"",
               "}",
               "sync-shopify: OK"
             ]
@@ -277,8 +283,8 @@
       "name": "WP-Screenshot",
       "ok": true,
       "details": {
-        "png": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/specs/phase-3/evidence/wp-page-9668.png",
-        "bytes": 11447,
+        "png": "/Users/clusteradm/Cortex/projects/Cortex-Web/specs/phase-3/evidence/wp-page-9668.png",
+        "bytes": 111790,
         "errors": []
       }
     },
@@ -287,8 +293,8 @@
       "name": "Shopify-Preview-Screenshot",
       "ok": true,
       "details": {
-        "png": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/specs/phase-3/evidence/shopify-body-preview.png",
-        "bytes": 45439
+        "png": "/Users/clusteradm/Cortex/projects/Cortex-Web/specs/phase-3/evidence/shopify-body-preview.png",
+        "bytes": 45388
       }
     },
     {
@@ -296,9 +302,9 @@
       "name": "Side-by-Side (HTML+PNG)",
       "ok": true,
       "details": {
-        "html": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/specs/phase-3/evidence/side-by-side.html",
-        "png": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web/specs/phase-3/evidence/side-by-side.png",
-        "bytes": 79574
+        "html": "/Users/clusteradm/Cortex/projects/Cortex-Web/specs/phase-3/evidence/side-by-side.html",
+        "png": "/Users/clusteradm/Cortex/projects/Cortex-Web/specs/phase-3/evidence/side-by-side.png",
+        "bytes": 141142
       }
     }
   ]
