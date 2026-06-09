@@ -18,9 +18,10 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve, relative, join } from "node:path";
 import yaml from "js-yaml";
-import Ajv from "ajv";
+import { createAdapterAjv } from "../../tools/lib/ajv-adapter.mjs";
 
-import { renderTemplateShopUeberUns } from "./lib/renderers/template-shop-ueber-uns.mjs";
+// Dispatch über die Renderer-Registry (SSOT) statt hartcodiertem switch.
+import { RENDERER_REGISTRY } from "./lib/renderer-registry.mjs";
 // CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
 import { tenantPath, tenantDescribe } from "../../tools/lib/tenant-path.mjs";
 
@@ -51,7 +52,7 @@ function loadSchema(relPath) {
 }
 
 function compileValidator(schema) {
-  return new Ajv({ allErrors: true, strict: false }).compile(schema);
+  return createAdapterAjv().compile(schema);
 }
 
 function enforceValid(validator, data, label) {
@@ -89,22 +90,31 @@ enforceValid(compileValidator(loadSchema("trunk/schema/page.schema.json")), page
 const teamMembers = loadAllTeamMembers();
 const sourcePath = relative(REPO_ROOT, contentPath);
 
-// Dispatch: for now only the ueber-uns page has a juvantis-template renderer.
-// Future pages can declare `views.shop.renderer` explicitly.
-const rendererKey = page.views?.shop?.renderer || (page.id === "ueber-uns" ? "shop-ueber-uns" : null);
+// Dispatch über die Renderer-Registry. Pages dürfen `views.shop.renderer`
+// explizit setzen; sonst nutzt die ueber-uns-Page ihren Template-Renderer.
+// Akzeptiert sowohl den voll-qualifizierten Registry-Key
+// ("shopify.template.shop-ueber-uns") als auch die Kurzform ("shop-ueber-uns").
+let rendererKey =
+  page.views?.shop?.renderer ||
+  (page.id === "ueber-uns" ? "shopify.template.shop-ueber-uns" : null);
 if (!rendererKey) {
-  die(3, `no juvantis template renderer configured for page id=${page.id} (set views.shop.renderer)`);
+  die(3, `no shop template renderer configured for page id=${page.id} (set views.shop.renderer)`);
+}
+// Kurzform -> voll-qualifizierten Template-Key normalisieren.
+if (!RENDERER_REGISTRY[rendererKey] && RENDERER_REGISTRY[`shopify.template.${rendererKey}`]) {
+  rendererKey = `shopify.template.${rendererKey}`;
+}
+const entry = RENDERER_REGISTRY[rendererKey];
+if (!entry || !rendererKey.startsWith("shopify.template.")) {
+  const known = Object.keys(RENDERER_REGISTRY)
+    .filter((k) => k.startsWith("shopify.template."))
+    .join(", ");
+  die(3, `unknown template renderer key: ${rendererKey} (known: ${known})`);
 }
 
 let payload;
 try {
-  switch (rendererKey) {
-    case "juvantis-ueber-uns":
-      payload = renderTemplateShopUeberUns(page, teamMembers, { sourcePath });
-      break;
-    default:
-      die(3, `unknown renderer key: ${rendererKey}`);
-  }
+  payload = entry.fn(page, teamMembers, { sourcePath });
 } catch (err) {
   die(3, `render failed: ${err.message}`);
 }

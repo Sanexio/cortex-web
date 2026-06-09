@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://cortex-web.local/schema/page.json",
   "title": "Page",
-  "description": "Inhaltsseite. Role-Keys (practice/shop/hub/shared) sind tenant-rollen-abstrakt — Tenant-spezifische Marken-Namen werden via tenant.config.json gemappt.",
+  "description": "Inhaltsseite. Role-Keys (practice/shop/hub/shared) sind tenant-rollen-abstrakt; Tenant-spezifische Marken-Namen werden via tenant.config.json gemappt.",
   "type": "object",
   "required": ["id", "site", "slugs", "title", "sections"],
   "additionalProperties": false,
@@ -22,17 +22,7 @@
         "hub": { "type": "string", "pattern": "^[a-z0-9/-]+$" }
       }
     },
-    "title": {
-      "type": "object",
-      "required": ["de"],
-      "additionalProperties": false,
-      "properties": {
-        "de": { "type": "string" },
-        "en": { "type": "string" },
-        "fr": { "type": "string" },
-        "es": { "type": "string" }
-      }
-    },
+    "title": { "$ref": "#/definitions/i18nString" },
     "status_shop": {
       "type": "string",
       "enum": ["draft", "active"],
@@ -54,310 +44,15 @@
       "minItems": 1,
       "items": {
         "oneOf": [
-          {
-            "type": "object",
-            "required": ["type", "body_md"],
-            "additionalProperties": false,
-            "properties": {
-              "type": { "const": "intro" },
-              "heading": {
-                "type": "object",
-                "required": ["de"],
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "body_md": {
-                "type": "object",
-                "required": ["de"],
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": ["type", "members"],
-            "additionalProperties": false,
-            "properties": {
-              "type": { "const": "team-grid" },
-              "heading": {
-                "type": "object",
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "members": {
-                "oneOf": [
-                  { "const": "all" },
-                  {
-                    "type": "array",
-                    "items": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-                    "minItems": 1
-                  }
-                ]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": ["type", "body_html"],
-            "additionalProperties": false,
-            "properties": {
-              "type": { "const": "service-body" },
-              "body_html": {
-                "type": "object",
-                "required": ["de"],
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string", "minLength": 1 },
-                  "en": { "type": "string" }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": ["type", "heading"],
-            "additionalProperties": false,
-            "properties": {
-              "type": { "const": "hero" },
-              "eyebrow": {
-                "type": "object",
-                "required": ["de"],
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "heading": {
-                "type": "object",
-                "required": ["de"],
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "lead": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "image": {
-                "type": "string",
-                "description": "Optional Hero-Bild — lokaler image-key (shopify-mirror://...) oder absoluter Pfad. Wenn gesetzt, rendert Hero als 2-Spalten-Layout (Bild + Text)."
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": ["type", "heading", "text"],
-            "additionalProperties": false,
-            "properties": {
-              "type": { "const": "usp-box" },
-              "variant": {
-                "type": "string",
-                "enum": ["dark", "light"],
-                "default": "dark"
-              },
-              "heading": {
-                "type": "object",
-                "required": ["de"],
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "text": {
-                "type": "object",
-                "required": ["de"],
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": ["type", "items"],
-            "additionalProperties": false,
-            "properties": {
-              "type": { "const": "bento-grid" },
-              "heading": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "items": {
-                "type": "array",
-                "minItems": 1,
-                "items": {
-                  "type": "object",
-                  "required": ["id", "title", "href"],
-                  "additionalProperties": false,
-                  "properties": {
-                    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-                    "title": {
-                      "type": "object",
-                      "required": ["de"],
-                      "additionalProperties": false,
-                      "properties": {
-                        "de": { "type": "string" },
-                        "en": { "type": "string" }
-                      }
-                    },
-                    "teaser": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "de": { "type": "string" },
-                        "en": { "type": "string" }
-                      }
-                    },
-                    "image": {
-                      "type": "string",
-                      "description": "Lokaler image-key (mirror) ODER vollständiger absoluter Pfad"
-                    },
-                    "href": { "type": "string" },
-                    "external": { "type": "boolean", "default": false }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": ["type", "steps"],
-            "additionalProperties": false,
-            "properties": {
-              "type": { "const": "process-steps" },
-              "heading": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "steps": {
-                "type": "array",
-                "minItems": 1,
-                "items": {
-                  "type": "object",
-                  "required": ["num", "title", "text"],
-                  "additionalProperties": false,
-                  "properties": {
-                    "num": { "type": "string" },
-                    "title": {
-                      "type": "object",
-                      "required": ["de"],
-                      "additionalProperties": false,
-                      "properties": {
-                        "de": { "type": "string" },
-                        "en": { "type": "string" }
-                      }
-                    },
-                    "text": {
-                      "type": "object",
-                      "required": ["de"],
-                      "additionalProperties": false,
-                      "properties": {
-                        "de": { "type": "string" },
-                        "en": { "type": "string" }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": ["type"],
-            "additionalProperties": false,
-            "properties": {
-              "type": { "const": "body" },
-              "heading": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "body_md": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string", "minLength": 1 },
-                  "en": { "type": "string" }
-                }
-              },
-              "body_html": {
-                "type": "object",
-                "additionalProperties": false,
-                "description": "1:1 HTML (für gemirrorte Sanexio-Description). Renderer sanitisiert via wp_kses_post. Builder bevorzugt body_html, fällt sonst auf body_md zurück.",
-                "properties": {
-                  "de": { "type": "string", "minLength": 1 },
-                  "en": { "type": "string" }
-                }
-              }
-            },
-            "anyOf": [
-              { "required": ["body_md"] },
-              { "required": ["body_html"] }
-            ]
-          },
-          {
-            "type": "object",
-            "required": ["type", "heading"],
-            "additionalProperties": false,
-            "properties": {
-              "type": { "const": "cta-banner" },
-              "heading": {
-                "type": "object",
-                "required": ["de"],
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "sub": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "cta_label": {
-                "type": "object",
-                "required": ["de"],
-                "additionalProperties": false,
-                "properties": {
-                  "de": { "type": "string" },
-                  "en": { "type": "string" }
-                }
-              },
-              "cta_url": { "type": "string" }
-            }
-          }
+          { "$ref": "#/definitions/introSection" },
+          { "$ref": "#/definitions/teamGridSection" },
+          { "$ref": "#/definitions/serviceBodySection" },
+          { "$ref": "#/definitions/heroSection" },
+          { "$ref": "#/definitions/uspBoxSection" },
+          { "$ref": "#/definitions/bentoGridSection" },
+          { "$ref": "#/definitions/processStepsSection" },
+          { "$ref": "#/definitions/bodySection" },
+          { "$ref": "#/definitions/ctaBannerSection" }
         ]
       }
     },
@@ -375,24 +70,8 @@
           "pattern": "^[a-z0-9-]+$",
           "description": "Slug der WP-Parent-Page. Adapter resolved das zur ID zur Push-Zeit."
         },
-        "eyebrow": {
-          "type": "object",
-          "required": ["de"],
-          "additionalProperties": false,
-          "properties": {
-            "de": { "type": "string" },
-            "en": { "type": "string" }
-          }
-        },
-        "sub": {
-          "type": "object",
-          "required": ["de"],
-          "additionalProperties": false,
-          "properties": {
-            "de": { "type": "string" },
-            "en": { "type": "string" }
-          }
-        },
+        "eyebrow": { "$ref": "#/definitions/i18nString" },
+        "sub": { "$ref": "#/definitions/i18nString" },
         "legacy_ids": {
           "type": "array",
           "description": "Bestehende WP-Page-IDs, die diesen Inhalt tragen. Adapter nutzt slug-Lookup, aber IDs dokumentieren Legacy-Zuordnung.",
@@ -400,58 +79,215 @@
         }
       }
     },
-    "upstream_source": {
+    "upstream_source": { "$ref": "#/definitions/upstreamSource" }
+  },
+  "definitions": {
+    "i18nString": {
       "type": "object",
-      "description": "Provenance-Block (drift-sync seit 2026-04-29). Verknüpft Trunk-YAML mit Upstream-Shopify-Source. Auch bei lokal editiertem Practice-Content bleibt der Bezug erhalten. Spec: specs/drift-sync/SPEC.md §E2.",
-      "required": ["type", "handle", "resource_id", "last_synced_at", "last_synced_hash"],
+      "required": ["de"],
+      "additionalProperties": false,
+      "properties": {
+        "de": { "type": "string" },
+        "en": { "type": "string" },
+        "fr": { "type": "string" },
+        "es": { "type": "string" },
+        "it": { "type": "string" },
+        "pt-pt": { "type": "string" }
+      }
+    },
+    "i18nText": {
+      "allOf": [
+        { "$ref": "#/definitions/i18nString" },
+        {
+          "properties": {
+            "de": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+    "introSection": {
+      "type": "object",
+      "required": ["type", "body_md"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "intro" },
+        "heading": { "$ref": "#/definitions/i18nString" },
+        "body_md": { "$ref": "#/definitions/i18nText" }
+      }
+    },
+    "teamGridSection": {
+      "type": "object",
+      "required": ["type", "members"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "team-grid" },
+        "heading": { "$ref": "#/definitions/i18nString" },
+        "members": {
+          "oneOf": [
+            { "const": "all" },
+            {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+              "minItems": 1
+            }
+          ]
+        }
+      }
+    },
+    "serviceBodySection": {
+      "type": "object",
+      "required": ["type", "body_html"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "service-body" },
+        "body_html": { "$ref": "#/definitions/i18nText" }
+      }
+    },
+    "heroSection": {
+      "type": "object",
+      "required": ["type", "heading"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "hero" },
+        "eyebrow": { "$ref": "#/definitions/i18nString" },
+        "heading": { "$ref": "#/definitions/i18nString" },
+        "lead": { "$ref": "#/definitions/i18nString" },
+        "image": {
+          "type": "string",
+          "description": "Optional Hero-Bild, z.B. shopify-mirror://... oder absoluter Pfad."
+        }
+      }
+    },
+    "uspBoxSection": {
+      "type": "object",
+      "required": ["type", "heading", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "usp-box" },
+        "variant": {
+          "type": "string",
+          "enum": ["dark", "light"],
+          "default": "dark"
+        },
+        "heading": { "$ref": "#/definitions/i18nString" },
+        "text": { "$ref": "#/definitions/i18nText" }
+      }
+    },
+    "bentoGridSection": {
+      "type": "object",
+      "required": ["type", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "bento-grid" },
+        "heading": { "$ref": "#/definitions/i18nString" },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "title", "href"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+              "title": { "$ref": "#/definitions/i18nString" },
+              "teaser": { "$ref": "#/definitions/i18nString" },
+              "image": {
+                "type": "string",
+                "description": "Lokaler image-key (mirror) oder vollstaendiger absoluter Pfad."
+              },
+              "href": { "type": "string" },
+              "external": { "type": "boolean", "default": false }
+            }
+          }
+        }
+      }
+    },
+    "processStepsSection": {
+      "type": "object",
+      "required": ["type", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "process-steps" },
+        "heading": { "$ref": "#/definitions/i18nString" },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["num", "title", "text"],
+            "additionalProperties": false,
+            "properties": {
+              "num": { "type": "string" },
+              "title": { "$ref": "#/definitions/i18nString" },
+              "text": { "$ref": "#/definitions/i18nText" }
+            }
+          }
+        }
+      }
+    },
+    "bodySection": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "body" },
+        "heading": { "$ref": "#/definitions/i18nString" },
+        "body_md": { "$ref": "#/definitions/i18nText" },
+        "body_html": {
+          "$ref": "#/definitions/i18nText",
+          "description": "1:1 HTML fuer gemirrorte Sanexio-Description. Renderer sanitisiert via wp_kses_post. Builder bevorzugt body_html, faellt sonst auf body_md zurueck."
+        }
+      },
+      "anyOf": [
+        { "required": ["body_md"] },
+        { "required": ["body_html"] }
+      ]
+    },
+    "ctaBannerSection": {
+      "type": "object",
+      "required": ["type", "heading"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "cta-banner" },
+        "heading": { "$ref": "#/definitions/i18nString" },
+        "sub": { "$ref": "#/definitions/i18nString" },
+        "cta_label": { "$ref": "#/definitions/i18nString" },
+        "cta_url": { "type": "string" }
+      }
+    },
+    "upstreamSource": {
+      "type": "object",
+      "description": "Provenance-Block (drift-sync seit 2026-04-29). Ressource-Felder sind optional, weil lokal kuratierte Pages teils nur Label-Provenance tragen.",
+      "required": ["type", "handle"],
       "additionalProperties": false,
       "properties": {
         "type": {
           "type": "string",
           "enum": ["page", "product"],
-          "description": "Shopify-Resource-Typ"
+          "description": "Shopify-Resource-Typ oder Produktbezug fuer gemeinsam kuratierte Pages."
         },
         "handle": {
           "type": "string",
           "pattern": "^[a-z0-9-]+$",
-          "description": "Shopify-Handle (= Slug). Convenience, kann sich ändern; resource_id ist stabil."
+          "description": "Shopify-Handle oder lokaler Bezug."
         },
-        "collection": {
-          "type": "string",
-          "pattern": "^[a-z0-9-]+$",
-          "description": "Sanexio-Collection-Handle (nur bei type=product)."
-        },
-        "resource_id": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Shopify-Numerische-ID — STABIL über Handle-Renaming, primärer Drift-Anker."
-        },
+        "collection": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "resource_id": { "type": "integer", "minimum": 1 },
         "scope": {
           "type": "string",
-          "enum": ["labor", "untersuchungen", "body-checks", "pages-shared", "ultraschall", "funktion", "check-up"],
-          "description": "Logischer Drift-Scope (siehe tools/drift-sync/config.json)."
+          "enum": ["labor", "untersuchungen", "body-checks", "pages-shared", "ultraschall", "funktion", "check-up"]
         },
-        "last_synced_at": {
-          "type": "string",
-          "format": "date-time",
-          "description": "ISO-8601 Timestamp des letzten erfolgreichen Sync."
-        },
-        "last_synced_hash": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{64}$",
-          "description": "SHA-256 der canonicalized Source-Daten (preis-unabhängig). Drift-Vergleich gegen current_hash."
-        },
+        "last_synced_at": { "type": "string", "format": "date-time" },
+        "last_synced_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
         "drift_strategy": {
           "type": "string",
           "enum": ["auto-curate", "manual", "frozen"],
-          "default": "auto-curate",
-          "description": "auto-curate: Auto-Sync (D3 Default) · manual: Drift wird nur gemeldet · frozen: kein Drift-Check"
+          "default": "auto-curate"
         },
-        "local_edits": {
-          "type": "boolean",
-          "default": false,
-          "description": "true = Praxis-Content wurde lokal angepasst. Auto-Sync stoppt bei Drift (LOCAL_DRIFT-Strategie)."
-        }
+        "local_edits": { "type": "boolean", "default": false },
+        "local_label_source": { "type": "string" },
+        "original_label": { "type": "string" },
+        "related_product_yaml": { "type": "string" }
       }
     }
   }

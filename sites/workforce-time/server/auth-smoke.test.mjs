@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -77,10 +77,30 @@ async function callAuthRoute(handleAuthRoute, method, path, { cookie, body } = {
 
 test("magic-link + TOTP enrollment unlocks protected bootstrap", async () => {
   const tempDir = await mkdtemp(join(tmpdir(), "workforce-auth-"));
-  process.env.NODE_ENV = "test";
-  process.env.WORKFORCE_AUTH_ENFORCE = "1";
-  process.env.WORKFORCE_TOTP_KEY = "auth-smoke-test-key";
-  process.env.ARBEITSZEITEN_DB = join(tempDir, "arbeitszeiten.sqlite");
+    process.env.NODE_ENV = "test";
+    process.env.WORKFORCE_AUTH_ENFORCE = "1";
+    process.env.WORKFORCE_TOTP_KEY = "auth-smoke-test-key";
+    process.env.CORTEX_TENANT_DIR = tempDir;
+    process.env.ARBEITSZEITEN_DB = join(tempDir, "arbeitszeiten.sqlite");
+
+    await writeFile(join(tempDir, "tenant.config.json"), JSON.stringify({
+      workforce: {
+        slug: "workforce-smoke",
+        tenant: {
+          display_name: "Workforce Smoke Test",
+          allowed_hosts: []
+        },
+        auth: {
+          users: [
+            {
+              email: "admin@workforce.local",
+              display_name: "Workforce Admin",
+              role: "admin"
+            }
+          ]
+        }
+      }
+    }, null, 2));
 
   try {
     const { handleAuthRoute, requireWorkforceApiSession } = await import("./auth.js");
@@ -142,6 +162,7 @@ test("magic-link + TOTP enrollment unlocks protected bootstrap", async () => {
     assert.equal(gate.ok, true);
     assert.ok(Array.isArray(getBootstrap().employees));
   } finally {
+    delete process.env.CORTEX_TENANT_DIR;
     await rm(tempDir, { recursive: true, force: true });
   }
 });

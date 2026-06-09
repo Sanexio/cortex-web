@@ -7,7 +7,7 @@
 // Input:  trunk/content/pages/_shared/{diagnostik,labor,leistungen}.yaml
 // Output: <theme>/inc/data/page-hub-<slug>.php  (return [...] PHP array)
 //
-// Usage:  bun adapters/wordpress/build-page-hub.mjs
+// Usage:  bun adapters/wordpress/build-page-hub.mjs [--dry-run] [--out <path>]
 //
 // HWG-Strip: views.practice.show_prices=false → Adapter zieht KEINE Preis-/
 // Money-Felder aus YAML in Praxis-Output. (Trunk-YAMLs enthalten keine Preise
@@ -24,12 +24,49 @@ import { themePath, themeDescribe } from "../../tools/lib/theme-path.mjs";
 const ROOT = path.resolve(import.meta.dir, "..", "..");
 const SRC_DIR = tenantPath("trunk/content/pages/_shared");
 const THEME = themePath();
-const DEST_DIR = path.join(THEME, "inc", "data");
+let DEST_DIR = path.join(THEME, "inc", "data");
+let dryRun = false;
+
+function usage() {
+  process.stdout.write(`Usage: bun adapters/wordpress/build-page-hub.mjs [--dry-run] [--out <path>]
+
+Options:
+  --help       Show this help and exit.
+  --dry-run    Render and report output files without writing or deleting files.
+  --out <path> Write page-hub PHP data files into this directory instead of the configured theme.
+
+No browser is opened by this adapter.
+`);
+}
+
+const args = process.argv.slice(2);
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i];
+  if (arg === "--help" || arg === "-h") {
+    usage();
+    process.exit(0);
+  } else if (arg === "--dry-run") {
+    dryRun = true;
+  } else if (arg === "--out") {
+    const value = args[++i];
+    if (!value) {
+      console.error("build-page-hub: --out requires a path");
+      process.exit(1);
+    }
+    DEST_DIR = path.resolve(value);
+  } else if (arg.startsWith("--out=")) {
+    DEST_DIR = path.resolve(arg.slice("--out=".length));
+  } else {
+    console.error(`build-page-hub: unexpected argument: ${arg}`);
+    process.exit(1);
+  }
+}
 
 process.stderr.write(`[build-page-hub] ${tenantDescribe()}\n`);
 process.stderr.write(`[build-page-hub] ${themeDescribe()}\n`);
 process.stderr.write(`[build-page-hub] SRC_DIR=${SRC_DIR}\n`);
 process.stderr.write(`[build-page-hub] DEST_DIR=${DEST_DIR}\n`);
+if (dryRun) process.stderr.write("[build-page-hub] DRY_RUN=1\n");
 
 // Auto-discover all page-YAMLs in trunk/content/pages/_shared/.
 // Excludes ueber-uns (uses different render path via content-bridge-v1).
@@ -41,7 +78,7 @@ const PAGES = fs
   .filter((s) => !SKIP.has(s));
 const UPLOAD_BASE = "/wp-content/uploads/2026/04/sanexio-imports";
 
-fs.mkdirSync(DEST_DIR, { recursive: true });
+if (!dryRun) fs.mkdirSync(DEST_DIR, { recursive: true });
 
 // Resolve image refs (shopify-mirror://scope/file.ext → /wp-content/.../file.ext)
 function resolveImage(ref) {
@@ -292,10 +329,12 @@ function buildOverviewCards(lang) {
 // no longer emit (e.g. when YAML had `title.en` but no body translation).
 const STALE_RE = /^page-hub-[a-z0-9-]+-(en|fr|es|it|pt-pt)\.php$/;
 let cleaned = 0;
-for (const f of fs.readdirSync(DEST_DIR)) {
-  if (STALE_RE.test(f)) {
-    fs.unlinkSync(path.join(DEST_DIR, f));
-    cleaned++;
+if (!dryRun && fs.existsSync(DEST_DIR)) {
+  for (const f of fs.readdirSync(DEST_DIR)) {
+    if (STALE_RE.test(f)) {
+      fs.unlinkSync(path.join(DEST_DIR, f));
+      cleaned++;
+    }
   }
 }
 if (cleaned > 0) console.log(`  · cleaned ${cleaned} stale -<lang>.php file(s)`);
@@ -362,10 +401,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 return ${phpExport(out, 0)};
 `;
-    fs.writeFileSync(dest, phpHeader);
+    if (!dryRun) fs.writeFileSync(dest, phpHeader);
     count++;
-    console.log(`  ✓ ${slug} [${lang}] → ${path.relative(THEME, dest)}`);
+    const prefix = dryRun ? "DRY-RUN: would write" : "✓";
+    console.log(`  ${prefix} ${slug} [${lang}] → ${path.relative(THEME, dest)}`);
   }
 }
 
-console.log(`\n==> Built ${count} page-hub PHP data file(s) across ${LANGS.length} languages`);
+console.log(`\n==> ${dryRun ? "Would build" : "Built"} ${count} page-hub PHP data file(s) across ${LANGS.length} languages`);

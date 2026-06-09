@@ -1,13 +1,43 @@
 #!/usr/bin/env bash
 # Cortex-Web · Shopify OAuth Authorize Launcher
 #
-# Öffnet die OAuth-Authorize-URL im Default-Browser. Die URL wird lokal
-# aus Konfigurationswerten zusammengebaut, damit keine Copy-Paste-Zeilen-
-# umbrüche auftreten.
+# Druckt die OAuth-Authorize-URL. Browser-Öffnen nur explizit mit --open.
 
 set -euo pipefail
 
 cd "$(dirname "$0")/.." || exit 1
+
+OPEN_BROWSER=0
+
+usage() {
+  cat <<'EOF'
+Usage: bash tools/shopify-authorize.sh [--open]
+
+Options:
+  --help  Show this help and exit.
+  --open  Open the generated OAuth URL in the default browser.
+
+Default: print the OAuth URL only. No browser is opened without --open.
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    --open)
+      OPEN_BROWSER=1
+      shift
+      ;;
+    *)
+      echo "ERROR: unexpected argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
 
 # CW-009/Plattform-Split: Shop-Domain + OAuth-Client-ID aus Tenant-Config,
 # nicht mehr hartcodiert. Helper: tools/lib/tenant-config.mjs.
@@ -41,11 +71,16 @@ URL+="&scope=$(urlencode "$SCOPES")"
 URL+="&redirect_uri=$(urlencode "$REDIRECT_URI")"
 URL+="&state=${STATE}"
 
-echo "Opening Shopify OAuth authorize URL:"
+echo "Shopify OAuth authorize URL:"
 echo "  Shop    : $SHOP"
 echo "  Scopes  : $SCOPES"
 echo "  Redirect: $REDIRECT_URI"
 echo ""
-open "$URL"
-echo "Browser should now show the Shopify consent page."
-echo "Click 'Install app' to trigger the callback to the running catcher."
+echo "$URL"
+
+if [ "$OPEN_BROWSER" -eq 1 ]; then
+  open "$URL"
+  echo ""
+  echo "Browser should now show the Shopify consent page."
+  echo "Click 'Install app' to trigger the callback to the running catcher."
+fi

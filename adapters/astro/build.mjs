@@ -14,12 +14,46 @@
 //   4. products-to-astro.mjs → src/data/products.ts (DHT-Timeline-Daten)
 //
 // Verwendung:
-//   bun adapters/astro/build.mjs
+//   bun adapters/astro/build.mjs [--dry-run] [--out <path>]
 
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 
 const REPO_ROOT = resolve(import.meta.dir, "../..");
+
+function usage() {
+  process.stdout.write(`Usage: bun adapters/astro/build.mjs [--dry-run] [--out <path>]
+
+Options:
+  --help       Show this help and exit.
+  --dry-run    Validate/render adapter output without writing files.
+  --out <path> Write the generated team data file to this path.
+`);
+}
+
+const forwardArgs = [];
+const args = process.argv.slice(2);
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i];
+  if (arg === "--help" || arg === "-h") {
+    usage();
+    process.exit(0);
+  } else if (arg === "--dry-run") {
+    forwardArgs.push(arg);
+  } else if (arg === "--out") {
+    const value = args[++i];
+    if (!value) {
+      process.stderr.write("ASTRO_ADAPTER_ERROR: --out requires a path\n");
+      process.exit(1);
+    }
+    forwardArgs.push("--out", value);
+  } else if (arg.startsWith("--out=")) {
+    forwardArgs.push(arg);
+  } else {
+    process.stderr.write(`ASTRO_ADAPTER_ERROR: unexpected argument: ${arg}\n`);
+    process.exit(1);
+  }
+}
 
 const STEPS = [
   { name: "team", script: "adapters/astro/team-to-astro.mjs" },
@@ -31,7 +65,7 @@ const summary = [];
 
 for (const step of STEPS) {
   process.stdout.write(`\n→ ${step.name} (${step.script})\n`);
-  const result = spawnSync("bun", [step.script], {
+  const result = spawnSync("bun", [step.script, ...forwardArgs], {
     cwd: REPO_ROOT,
     stdio: ["ignore", "pipe", "inherit"],
     encoding: "utf8",

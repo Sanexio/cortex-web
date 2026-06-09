@@ -7,6 +7,7 @@ import { test } from "node:test";
 test("buildPayrollExport aggregates freigegebene Eintraege pro Tag und Mitarbeiter", async () => {
   const tempDir = await mkdtemp(join(tmpdir(), "workforce-payroll-"));
   process.env.NODE_ENV = "test";
+  process.env.CORTEX_TENANT_DIR = join(process.cwd(), "../..", "trunk/_examples");
   process.env.ARBEITSZEITEN_DB = join(tempDir, "arbeitszeiten.sqlite");
 
   try {
@@ -62,6 +63,7 @@ test("buildPayrollExport aggregates freigegebene Eintraege pro Tag und Mitarbeit
     assert.match(lodas, /\[Bewegungsdaten\]/);
     assert.match(lodas, /^1001;05\.2026;100;/m);
   } finally {
+    delete process.env.CORTEX_TENANT_DIR;
     await rm(tempDir, { recursive: true, force: true });
   }
 });

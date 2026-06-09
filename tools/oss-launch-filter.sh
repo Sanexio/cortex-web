@@ -66,13 +66,39 @@ REPO_URL="git@github.com:Sanexio/cortex-web.git"
 WORK="/tmp/cortex-web-scrub-$(date +%s)"
 BUNDLE_DIR="$HOME/Cortex/_archive/cortex-web-pre-oss"
 
+usage() {
+  cat <<'EOF'
+Usage: bash tools/oss-launch-filter.sh [dry|prepare|push]
+
+Status: deprecated / historical. This script documents the completed 2026-05 OSS launch history rewrite.
+
+Modes:
+  dry      Mirror-clone, run git-filter-repo scrub, and print a report.
+  prepare  dry + create a pre-scrub bundle backup.
+  push     prepare + force-push after an explicit confirmation prompt.
+
+Preflight:
+  Requires git-filter-repo. Install on macOS with:
+    brew install git-filter-repo
+
+No browser is opened by this tool.
+EOF
+}
+
+if [ "$MODE" = "--help" ] || [ "$MODE" = "-h" ]; then
+  usage
+  exit 0
+fi
+
 case "$MODE" in
   dry|prepare|push) ;;
-  *) echo "Usage: $0 [dry|prepare|push]" >&2; exit 2 ;;
+  *) usage >&2; exit 2 ;;
 esac
 
 command -v git-filter-repo >/dev/null || {
-  echo "ERROR: git-filter-repo nicht installiert. Auf macOS: brew install git-filter-repo" >&2
+  echo "ERROR: git-filter-repo nicht installiert." >&2
+  echo "Installiere es auf macOS mit: brew install git-filter-repo" >&2
+  echo "Hinweis: Dieses Skript ist deprecated/historisch und sollte nur für eine neue explizite Filter-Welle verwendet werden." >&2
   exit 1
 }
 

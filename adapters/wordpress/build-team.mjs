@@ -25,7 +25,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve, join } from "node:path";
 import yaml from "js-yaml";
-import Ajv from "ajv";
+import { createAdapterAjv } from "../../tools/lib/ajv-adapter.mjs";
 
 import { renderTeamPractice, RENDERER_META } from "./lib/renderers/team-practice.mjs";
 // CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
@@ -63,7 +63,7 @@ function loadSchema() {
 }
 
 function compileValidator(schema) {
-  return new Ajv({ allErrors: true, strict: false }).compile(schema);
+  return createAdapterAjv().compile(schema);
 }
 
 function enforceValid(validator, data, label) {

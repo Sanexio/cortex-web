@@ -22,6 +22,11 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
+# CW-009/Plattform-Split: Content lebt im Tenant-Repo, nicht im Framework.
+# Pfade über den Tenant-Resolver auflösen (Env CORTEX_TENANT_DIR / Fallback _examples).
+# shellcheck source=tools/lib/tenant-path.sh
+. "$REPO_ROOT/tools/lib/tenant-path.sh"
+
 DRY_RUN=0
 for arg in "$@"; do
   case "$arg" in
@@ -30,8 +35,10 @@ for arg in "$@"; do
   esac
 done
 
-HUB_YAML="trunk/content/pages/praxis/service.yaml"
-CHILD_DIR="trunk/content/pages/praxis/service"
+HUB_YAML="$(tenant_path trunk/content/pages/praxis/service.yaml)"
+CHILD_DIR="$(tenant_path trunk/content/pages/praxis/service)"
+
+echo "sync-service-wp: $(tenant_describe)" >&2
 
 if [ ! -f "$HUB_YAML" ]; then
   echo "sync-service-wp: hub YAML missing: $HUB_YAML" >&2

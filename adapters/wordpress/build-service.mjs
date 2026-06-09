@@ -15,7 +15,7 @@
 import { readFileSync } from "node:fs";
 import { resolve, relative } from "node:path";
 import yaml from "js-yaml";
-import Ajv from "ajv";
+import { createAdapterAjv } from "../../tools/lib/ajv-adapter.mjs";
 
 import { renderServicePractice } from "./lib/renderers/service-practice.mjs";
 
@@ -65,7 +65,7 @@ try {
   die(1, `cannot read page schema at ${schemaPath}: ${err.message}`);
 }
 
-const ajv = new Ajv({ allErrors: true, strict: false });
+const ajv = createAdapterAjv();
 const validate = ajv.compile(schema);
 if (!validate(page)) {
   const details = validate.errors

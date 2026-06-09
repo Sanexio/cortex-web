@@ -15,7 +15,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve, basename } from "node:path";
 import yaml from "js-yaml";
-import Ajv from "ajv";
+import { createAdapterAjv } from "../../tools/lib/ajv-adapter.mjs";
 
 import { astroPath, writeWithBackup, tsHeader, tsExportConst } from "./lib/astro-writer.mjs";
 // CW-009/Plattform-Split: Tenant-Pfad via Helper auflösen statt hartcodieren.
@@ -24,7 +24,37 @@ import { tenantPath, tenantDescribe } from "../../tools/lib/tenant-path.mjs";
 const REPO_ROOT = resolve(import.meta.dir, "../..");
 const TEAM_DIR = tenantPath("trunk/content/team");
 const SCHEMA_PATH = resolve(REPO_ROOT, "trunk/schema/team-member.schema.json");
-const TARGET = astroPath("src/data/team.ts");
+let target = astroPath("src/data/team.ts");
+let dryRun = false;
+
+function usage() {
+  process.stdout.write(`Usage: bun adapters/astro/team-to-astro.mjs [--dry-run] [--out <path>]
+
+Options:
+  --help       Show this help and exit.
+  --dry-run    Validate and render, but do not write team.ts.
+  --out <path> Write the generated TypeScript to this path instead of the configured Astro repo.
+`);
+}
+
+const args = process.argv.slice(2);
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i];
+  if (arg === "--help" || arg === "-h") {
+    usage();
+    process.exit(0);
+  } else if (arg === "--dry-run") {
+    dryRun = true;
+  } else if (arg === "--out") {
+    const value = args[++i];
+    if (!value) die(1, "--out requires a path");
+    target = resolve(value);
+  } else if (arg.startsWith("--out=")) {
+    target = resolve(arg.slice("--out=".length));
+  } else {
+    die(1, `unexpected argument: ${arg}`);
+  }
+}
 
 process.stderr.write(`[astro/team-to-astro] ${tenantDescribe()}\n`);
 process.stderr.write(`[astro/team-to-astro] TEAM_DIR=${TEAM_DIR}\n`);
@@ -41,7 +71,7 @@ try {
   die(1, `cannot read team-member schema: ${err.message}`);
 }
 
-const ajv = new Ajv({ allErrors: true, strict: false });
+const ajv = createAdapterAjv();
 const validate = ajv.compile(schema);
 
 let files;
@@ -99,15 +129,19 @@ const ts =
   `}\n\n` +
   tsExportConst("TEAM", members, "readonly TeamMember[]");
 
-try {
-  writeWithBackup(TARGET, ts);
-} catch (err) {
-  die(1, `write failed: ${err.message}`);
+if (!dryRun) {
+  try {
+    writeWithBackup(target, ts);
+  } catch (err) {
+    die(1, `write failed: ${err.message}`);
+  }
 }
 
 process.stdout.write(JSON.stringify({
   ok: true,
-  wrote: TARGET.replace(REPO_ROOT + "/", ""),
+  dry_run: dryRun,
+  wrote: dryRun ? null : target.replace(REPO_ROOT + "/", ""),
+  would_write: dryRun ? target.replace(REPO_ROOT + "/", "") : undefined,
   members: members.length,
 }, null, 2) + "\n");
 

@@ -127,6 +127,14 @@ function tenantAllowedHosts() {
     .filter((host, index, hosts) => hosts.indexOf(host) === index);
 }
 
+// Der Dev-Bypass für das Host-Gate (T-203) gilt nur, solange Enforcement
+// nicht explizit verlangt wird. WORKFORCE_AUTH_ENFORCE=1 (Prod-Härtung / Tests)
+// schaltet das Gate auch im Nicht-Prod-Modus scharf, damit es testbar ist und
+// in produktionsnahen Setups nicht still umgangen wird.
+function hostGateBypassed() {
+  return isDevelopment() && process.env.WORKFORCE_AUTH_ENFORCE !== "1";
+}
+
 function tenantAuthContext(request = null) {
   const host = request ? requestHost(request) : "";
   const allowedHosts = tenantAllowedHosts();
@@ -139,8 +147,9 @@ function tenantAuthContext(request = null) {
     allowedHosts,
     // Das Tenant-Host-Gate (T-203) ist eine Produktions-Sicherung gegen
     // fremde Login-Domains. Im Dev-Modus (lokales Testen, vite-Proxy mit
-    // wechselnden 127.0.0.1-Ports) wird es übersprungen.
-    hostAccepted: isDevelopment() || !host || allowedHosts.length === 0 || allowedHosts.includes(host)
+    // wechselnden 127.0.0.1-Ports) wird es übersprungen — außer Enforcement
+    // ist explizit aktiv (siehe hostGateBypassed()).
+    hostAccepted: hostGateBypassed() || !host || allowedHosts.length === 0 || allowedHosts.includes(host)
   };
 }
 

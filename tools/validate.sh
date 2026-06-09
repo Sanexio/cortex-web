@@ -1,48 +1,18 @@
 #!/usr/bin/env bash
 # Cortex-Web — Schema-Validation (CW-002).
-# Läuft AJV gegen alle Content-Dateien im Trunk. Für Phase 1: nur products.
-# Exit 0 = alle Dateien valide, 1 = Setup-Problem, 2 = Validation-Fehler.
+# Exit 0 = alle Objekte valide, 1 = Setup-Problem, 2 = Validation-Fehler.
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-# shellcheck source=lib/tenant-path.sh
-. "$REPO_ROOT/tools/lib/tenant-path.sh"
-PRODUCTS_DIR="$(tenant_path trunk/content/products)"
-echo "validate: $(tenant_describe)"
-
 if [ ! -d node_modules ]; then
   echo "validate: node_modules missing — run 'bun install' in $REPO_ROOT" >&2
   exit 1
 fi
 
-if [ ! -d "$PRODUCTS_DIR" ]; then
-  echo "validate: products directory missing at $PRODUCTS_DIR" >&2
-  exit 1
-fi
-
-fail=0
-count=0
-
-while IFS= read -r -d '' file; do
-  count=$((count + 1))
-  echo "validate: ${file#$REPO_ROOT/}"
-  if ! bun adapters/wordpress/build.mjs "$file" > /dev/null; then
-    fail=$((fail + 1))
-  fi
-done < <(find "$PRODUCTS_DIR" -type f -name '*.yaml' -print0)
-
-if [ $count -eq 0 ]; then
-  echo "validate: no product YAML files found under $PRODUCTS_DIR" >&2
-  exit 1
-fi
-
-if [ $fail -gt 0 ]; then
-  echo "validate: FAILED ($fail of $count files invalid)" >&2
-  exit 2
-fi
+node tools/lib/schema-validate.mjs
 
 # Optional Shopify connectivity check (CW-002 extension, Phase 2).
 # Activated by sync-shopify.sh (CHECK_SHOPIFY=1) or manually for pre-flight.
@@ -69,5 +39,3 @@ if [ "${CHECK_SHOPIFY:-0}" = "1" ]; then
   echo "validate: shopify OK ($SHOPIFY_STORE, HTTP 200)"
   rm -f /tmp/cortex-web-shop.json
 fi
-
-echo "validate: OK ($count file(s))"

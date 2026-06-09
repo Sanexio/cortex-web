@@ -1,31 +1,46 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://cortex-web.local/schema/media.json",
-  "title": "Media Registry Entry",
-  "description": "Schema für einzelne Einträge in trunk/media/registry.yaml.",
+  "title": "Media Registry",
+  "description": "Schema fuer trunk/media/registry.yaml. Die Datei ist eine Map von Media-IDs auf Registry-Eintraege.",
   "type": "object",
-  "required": ["master_backend", "master_url", "backup_local", "uploaded", "rechte", "alt"],
-  "properties": {
-    "master_backend": { "enum": ["shopify_files", "nas", "s3", "wp_media"] },
-    "master_url": { "type": "string", "format": "uri" },
-    "backup_local": { "type": "string" },
-    "uploaded": { "type": "string", "format": "date" },
-    "rechte": { "type": "string" },
-    "alt": {
+  "minProperties": 1,
+  "additionalProperties": false,
+  "patternProperties": {
+    "^[a-z0-9-]+$": { "$ref": "#/definitions/mediaEntry" }
+  },
+  "definitions": {
+    "mediaEntry": {
+      "type": "object",
+      "required": ["master_backend", "master_url", "backup_local", "uploaded", "rechte", "alt"],
+      "additionalProperties": false,
+      "properties": {
+        "master_backend": { "enum": ["shopify_files", "nas", "s3", "wp_media"] },
+        "master_url": { "type": "string", "format": "uri" },
+        "backup_local": { "type": "string" },
+        "uploaded": { "type": "string", "format": "date" },
+        "rechte": { "type": "string" },
+        "alt": { "$ref": "#/definitions/i18nString" },
+        "sites": {
+          "type": "object",
+          "description": "Tenant- oder role-spezifische Sync-States, z.B. juvantis/praxis oder shop/practice.",
+          "additionalProperties": {
+            "enum": ["auto-synced", "manual", "none"]
+          }
+        }
+      }
+    },
+    "i18nString": {
       "type": "object",
       "required": ["de"],
+      "additionalProperties": false,
       "properties": {
         "de": { "type": "string" },
         "en": { "type": "string" },
         "fr": { "type": "string" },
-        "es": { "type": "string" }
-      }
-    },
-    "sites": {
-      "type": "object",
-      "properties": {
-        "shop": { "enum": ["auto-synced", "manual", "none"] },
-        "practice": { "enum": ["auto-synced", "manual", "none"] }
+        "es": { "type": "string" },
+        "it": { "type": "string" },
+        "pt-pt": { "type": "string" }
       }
     }
   }
