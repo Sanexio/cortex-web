@@ -109,8 +109,14 @@ const server = createServer(async (req, res) => {
     const accessToken = json.access_token;
     const scope = json.scope ?? '';
 
-    if (!accessToken || !accessToken.startsWith('shpat_')) {
-      throw new Error(`Unexpected token format (expected shpat_…): ${JSON.stringify(json)}`);
+    const isOffline = accessToken && accessToken.startsWith('shpat_');
+    const isOnline = accessToken && accessToken.startsWith('shpua_');
+    if (!isOffline && !isOnline) {
+      throw new Error(`Unexpected token format (expected shpat_/shpua_…): ${JSON.stringify(json)}`);
+    }
+    if (isOnline) {
+      console.warn('⚠ Online-User-Token (shpua_…) erhalten — gültig nur ~24h (an die Login-Session gebunden).');
+      console.warn('  Für ein permanentes Token die App auf Offline-Access stellen oder eine Custom-App im Shop-Admin nutzen.');
     }
 
     const updated = upsertEnvVars(envRaw, {
