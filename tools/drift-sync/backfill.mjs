@@ -21,6 +21,7 @@ import { fileURLToPath } from "node:url";
 import yaml from "js-yaml";
 
 import { createClient } from "../../adapters/shopify/lib/shopify-rest-client.mjs";
+import { tenantPath, tenantIsExamples, tenantDescribe } from "../lib/tenant-path.mjs";
 import { listProductsInCollection } from "./lib/shopify-collection.mjs";
 import { getPagesByHandles } from "./lib/shopify-page.mjs";
 import { walkTrunkDir } from "./lib/trunk-walker.mjs";
@@ -31,6 +32,8 @@ import {
 } from "./lib/provenance.mjs";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const TENANT_ROOT = tenantIsExamples() ? REPO_ROOT : tenantPath();
+const TRUNK_ROOT = tenantIsExamples() ? resolve(REPO_ROOT, "trunk") : tenantPath("trunk");
 
 function die(code, msg) { process.stderr.write(`backfill: ${msg}\n`); process.exit(code); }
 function log(msg) { process.stderr.write(`backfill: ${msg}\n`); }
@@ -49,8 +52,26 @@ function parseArgs(argv) {
 }
 
 async function loadConfig() {
-  const path = join(REPO_ROOT, "tools", "drift-sync", "config.json");
+  const path = process.env.DRIFT_SYNC_CONFIG
+    ? resolve(process.env.DRIFT_SYNC_CONFIG)
+    : join(REPO_ROOT, "tools", "drift-sync", "config.json");
   return JSON.parse(await readFile(path, "utf8"));
+}
+
+function trunkPath(relPath) {
+  if (relPath.startsWith("trunk/")) {
+    return resolve(TRUNK_ROOT, relPath.slice("trunk/".length));
+  }
+  return resolve(TENANT_ROOT, relPath);
+}
+
+function displayPath(absPath) {
+  const normalized = absPath.replace(/\\/g, "/");
+  for (const root of [TENANT_ROOT, REPO_ROOT]) {
+    const prefix = root.replace(/\\/g, "/") + "/";
+    if (normalized.startsWith(prefix)) return normalized.slice(prefix.length);
+  }
+  return absPath;
 }
 
 function getEnv(name) {
@@ -64,7 +85,7 @@ function dumpYaml(obj) {
 }
 
 async function backfillScope({ client, scopeName, scopeConfig, dryRun }) {
-  const trunkDir = resolve(REPO_ROOT, scopeConfig.praxis_target.trunk_dir);
+  const trunkDir = trunkPath(scopeConfig.praxis_target.trunk_dir);
   const walked = await walkTrunkDir(trunkDir);
 
   // Sanexio-Sources holen
@@ -151,7 +172,7 @@ async function backfillScope({ client, scopeName, scopeConfig, dryRun }) {
 
     matched++;
     matchActions.push({
-      file: t.filePath.replace(REPO_ROOT + "/", ""),
+      file: displayPath(t.filePath),
       handle: candidate.handle,
       via: matchVia,
       resource_id: candidate.id
@@ -169,6 +190,7 @@ async function backfillScope({ client, scopeName, scopeConfig, dryRun }) {
 async function main() {
   const args = parseArgs(process.argv);
   const config = await loadConfig();
+  log(tenantDescribe());
   const store = getEnv(config.shopify_store_env);
   const token = getEnv(config.shopify_token_env);
   const client = createClient({ store, token });

@@ -109,6 +109,29 @@ function normTemplateSuffix(v) {
   return v;
 }
 
+function normalizeHtmlForCompare(html) {
+  return String(html ?? "")
+    .replace(/\r\n?/g, "\n")
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<([a-zA-Z][\w:-]*)(\s+[^<>]*?)?>/g, (_m, tagName, rawAttrs = "") => {
+      const attrs = [];
+      const attrRe = /([^\s=]+)(?:\s*=\s*("[^"]*"|'[^']*'|[^\s"'>]+))?/g;
+      let match;
+      while ((match = attrRe.exec(rawAttrs.trim())) !== null) {
+        const name = match[1].toLowerCase();
+        if (!name) continue;
+        const value = match[2] ? match[2].replace(/^'([^']*)'$/, '"$1"') : null;
+        attrs.push(value === null ? name : `${name}=${value}`);
+      }
+      attrs.sort((a, b) => a.localeCompare(b));
+      const suffix = attrs.length ? ` ${attrs.join(" ")}` : "";
+      return `<${tagName.toLowerCase()}${suffix}>`;
+    })
+    .replace(/>\s+</g, "><")
+    .replace(/[ \t]+\n/g, "\n")
+    .trim();
+}
+
 function firstDiffOffset(a, b) {
   const aS = a ?? "";
   const bS = b ?? "";
@@ -163,12 +186,16 @@ if (pages.length === 0) {
   {
     const lv = local.page.body_html ?? "";
     const rv = live.body_html ?? "";
-    const off = firstDiffOffset(lv, rv);
+    const nlv = normalizeHtmlForCompare(lv);
+    const nrv = normalizeHtmlForCompare(rv);
+    const off = firstDiffOffset(nlv, nrv);
     const eq = off === -1;
     result.fields.body_html = {
       equal: eq,
       local_length: lv.length,
       live_length: rv.length,
+      local_normalized_length: nlv.length,
+      live_normalized_length: nrv.length,
       first_diff_offset: eq ? null : off
     };
     if (!eq) result.diff_count += 1;

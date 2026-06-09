@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "_comment": "Staging override for cortex-staging.myshopify.com. Use with DRIFT_SYNC_CONFIG=tools/drift-sync/config.staging.json; keeps production config unchanged.",
+  "shopify_store_env": "SHOPIFY_STORE",
+  "shopify_token_env": "SHOPIFY_ADMIN_TOKEN",
+  "report_dir": "tools/drift-sync/reports",
+  "backup_dir": "_archive/drift-sync",
+  "scopes": {
+    "staging-ueber-uns": {
+      "_note": "Verified Dev-Store page handle=uber-uns; local Tenant source file is ueber-uns.yaml with slugs.shop=uber-uns.",
+      "type": "pages",
+      "page_handles": ["uber-uns"],
+      "praxis_target": {
+        "page_template": "template-page-hub.php",
+        "trunk_dir": "trunk/content/pages/_shared",
+        "page_status_default": "draft"
+      },
+      "auto_publish_allowed": false
+    }
+  }
+}

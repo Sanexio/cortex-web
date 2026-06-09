@@ -20,10 +20,16 @@ import { readFileSync, writeFileSync, statSync, existsSync } from "node:fs";
 import { resolve, dirname, basename, extname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import yaml from "js-yaml";
+import { tenantPath, tenantIsExamples, tenantDescribe } from "../lib/tenant-path.mjs";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const MAP = resolve(REPO_ROOT, "tools/mirror-shopify-images.map");
-const REG = resolve(REPO_ROOT, "trunk/media/registry.yaml");
+const DEFAULT_REG = tenantIsExamples()
+  ? resolve(REPO_ROOT, "trunk/media/registry.yaml")
+  : tenantPath("trunk/media/registry.yaml");
+const REG = process.env.MEDIA_REGISTRY_PATH
+  ? resolve(process.env.MEDIA_REGISTRY_PATH)
+  : DEFAULT_REG;
 const MIRROR = resolve(REPO_ROOT, "_media-source/shopify-mirror");
 
 const write = process.argv.includes("--write");
@@ -87,8 +93,10 @@ const out = header + yaml.dump(entries, { lineWidth: 0, sortKeys: true });
 
 if (write) {
   writeFileSync(REG, out);
+  process.stderr.write(`register: ${tenantDescribe()}\n`);
   process.stderr.write(`register: wrote ${Object.keys(entries).length} entries to ${relative(REPO_ROOT, REG)}\n`);
 } else {
   process.stdout.write(out);
+  process.stderr.write(`register: ${tenantDescribe()}\n`);
   process.stderr.write(`register: dry-run (${Object.keys(entries).length} entries) — pass --write to persist\n`);
 }

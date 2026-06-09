@@ -15,6 +15,7 @@ import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "../../adapters/shopify/lib/shopify-rest-client.mjs";
+import { tenantPath, tenantIsExamples, tenantDescribe } from "../lib/tenant-path.mjs";
 import { listProductsInCollection } from "./lib/shopify-collection.mjs";
 import { getPagesByHandles } from "./lib/shopify-page.mjs";
 import { walkTrunkDir, findByResourceId } from "./lib/trunk-walker.mjs";
@@ -26,6 +27,8 @@ import {
 } from "./lib/provenance.mjs";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const TENANT_ROOT = tenantIsExamples() ? REPO_ROOT : tenantPath();
+const TRUNK_ROOT = tenantIsExamples() ? resolve(REPO_ROOT, "trunk") : tenantPath("trunk");
 
 function die(code, msg) {
   process.stderr.write(`drift-detect: ${msg}\n`);
@@ -46,13 +49,31 @@ function parseArgs(argv) {
 }
 
 async function loadConfig() {
-  const configPath = join(REPO_ROOT, "tools", "drift-sync", "config.json");
+  const configPath = process.env.DRIFT_SYNC_CONFIG
+    ? resolve(process.env.DRIFT_SYNC_CONFIG)
+    : join(REPO_ROOT, "tools", "drift-sync", "config.json");
   try {
     const content = await readFile(configPath, "utf8");
     return JSON.parse(content);
   } catch (err) {
     die(1, `config laden fehlgeschlagen (${configPath}): ${err.message}`);
   }
+}
+
+function trunkPath(relPath) {
+  if (relPath.startsWith("trunk/")) {
+    return resolve(TRUNK_ROOT, relPath.slice("trunk/".length));
+  }
+  return resolve(TENANT_ROOT, relPath);
+}
+
+function displayPath(absPath) {
+  const normalized = absPath.replace(/\\/g, "/");
+  for (const root of [TENANT_ROOT, REPO_ROOT]) {
+    const prefix = root.replace(/\\/g, "/") + "/";
+    if (normalized.startsWith(prefix)) return normalized.slice(prefix.length);
+  }
+  return absPath;
 }
 
 function getEnv(name) {
@@ -62,7 +83,7 @@ function getEnv(name) {
 }
 
 async function detectScope({ client, scopeName, scopeConfig, repoRoot }) {
-  const trunkDir = resolve(repoRoot, scopeConfig.praxis_target.trunk_dir);
+  const trunkDir = trunkPath(scopeConfig.praxis_target.trunk_dir);
   const walkedTrunk = await walkTrunkDir(trunkDir);
 
   // Sanexio-Sources abrufen
@@ -115,9 +136,7 @@ async function detectScope({ client, scopeName, scopeConfig, repoRoot }) {
       resource_id: src.id,
       handle: src.handle,
       title: src.title,
-      trunk_path: trunkMatch?.filePath
-        ? trunkMatch.filePath.replace(repoRoot + "/", "")
-        : null,
+      trunk_path: trunkMatch?.filePath ? displayPath(trunkMatch.filePath) : null,
       current_hash: result.current_hash,
       last_synced_hash: result.last_synced_hash,
       drift_strategy: result.drift_strategy,
@@ -135,7 +154,7 @@ async function detectScope({ client, scopeName, scopeConfig, repoRoot }) {
         resource_id: provId,
         handle: t.upstream_source.handle,
         title: null,
-        trunk_path: t.filePath.replace(repoRoot + "/", ""),
+        trunk_path: displayPath(t.filePath),
         last_synced_hash: t.upstream_source.last_synced_hash,
         drift_strategy: t.upstream_source.drift_strategy
       });
@@ -234,6 +253,7 @@ function renderHumanReport(scopeReports) {
 async function main() {
   const args = parseArgs(process.argv);
   const config = await loadConfig();
+  process.stderr.write(`drift-detect: ${tenantDescribe()}\n`);
 
   const store = getEnv(config.shopify_store_env);
   const token = getEnv(config.shopify_token_env);
@@ -262,6 +282,8 @@ async function main() {
   const reportObj = {
     timestamp: new Date().toISOString(),
     repo_root: REPO_ROOT,
+    tenant_root: TENANT_ROOT,
+    trunk_root: TRUNK_ROOT,
     scopes_requested: scopeNames,
     scopes: reports,
     summary: summarize(reports)

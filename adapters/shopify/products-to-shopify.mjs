@@ -11,6 +11,10 @@
 // Safety: if the existing product has status=active or published_at != null,
 // require ALLOW_OVERWRITE=1 to proceed. Otherwise abort with a hint.
 //
+// Backup (CW-008): before any update, the existing Shopify product is saved as
+//   adapters/shopify/.backups/<ISO-ts>_product<id>_<handle>.json. If the backup
+//   write fails, the update aborts without touching Shopify.
+//
 // Env:
 //   SHOPIFY_STORE         (required) <handle>.myshopify.com
 //   SHOPIFY_ADMIN_TOKEN   (required) shpat_…
@@ -21,7 +25,11 @@
 //   1 config / input error
 //   2 REST error (4xx/5xx, ambiguous handle, or refused overwrite)
 
+import { mkdirSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { createClient } from "./lib/shopify-rest-client.mjs";
+
+const REPO_ROOT = resolve(import.meta.dir, "../..");
 
 function die(code, msg) {
   process.stderr.write(`ADAPTER_ERROR: ${msg}\n`);
@@ -78,6 +86,7 @@ if (!products) {
 
 let result;
 let action;
+let backupPath = null;
 try {
   if (products.length === 0) {
     action = "create";
@@ -90,6 +99,28 @@ try {
       die(2, `target product handle="${payload.product.handle}" id=${existing.id} is published (status=${existing.status}, published_at=${existing.published_at}) — set ALLOW_OVERWRITE=1 to proceed`);
     }
     action = "update";
+
+    let fullExisting;
+    try {
+      const fullRes = await client.get(`/products/${existing.id}.json`);
+      fullExisting = fullRes?.product || null;
+    } catch (err) {
+      die(2, `pre-update product fetch failed: ${err.message}`);
+    }
+    if (!fullExisting) die(2, `pre-update product fetch returned empty for id=${existing.id}`);
+
+    try {
+      const ts = new Date().toISOString().replace(/[:.]/g, "-");
+      const safeHandle = (fullExisting.handle || payload.product.handle).replace(/[^a-zA-Z0-9._-]+/g, "_");
+      const dir = resolve(REPO_ROOT, "adapters/shopify/.backups");
+      mkdirSync(dir, { recursive: true });
+      const absBackup = resolve(dir, `${ts}_product${existing.id}_${safeHandle}.json`);
+      writeFileSync(absBackup, JSON.stringify(fullExisting, null, 2));
+      backupPath = absBackup.replace(REPO_ROOT + "/", "");
+    } catch (err) {
+      die(2, `backup write failed (CW-008 aborts update): ${err.message}`);
+    }
+
     const updateBody = {
       product: {
         id: existing.id,
@@ -114,6 +145,7 @@ const summary = {
   status: result.status,
   published_at: result.published_at,
   updated_at: result.updated_at,
+  backup_path: backupPath,
   admin_url: `https://${store.replace(/\.myshopify\.com$/, "")}.myshopify.com/admin/products/${result.id}`
 };
 process.stdout.write(JSON.stringify(summary, null, 2) + "\n");

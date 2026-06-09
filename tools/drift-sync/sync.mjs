@@ -21,6 +21,7 @@ import { spawnSync } from "node:child_process";
 import yaml from "js-yaml";
 
 import { createClient } from "../../adapters/shopify/lib/shopify-rest-client.mjs";
+import { tenantPath, tenantIsExamples, tenantDescribe } from "../lib/tenant-path.mjs";
 import { listProductsInCollection, getProductById } from "./lib/shopify-collection.mjs";
 import { getPagesByHandles } from "./lib/shopify-page.mjs";
 import { walkTrunkDir, findByResourceId } from "./lib/trunk-walker.mjs";
@@ -37,6 +38,8 @@ import {
 } from "./lib/hwg-curate.mjs";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const TENANT_ROOT = tenantIsExamples() ? REPO_ROOT : tenantPath();
+const TRUNK_ROOT = tenantIsExamples() ? resolve(REPO_ROOT, "trunk") : tenantPath("trunk");
 
 function die(code, msg) {
   process.stderr.write(`drift-sync: ${msg}\n`);
@@ -62,8 +65,26 @@ function parseArgs(argv) {
 }
 
 async function loadConfig() {
-  const path = join(REPO_ROOT, "tools", "drift-sync", "config.json");
+  const path = process.env.DRIFT_SYNC_CONFIG
+    ? resolve(process.env.DRIFT_SYNC_CONFIG)
+    : join(REPO_ROOT, "tools", "drift-sync", "config.json");
   return JSON.parse(await readFile(path, "utf8"));
+}
+
+function trunkPath(relPath) {
+  if (relPath.startsWith("trunk/")) {
+    return resolve(TRUNK_ROOT, relPath.slice("trunk/".length));
+  }
+  return resolve(TENANT_ROOT, relPath);
+}
+
+function displayPath(absPath) {
+  const normalized = absPath.replace(/\\/g, "/");
+  for (const root of [TENANT_ROOT, REPO_ROOT]) {
+    const prefix = root.replace(/\\/g, "/") + "/";
+    if (normalized.startsWith(prefix)) return normalized.slice(prefix.length);
+  }
+  return absPath;
 }
 
 function getEnv(name) {
@@ -76,16 +97,16 @@ function dumpYaml(obj) {
   return yaml.dump(obj, { lineWidth: 100, noRefs: true, sortKeys: false });
 }
 
-async function backupTrunkYaml(trunkPath, repoRoot) {
+async function backupTrunkYaml(trunkPath) {
   const ts = new Date().toISOString().replace(/[:.]/g, "-");
-  const relPath = trunkPath.replace(repoRoot + "/", "");
+  const relPath = displayPath(trunkPath);
   const safeRel = relPath.replace(/\//g, "__");
-  const backupDir = resolve(repoRoot, "_archive", "drift-sync");
+  const backupDir = resolve(TENANT_ROOT, "_archive", "drift-sync");
   await mkdir(backupDir, { recursive: true });
   const backupPath = join(backupDir, `${ts}__${safeRel}`);
   const content = await readFile(trunkPath, "utf8");
   await writeFile(backupPath, content);
-  return backupPath.replace(repoRoot + "/", "");
+  return displayPath(backupPath);
 }
 
 async function pushToWp(yamlPath, repoRoot, status, dryRun, sourceType) {
@@ -94,14 +115,14 @@ async function pushToWp(yamlPath, repoRoot, status, dryRun, sourceType) {
   const pushSpec = sourceType === "product" ? "wp:product" : "wp:page";
 
   if (dryRun) {
-    log(`  [dry-run] würde push ${pushSpec} ${yamlPath.replace(repoRoot + "/", "")} (status=${status})`);
+    log(`  [dry-run] würde push ${pushSpec} ${displayPath(yamlPath)} (status=${status})`);
     return { ok: true, dryRun: true };
   }
 
   if (pushSpec === "wp:page") {
     // wp:page ist noch nicht in cw-transfer PUSH_TOOLS registriert.
     // Trunk-YAML ist geschrieben, manueller Push pflichtig in dieser Phase.
-    log(`  ⏸  wp:page Push noch nicht implementiert — Trunk geschrieben, manuell nachpflegen: ${yamlPath.replace(repoRoot + "/", "")}`);
+    log(`  ⏸  wp:page Push noch nicht implementiert — Trunk geschrieben, manuell nachpflegen: ${displayPath(yamlPath)}`);
     return { ok: true, deferred: true, reason: "wp_page_push_not_implemented" };
   }
 
@@ -156,12 +177,12 @@ async function handleNewOrUpdated({
   // Lokale Praxis-Felder erhalten.
   let finalTrunk;
   if (drift.status === "UPDATED" && drift.trunk_path) {
-    const existingPath = resolve(repoRoot, drift.trunk_path);
+    const existingPath = resolve(TENANT_ROOT, drift.trunk_path);
     const existingContent = await readFile(existingPath, "utf8");
     const existing = yaml.load(existingContent);
 
     // Backup vor Modifikation
-    const backupRel = await backupTrunkYaml(existingPath, repoRoot);
+    const backupRel = await backupTrunkYaml(existingPath);
     log(`  💾 Backup: ${backupRel}`);
 
     // Merge: neue Curation als Basis, Praxis-Lokal-Felder aus existing übernehmen
@@ -189,18 +210,18 @@ async function handleNewOrUpdated({
   finalTrunk.upstream_source = provenance;
 
   // Trunk-Pfad bestimmen
-  const trunkDir = resolve(repoRoot, scopeConfig.praxis_target.trunk_dir);
+  const trunkDir = trunkPath(scopeConfig.praxis_target.trunk_dir);
   const filename = `${source.handle}.yaml`;
   const targetPath = resolve(trunkDir, filename);
 
   // Schreiben
   if (args.dryRun) {
-    log(`  [dry-run] würde schreiben: ${targetPath.replace(repoRoot + "/", "")}`);
+    log(`  [dry-run] würde schreiben: ${displayPath(targetPath)}`);
   } else {
     await mkdir(trunkDir, { recursive: true });
     const yamlString = dumpYaml(finalTrunk);
     await writeFile(targetPath, yamlString);
-    log(`  💾 ${targetPath.replace(repoRoot + "/", "")}`);
+    log(`  💾 ${displayPath(targetPath)}`);
   }
 
   // Push to WP
@@ -224,13 +245,14 @@ async function handleNewOrUpdated({
     status: drift.status === "NEW" ? "NEW_DONE" : "UPDATED_DONE",
     warnings: curate.warnings,
     push_status: status,
-    trunk_path: targetPath.replace(repoRoot + "/", "")
+    trunk_path: displayPath(targetPath)
   };
 }
 
 async function main() {
   const args = parseArgs(process.argv);
   const config = await loadConfig();
+  log(tenantDescribe());
 
   const store = getEnv(config.shopify_store_env);
   const token = getEnv(config.shopify_token_env);
@@ -262,7 +284,7 @@ async function main() {
     const sourceById = new Map(sources.map((s) => [s.id, s]));
 
     // Trunk walken
-    const trunkDir = resolve(REPO_ROOT, scopeConfig.praxis_target.trunk_dir);
+    const trunkDir = trunkPath(scopeConfig.praxis_target.trunk_dir);
     const walkedTrunk = await walkTrunkDir(trunkDir);
     const trunkInScope = walkedTrunk.filter((f) => f.upstream_source?.scope === scopeName);
 
@@ -281,7 +303,7 @@ async function main() {
         resource_id: src.id,
         handle: src.handle,
         trunk_path: trunkMatch?.filePath
-          ? trunkMatch.filePath.replace(REPO_ROOT + "/", "")
+          ? displayPath(trunkMatch.filePath)
           : null
       };
 
@@ -321,17 +343,17 @@ async function main() {
       log(`  🗑  REMOVED: ${t.upstream_source.handle} — Sanexio nicht mehr da`);
       summary.removed++;
       if (!args.dryRun) {
-        const removedDir = resolve(REPO_ROOT, "_archive", "drift-sync", "removed");
+        const removedDir = resolve(TENANT_ROOT, "_archive", "drift-sync", "removed");
         await mkdir(removedDir, { recursive: true });
         const targetPath = join(removedDir, basename(t.filePath));
         await rename(t.filePath, targetPath);
-        log(`     → ${targetPath.replace(REPO_ROOT + "/", "")}`);
+        log(`     → ${displayPath(targetPath)}`);
       }
       actions.push({
         handle: t.upstream_source.handle,
         resource_id: provId,
         action: "REMOVED_ARCHIVED",
-        trunk_path: t.filePath.replace(REPO_ROOT + "/", "")
+        trunk_path: displayPath(t.filePath)
       });
     }
   }
