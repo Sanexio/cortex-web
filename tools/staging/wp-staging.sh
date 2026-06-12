@@ -12,7 +12,7 @@
 # ============================================================
 set -euo pipefail
 
-STAGING_DIR="${STAGING_DIR:-$HOME/cortex-web-staging}"
+STAGING_DIR="${STAGING_DIR:-$HOME/.cortex/cortex-web-staging}"
 WP_PORT="${WP_PORT:-8920}"
 WP_HOST="${WP_HOST:-127.0.0.1}"
 WP_DIR="$STAGING_DIR/wp"

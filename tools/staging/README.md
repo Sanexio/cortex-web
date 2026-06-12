@@ -31,8 +31,9 @@ mu-plugins (`cortex-dev-auth` = REST-Auth über HTTP; `cortex-staging-templates`
 = registriert die Theme-Page-Templates, die der Content nutzt) → Admin +
 Application-Password via wp-cli seeden → `Cortex-Web/.env.local` WP-Block füllen.
 
-- WP-Install liegt unter `~/cortex-web-staging/` (außerhalb der Repos, nicht versioniert).
-- Admin-Passwort: `~/cortex-web-staging/.admin-pw`. App-Password: `~/cortex-web-staging/.app-pw`.
+- WP-Install liegt unter `~/.cortex/cortex-web-staging/` (außerhalb der Repos, nicht versioniert).
+- Das Staging liegt bewusst außerhalb von `~/Cortex`, weil es ein Laufzeit-Artefakt ist und nicht in einem sync-überwachten Quellbaum leben soll.
+- Admin-Passwort: `~/.cortex/cortex-web-staging/.admin-pw`. App-Password: `~/.cortex/cortex-web-staging/.app-pw`.
 - `.env.local` ist git-ignoriert.
 
 ### Hinweis PHP-Version
@@ -58,5 +59,5 @@ Shopify hat keinen lokalen Modus — Push/Diff/Drift laufen gegen einen
 ## Cleanup
 ```bash
 tools/staging/wp-staging.sh stop
-rm -rf ~/cortex-web-staging        # komplette WP-Staging entfernen
+rm -rf ~/.cortex/cortex-web-staging        # komplette WP-Staging entfernen
 ```
