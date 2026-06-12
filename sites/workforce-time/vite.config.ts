@@ -6,6 +6,7 @@ export default defineConfig({
   server: {
     port: 5174,
     strictPort: false,
+    allowedHosts: ["cluster-mini-04", "cluster-mini-04.piranha-marlin.ts.net"],
     proxy: {
       "/api": "http://127.0.0.1:5175"
     }
