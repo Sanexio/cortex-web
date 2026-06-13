@@ -9,6 +9,12 @@ import {
   VACATION_ABSENCE_TYPES,
   KNOWN_ABSENCE_TYPES
 } from "./absence-constants.js";
+import {
+  TIME_ENTRY_STATUS,
+  TIME_ENTRY_STATUS_VALUES,
+  TIME_ENTRY_TYPE,
+  TIME_ENTRY_TYPE_VALUES
+} from "./time-entry-constants.js";
 import { tenantConfigGet, tenantIsDemo, tenantPath } from "./tenant.js";
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -3773,16 +3779,18 @@ function loadPayrollPersonnelNumberMap() {
   return map;
 }
 
-// T-004a — Stempeluhr Backend (claude-chat, 2026-06-04).
-// Nutzt time_entries-Tabelle mit status='running'. Pausen werden über
-// stamp_active_breaks-Tabelle als laufende Pause verfolgt; bei break-end
-// werden die Pausen-Minuten in unpaid_break_minutes aufaddiert.
+// T-004a — Stempeluhr Backend (claude-chat, 2026-06-04, korrigiert 2026-06-14).
+// Nutzt time_entries-Tabelle mit status=TIME_ENTRY_STATUS.LAUFEND.
+// Pausen werden über stamp_active_breaks-Tabelle als laufende Pause
+// verfolgt; bei break-end werden die Pausen-Minuten in
+// unpaid_break_minutes aufaddiert. Bei stamp-end wechselt der Status
+// auf TIME_ENTRY_STATUS.ENTWURF (= wartet auf Freigabe durch Leitung).
 function getActiveTimeEntry(employeeId) {
   return db.prepare(`
     SELECT * FROM time_entries
-    WHERE employee_id = ? AND status = 'running'
+    WHERE employee_id = ? AND status = ?
     ORDER BY starts_at DESC LIMIT 1
-  `).get(employeeId);
+  `).get(employeeId, TIME_ENTRY_STATUS.LAUFEND);
 }
 
 function newTimeEntryId() {
@@ -3818,8 +3826,18 @@ export function stampStart(employeeId, options = {}) {
     INSERT INTO time_entries (
       id, employee_id, starts_at, ends_at, work_area_id, location_id,
       status, entry_type, paid_break_minutes, unpaid_break_minutes, note
-    ) VALUES (?, ?, ?, ?, ?, ?, 'running', 'regular', 0, 0, ?)
-  `).run(id, employeeId, startsAt, startsAt, workAreaId, locationId, options.note ?? null);
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?)
+  `).run(
+    id,
+    employeeId,
+    startsAt,
+    startsAt,
+    workAreaId,
+    locationId,
+    TIME_ENTRY_STATUS.LAUFEND,
+    TIME_ENTRY_TYPE.ARBEITSZEIT,
+    options.note ?? null
+  );
   recordAuditEvent({
     entityType: "time_entry",
     entityId: id,
@@ -3845,9 +3863,9 @@ export function stampEnd(employeeId, options = {}) {
   const newUnpaid = Number(active.unpaid_break_minutes ?? 0) + unpaidExtra;
   db.prepare(`
     UPDATE time_entries
-    SET ends_at = ?, status = 'completed', unpaid_break_minutes = ?, updated_at = CURRENT_TIMESTAMP
+    SET ends_at = ?, status = ?, unpaid_break_minutes = ?, updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
-  `).run(endsAt, newUnpaid, active.id);
+  `).run(endsAt, TIME_ENTRY_STATUS.ENTWURF, newUnpaid, active.id);
   recordAuditEvent({
     entityType: "time_entry",
     entityId: active.id,
@@ -4913,6 +4931,8 @@ export function setPayrollPersonnelNumber(employeeId, personnelNumber) {
 
 migrate();
 ensureAbsenceStatusGuard();
+ensureTimeEntryStatusGuard();
+ensureTimeEntryTypeGuard();
 seed();
 ensureOperationalSeed();
 
@@ -4931,21 +4951,33 @@ ensureOperationalSeed();
  * Idempotent: wird beim Service-Boot ausgeführt, DROP TRIGGER IF EXISTS
  * + CREATE TRIGGER.
  */
-function ensureAbsenceStatusGuard() {
-  const allowed = ABSENCE_STATUS_VALUES.map((s) => `'${s}'`).join(", ");
-  for (const op of ["INSERT", "UPDATE OF status"]) {
-    const triggerName = op === "INSERT"
-      ? "absence_requests_status_guard_ins"
-      : "absence_requests_status_guard_upd";
+function installStatusGuard(table, column, values) {
+  const allowed = values.map((s) => `'${s}'`).join(", ");
+  const allowedHuman = values.join(" | ");
+  for (const op of ["INSERT", `UPDATE OF ${column}`]) {
+    const suffix = op === "INSERT" ? "ins" : "upd";
+    const triggerName = `${table}_${column}_guard_${suffix}`;
     db.exec(`DROP TRIGGER IF EXISTS ${triggerName}`);
     db.exec(`
       CREATE TRIGGER ${triggerName}
-      BEFORE ${op} ON absence_requests
+      BEFORE ${op} ON ${table}
       FOR EACH ROW
-      WHEN NEW.status NOT IN (${allowed})
+      WHEN NEW.${column} NOT IN (${allowed})
       BEGIN
-        SELECT RAISE(ABORT, 'absence_requests.status: ungültiger Wert. Erlaubt: ${ABSENCE_STATUS_VALUES.join(" | ")}');
+        SELECT RAISE(ABORT, '${table}.${column}: ungültiger Wert. Erlaubt: ${allowedHuman}');
       END;
     `);
   }
+}
+
+function ensureAbsenceStatusGuard() {
+  installStatusGuard("absence_requests", "status", ABSENCE_STATUS_VALUES);
+}
+
+function ensureTimeEntryStatusGuard() {
+  installStatusGuard("time_entries", "status", TIME_ENTRY_STATUS_VALUES);
+}
+
+function ensureTimeEntryTypeGuard() {
+  installStatusGuard("time_entries", "entry_type", TIME_ENTRY_TYPE_VALUES);
 }
