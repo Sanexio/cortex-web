@@ -602,6 +602,17 @@ export function parseAbsencesByRowHtml(html) {
       events.push({ pos: m.index, kind: "emp", value: name });
     }
   }
+  // Fallback-Quelle: Zeit-Selektor-Buttons tragen den Mitarbeiternamen
+  // im aria-label ("Zeitraum fuer Fjolla Statovci am 01.06.2026
+  // auswaehlen"). Wir sammeln diese als "emp-fallback"-Events, sodass
+  // ein Bar, der keinen vorausgehenden <p font-medium>-Header hat,
+  // den nächsten benachbarten Slot-Namen erbt.
+  for (const m of source.matchAll(/aria-label="Zeitraum\s+f(?:ü|ue)r\s+([^"]+?)\s+am\s+\d/gi)) {
+    const name = cleanText(m[1]);
+    if (name && name.length >= 2) {
+      events.push({ pos: m.index, kind: "emp-fallback", value: name });
+    }
+  }
   for (const m of source.matchAll(/data-testid="absence-bar-(\d+)"[^>]*?aria-label="([^"]*)"/gi)) {
     events.push({ pos: m.index, kind: "bar", id: m[1], aria: m[2] });
   }
@@ -615,10 +626,18 @@ export function parseAbsencesByRowHtml(html) {
   const decodeAria = (s) => String(s).replace(/&amp;/g, "&").replace(/&#10;|&#x0?a;/gi, "\n").replace(/&quot;/g, '"');
   const rows = [];
   const seen = new Set();
+  // currentEmp wird vom <p font-medium>-Header gesetzt. emp-fallback
+  // dient nur dann, wenn currentEmp leer ist oder ein Bar VOR dem
+  // ersten Header steht — z.B. wenn das Grid-Layout die Bars im DOM
+  // vor dem Namen rendert.
   let currentEmp = "";
+  let lastFallbackEmp = "";
   for (const ev of events) {
-    if (ev.kind === "emp") { currentEmp = ev.value; continue; }
-    if (!currentEmp || seen.has(ev.id)) continue;
+    if (ev.kind === "emp") { currentEmp = ev.value; lastFallbackEmp = ev.value; continue; }
+    if (ev.kind === "emp-fallback") { lastFallbackEmp = ev.value; continue; }
+    if (seen.has(ev.id)) continue;
+    const employeeForBar = currentEmp || lastFallbackEmp;
+    if (!employeeForBar) continue;
     seen.add(ev.id);
     const lines = cleanLines(decodeAria(ev.aria));
     const range = lines.map(parseDateRangeLine).find(Boolean);
@@ -626,8 +645,8 @@ export function parseAbsencesByRowHtml(html) {
     rows.push({
       __rowId: `absence-bar-${ev.id}`,
       sourceId: `absence-${ev.id}`,
-      rowEmployee: currentEmp,
-      employeeName: currentEmp,
+      rowEmployee: employeeForBar,
+      employeeName: employeeForBar,
       startsOn: range?.startsOn || "",
       endsOn: range?.endsOn || range?.startsOn || "",
       type: typeLine || "Abwesenheit",

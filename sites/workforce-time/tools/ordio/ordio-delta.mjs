@@ -593,20 +593,25 @@ function toGermanDate(dateString) {
 }
 
 async function captureAbsences(page, options) {
-  // Ordio /absences zeigt immer nur den aktuellen Monat — für längere
-  // Zeiträume iterieren wir per Monats-Picker (Klick auf den
-  // Monatslabel-Button und Auswahl aus dem Popover). Wir sammeln 3
-  // Monate rückwärts und 1 Monat vorwärts vom aktuellen Monat, dann
-  // dedupen über sourceId.
+  // Ordio /absences zeigt immer nur den aktuellen Monat. URL-Parameter
+  // werden ignoriert; einziger Hebel sind die Navigations-Pfeile mit
+  // aria-label="Vorheriger Zeitraum" / "Nächster Zeitraum".
+  // Strategie: erst 11 Monate rückwärts (Januar erreichen), dort sammeln,
+  // dann 12 Schritte vorwärts (= jeder Monat des Jahres + 1 Monat in die
+  // Zukunft). Bars werden über sourceId dedupliziert.
   await page.goto(new URL("/absences", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
   await page.waitForTimeout(3500);
 
   const collected = [];
   const seen = new Set();
-  const monthAbbrev = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
 
-  async function collectCurrentMonth(label) {
+  async function collectCurrent(label) {
+    // Vor dem Parsen einmal scrollen, damit virtualized rows nachgeladen werden.
+    for (let i = 0; i < 4; i += 1) {
+      await page.mouse.wheel(0, 3000).catch(() => {});
+      await page.waitForTimeout(400);
+    }
     const content = await page.content();
     const rowBased = parseAbsencesByRowHtml(content);
     let added = 0;
@@ -616,44 +621,43 @@ async function captureAbsences(page, options) {
       collected.push(row);
       added += 1;
     }
-    if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG Absences ${label}: ${rowBased.length} Bars, ${added} neu`);
+    if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG Absences ${label}: DOM=${rowBased.length} Bars, +${added} neu, total=${collected.length}`);
   }
 
-  async function navigateToMonth(monthIndex) {
-    const label = monthAbbrev[monthIndex];
-    // Picker öffnen
-    const pickerToggle = page.locator("button:visible", { hasText: new RegExp(`^(${monthAbbrev.join("|")})$`) });
-    if (!(await pickerToggle.count())) return false;
-    await pickerToggle.first().click();
-    await page.waitForTimeout(800);
-    // Monatswahl
-    const target = page.locator("button:visible, [role=option]:visible, [role=menuitem]:visible", { hasText: new RegExp(`^${label}$`) });
-    if (!(await target.count())) {
-      await page.keyboard.press("Escape").catch(() => {});
+  async function clickArrow(direction) {
+    const ariaLabel = direction === "prev" ? "Vorheriger Zeitraum" : "Nächster Zeitraum";
+    const btn = page.locator(`button[aria-label="${ariaLabel}"]`);
+    if (!(await btn.count())) return false;
+    try {
+      await btn.first().click({ timeout: 5000 });
+    } catch {
       return false;
     }
-    await target.first().click();
-    await page.waitForTimeout(3500);
+    await page.waitForTimeout(2500);
     return true;
   }
 
-  const now = new Date();
-  const currentMonthIdx = now.getMonth();
-  // 3 zurück, current, 1 vorwärts
-  const monthOffsets = [-3, -2, -1, 0, 1];
+  // Erste Erfassung: aktueller Monat
+  await collectCurrent("current");
 
-  // Erste Erfassung (aktueller Monat ist Default beim /absences-Aufruf)
-  await collectCurrentMonth(monthAbbrev[currentMonthIdx]);
-
-  for (const offset of monthOffsets) {
-    if (offset === 0) continue;
-    const targetIdx = (currentMonthIdx + offset + 12) % 12;
-    const success = await navigateToMonth(targetIdx);
-    if (!success) {
-      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG Monatswechsel auf ${monthAbbrev[targetIdx]} fehlgeschlagen — überspringe`);
-      continue;
+  // 11 Monate rückwärts (Januar/Vorjahres-Dezember erreichen)
+  for (let i = 1; i <= 11; i += 1) {
+    const ok = await clickArrow("prev");
+    if (!ok) {
+      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG prev-Pfeil nicht klickbar bei step ${i}`);
+      break;
     }
-    await collectCurrentMonth(monthAbbrev[targetIdx]);
+    await collectCurrent(`prev-${i}`);
+  }
+
+  // Zurück zur Gegenwart + 1 Monat in die Zukunft: 12 Schritte vorwärts
+  for (let i = 1; i <= 12; i += 1) {
+    const ok = await clickArrow("next");
+    if (!ok) {
+      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG next-Pfeil nicht klickbar bei step ${i}`);
+      break;
+    }
+    await collectCurrent(`next-${i}`);
   }
 
   if (collected.length) return collected;
