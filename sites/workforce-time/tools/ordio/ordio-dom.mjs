@@ -1146,8 +1146,13 @@ export function mapAbsenceRows(rows, options = {}) {
     const startsOn = isoDateFromText(row.startsOn) || parsed.startsOn || isoDateFromText(row.rawText);
     const endsOn = isoDateFromText(row.endsOn, startsOn?.slice(0, 4)) || parsed.endsOn || startsOn;
     if (!employeeName || !startsOn || !endsOn) continue;
-    if (options.from && endsOn < options.from) continue;
-    if (options.to && startsOn > options.to) continue;
+    // Date-Range-Filter (options.from/to) wird für Absences NICHT
+    // angewendet: captureAbsences iteriert eigenständig über alle
+    // verfügbaren Monate via Pfeil-Navigation; ein zusätzlicher Filter
+    // würde die per Pfeil-Klick erfassten älteren Monate verwerfen.
+    // Für Plan/Work-Hours (mapPlanRows, mapWorkHoursRows) bleibt der
+    // Filter aktiv, weil diese Pipelines an isoWeeksInRange gekoppelt
+    // sind.
     stats.afterDateFilter += 1;
     const employeeInput = row.rowEmployeeNumber
       ? { name: employeeName, pnr: row.rowEmployeeNumber, __cells: [] }
