@@ -460,7 +460,7 @@ type WorkforceConfig = {
 };
 
 const defaultWorkforceConfig: WorkforceConfig = {
-  defaultLocationName: "Praxis Demo",
+  defaultLocationName: "",
   defaultWeeklyHours: { default: 40, by_name_tokens: [] },
   displayNameOverrides: [],
   workAreaOverrides: [],
@@ -470,7 +470,7 @@ const defaultWorkforceConfig: WorkforceConfig = {
   defaultCalculationNote:
     "MFA-Zeiten werden nur über die Mitarbeiter-ID gezählt; der Arbeitsbereich ist Herkunft der Buchung, keine feste Zuordnung.",
   shiftSchema: [],
-  isDemo: true
+  isDemo: false
 };
 
 // Modul-Level-Ref: Helper unten greifen darauf zu, ohne den Config
@@ -625,28 +625,14 @@ type ScheduleRecord = {
   area: string;
 };
 
-const fallbackEmployees: Employee[] = [
-  { id: "mfa-a", name: "MFA A", role: "Sprechstunde", initials: "MA" },
-  { id: "mfa-b", name: "MFA B", role: "Anmeldung", initials: "MB" },
-  { id: "mfa-c", name: "MFA C", role: "Labor", initials: "MC" },
-  { id: "arzt-a", name: "Arzt A", role: "Sprechstunde", initials: "AA" },
-  { id: "backoffice-a", name: "Backoffice A", role: "Verwaltung", initials: "BA" }
-];
-
-// Fallback-Listen werden nur verwendet, wenn die Bootstrap-API nicht
-// erreichbar ist (Offline-/Demo-Fall). Sie tragen keine Tenant-Strings;
-// echte Praxiswerte kommen aus dem Bootstrap (workforce.* via
-// tenant.config.json).
-const fallbackWorkAreas = [
-  "Sprechstunde",
-  "Anmeldung links",
-  "Anmeldung rechts",
-  "Labor",
-  "Funktion",
-  "Backoffice"
-];
-
-const fallbackLocations = ["Praxis Demo", "Homeoffice"];
+// Initial-Fallbacks sind leere Arrays — alle echten Werte (Praxis-MA,
+// Standorte, Bereiche) kommen vom Bootstrap-Endpoint aus
+// tenant.config.json. Demo-Defaults wurden mit dem Hard-Cut entfernt;
+// wenn Bootstrap fehlschlägt, sieht der User leere Tabellen statt
+// fiktiver MFAs.
+const fallbackEmployees: Employee[] = [];
+const fallbackWorkAreas: string[] = [];
+const fallbackLocations: string[] = [];
 
 const shiftSegments: ShiftSegment[] = [
   { id: "early", label: "Frühdienst", shortLabel: "Früh", startTime: "07:00", endTime: "14:00" },
@@ -662,54 +648,7 @@ function resolveShiftSchema(): ShiftSchemaGroup[] {
   return Array.isArray(tenantSchema) ? tenantSchema : [];
 }
 
-const fallbackEntries: TimeEntry[] = [
-  {
-    id: "t-1001",
-    employeeId: "mfa-a",
-    startDate: "2026-05-18",
-    startTime: "06:47",
-    endDate: "2026-05-18",
-    endTime: "17:13",
-    area: "Sprechstunde",
-    location: "Praxis Demo",
-    status: "freigegeben",
-    type: "Arbeitszeit",
-    paidBreakMinutes: 0,
-    unpaidBreakMinutes: 30,
-    audit: ["Automatisch aus Stempelzeit erstellt", "Von Leitung geprueft"]
-  },
-  {
-    id: "t-1002",
-    employeeId: "mfa-b",
-    startDate: "2026-05-18",
-    startTime: "06:53",
-    endDate: "2026-05-18",
-    endTime: "17:20",
-    area: "Anmeldung links",
-    location: "Praxis Demo",
-    status: "freigegeben",
-    type: "Arbeitszeit",
-    paidBreakMinutes: 0,
-    unpaidBreakMinutes: 30,
-    audit: ["Terminal-Buchung", "Pausenregel erkannt"]
-  },
-  {
-    id: "t-1003",
-    employeeId: "mfa-c",
-    startDate: "2026-05-18",
-    startTime: "07:56",
-    endDate: "2026-05-18",
-    endTime: "17:30",
-    area: "Labor / Diagnostik",
-    location: "Praxis Demo",
-    status: "aenderungsantrag",
-    type: "Arbeitszeit",
-    paidBreakMinutes: 0,
-    unpaidBreakMinutes: 60,
-    note: "Endzeit wurde nachgetragen.",
-    audit: ["Mitarbeiterin hat Korrektur beantragt", "Wartet auf Freigabe"]
-  }
-];
+const fallbackEntries: TimeEntry[] = [];
 
 const fallbackData: BootstrapPayload = {
   employees: fallbackEmployees,
@@ -1373,8 +1312,15 @@ function viewForMigrationWeek(week: MigrationWeekCoverage | { type?: string }): 
   return "time";
 }
 
-function getEmployee(employees: Employee[], id: string) {
-  return employees.find((employee) => employee.id === id) ?? employees[0] ?? fallbackEmployees[0];
+const employeePlaceholder: Employee = {
+  id: "",
+  name: "—",
+  role: "",
+  initials: "—"
+};
+
+function getEmployee(employees: Employee[], id: string): Employee {
+  return employees.find((employee) => employee.id === id) ?? employees[0] ?? employeePlaceholder;
 }
 
 function compactInitials(value: string) {
@@ -5554,9 +5500,9 @@ function AddTimeDialog({
 }) {
   const areaOptions = uniqueLabels(workAreas.map(canonicalWorkAreaLabel));
   const [form, setForm] = useState({
-    employeeId: employees[0]?.id ?? fallbackEmployees[0].id,
-    area: areaOptions[0] ?? canonicalWorkAreaLabel(fallbackWorkAreas[0]),
-    location: locations[0] ?? fallbackLocations[0],
+    employeeId: employees[0]?.id ?? "",
+    area: areaOptions[0] ?? "",
+    location: locations[0] ?? "",
     startDate: initialDate ?? "2026-05-24",
     startTime: "10:00",
     endDate: initialDate ?? "2026-05-24",
@@ -5959,7 +5905,7 @@ function AddAbsenceDialog({
   }) => void;
 }) {
   const [form, setForm] = useState({
-    employeeId: employees[0]?.id ?? fallbackEmployees[0].id,
+    employeeId: employees[0]?.id ?? "",
     type: "Urlaub",
     startsOn: initialDate ?? "2026-06-05",
     endsOn: initialDate ?? "2026-06-05",
