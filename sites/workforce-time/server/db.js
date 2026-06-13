@@ -3,6 +3,12 @@ import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DatabaseSync } from "node:sqlite";
+import {
+  ABSENCE_STATUS,
+  ABSENCE_STATUS_VALUES,
+  VACATION_ABSENCE_TYPES,
+  KNOWN_ABSENCE_TYPES
+} from "./absence-constants.js";
 import { tenantConfigGet, tenantIsDemo, tenantPath } from "./tenant.js";
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -2703,10 +2709,20 @@ export function createAbsenceRequest(payload) {
     throw new Error("Mitarbeiter nicht gefunden");
   }
 
+  // Whitelist-Validierung: nur Typen, die der Code kennt, werden
+  // akzeptiert. Verhindert dass durch Tippfehler (z.B. 'urlaub' statt
+  // 'Bezahlter Urlaub') Records entstehen, die später durch keinen
+  // Filter mehr greifbar sind (insbesondere Resturlaub-Quota).
+  if (!KNOWN_ABSENCE_TYPES.includes(absenceType)) {
+    throw new Error(
+      `absence_type "${absenceType}" ist nicht in der Whitelist. Erlaubte Werte: ${KNOWN_ABSENCE_TYPES.join(", ")}`
+    );
+  }
+
   const status =
-    typeof payload.status === "string" && ["offen", "genehmigt", "abgelehnt"].includes(payload.status)
+    typeof payload.status === "string" && ABSENCE_STATUS_VALUES.includes(payload.status)
       ? payload.status
-      : "offen";
+      : ABSENCE_STATUS.OPEN;
   const id = payload.id && typeof payload.id === "string" ? payload.id : `absence_${randomUUID()}`;
   const createdAt = now();
 
@@ -3923,9 +3939,9 @@ export function listAllPendingApprovals() {
   const absenceRows = db.prepare(`
     SELECT id, employee_id, absence_type, starts_on, ends_on, status, note, created_at
     FROM absence_requests
-    WHERE status = 'open'
+    WHERE status = ?
     ORDER BY created_at ASC
-  `).all();
+  `).all(ABSENCE_STATUS.OPEN);
   const absences = absenceRows.map((r) => ({
     type: "absence",
     id: r.id,
@@ -4338,10 +4354,10 @@ export function detectShiftConflicts(payload) {
       SELECT id, absence_type, starts_on, ends_on
       FROM absence_requests
       WHERE employee_id = @employeeId
-        AND status = 'approved'
+        AND status = @approvedStatus
         AND starts_on <= date(@endsAt)
         AND ends_on >= date(@startsAt)
-    `).all({ employeeId, startsAt, endsAt });
+    `).all({ employeeId, startsAt, endsAt, approvedStatus: ABSENCE_STATUS.APPROVED });
     for (const row of absenceRows) {
       conflicts.push({
         employeeId,
@@ -4518,11 +4534,9 @@ export function getAbsenceQuotaConfig() {
   return { defaultDays, byEmployee };
 }
 
-// Liste der absence_type-Strings, die als Urlaubstage zählen (Ordio
-// liefert deutsche Strings; "Bezahlter Urlaub" ist der Hauptfall, plus
-// "Unbezahlter Urlaub" und "Sonderurlaub"). Krankheit, Berufsschule
-// und Feiertagsausgleich zählen explizit nicht aufs Urlaubskontingent.
-const VACATION_ABSENCE_TYPES = ["Bezahlter Urlaub", "Unbezahlter Urlaub", "Sonderurlaub"];
+// VACATION_ABSENCE_TYPES, ABSENCE_STATUS sind zentral in
+// ./absence-constants.js definiert (Single Source of Truth seit
+// 2026-06-14, nach Quota-Bug-Diagnose).
 
 function countWeekdaysInRange(startIso, endIso) {
   // Inklusive beider Grenzen. Wochenenden werden nicht gezählt
@@ -4572,8 +4586,8 @@ export function calculateAbsenceQuota(employeeId, year) {
   }
   const { defaultDays, byEmployee } = getAbsenceQuotaConfig();
   const allocated = Number(byEmployee?.[employeeId] ?? defaultDays);
-  const used = countVacationDaysForYear(employeeId, yearNum, "genehmigt");
-  const pending = countVacationDaysForYear(employeeId, yearNum, "offen");
+  const used = countVacationDaysForYear(employeeId, yearNum, ABSENCE_STATUS.APPROVED);
+  const pending = countVacationDaysForYear(employeeId, yearNum, ABSENCE_STATUS.OPEN);
   return {
     employeeId,
     employeeName: emp.name,
@@ -4898,5 +4912,40 @@ export function setPayrollPersonnelNumber(employeeId, personnelNumber) {
 }
 
 migrate();
+ensureAbsenceStatusGuard();
 seed();
 ensureOperationalSeed();
+
+/**
+ * Schutzschicht gegen Status-Drift in absence_requests.
+ *
+ * Hintergrund: Im Code waren historisch englische Status-Strings
+ * ('approved', 'open') hartcodiert, während die DB nach Ordio-Import
+ * deutsche Werte ('genehmigt', 'offen') trug. Folge: SQL-Filter
+ * matchten nicht und der Resturlaub wurde falsch berechnet.
+ *
+ * Dieser Trigger blockt INSERT/UPDATE mit ungültigen Status-Werten
+ * direkt auf DB-Ebene. Wenn jemand im Code zurück zu 'approved' o.ä.
+ * verfällt, schlägt der Write hart fehl statt still falsch zu landen.
+ *
+ * Idempotent: wird beim Service-Boot ausgeführt, DROP TRIGGER IF EXISTS
+ * + CREATE TRIGGER.
+ */
+function ensureAbsenceStatusGuard() {
+  const allowed = ABSENCE_STATUS_VALUES.map((s) => `'${s}'`).join(", ");
+  for (const op of ["INSERT", "UPDATE OF status"]) {
+    const triggerName = op === "INSERT"
+      ? "absence_requests_status_guard_ins"
+      : "absence_requests_status_guard_upd";
+    db.exec(`DROP TRIGGER IF EXISTS ${triggerName}`);
+    db.exec(`
+      CREATE TRIGGER ${triggerName}
+      BEFORE ${op} ON absence_requests
+      FOR EACH ROW
+      WHEN NEW.status NOT IN (${allowed})
+      BEGIN
+        SELECT RAISE(ABORT, 'absence_requests.status: ungültiger Wert. Erlaubt: ${ABSENCE_STATUS_VALUES.join(" | ")}');
+      END;
+    `);
+  }
+}
