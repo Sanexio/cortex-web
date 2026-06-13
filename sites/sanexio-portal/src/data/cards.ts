@@ -19,7 +19,7 @@ export const CARDS: ProjectCard[] = [
     title: "Workforce-Time",
     subtitle: "Arbeitszeit · Schichtplanung",
     description:
-      "Browser-App für Stempelzeiten, Schichtplanung und Lohnabrechnungs-Export. Magic-Link-Login + TOTP. Auf Local-Stage landet der Login-Link in der Mailpit-Inbox (Card „Login-Mails").",
+      'Browser-App für Stempelzeiten, Schichtplanung und Lohnabrechnungs-Export. Magic-Link-Login + TOTP. Auf Local-Stage landet der Login-Link in der Mailpit-Inbox (Card „Login-Mails").',
     status: "production",
     access: "open",
     badge: "PRODUCTION",
