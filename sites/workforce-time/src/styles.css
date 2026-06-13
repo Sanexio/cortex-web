@@ -2655,9 +2655,9 @@ button:disabled {
   font-weight: 700;
   line-height: 1;
   /* Caps-only Initialen sitzen ohne Descender visuell zu hoch in der
-   * line-box. Top-Padding skaliert mit Container-Höhe — Iteration 5
-   * (2026-06-13) auf ~25 % gehoben. */
-  padding-top: 6px;
+   * line-box. Top-Padding skaliert mit Container-Höhe — Iteration 6
+   * (2026-06-13) auf ~33 % gehoben. */
+  padding-top: 8px;
   padding-bottom: 0;
   white-space: nowrap;
 }
@@ -2854,7 +2854,7 @@ button:disabled {
   width: 28px;
   height: 28px;
   font-size: 10px;
-  padding-top: 7px;
+  padding-top: 9px;
 }
 
 .people-grid {
@@ -3529,10 +3529,10 @@ tbody tr:hover,
   line-height: 1;
   /* Caps-only Initialen haben keinen Descender und ankern an der
    * Baseline — der visuelle Schwerpunkt liegt oberhalb der line-box-
-   * Mitte. Top-Padding ~25 % der Container-Höhe schiebt die Glyphen
-   * auf die optische Mitte (UX-Feedback 2026-06-13 Iteration 5).
+   * Mitte. Top-Padding ~33 % der Container-Höhe schiebt die Glyphen
+   * auf die optische Mitte (UX-Feedback 2026-06-13 Iteration 6).
    * .avatar.tiny / .large unten skalieren das Padding proportional. */
-  padding-top: 9px;
+  padding-top: 12px;
   padding-bottom: 0;
   text-align: center;
   white-space: nowrap;
@@ -3545,7 +3545,7 @@ tbody tr:hover,
   width: 46px;
   height: 46px;
   font-size: 13px;
-  padding-top: 11px;
+  padding-top: 14px;
 }
 
 .employee-cell .avatar,
