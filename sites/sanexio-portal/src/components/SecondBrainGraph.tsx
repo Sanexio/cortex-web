@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import cytoscape, { type Core, type ElementsDefinition } from "cytoscape";
 // @ts-expect-error fcose ships without local declarations in current version
 import fcose from "cytoscape-fcose";
@@ -18,31 +18,86 @@ type GraphData = {
 };
 
 const FALLBACK_CLUSTER_COLOR = "#5e6166";
+const REFRESH_INTERVAL_MS = 60_000;
+// /api/graph wird von der Vite-Middleware on-demand gebaut (Dev-Server).
+// /graph.json ist das statische Build-Artefakt (Production / Preview).
+const ENDPOINTS = ["/api/graph", "/graph.json"];
+
+async function fetchGraph(signal: AbortSignal): Promise<GraphData> {
+  let lastErr: unknown;
+  for (const url of ENDPOINTS) {
+    try {
+      const r = await fetch(url, { signal, cache: "no-store" });
+      if (!r.ok) {
+        lastErr = new Error(`${url} → HTTP ${r.status}`);
+        continue;
+      }
+      return (await r.json()) as GraphData;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error("graph fetch failed");
+}
 
 export function SecondBrainGraph() {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<Core | null>(null);
   const [data, setData] = useState<GraphData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastSync, setLastSync] = useState<Date | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/graph.json")
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then((g: GraphData) => {
-        if (!cancelled) setData(g);
-      })
-      .catch((e: Error) => {
-        if (!cancelled) setError(e.message);
+  const refresh = useCallback(async (manual = false) => {
+    const ctl = new AbortController();
+    if (manual) setRefreshing(true);
+    try {
+      const g = await fetchGraph(ctl.signal);
+      setData((prev) => {
+        if (
+          prev &&
+          prev.generated_at === g.generated_at &&
+          prev.stats.nodes === g.stats.nodes &&
+          prev.stats.edges === g.stats.edges
+        ) {
+          return prev;
+        }
+        return g;
       });
-    return () => {
-      cancelled = true;
-    };
+      setLastSync(new Date());
+      setError(null);
+    } catch (e) {
+      if ((e as Error).name !== "AbortError") {
+        setError((e as Error).message);
+      }
+    } finally {
+      if (manual) setRefreshing(false);
+    }
+    return ctl;
   }, []);
 
+  // Initial-Fetch + Interval-Polling + Window-Focus-Refresh.
+  useEffect(() => {
+    let cancelled = false;
+    let interval: ReturnType<typeof setInterval> | null = null;
+
+    void (async () => {
+      await refresh(false);
+      if (cancelled) return;
+      interval = setInterval(() => void refresh(false), REFRESH_INTERVAL_MS);
+    })();
+
+    const onFocus = () => void refresh(false);
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      cancelled = true;
+      if (interval) clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [refresh]);
+
+  // Render Cytoscape whenever the data signature changes.
   useEffect(() => {
     if (!data || !containerRef.current) return;
 
@@ -138,19 +193,39 @@ export function SecondBrainGraph() {
         <h2 className="section-title">
           <span className="section-marker">04</span> Second Brain · Graph
         </h2>
-        {data && (
-          <p className="graph-stats">
-            {data.stats.nodes} Knoten · {data.stats.edges} Kanten ·{" "}
-            {data.stats.files_scanned} Files · Stand{" "}
-            {new Date(data.generated_at).toLocaleString("de-DE")}
-          </p>
-        )}
-        {!data && !error && <p className="graph-stats">Lade Graph …</p>}
-        {error && (
-          <p className="graph-stats graph-stats-error">
-            Graph nicht geladen ({error}) — Run <code>npm run build:graph</code>
-          </p>
-        )}
+        <div className="graph-meta">
+          {data && (
+            <p className="graph-stats">
+              {data.stats.nodes} Knoten · {data.stats.edges} Kanten ·{" "}
+              {data.stats.files_scanned} Files
+              {lastSync && (
+                <>
+                  {" "}
+                  · sync {lastSync.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                </>
+              )}
+            </p>
+          )}
+          {!data && !error && <p className="graph-stats">Lade Graph …</p>}
+          {error && (
+            <p className="graph-stats graph-stats-error">
+              Graph nicht geladen ({error})
+            </p>
+          )}
+          <button
+            type="button"
+            className="graph-refresh"
+            onClick={() => void refresh(true)}
+            disabled={refreshing}
+            aria-label="Graph aktualisieren"
+            title="Vault neu scannen"
+          >
+            <span className={refreshing ? "spin" : ""} aria-hidden="true">
+              ↻
+            </span>
+            {refreshing ? " sync …" : " sync"}
+          </button>
+        </div>
       </header>
       <div ref={containerRef} className="graph-canvas" aria-label="Second-Brain-Graph" />
       {data && (

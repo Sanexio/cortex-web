@@ -343,6 +343,35 @@ body {
   margin-bottom: 16px;
 }
 .graph-head .section-title { margin: 0; }
+.graph-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.graph-refresh {
+  appearance: none;
+  background: rgba(0, 240, 255, 0.06);
+  color: var(--neon-cyan);
+  border: 1px solid rgba(0, 240, 255, 0.32);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.18s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.graph-refresh:hover { background: rgba(255, 234, 0, 0.1); color: var(--neon-yellow); border-color: var(--neon-yellow); }
+.graph-refresh:disabled { cursor: progress; opacity: 0.6; }
+.graph-refresh .spin { display: inline-block; animation: spin 0.7s linear infinite; }
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
 .graph-stats {
   font-family: var(--font-mono);
   font-size: 11px;

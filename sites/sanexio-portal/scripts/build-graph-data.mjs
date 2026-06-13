@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * build-graph-data.mjs — Second-Brain-Visual-Graph für Sanexio-Portal.
  *
@@ -20,10 +19,11 @@ import os from "node:os";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const VAULT = path.join(os.homedir(), "Cortex", "Nexus", "Second Brain");
+export const VAULT = path.join(os.homedir(), "Cortex", "Nexus", "Second Brain");
 // Output ist immer relativ zum Site-Root (scripts/ -> ../public/).
 const OUT = path.join(__dirname, "..", "public", "graph.json");
 const QUIET = process.argv.includes("--quiet");
+const IS_DIRECT_RUN = process.argv[1] === fileURLToPath(import.meta.url);
 
 const CLUSTER_COLORS = [
   "#00f0ff", // cyan
@@ -98,9 +98,9 @@ function resolveLink(target, byBasename, byNoteId) {
   return null;
 }
 
-async function main() {
+export async function buildGraph({ quiet = true } = {}) {
   const files = await walk(VAULT);
-  if (!QUIET) console.log(`[graph] scanned ${files.length} markdown files under ${VAULT}`);
+  if (!quiet) console.log(`[graph] scanned ${files.length} markdown files under ${VAULT}`);
 
   const notes = [];
   const byBasename = new Map();
@@ -197,16 +197,23 @@ async function main() {
     edges: outEdges,
   };
 
+  return payload;
+}
+
+async function writeStatic() {
+  const payload = await buildGraph({ quiet: QUIET });
   await fs.mkdir(path.dirname(OUT), { recursive: true });
   await fs.writeFile(OUT, JSON.stringify(payload, null, 2));
   if (!QUIET) {
     console.log(
-      `[graph] wrote ${OUT}: ${outNodes.length} nodes, ${outEdges.length} edges, ${clustersSorted.length} clusters`
+      `[graph] wrote ${OUT}: ${payload.nodes.length} nodes, ${payload.edges.length} edges, ${payload.clusters.length} clusters`
     );
   }
 }
 
-main().catch((err) => {
-  console.error("[graph] FAILED:", err);
-  process.exit(1);
-});
+if (IS_DIRECT_RUN) {
+  writeStatic().catch((err) => {
+    console.error("[graph] FAILED:", err);
+    process.exit(1);
+  });
+}
