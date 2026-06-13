@@ -29,7 +29,7 @@
 }
 
 /* ============================================================
- * Cyberpunk-Theme (CP2077-Style aus Sanexio-Cortex-Dashboard)
+ * Cyberpunk-Theme (CP2077-Style aus dem Cortex-Dashboard)
  * Aktiv via <html data-theme="cyberpunk">. Override-Pattern: nur
  * Variablen ersetzen, das Layout bleibt identisch.
  * ============================================================ */
@@ -2655,8 +2655,9 @@ button:disabled {
   font-weight: 700;
   line-height: 1;
   /* Caps-only Initialen sitzen ohne Descender visuell zu hoch in der
-   * line-box. 2 px Top-Padding schieben sie auf die optische Mitte. */
-  padding-top: 2px;
+   * line-box. Top-Padding skaliert mit Container-Höhe; bewährter Wert
+   * nach UX-Feedback (2026-06-13 Iteration 4): ~17 % der Höhe. */
+  padding-top: 4px;
   padding-bottom: 0;
   white-space: nowrap;
 }
@@ -2853,7 +2854,7 @@ button:disabled {
   width: 28px;
   height: 28px;
   font-size: 10px;
-  padding-top: 2px;
+  padding-top: 5px;
 }
 
 .people-grid {
@@ -3527,12 +3528,11 @@ tbody tr:hover,
   letter-spacing: 0;
   line-height: 1;
   /* Caps-only Initialen haben keinen Descender und ankern an der
-   * Baseline — der visuelle Schwerpunkt liegt damit oberhalb der
-   * mathematischen Mitte der line-box. 3 px Top-Padding (skaliert
-   * mit Container-Höhe ~34 px) verschieben die Glyphen genau auf
-   * die optische Container-Mitte. .avatar.tiny / .large unten
-   * skalieren das Padding. */
-  padding-top: 3px;
+   * Baseline — der visuelle Schwerpunkt liegt oberhalb der line-box-
+   * Mitte. Top-Padding ~17 % der Container-Höhe schiebt die Glyphen
+   * auf die optische Mitte (UX-Feedback 2026-06-13 Iteration 4).
+   * .avatar.tiny / .large unten skalieren das Padding proportional. */
+  padding-top: 6px;
   padding-bottom: 0;
   text-align: center;
   white-space: nowrap;
@@ -3545,7 +3545,7 @@ tbody tr:hover,
   width: 46px;
   height: 46px;
   font-size: 13px;
-  padding-top: 4px;
+  padding-top: 8px;
 }
 
 .employee-cell .avatar,
