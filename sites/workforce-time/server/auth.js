@@ -420,6 +420,10 @@ function insertAudit(eventType, { userId = null, sessionId = null, deviceId = nu
 }
 
 function assertMagicLinkRateLimit(userId) {
+  // P.1 (2026-06-13): Dev-Mode skipt das Rate-Limit, sonst blockt die
+  // Test-Schleife (Submit -> Banner -> Klick -> nochmal Submit) nach
+  // 5 Anfragen pro Stunde. In Production bleibt 5/h aktiv.
+  if (isDevelopment()) return;
   const since = addSeconds(-60 * 60);
   const count = db
     .prepare(`
