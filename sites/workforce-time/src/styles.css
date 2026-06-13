@@ -36,54 +36,54 @@
 :root[data-theme="cyberpunk"] {
   color-scheme: dark;
   font-family:
-    "Chakra Petch", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --bg: #0A0C10;
-  --surface: #11151C;
-  --surface-muted: #161B24;
-  --surface-raised: #1D2430;
-  --line: rgba(2, 215, 242, 0.32);
-  --line-strong: #02D7F2;
-  --text: #E6ECF2;
-  --muted: #9AA7B5;
-  --subtle: #6F7E8E;
-  --blue: #02D7F2;
-  --blue-soft: rgba(2, 215, 242, 0.12);
+    "Rajdhani", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bg: #0c0c0c;
+  --surface: #141414;
+  --surface-muted: #1c1c1c;
+  --surface-raised: #242424;
+  --line: rgba(0, 221, 245, 0.32);
+  --line-strong: #00ddf5;
+  --text: #ffffff;
+  --muted: #888888;
+  --subtle: #666666;
+  --blue: #00ddf5;
+  --blue-soft: rgba(0, 221, 245, 0.12);
   --teal: #3DDC97;
   --teal-soft: rgba(61, 220, 151, 0.14);
-  --amber: #FCEE0A;
-  --amber-soft: rgba(252, 238, 10, 0.14);
-  --rose: #C5003C;
-  --rose-soft: rgba(197, 0, 60, 0.18);
+  --amber: #f5c300;
+  --amber-soft: rgba(245, 195, 0, 0.14);
+  --rose: #ff2878;
+  --rose-soft: rgba(255, 40, 120, 0.18);
   --radius-card: 6px;
   --radius-input: 4px;
   --radius-pill: 999px;
   --shadow:
-    0 0 0 1px rgba(2, 215, 242, 0.18),
+    0 0 0 1px rgba(0, 221, 245, 0.18),
     0 18px 44px rgba(0, 0, 0, 0.55);
   --shadow-soft:
-    0 0 0 1px rgba(2, 215, 242, 0.12),
+    0 0 0 1px rgba(0, 221, 245, 0.12),
     0 8px 22px rgba(0, 0, 0, 0.45);
 }
 
 :root[data-theme="cyberpunk"] body {
   background:
-    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(252, 238, 10, 0.10), transparent 70%),
-    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(2, 215, 242, 0.08), transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(245, 195, 0, 0.10), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(0, 221, 245, 0.08), transparent 70%),
     var(--bg);
 }
 
 :root[data-theme="cyberpunk"] .sidebar {
   background:
-    linear-gradient(180deg, color-mix(in srgb, #FCEE0A 7%, #0A0C10), #0A0C10);
+    linear-gradient(180deg, color-mix(in srgb, #f5c300 7%, #0c0c0c), #0c0c0c);
   border-right: 1px solid var(--line-strong);
 }
 
 :root[data-theme="cyberpunk"] .brand-mark {
-  background: linear-gradient(135deg, #FCEE0A, #02D7F2);
+  background: linear-gradient(135deg, #f5c300, #00ddf5);
   color: #000;
   border-radius: 4px;
   letter-spacing: 0.08em;
-  font-family: "Orbitron", "Chakra Petch", sans-serif;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
 }
 
 :root[data-theme="cyberpunk"] .brand-row strong,
@@ -91,20 +91,20 @@
 :root[data-theme="cyberpunk"] h1,
 :root[data-theme="cyberpunk"] h2,
 :root[data-theme="cyberpunk"] h3 {
-  font-family: "Orbitron", "Chakra Petch", sans-serif;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
   letter-spacing: 0.02em;
 }
 
 :root[data-theme="cyberpunk"] .nav-item.active {
-  background: rgba(252, 238, 10, 0.10);
-  color: #FCEE0A;
-  border-left: 2px solid #FCEE0A;
+  background: rgba(245, 195, 0, 0.10);
+  color: #f5c300;
+  border-left: 2px solid #f5c300;
 }
 
 :root[data-theme="cyberpunk"] .primary-button {
-  background: #FCEE0A;
+  background: #f5c300;
   color: #000;
-  border: 1px solid #FCEE0A;
+  border: 1px solid #f5c300;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -115,17 +115,17 @@
 
 :root[data-theme="cyberpunk"] .secondary-button {
   background: transparent;
-  color: #02D7F2;
-  border: 1px solid #02D7F2;
+  color: #00ddf5;
+  border: 1px solid #00ddf5;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 :root[data-theme="cyberpunk"] kbd {
-  background: rgba(2, 215, 242, 0.15);
-  color: #02D7F2;
-  border-color: #02D7F2;
-  font-family: "Share Tech Mono", "JetBrains Mono", monospace;
+  background: rgba(0, 221, 245, 0.15);
+  color: #00ddf5;
+  border-color: #00ddf5;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
 }
 
 /* ============================================================

@@ -56,7 +56,7 @@ type ThemeKey = "default" | "cyberpunk";
 
 const THEME_STORAGE_KEY = "workforce-time-theme";
 const CYBERPUNK_FONT_URL =
-  "https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Orbitron:wght@600;700;900&family=JetBrains+Mono:wght@400;700&family=Share+Tech+Mono&display=swap";
+  "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap";
 
 function readStoredTheme(): ThemeKey {
   if (typeof window === "undefined") return "default";
