@@ -18,6 +18,7 @@ import {
   KeyRound,
   LogOut,
   Mail,
+  Palette,
   PauseCircle,
   Plus,
   QrCode,
@@ -49,7 +50,33 @@ type ShiftConflictCheckPayload = {
 };
 const ShiftConflictContext = createContext<((payload: ShiftConflictCheckPayload) => Promise<ShiftConflict[]>) | null>(null);
 
-type ViewKey = "dashboard" | "plan" | "time" | "absences" | "approvals" | "employees" | "payroll" | "reports" | "imports" | "stamp" | "admin" | "settings";
+type ViewKey = "dashboard" | "plan" | "time" | "absences" | "approvals" | "employees" | "payroll" | "reports" | "imports" | "stamp" | "admin" | "settings" | "design";
+
+type ThemeKey = "default" | "cyberpunk";
+
+const THEME_STORAGE_KEY = "workforce-time-theme";
+const CYBERPUNK_FONT_URL =
+  "https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Orbitron:wght@600;700;900&family=JetBrains+Mono:wght@400;700&family=Share+Tech+Mono&display=swap";
+
+function readStoredTheme(): ThemeKey {
+  if (typeof window === "undefined") return "default";
+  const raw = window.localStorage.getItem(THEME_STORAGE_KEY);
+  return raw === "cyberpunk" ? "cyberpunk" : "default";
+}
+
+function applyTheme(theme: ThemeKey) {
+  if (typeof document === "undefined") return;
+  document.documentElement.dataset.theme = theme;
+  if (theme === "cyberpunk") {
+    if (!document.getElementById("cyberpunk-fonts")) {
+      const link = document.createElement("link");
+      link.id = "cyberpunk-fonts";
+      link.rel = "stylesheet";
+      link.href = CYBERPUNK_FONT_URL;
+      document.head.appendChild(link);
+    }
+  }
+}
 
 type PayrollDay = {
   date: string;
@@ -802,7 +829,8 @@ const viewMeta: Record<ViewKey, { title: string; eyebrow: string }> = {
   imports: { title: "Import & Sync", eyebrow: "Migration" },
   stamp: { title: "Stempeluhr", eyebrow: "Kiosk-Modus" },
   admin: { title: "Benutzer & Rollen", eyebrow: "Rollen-Verwaltung" },
-  settings: { title: "Einstellungen", eyebrow: "Rollen & Schutz" }
+  settings: { title: "Einstellungen", eyebrow: "Rollen & Schutz" },
+  design: { title: "Design", eyebrow: "Visuelle Erscheinung" }
 };
 
 function parseDateTime(date: string, time: string) {
@@ -1564,7 +1592,15 @@ function App() {
   // Mitarbeiter ihn ohne Mailpit-Umweg klicken kann.
   const [devLoginUrl, setDevLoginUrl] = useState<string | null>(null);
   const [helpChapterId, setHelpChapterId] = useState<string | null>(null);
+  const [theme, setTheme] = useState<ThemeKey>(() => readStoredTheme());
   const visibleWeekStart = activeWeekStart ?? getPrototypeWeekStart(data);
+
+  useEffect(() => {
+    applyTheme(theme);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    }
+  }, [theme]);
 
   function navigateView(nextView: ViewKey) {
     if (nextView === "time") {
@@ -1992,7 +2028,8 @@ function App() {
         <RefreshCw size={17} />
         Aktualisieren
       </button>
-    )
+    ),
+    design: null
   } satisfies Record<ViewKey, ReactNode>;
 
   if (authStatus !== "authenticated" && authStatus !== "offline") {
@@ -2157,6 +2194,7 @@ function App() {
         {view === "stamp" ? <StampKioskView employees={data.employees} request={request} /> : null}
         {view === "admin" ? <AdminRolesView request={request} authUser={authUser} /> : null}
         {view === "settings" ? <SettingsView data={data} apiMessage={apiMessage} /> : null}
+        {view === "design" ? <DesignView theme={theme} setTheme={setTheme} /> : null}
       </main>
 
       {dialog === "time" ? (
@@ -2506,7 +2544,8 @@ function Sidebar({
     { view: "imports", label: "Import & Sync", icon: Database },
     { view: "stamp", label: "Stempeluhr", icon: QrCode },
     { view: "admin", label: "Rollen-Admin", icon: ShieldCheck },
-    { view: "settings", label: "Einstellungen", icon: Settings2 }
+    { view: "settings", label: "Einstellungen", icon: Settings2 },
+    { view: "design", label: "Design", icon: Palette }
   ];
   const actions: Array<{ label: string; icon: typeof Home; onClick: () => void }> = [
     { label: "Schicht planen", icon: CalendarDays, onClick: onOpenShift },
@@ -5346,6 +5385,102 @@ function ImportsView({
             </div>
           ))}
           {data.syncConflicts.length === 0 ? <div className="empty-state compact">Keine Konflikte</div> : null}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+type ThemeOption = {
+  key: ThemeKey;
+  label: string;
+  description: string;
+  preview: { background: string; surface: string; primary: string; accent: string; text: string };
+};
+
+const THEME_OPTIONS: ThemeOption[] = [
+  {
+    key: "default",
+    label: "Standard",
+    description:
+      "Heller Apple-naher Look mit weicher Tiefe und Sanexio-Rot als Akzent. Ruhiges Default-Design für den Praxisbetrieb.",
+    preview: {
+      background: "#fbfbfd",
+      surface: "#ffffff",
+      primary: "#c8161d",
+      accent: "#0f766e",
+      text: "#1d1d1f"
+    }
+  },
+  {
+    key: "cyberpunk",
+    label: "Cyberpunk",
+    description:
+      "CP2077-Style aus dem Sanexio-Cortex-Dashboard: tactical black mit gelb-cyaner Akzentführung und Display-Font Orbitron / Chakra Petch.",
+    preview: {
+      background: "#0A0C10",
+      surface: "#11151C",
+      primary: "#FCEE0A",
+      accent: "#02D7F2",
+      text: "#E6ECF2"
+    }
+  }
+];
+
+function DesignView({ theme, setTheme }: { theme: ThemeKey; setTheme: (next: ThemeKey) => void }) {
+  return (
+    <div className="design-layout">
+      <section className="wide-panel">
+        <div className="section-heading">
+          <div>
+            <h2>Design</h2>
+            <p>
+              Wähle das visuelle Erscheinungsbild der Arbeitszeit-App. Die Auswahl wird im Browser
+              gespeichert und gilt für alle weiteren Ansichten dieser Sitzung.
+            </p>
+          </div>
+        </div>
+        <div className="design-grid">
+          {THEME_OPTIONS.map((option) => {
+            const active = option.key === theme;
+            return (
+              <button
+                key={option.key}
+                type="button"
+                className={active ? "design-card active" : "design-card"}
+                onClick={() => setTheme(option.key)}
+                aria-pressed={active}
+              >
+                <div
+                  className="design-preview"
+                  style={{
+                    background: option.preview.background,
+                    color: option.preview.text,
+                    borderColor: active ? option.preview.primary : "transparent"
+                  }}
+                >
+                  <div
+                    className="design-preview-bar"
+                    style={{ background: option.preview.surface, borderColor: option.preview.accent }}
+                  >
+                    <span style={{ color: option.preview.primary, fontWeight: 700 }}>{option.label}</span>
+                  </div>
+                  <div className="design-preview-dots">
+                    <span style={{ background: option.preview.primary }} />
+                    <span style={{ background: option.preview.accent }} />
+                    <span style={{ background: option.preview.text }} />
+                  </div>
+                </div>
+                <div className="design-card-body">
+                  <header>
+                    <strong>{option.label}</strong>
+                    {active ? <span className="design-card-badge">Aktiv</span> : null}
+                  </header>
+                  <p>{option.description}</p>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </section>
     </div>
