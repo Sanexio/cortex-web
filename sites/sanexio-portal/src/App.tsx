@@ -4,6 +4,7 @@ import { ProjectCardView } from "./components/ProjectCard";
 import { LockedToast } from "./components/LockedToast";
 import { SecondBrainGraph } from "./components/SecondBrainGraph";
 import { LoginGate } from "./components/LoginGate";
+import { SanexioCortexDashboard } from "./components/SanexioCortexDashboard";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
 
 function Hub() {
   const [locked, setLocked] = useState<ProjectCard | null>(null);
+  const [adminOpen, setAdminOpen] = useState<ProjectCard | null>(null);
   const activeCount = CARDS.filter((c) => c.status === "production").length;
   const lockedCount = CARDS.length - activeCount;
 
@@ -56,7 +58,12 @@ function Hub() {
           </h2>
           <div className="cards-grid">
             {CARDS.map((c) => (
-              <ProjectCardView key={c.id} card={c} onLockedClick={setLocked} />
+              <ProjectCardView
+                key={c.id}
+                card={c}
+                onLockedClick={setLocked}
+                onAdminClick={setAdminOpen}
+              />
             ))}
           </div>
         </section>
@@ -80,6 +87,10 @@ function Hub() {
 
       {locked && (
         <LockedToast title={locked.title} onClose={() => setLocked(null)} />
+      )}
+
+      {adminOpen && (
+        <SanexioCortexDashboard onClose={() => setAdminOpen(null)} />
       )}
     </div>
   );

@@ -4,15 +4,18 @@ import type { ProjectCard } from "../data/cards";
 type Props = {
   card: ProjectCard;
   onLockedClick: (card: ProjectCard) => void;
+  onAdminClick: (card: ProjectCard) => void;
 };
 
-export function ProjectCardView({ card, onLockedClick }: Props) {
+export function ProjectCardView({ card, onLockedClick, onAdminClick }: Props) {
   const [hover, setHover] = useState(false);
   const isLocked = card.status === "locked";
+  const isAdmin = card.access === "admin";
 
   const className = [
     "card",
     isLocked ? "card-locked" : "card-active",
+    isAdmin ? "card-admin" : "",
     hover ? "card-hover" : "",
   ]
     .filter(Boolean)
@@ -26,7 +29,18 @@ export function ProjectCardView({ card, onLockedClick }: Props) {
       </div>
       <div className="card-head">
         <span className="card-id">{`// ${card.id}`}</span>
-        {card.badge && <span className="card-badge">{card.badge}</span>}
+        {card.badge && (
+          <span
+            className={[
+              "card-badge",
+              isAdmin ? "card-badge-admin" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            {card.badge}
+          </span>
+        )}
         {isLocked && (
           <span className="card-badge card-badge-locked" aria-label="locked">
             RESTRICTED
@@ -64,6 +78,21 @@ export function ProjectCardView({ card, onLockedClick }: Props) {
         onMouseLeave={() => setHover(false)}
         onClick={() => onLockedClick(card)}
         aria-label={`${card.title} (restricted)`}
+      >
+        {body}
+      </button>
+    );
+  }
+
+  if (isAdmin) {
+    return (
+      <button
+        type="button"
+        className={className}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onClick={() => onAdminClick(card)}
+        aria-label={`${card.title} (admin)`}
       >
         {body}
       </button>

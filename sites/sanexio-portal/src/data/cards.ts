@@ -4,8 +4,12 @@ export type ProjectCard = {
   subtitle: string;
   description: string;
   status: "production" | "locked";
+  /** Welche Auth-Stufe vor Öffnen?  "open" = direkt, "admin" = Admin-Gate. */
+  access?: "open" | "admin";
   badge?: string;
   href?: string;
+  /** Interne Sub-Routen (z.B. "sanexio-cortex") für Admin-Apps im Portal selbst. */
+  internalRoute?: string;
   tags: string[];
 };
 
@@ -17,9 +21,22 @@ export const CARDS: ProjectCard[] = [
     description:
       "Browser-App für Stempelzeiten, Schichtplanung und Lohnabrechnungs-Export. Magic-Link-Login + TOTP.",
     status: "production",
+    access: "open",
     badge: "PRODUCTION",
     href: "http://127.0.0.1:5174/",
     tags: ["Workforce", "Login", "Live"],
+  },
+  {
+    id: "sanexio-cortex",
+    title: "Sanexio Cortex",
+    subtitle: "Plattform-Dashboard",
+    description:
+      "Admin-Dashboard zum Cortex-Ökosystem (Plattform-Fortschritt, Cluster-Sync, Live-Deploys, offene User-Aktionen). Manuell gepflegt.",
+    status: "production",
+    access: "admin",
+    badge: "ADMIN",
+    internalRoute: "sanexio-cortex",
+    tags: ["Dashboard", "Admin", "Cluster"],
   },
   {
     id: "cortex-qm",
@@ -51,9 +68,9 @@ export const CARDS: ProjectCard[] = [
   {
     id: "cortex-harness",
     title: "Cortex-Harness",
-    subtitle: "Agent-Testbed",
+    subtitle: "Skill-Engine · Hermes-Agents",
     description:
-      "Skill-Engine + Adapter-Harness für Hermes-Style-Agents. Internal.",
+      "Adapter-Harness für Hermes-Style-Agents (interne KI-Engine), keine Visualisierung — nicht das Sanexio-Dashboard.",
     status: "locked",
     tags: ["Engine", "Agent"],
   },
