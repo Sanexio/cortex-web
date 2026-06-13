@@ -3506,9 +3506,8 @@ tbody tr:hover,
 }
 
 .avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-grid;
+  place-items: center;
   flex: 0 0 auto;
   width: 34px;
   height: 34px;
@@ -3518,11 +3517,17 @@ tbody tr:hover,
   color: #ffffff;
   overflow: hidden;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0;
   line-height: 1;
   text-align: center;
   white-space: nowrap;
+  /* Apple-/Chakra-Petch-Caps sitzen optisch leicht zu hoch in der
+   * line-box — ein 1px-Top-Padding zieht die Initialen in die echte
+   * geometrische Mitte. Bottom-Padding bleibt 0, sonst kippt die
+   * Korrektur wieder. */
+  padding-top: 1px;
+  padding-bottom: 0;
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.26),
     0 0 0 1px rgba(29, 29, 31, 0.06);
