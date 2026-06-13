@@ -2278,7 +2278,12 @@ button:disabled {
 }
 
 .schema-planner {
-  overflow: auto;
+  /* Vorher: overflow: auto — bei mehreren Gruppen-Sektionen wurden
+   * die zusätzlichen Gruppen unten abgeschnitten und vom internen
+   * Scrollbalken versteckt. Jetzt wächst der Planner vertikal mit der
+   * Tabellenhöhe und scrollt nur horizontal bei schmalem Viewport. */
+  overflow-x: auto;
+  overflow-y: visible;
   scroll-padding-left: clamp(130px, 20vw, 230px);
   scroll-padding-top: 88px;
   contain: layout paint;
@@ -2359,8 +2364,9 @@ button:disabled {
 
 .schema-group-row,
 .schema-group-fill {
-  min-height: 30px;
-  background: var(--surface-muted);
+  min-height: 38px;
+  background: color-mix(in srgb, var(--blue) 8%, var(--surface));
+  border-top: 2px solid var(--blue);
 }
 
 .schema-group-row {
@@ -2371,10 +2377,11 @@ button:disabled {
   min-width: 0;
   align-items: center;
   justify-content: flex-start;
-  padding: 7px 12px;
-  color: var(--text);
+  padding: 10px 14px;
+  color: var(--blue);
   font-size: 13px;
   font-weight: 900;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   overflow-wrap: break-word;
   hyphens: auto;
