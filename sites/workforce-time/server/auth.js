@@ -613,13 +613,19 @@ async function sendMagicLinkMail(request, user, token) {
     console.log(`[workforce-auth] Magic-Link fuer ${user.email}: ${link}`);
   }
 
+  // P.1 (2026-06-13): Dev-Mode liefert den Link auch direkt im API-Response
+  // (delivery.dev_link), damit der Mitarbeiter ihn ohne Mailpit-Inbox-Umweg
+  // direkt klicken kann. Wird in Produktion ausgeblendet — dort kommt der
+  // Link ueber die echte SMTP-Pipeline ins Mitarbeiter-Postfach.
+  const devLink = isDevelopment() ? link : undefined;
+
   try {
     const result = await sendSmtpMail({ from: mailFrom(), to: user.email, subject, text });
-    return isDevelopment() ? { ...result, stdout: true } : result;
+    return isDevelopment() ? { ...result, stdout: true, dev_link: devLink } : result;
   } catch (error) {
     if (!isDevelopment()) throw error;
     console.warn(`[workforce-auth] Mailpit nicht erreichbar, Link nur in stdout geloggt: ${error.message}`);
-    return { delivered: false, stdout: true, error: error.message };
+    return { delivered: false, stdout: true, dev_link: devLink, error: error.message };
   }
 }
 

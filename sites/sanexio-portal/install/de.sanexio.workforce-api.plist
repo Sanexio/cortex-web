@@ -28,6 +28,8 @@
         <string>5175</string>
         <key>ARBEITSZEITEN_EXTRA_ORIGINS</key>
         <string>https://${LOCAL_WP_HOST}</string>
+        <key>WORKFORCE_PUBLIC_BASE_URL</key>
+        <string>http://127.0.0.1:5174</string>
     </dict>
 
     <key>RunAtLoad</key>

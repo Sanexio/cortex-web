@@ -19,7 +19,7 @@ export const CARDS: ProjectCard[] = [
     title: "Workforce-Time",
     subtitle: "Arbeitszeit · Schichtplanung",
     description:
-      'Browser-App für Stempelzeiten, Schichtplanung und Lohnabrechnungs-Export. Magic-Link-Login + TOTP. Auf Local-Stage landet der Login-Link in der Mailpit-Inbox (Card „Login-Mails").',
+      "Browser-App für Stempelzeiten, Schichtplanung und Lohnabrechnungs-Export. Direkter Login mit Mitarbeiter-Mail — Login-Link erscheint sofort im Formular.",
     status: "production",
     access: "open",
     badge: "PRODUCTION",
@@ -37,18 +37,6 @@ export const CARDS: ProjectCard[] = [
     badge: "ADMIN",
     href: "http://127.0.0.1:9119/projects",
     tags: ["Dashboard", "Admin", "Cluster"],
-  },
-  {
-    id: "mailpit",
-    title: "Login-Mails",
-    subtitle: "Mailpit · Magic-Link-Inbox",
-    description:
-      "Lokaler Mail-Catcher für Workforce-Time-Login-Links. Auf Local-Stage landen alle Auth-Mails hier, nicht im echten Postfach.",
-    status: "production",
-    access: "open",
-    badge: "INBOX",
-    href: "http://127.0.0.1:8025/",
-    tags: ["Mail", "Login-Link", "Dev"],
   },
   {
     id: "cortex-qm",

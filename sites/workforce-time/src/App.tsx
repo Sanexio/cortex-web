@@ -275,6 +275,7 @@ type MagicLinkPayload = {
     delivered?: boolean;
     stdout?: boolean;
     error?: string;
+    dev_link?: string;
   };
 };
 
@@ -1650,6 +1651,9 @@ function App() {
   ));
   const [totpCode, setTotpCode] = useState("");
   const [totpSetup, setTotpSetup] = useState<TotpEnrollmentPayload | null>(null);
+  // Dev-Stage: Backend liefert den Login-Link direkt mit, damit der
+  // Mitarbeiter ihn ohne Mailpit-Umweg klicken kann.
+  const [devLoginUrl, setDevLoginUrl] = useState<string | null>(null);
   const [helpChapterId, setHelpChapterId] = useState<string | null>(null);
   const visibleWeekStart = activeWeekStart ?? getPrototypeWeekStart(data);
 
@@ -1766,7 +1770,12 @@ function App() {
       });
       if (payload.tenant) setTenantMeta(payload.tenant);
       setAuthStatus("magic_sent");
-      setAuthMessage(payload.delivery?.delivered ? "Login-Link verschickt" : "Login-Link lokal erzeugt");
+      setDevLoginUrl(payload.delivery?.dev_link ?? null);
+      if (payload.delivery?.dev_link) {
+        setAuthMessage("Login-Link bereit — direkt klicken");
+      } else {
+        setAuthMessage(payload.delivery?.delivered ? "Login-Link an Mail-Adresse verschickt" : "Login-Link lokal erzeugt");
+      }
     } catch (error) {
       setAuthMessage(error instanceof Error ? error.message : "Login-Link konnte nicht erzeugt werden");
     } finally {
@@ -2093,6 +2102,7 @@ function App() {
         setup={totpSetup}
         message={authMessage}
         busy={busy}
+        devLoginUrl={devLoginUrl}
         onEmailChange={setLoginEmail}
         onTokenChange={setMagicToken}
         onTotpChange={setTotpCode}
@@ -2372,6 +2382,7 @@ function AuthShell({
   setup,
   message,
   busy,
+  devLoginUrl,
   onEmailChange,
   onTokenChange,
   onTotpChange,
@@ -2389,6 +2400,7 @@ function AuthShell({
   setup: TotpEnrollmentPayload | null;
   message: string;
   busy: boolean;
+  devLoginUrl: string | null;
   onEmailChange: (value: string) => void;
   onTokenChange: (value: string) => void;
   onTotpChange: (value: string) => void;
@@ -2455,6 +2467,18 @@ function AuthShell({
 
         {showTokenForm ? (
           <form className="auth-form" onSubmit={onVerifyToken}>
+            {devLoginUrl ? (
+              <div className="dev-link-banner">
+                <p className="dev-link-headline">Dein Login-Link ist bereit:</p>
+                <a className="primary-button dev-link-button" href={devLoginUrl}>
+                  <Check size={17} />
+                  Jetzt einloggen
+                </a>
+                <p className="dev-link-hint">
+                  Klicken öffnet die Anmeldung und führt dich zurück in Workforce-Time.
+                </p>
+              </div>
+            ) : null}
             <label className="field">
               <span>Magic-Link-Token</span>
               <input
