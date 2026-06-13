@@ -4518,24 +4518,45 @@ export function getAbsenceQuotaConfig() {
   return { defaultDays, byEmployee };
 }
 
-function countApprovedVacationDaysForYear(employeeId, year) {
+// Liste der absence_type-Strings, die als Urlaubstage zählen (Ordio
+// liefert deutsche Strings; "Bezahlter Urlaub" ist der Hauptfall, plus
+// "Unbezahlter Urlaub" und "Sonderurlaub"). Krankheit, Berufsschule
+// und Feiertagsausgleich zählen explizit nicht aufs Urlaubskontingent.
+const VACATION_ABSENCE_TYPES = ["Bezahlter Urlaub", "Unbezahlter Urlaub", "Sonderurlaub"];
+
+function countWeekdaysInRange(startIso, endIso) {
+  // Inklusive beider Grenzen. Wochenenden werden nicht gezählt
+  // (Mo-Fr = Werktage; Feiertage werden nicht abgezogen — das wäre
+  // tenant-spezifisch und kommt in einer Folgewelle).
+  const start = new Date(startIso);
+  const end = new Date(endIso);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 0;
+  let count = 0;
+  for (let d = new Date(start); d.getTime() <= end.getTime(); d.setUTCDate(d.getUTCDate() + 1)) {
+    const wd = d.getUTCDay();
+    if (wd !== 0 && wd !== 6) count += 1;
+  }
+  return count;
+}
+
+function countVacationDaysForYear(employeeId, year, statusFilter) {
   const yearStart = `${year}-01-01`;
   const yearEnd = `${year}-12-31`;
+  const placeholders = VACATION_ABSENCE_TYPES.map(() => "?").join(",");
   const rows = db.prepare(`
     SELECT starts_on, ends_on
     FROM absence_requests
-    WHERE employee_id = @employeeId
-      AND absence_type = 'vacation'
-      AND status = 'approved'
-      AND ends_on >= @yearStart
-      AND starts_on <= @yearEnd
-  `).all({ employeeId, yearStart, yearEnd });
+    WHERE employee_id = ?
+      AND absence_type IN (${placeholders})
+      AND status = ?
+      AND ends_on >= ?
+      AND starts_on <= ?
+  `).all(employeeId, ...VACATION_ABSENCE_TYPES, statusFilter, yearStart, yearEnd);
   let totalDays = 0;
   for (const row of rows) {
     const start = row.starts_on < yearStart ? yearStart : row.starts_on;
     const end = row.ends_on > yearEnd ? yearEnd : row.ends_on;
-    const days = Math.floor((Date.parse(end) - Date.parse(start)) / (1000 * 60 * 60 * 24)) + 1;
-    if (days > 0) totalDays += days;
+    totalDays += countWeekdaysInRange(start, end);
   }
   return totalDays;
 }
@@ -4551,21 +4572,8 @@ export function calculateAbsenceQuota(employeeId, year) {
   }
   const { defaultDays, byEmployee } = getAbsenceQuotaConfig();
   const allocated = Number(byEmployee?.[employeeId] ?? defaultDays);
-  const used = countApprovedVacationDaysForYear(employeeId, yearNum);
-  const pendingRows = db.prepare(`
-    SELECT starts_on, ends_on
-    FROM absence_requests
-    WHERE employee_id = ?
-      AND absence_type = 'vacation'
-      AND status = 'open'
-      AND ends_on >= ?
-      AND starts_on <= ?
-  `).all(employeeId, `${yearNum}-01-01`, `${yearNum}-12-31`);
-  let pending = 0;
-  for (const r of pendingRows) {
-    const days = Math.floor((Date.parse(r.ends_on) - Date.parse(r.starts_on)) / (1000 * 60 * 60 * 24)) + 1;
-    if (days > 0) pending += days;
-  }
+  const used = countVacationDaysForYear(employeeId, yearNum, "genehmigt");
+  const pending = countVacationDaysForYear(employeeId, yearNum, "offen");
   return {
     employeeId,
     employeeName: emp.name,
