@@ -71,3 +71,7 @@ sites/praxis-webseite/_deploy/welle-F-phase-B/*/wp-salts.txt
 sites/praxis-webseite/_deploy/welle-F-phase-A/*/.htpasswd
 adapters/astro/.backups/
 sites/sanexio-github-io/repo/
+__pycache__/
+*.pyc
+*.pyo
+.tmp/
