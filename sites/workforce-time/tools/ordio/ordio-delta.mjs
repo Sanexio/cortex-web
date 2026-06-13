@@ -593,19 +593,70 @@ function toGermanDate(dateString) {
 }
 
 async function captureAbsences(page, options) {
+  // Ordio /absences zeigt immer nur den aktuellen Monat — für längere
+  // Zeiträume iterieren wir per Monats-Picker (Klick auf den
+  // Monatslabel-Button und Auswahl aus dem Popover). Wir sammeln 3
+  // Monate rückwärts und 1 Monat vorwärts vom aktuellen Monat, dann
+  // dedupen über sourceId.
   await page.goto(new URL("/absences", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
   await page.waitForTimeout(3500);
-  // Original-Methode (verifiziert 2026-06-06): /absences ist pro
-  // Mitarbeiter gruppiert (Zeilen-Header → Bars). parseAbsencesByRowHtml
-  // ordnet jeden Bar dem vorausgehenden Mitarbeiter-Header zu — loest auch
-  // Spezial-Typen (Krankheit/Feiertagsausgleich) korrekt auf.
-  const content = await page.content();
-  const rowBased = parseAbsencesByRowHtml(content);
-  if (rowBased.length) {
-    if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG Absences row-based: ${rowBased.length} Bars mit Mitarbeiter-Header`);
-    return rowBased;
+
+  const collected = [];
+  const seen = new Set();
+  const monthAbbrev = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+
+  async function collectCurrentMonth(label) {
+    const content = await page.content();
+    const rowBased = parseAbsencesByRowHtml(content);
+    let added = 0;
+    for (const row of rowBased) {
+      if (seen.has(row.sourceId)) continue;
+      seen.add(row.sourceId);
+      collected.push(row);
+      added += 1;
+    }
+    if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG Absences ${label}: ${rowBased.length} Bars, ${added} neu`);
   }
+
+  async function navigateToMonth(monthIndex) {
+    const label = monthAbbrev[monthIndex];
+    // Picker öffnen
+    const pickerToggle = page.locator("button:visible", { hasText: new RegExp(`^(${monthAbbrev.join("|")})$`) });
+    if (!(await pickerToggle.count())) return false;
+    await pickerToggle.first().click();
+    await page.waitForTimeout(800);
+    // Monatswahl
+    const target = page.locator("button:visible, [role=option]:visible, [role=menuitem]:visible", { hasText: new RegExp(`^${label}$`) });
+    if (!(await target.count())) {
+      await page.keyboard.press("Escape").catch(() => {});
+      return false;
+    }
+    await target.first().click();
+    await page.waitForTimeout(3500);
+    return true;
+  }
+
+  const now = new Date();
+  const currentMonthIdx = now.getMonth();
+  // 3 zurück, current, 1 vorwärts
+  const monthOffsets = [-3, -2, -1, 0, 1];
+
+  // Erste Erfassung (aktueller Monat ist Default beim /absences-Aufruf)
+  await collectCurrentMonth(monthAbbrev[currentMonthIdx]);
+
+  for (const offset of monthOffsets) {
+    if (offset === 0) continue;
+    const targetIdx = (currentMonthIdx + offset + 12) % 12;
+    const success = await navigateToMonth(targetIdx);
+    if (!success) {
+      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG Monatswechsel auf ${monthAbbrev[targetIdx]} fehlgeschlagen — überspringe`);
+      continue;
+    }
+    await collectCurrentMonth(monthAbbrev[targetIdx]);
+  }
+
+  if (collected.length) return collected;
   return extractAbsenceRowsFromPage(page);
 }
 
