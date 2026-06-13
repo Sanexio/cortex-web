@@ -31,7 +31,6 @@ import {
   renderPayrollExportDatevLodas,
   renderTeamSollIstCsv,
   requestTimeEntryCorrection,
-  runDemoImport,
   runExternalSnapshotImport,
   deleteShift,
   setPayrollPersonnelNumber,
@@ -192,12 +191,6 @@ const server = createServer(async (request, response) => {
     if (request.method === "POST" && url.pathname === "/api/absences") {
       const payload = await readJson(request);
       sendJson(response, 201, createAbsenceRequest(payload));
-      return;
-    }
-
-    if (request.method === "POST" && url.pathname === "/api/imports/demo") {
-      if (!requireAdmin(authGate, response)) return;
-      sendJson(response, 201, runDemoImport());
       return;
     }
 

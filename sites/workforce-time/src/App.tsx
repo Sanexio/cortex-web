@@ -653,50 +653,13 @@ const shiftSegments: ShiftSegment[] = [
   { id: "late", label: "Spätdienst", shortLabel: "Spät", startTime: "14:00", endTime: "18:00" }
 ];
 
-// Demo-Schichtschema (greift wenn weder tenant.config.json noch
-// /api/bootstrap ein Schema liefern). Enthaelt keine Tenant-Strings;
-// echtes Praxis-Schema kommt aus workforce.shift_schema.
-const demoShiftSchema: ShiftSchemaGroup[] = [
-  {
-    category: "Praxis Demo",
-    shifts: [
-      {
-        id: "demo-sprechstunde",
-        label: "Sprechstunde",
-        aliases: ["Sprechstunde"],
-        eligibility: "Demo-Sprechstunde"
-      },
-      {
-        id: "demo-anmeldung-links",
-        label: "Anmeldung links",
-        aliases: ["Anmeldung links"],
-        eligibility: "Demo-Anmeldung"
-      },
-      {
-        id: "demo-anmeldung-rechts",
-        label: "Anmeldung rechts",
-        aliases: ["Anmeldung rechts"],
-        eligibility: "Demo-Anmeldung"
-      },
-      {
-        id: "demo-labor",
-        label: "Labor",
-        aliases: ["Labor", "Labor / Diagnostik"],
-        eligibility: "Demo-Labor"
-      },
-      {
-        id: "demo-backoffice",
-        label: "Backoffice",
-        aliases: ["Backoffice", "Homeoffice"],
-        eligibility: "Demo-Backoffice"
-      }
-    ]
-  }
-];
-
+// Schichtschema wird ausschließlich aus tenant.config.json
+// (workforce.shift_schema) geladen. Demo-Fallback wurde mit dem
+// Hard-Cut der Demo-Pfade entfernt — eine leere Tenant-Config liefert
+// ein leeres Array.
 function resolveShiftSchema(): ShiftSchemaGroup[] {
   const tenantSchema = getWorkforceConfig().shiftSchema;
-  return Array.isArray(tenantSchema) && tenantSchema.length > 0 ? tenantSchema : demoShiftSchema;
+  return Array.isArray(tenantSchema) ? tenantSchema : [];
 }
 
 const fallbackEntries: TimeEntry[] = [
@@ -1946,19 +1909,6 @@ function App() {
     }
   }
 
-  async function runDemoImport() {
-    await mutate(() =>
-      request<{ batch: ImportBatch; bootstrap: BootstrapPayload }>("/api/imports/demo", {
-        method: "POST"
-      }),
-      (result) => {
-        setWorkforceConfig(result.bootstrap.workforce);
-        setData(result.bootstrap);
-        setActiveWeekStart(getPrototypeWeekStart(result.bootstrap));
-      }
-    );
-  }
-
   async function runDeltaImport() {
     await mutate(() =>
       request<{ batch: ImportBatch; bootstrap: BootstrapPayload }>("/api/imports/delta-snapshot", {
@@ -1991,7 +1941,12 @@ function App() {
   }
 
   function openShiftDialogForWeek(day = visibleWeekStart) {
-    openShiftDialog(shiftDefaultsFromTemplate(shiftSlotsForTemplate(resolveShiftSchema()[0].shifts[0])[0], day, data.locations));
+    const firstTemplate = resolveShiftSchema()[0]?.shifts[0];
+    if (!firstTemplate) {
+      openShiftDialog();
+      return;
+    }
+    openShiftDialog(shiftDefaultsFromTemplate(shiftSlotsForTemplate(firstTemplate)[0], day, data.locations));
   }
 
   async function deleteEditingShift() {
@@ -2247,7 +2202,6 @@ function App() {
         {view === "imports" ? (
           <ImportsView
             data={data}
-            runDemoImport={runDemoImport}
             runDeltaImport={runDeltaImport}
             busy={busy}
             setView={navigateView}
@@ -3265,7 +3219,7 @@ function WeeklyMatrix({
   onPlanShift?: (template: ShiftSlotTemplate, day: string) => void;
 }) {
   const schemaGroups = schemaGroupsForData(data);
-  const defaultSlot = shiftSlotsForTemplate(schemaGroups[0]?.shifts[0] ?? resolveShiftSchema()[0].shifts[0])[0];
+  const defaultSlot = shiftSlotsForTemplate(schemaGroups[0]?.shifts[0] ?? resolveShiftSchema()[0]?.shifts[0])[0];
   const labelColumn = days.length === 1 ? "minmax(108px, 128px)" : "minmax(142px, 170px)";
 
   function openDay(day: string) {
@@ -3326,7 +3280,7 @@ function MatrixRow({
   onPlanShift?: (template: ShiftSlotTemplate, day: string) => void;
 }) {
   const schemaGroups = schemaGroupsForData(data);
-  const defaultSlot = shiftSlotsForTemplate(schemaGroups[0]?.shifts[0] ?? resolveShiftSchema()[0].shifts[0])[0];
+  const defaultSlot = shiftSlotsForTemplate(schemaGroups[0]?.shifts[0] ?? resolveShiftSchema()[0]?.shifts[0])[0];
 
   function openMatrixCell(day: string, shifts: Shift[], entries: TimeEntry[], absences: AbsenceRequest[]) {
     if (shifts[0] && onEditShift) {
@@ -3657,7 +3611,7 @@ function ShiftDayInspector({
   onPlanShift: (template: ShiftSlotTemplate, day: string) => void;
 }) {
   const schemaGroups = schemaGroupsForData(data);
-  const defaultSlot = shiftSlotsForTemplate(schemaGroups[0]?.shifts[0] ?? resolveShiftSchema()[0].shifts[0])[0];
+  const defaultSlot = shiftSlotsForTemplate(schemaGroups[0]?.shifts[0] ?? resolveShiftSchema()[0]?.shifts[0])[0];
   const dayShifts = data.shifts
     .filter((shift) => shift.startDate === day)
     .sort((first, second) => `${first.startTime}-${first.area}`.localeCompare(`${second.startTime}-${second.area}`));
@@ -3763,7 +3717,7 @@ function FixedWeeklyPlanner({
   onPlanShift: (template: ShiftSlotTemplate, day: string) => void;
 }) {
   const schemaGroups = schemaGroupsForData(data);
-  const defaultSlot = shiftSlotsForTemplate(schemaGroups[0]?.shifts[0] ?? resolveShiftSchema()[0].shifts[0])[0];
+  const defaultSlot = shiftSlotsForTemplate(schemaGroups[0]?.shifts[0] ?? resolveShiftSchema()[0]?.shifts[0])[0];
   const labelColumn = days.length === 1 ? "minmax(112px, 126px)" : "minmax(150px, 220px)";
 
   function openDay(day: string) {
@@ -5170,14 +5124,12 @@ function AbsenceView({
 
 function ImportsView({
   data,
-  runDemoImport,
   runDeltaImport,
   busy,
   setView,
   setActiveWeekStart
 }: {
   data: BootstrapPayload;
-  runDemoImport: () => void;
   runDeltaImport: () => void;
   busy: boolean;
   setView: (view: ViewKey) => void;
@@ -5206,10 +5158,6 @@ function ImportsView({
             <button className="primary-button" onClick={runDeltaImport} disabled={busy}>
               <RefreshCw size={17} />
               Delta-Sync
-            </button>
-            <button className="secondary-button" onClick={runDemoImport} disabled={busy}>
-              <RefreshCw size={17} />
-              Demo-Sync
             </button>
           </div>
         </div>

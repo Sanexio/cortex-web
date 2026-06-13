@@ -811,8 +811,11 @@ function insertSourceRecord(
   localEntity,
   localId,
   payload,
-  sourceSystem = "demo_seed"
+  sourceSystem
 ) {
+  if (!sourceSystem) {
+    throw new Error("insertSourceRecord: sourceSystem ist Pflicht (Demo-Defaults entfernt).");
+  }
   const importedAt = now();
   const rawPayload = JSON.stringify(payload);
   const sourceRecordId =
@@ -1365,271 +1368,55 @@ function applyTenantSeed(tenantSeed) {
 }
 
 function seed() {
-  const employeeCount = db.prepare("SELECT COUNT(*) AS count FROM employees").get().count;
-  if (employeeCount > 0) {
-    return;
-  }
-
-  // Bevor wir den Demo-Seed zuenden: wenn der Tenant einen seed.json
-  // hinterlegt hat, hat dieser Vorrang. Demo-Daten ueberschreiben
-  // niemals echte Praxisdaten.
-  const tenantSeed = loadTenantSeedFromFile();
-  if (tenantSeed) {
-    applyTenantSeed(tenantSeed);
-    return;
-  }
-
-  const importedAt = now();
-  const batchId = "batch_demo_seed_2026_05_24";
-
+  // Roles + System-Owner sind tenantneutrale Fundament-Datensätze und
+  // werden idempotent angelegt, falls die DB leer startet.
   const roles = [
     ["role_owner", "Praxisleitung", "Vollzugriff auf Import, Arbeitszeiten und Freigaben"],
     ["role_admin", "Dienstplanung", "Planung, Arbeitszeiten und Abwesenheiten verwalten"],
     ["role_employee", "MFA Self-Service", "Eigene Zeiten und Antraege einsehen"]
   ];
 
-  // Demo-Seed: neutralisierte Standortnamen, damit der Prototyp ohne
-  // Tenant-Anbindung keine Praxis-spezifischen Strings in die SQLite
-  // schreibt. Echte Tenant-Standorte kommen ueber
-  // ensureOperationalSeed() aus tenant.config.json.
-  const locations = ["Praxis Demo", "Demo-Gemeinschaft", "Demo-Filiale", "Homeoffice"];
-  const workAreas = [
-    "Sprechstunde",
-    "Anmeldung links",
-    "Anmeldung rechts",
-    "Labor / Diagnostik",
-    "Backoffice",
-    "Homeoffice"
-  ];
-
-  const employees = [
-    { id: "mfa-a", name: "MFA A", role: "Sprechstunde", initials: "MA" },
-    { id: "mfa-b", name: "MFA B", role: "Anmeldung", initials: "MB" },
-    { id: "mfa-c", name: "MFA C", role: "Labor", initials: "MC" },
-    { id: "arzt-a", name: "Arzt A", role: "Sprechstunde", initials: "AA" },
-    { id: "backoffice-a", name: "Backoffice A", role: "Verwaltung", initials: "BA" }
-  ];
-
-  const entries = [
-    {
-      id: "t-1001",
-      employeeId: "mfa-a",
-      startDate: "2026-05-18",
-      startTime: "06:47",
-      endDate: "2026-05-18",
-      endTime: "17:13",
-      area: "Sprechstunde",
-      location: "Praxis Demo",
-      status: "freigegeben",
-      type: "Arbeitszeit",
-      paidBreakMinutes: 0,
-      unpaidBreakMinutes: 30,
-      note: null,
-      audit: ["Automatisch aus Stempelzeit erstellt", "Von Leitung geprueft"]
-    },
-    {
-      id: "t-1002",
-      employeeId: "mfa-b",
-      startDate: "2026-05-18",
-      startTime: "06:53",
-      endDate: "2026-05-18",
-      endTime: "17:20",
-      area: "Anmeldung links",
-      location: "Praxis Demo",
-      status: "freigegeben",
-      type: "Arbeitszeit",
-      paidBreakMinutes: 0,
-      unpaidBreakMinutes: 30,
-      note: null,
-      audit: ["Terminal-Buchung", "Pausenregel erkannt"]
-    },
-    {
-      id: "t-1003",
-      employeeId: "mfa-c",
-      startDate: "2026-05-18",
-      startTime: "07:56",
-      endDate: "2026-05-18",
-      endTime: "17:30",
-      area: "Labor / Diagnostik",
-      location: "Praxis Demo",
-      status: "aenderungsantrag",
-      type: "Arbeitszeit",
-      paidBreakMinutes: 0,
-      unpaidBreakMinutes: 60,
-      note: "Endzeit wurde nachgetragen.",
-      audit: ["Mitarbeiterin hat Korrektur beantragt", "Wartet auf Freigabe"]
-    },
-    {
-      id: "t-1004",
-      employeeId: "arzt-a",
-      startDate: "2026-05-19",
-      startTime: "08:00",
-      endDate: "2026-05-19",
-      endTime: "17:09",
-      area: "Sprechstunde",
-      location: "Praxis Demo",
-      status: "konflikt",
-      type: "Schichtunabhaengig",
-      paidBreakMinutes: 0,
-      unpaidBreakMinutes: 0,
-      note: "Keine geplante Schicht gefunden.",
-      audit: ["Mobil erfasst", "Pruefung: Schichtbezug fehlt"]
-    },
-    {
-      id: "t-1005",
-      employeeId: "backoffice-a",
-      startDate: "2026-05-20",
-      startTime: "09:15",
-      endDate: "2026-05-20",
-      endTime: "13:05",
-      area: "Homeoffice",
-      location: "Homeoffice",
-      status: "aenderungsantrag",
-      type: "Dienstgang",
-      paidBreakMinutes: 0,
-      unpaidBreakMinutes: 0,
-      note: "Interner Dienstgang.",
-      audit: ["Web-Buchung", "Dienstgang markiert"]
-    }
-  ];
-
   db.exec("BEGIN");
   try {
     for (const [id, name, description] of roles) {
-      db.prepare("INSERT INTO roles (id, name, description) VALUES (?, ?, ?)").run(
+      db.prepare("INSERT OR IGNORE INTO roles (id, name, description) VALUES (?, ?, ?)").run(
         id,
         name,
         description
       );
     }
-
     db.prepare(`
-      INSERT INTO users (id, display_name, auth_provider)
+      INSERT OR IGNORE INTO users (id, display_name, auth_provider)
       VALUES ('user_system_owner', 'Praxisleitung', 'local')
     `).run();
     db.prepare(`
-      INSERT INTO user_roles (user_id, role_id)
+      INSERT OR IGNORE INTO user_roles (user_id, role_id)
       VALUES ('user_system_owner', 'role_owner')
     `).run();
-
-    db.prepare(`
-      INSERT INTO import_batches (
-        id, source_system, mode, status, period_start, period_end, record_count,
-        inserted_count, updated_count, unchanged_count, conflict_count, error_count,
-        note, started_at, completed_at
-      )
-      VALUES (?, 'demo_seed', 'manual_snapshot', 'completed', '2026-05-18', '2026-05-24',
-        ?, ?, 0, 0, 0, 0, ?, ?, ?)
-    `).run(
-      batchId,
-      locations.length + workAreas.length + employees.length + entries.length,
-      locations.length + workAreas.length + employees.length + entries.length,
-      "Anonymisierter Seed fuer lokale Entwicklung; echte Importsnapshots bleiben privat.",
-      importedAt,
-      importedAt
-    );
-
-    for (const location of locations) {
-      const id = idFromName("loc", location);
-      db.prepare(`
-        INSERT INTO locations (id, name, source_system, source_id, imported_at)
-        VALUES (?, ?, 'demo_seed', ?, ?)
-      `).run(id, location, id, importedAt);
-      insertSourceRecord(batchId, "location", id, "location", id, { name: location, updatedAt: importedAt });
-    }
-
-    for (const area of workAreas) {
-      const id = idFromName("area", area);
-      db.prepare(`
-        INSERT INTO work_areas (id, name, source_system, source_id, imported_at)
-        VALUES (?, ?, 'demo_seed', ?, ?)
-      `).run(id, area, id, importedAt);
-      insertSourceRecord(batchId, "work_area", id, "work_area", id, { name: area, updatedAt: importedAt });
-    }
-
-    for (const employee of employees) {
-      db.prepare(`
-        INSERT INTO employees (
-          id, display_name, role_title, initials, source_system, source_id, imported_at
-        )
-        VALUES (?, ?, ?, ?, 'demo_seed', ?, ?)
-      `).run(employee.id, employee.name, employee.role, employee.initials, employee.id, importedAt);
-      db.prepare(`
-        INSERT INTO employee_external_ids (id, employee_id, source_system, source_id, imported_at)
-        VALUES (?, ?, 'demo_seed', ?, ?)
-      `).run(`ext_${employee.id}`, employee.id, employee.id, importedAt);
-      insertSourceRecord(batchId, "employee", employee.id, "employee", employee.id, {
-        displayName: employee.name,
-        roleTitle: employee.role,
-        updatedAt: importedAt
-      });
-    }
-
-    for (const entry of entries) {
-      const workAreaId = idFromName("area", entry.area);
-      const locationId = idFromName("loc", entry.location);
-      db.prepare(`
-        INSERT INTO time_entries (
-          id, employee_id, starts_at, ends_at, work_area_id, location_id, status,
-          entry_type, paid_break_minutes, unpaid_break_minutes, note,
-          source_system, source_id, imported_at
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'demo_seed', ?, ?)
-      `).run(
-        entry.id,
-        entry.employeeId,
-        toDateTime(entry.startDate, entry.startTime),
-        toDateTime(entry.endDate, entry.endTime),
-        workAreaId,
-        locationId,
-        entry.status,
-        entry.type,
-        entry.paidBreakMinutes,
-        entry.unpaidBreakMinutes,
-        entry.note,
-        entry.id,
-        importedAt
-      );
-      insertSourceRecord(batchId, "time_entry", entry.id, "time_entry", entry.id, {
-        employeeId: entry.employeeId,
-        start: toDateTime(entry.startDate, entry.startTime),
-        end: toDateTime(entry.endDate, entry.endTime),
-        updatedAt: importedAt
-      });
-      for (const auditLine of entry.audit) {
-        insertAudit("time_entry", entry.id, auditLine, null);
-      }
-    }
-
-    db.prepare(`
-      INSERT INTO sync_runs (
-        id, import_batch_id, trigger_type, status, started_at, completed_at, summary_json
-      )
-      VALUES (?, ?, 'manual_seed', 'completed', ?, ?, ?)
-    `).run(
-      "sync_demo_seed_2026_05_24",
-      batchId,
-      importedAt,
-      importedAt,
-      JSON.stringify({ inserted: locations.length + workAreas.length + employees.length + entries.length })
-    );
-
     db.exec("COMMIT");
   } catch (error) {
     db.exec("ROLLBACK");
     throw error;
   }
+
+  const employeeCount = db.prepare("SELECT COUNT(*) AS count FROM employees").get().count;
+  if (employeeCount > 0) {
+    return;
+  }
+
+  // Tenant-Seed (Pflicht im Produktivbetrieb) füllt Mitarbeitende,
+  // Standorte und Bereiche. Ohne Tenant-Seed bleibt die DB leer —
+  // Demo-Daten gibt es nicht mehr.
+  const tenantSeed = loadTenantSeedFromFile();
+  if (tenantSeed) {
+    applyTenantSeed(tenantSeed);
+  }
 }
 
 function ensureOperationalSeed() {
-  const importedAt = now();
-  const batchId = "batch_demo_operational_2026_05_24";
-  const existingBatch = db.prepare("SELECT id FROM import_batches WHERE id = ?").get(batchId);
-  // Standorte und Arbeitsbereiche kommen aus der Tenant-Config.
-  // Schluessel der work_area_categories sind die Standortnamen, die
-  // Werte sind die Arbeitsbereiche je Standort. Im Demo-Modus
-  // (kein Tenant) bleibt eine neutrale Default-Liste, damit der
-  // Prototyp ohne Tenant-Anbindung Module testen kann.
+  // Standorte und Arbeitsbereiche kommen ausschließlich aus
+  // tenant.config.json (Block workforce). Ohne Tenant-Anbindung wird
+  // hier nichts geschrieben — Demo-Daten gibt es nicht mehr.
   const tenantWorkAreaCategories =
     tenantConfigGet("workforce.work_area_categories", null);
   const tenantLocations = tenantConfigGet("workforce.locations", null);
@@ -1638,7 +1425,7 @@ function ensureOperationalSeed() {
     ? tenantLocations
     : tenantWorkAreaCategories && typeof tenantWorkAreaCategories === "object"
     ? Object.keys(tenantWorkAreaCategories)
-    : ["Praxis Demo", "Demo-Gemeinschaft"];
+    : [];
 
   const schemaWorkAreas = tenantWorkAreaCategories && typeof tenantWorkAreaCategories === "object"
     ? Array.from(
@@ -1648,78 +1435,13 @@ function ensureOperationalSeed() {
           )
         )
       ).filter(Boolean)
-    : [
-        "Sprechstunde",
-        "Anmeldung links",
-        "Anmeldung rechts",
-        "Labor",
-        "Backoffice",
-        "Homeoffice"
-      ];
+    : [];
 
-  const shifts = [
-    {
-      id: "sh-2001",
-      area: "Sprechstunde",
-      location: "Praxis Demo",
-      startDate: "2026-05-25",
-      startTime: "07:00",
-      endDate: "2026-05-25",
-      endTime: "17:00",
-      requiredStaff: 2,
-      note: "Regelsprechstunde",
-      assignments: ["mfa-a", "arzt-a"]
-    },
-    {
-      id: "sh-2002",
-      area: "Labor / Diagnostik",
-      location: "Praxis Demo",
-      startDate: "2026-05-25",
-      startTime: "07:30",
-      endDate: "2026-05-25",
-      endTime: "15:30",
-      requiredStaff: 1,
-      note: "Diagnostikfenster",
-      assignments: ["mfa-c"]
-    },
-    {
-      id: "sh-2003",
-      area: "Anmeldung links",
-      location: "Praxis Demo",
-      startDate: "2026-05-26",
-      startTime: "06:45",
-      endDate: "2026-05-26",
-      endTime: "16:15",
-      requiredStaff: 2,
-      note: "Fruehdienst Anmeldung",
-      assignments: ["mfa-b"]
-    }
-  ];
+  if (schemaLocations.length === 0 && schemaWorkAreas.length === 0) {
+    return;
+  }
 
-  const absences = [
-    {
-      id: "abs-3001",
-      employeeId: "mfa-b",
-      type: "Urlaub",
-      startsOn: "2026-05-28",
-      endsOn: "2026-05-29",
-      status: "offen",
-      note: "Antrag wartet auf Freigabe."
-    },
-    {
-      id: "abs-3002",
-      employeeId: "mfa-c",
-      type: "Fortbildung",
-      startsOn: "2026-06-03",
-      endsOn: "2026-06-03",
-      status: "genehmigt",
-      note: "Externe Schulung."
-    }
-  ];
-
-  const shiftCount = db.prepare("SELECT COUNT(*) AS count FROM shifts").get().count;
-  const absenceCount = db.prepare("SELECT COUNT(*) AS count FROM absence_requests").get().count;
-
+  const importedAt = now();
   db.exec("BEGIN");
   try {
     for (const location of schemaLocations) {
@@ -1737,111 +1459,6 @@ function ensureOperationalSeed() {
         VALUES (?, ?, 'local_schema', ?, ?)
       `).run(id, area, id, importedAt);
     }
-
-    if (existingBatch && shiftCount > 0 && absenceCount > 0) {
-      db.exec("COMMIT");
-      return;
-    }
-
-    if (!existingBatch) {
-      const recordCount = shifts.length + absences.length;
-      db.prepare(`
-        INSERT INTO import_batches (
-          id, source_system, mode, status, period_start, period_end, record_count,
-          inserted_count, updated_count, unchanged_count, conflict_count, error_count,
-          note, started_at, completed_at
-        )
-        VALUES (?, 'demo_seed', 'manual_snapshot', 'completed', '2026-05-25', '2026-06-03',
-          ?, ?, 0, 0, 0, 0, ?, ?, ?)
-      `).run(
-        batchId,
-        recordCount,
-        recordCount,
-        "Ergaenzender Seed fuer Plan, Abwesenheiten und live testbare App-Module.",
-        importedAt,
-        importedAt
-      );
-    }
-
-    const employeeExists = db.prepare("SELECT 1 FROM employees WHERE id = ?");
-
-    for (const shift of shifts) {
-      // Demo-Shifts referenzieren Demo-Employees (mfa-a/-b/-c). Wenn
-      // ein Tenant-Seed gelaufen ist und die Demo-Employees nicht
-      // existieren, ueberspringen wir den Shift, statt am FK-Constraint
-      // zu sterben.
-      const missingAssignment = (shift.assignments ?? []).some(
-        (employeeId) => !employeeExists.get(employeeId)
-      );
-      if (missingAssignment) continue;
-
-      const workAreaId = idFromName("area", shift.area);
-      const locationId = idFromName("loc", shift.location);
-      db.prepare(`
-        INSERT OR IGNORE INTO shifts (
-          id, work_area_id, location_id, starts_at, ends_at, required_staff, note,
-          source_system, source_id, imported_at
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'demo_seed', ?, ?)
-      `).run(
-        shift.id,
-        workAreaId,
-        locationId,
-        toDateTime(shift.startDate, shift.startTime),
-        toDateTime(shift.endDate, shift.endTime),
-        shift.requiredStaff,
-        shift.note,
-        shift.id,
-        importedAt
-      );
-      insertSourceRecord(batchId, "shift", shift.id, "shift", shift.id, {
-        area: shift.area,
-        location: shift.location,
-        startsAt: toDateTime(shift.startDate, shift.startTime),
-        endsAt: toDateTime(shift.endDate, shift.endTime),
-        requiredStaff: shift.requiredStaff,
-        updatedAt: importedAt
-      });
-      for (const employeeId of shift.assignments) {
-        db.prepare(`
-          INSERT OR IGNORE INTO shift_assignments (
-            id, shift_id, employee_id, status, source_system, source_id, imported_at
-          )
-          VALUES (?, ?, ?, 'assigned', 'demo_seed', ?, ?)
-        `).run(`assign_${shift.id}_${employeeId}`, shift.id, employeeId, `assign_${shift.id}_${employeeId}`, importedAt);
-      }
-    }
-
-    for (const absence of absences) {
-      if (!employeeExists.get(absence.employeeId)) continue;
-      db.prepare(`
-        INSERT OR IGNORE INTO absence_requests (
-          id, employee_id, absence_type, starts_on, ends_on, status, note,
-          source_system, source_id, imported_at
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'demo_seed', ?, ?)
-      `).run(
-        absence.id,
-        absence.employeeId,
-        absence.type,
-        absence.startsOn,
-        absence.endsOn,
-        absence.status,
-        absence.note,
-        absence.id,
-        importedAt
-      );
-      insertSourceRecord(batchId, "absence_request", absence.id, "absence_request", absence.id, {
-        employeeId: absence.employeeId,
-        absenceType: absence.type,
-        startsOn: absence.startsOn,
-        endsOn: absence.endsOn,
-        status: absence.status,
-        updatedAt: importedAt
-      });
-      insertAudit("absence_request", absence.id, "Seed angelegt", "Anonymisierte Abwesenheit fuer Testbetrieb");
-    }
-
     db.exec("COMMIT");
   } catch (error) {
     db.exec("ROLLBACK");
@@ -3222,7 +2839,7 @@ function upsertImportedNamedEntity(
   return { id: localId, name };
 }
 
-function upsertImportedEmployee(batchId, record, summary, sourceSystem = "ordio_demo", importedAt = now()) {
+function upsertImportedEmployee(batchId, record, summary, sourceSystem = "ordio", importedAt = now()) {
   const sourceId = String(record.sourceId ?? record.id ?? record.displayName);
   const localId = localIdFromSource("emp", sourceId);
   const payload = { ...record, sourceId, updatedAt: record.updatedAt ?? importedAt };
@@ -3279,7 +2896,7 @@ function upsertImportedEmployee(batchId, record, summary, sourceSystem = "ordio_
   return localId;
 }
 
-function upsertImportedShift(batchId, record, summary, sourceSystem = "ordio_demo", importedAt = now()) {
+function upsertImportedShift(batchId, record, summary, sourceSystem = "ordio", importedAt = now()) {
   const sourceId = String(record.sourceId ?? record.id);
   const localId = localIdFromSource("shift", sourceId);
   const payload = { ...record, sourceId, updatedAt: record.updatedAt ?? importedAt };
@@ -3353,7 +2970,7 @@ function upsertImportedShift(batchId, record, summary, sourceSystem = "ordio_dem
   return localId;
 }
 
-function upsertImportedAbsence(batchId, record, summary, sourceSystem = "ordio_demo", importedAt = now()) {
+function upsertImportedAbsence(batchId, record, summary, sourceSystem = "ordio", importedAt = now()) {
   const sourceId = String(record.sourceId ?? record.id);
   const localId = localIdFromSource("absence", sourceId);
   const payload = { ...record, sourceId, updatedAt: record.updatedAt ?? importedAt };
@@ -3412,7 +3029,7 @@ function upsertImportedAbsence(batchId, record, summary, sourceSystem = "ordio_d
   return localId;
 }
 
-function upsertImportedTimeEntry(batchId, record, summary, sourceSystem = "ordio_demo", importedAt = now()) {
+function upsertImportedTimeEntry(batchId, record, summary, sourceSystem = "ordio", importedAt = now()) {
   const sourceId = String(record.sourceId ?? record.id);
   const localId = localIdFromSource("time", sourceId);
   const payload = { ...record, sourceId, updatedAt: record.updatedAt ?? importedAt };
@@ -3954,137 +3571,6 @@ export function runExternalSnapshotImport(snapshotPath = importSnapshotPath) {
   return {
     batch: listImportBatches(1)[0],
     summary,
-    bootstrap: getBootstrap()
-  };
-}
-
-export function runDemoImport() {
-  const startedAt = now();
-  const batchId = `batch_ordio_demo_${startedAt.replace(/[^0-9]/g, "")}`;
-  const summary = {
-    recordCount: 4,
-    insertedCount: 0,
-    updatedCount: 0,
-    unchangedCount: 0,
-    conflictCount: 0,
-    errorCount: 0
-  };
-
-  db.exec("BEGIN");
-  try {
-    db.prepare(`
-      INSERT INTO import_batches (
-        id, source_system, mode, status, period_start, period_end, record_count,
-        inserted_count, updated_count, unchanged_count, conflict_count, error_count,
-        note, started_at
-      )
-      VALUES (?, 'ordio_demo', 'manual_snapshot', 'running', '2026-05-22', '2026-06-05',
-        ?, 0, 0, 0, 0, 0, ?, ?)
-    `).run(
-      batchId,
-      summary.recordCount,
-      "Read-only Demo-Sync fuer lokalen Live-Test; keine externe Verbindung.",
-      startedAt
-    );
-
-    const importedEmployeeId = upsertImportedEmployee(
-      batchId,
-      {
-        sourceId: "employee-demo-d",
-        displayName: "MFA D",
-        roleTitle: "Anmeldung",
-        initials: "MD"
-      },
-      summary
-    );
-
-    upsertImportedShift(
-      batchId,
-      {
-        sourceId: "shift-demo-d-2026-05-27",
-        area: "Anmeldung rechts",
-        location: "Praxis Demo",
-        startDate: "2026-05-27",
-        startTime: "07:00",
-        endDate: "2026-05-27",
-        endTime: "14:30",
-        requiredStaff: 2,
-        note: "Aus Demo-Snapshot importiert",
-        assignments: [importedEmployeeId]
-      },
-      summary
-    );
-
-    upsertImportedAbsence(
-      batchId,
-      {
-        sourceId: "absence-demo-a-2026-06-05",
-        employeeId: "mfa-a",
-        type: "Urlaub",
-        startsOn: "2026-06-05",
-        endsOn: "2026-06-05",
-        status: "offen",
-        note: "Aus Demo-Snapshot importiert"
-      },
-      summary
-    );
-
-    upsertImportedTimeEntry(
-      batchId,
-      {
-        sourceId: "time-demo-d-2026-05-22",
-        employeeId: importedEmployeeId,
-        startDate: "2026-05-22",
-        startTime: "08:05",
-        endDate: "2026-05-22",
-        endTime: "14:10",
-        area: "Anmeldung rechts",
-        location: "Praxis Demo",
-        status: "freigegeben",
-        type: "Arbeitszeit",
-        paidBreakMinutes: 0,
-        unpaidBreakMinutes: 30,
-        note: "Aus Demo-Snapshot importiert"
-      },
-      summary
-    );
-
-    const completedAt = now();
-    db.prepare(`
-      UPDATE import_batches
-      SET status = 'completed',
-        inserted_count = ?,
-        updated_count = ?,
-        unchanged_count = ?,
-        conflict_count = ?,
-        error_count = ?,
-        completed_at = ?
-      WHERE id = ?
-    `).run(
-      summary.insertedCount,
-      summary.updatedCount,
-      summary.unchangedCount,
-      summary.conflictCount,
-      summary.errorCount,
-      completedAt,
-      batchId
-    );
-
-    db.prepare(`
-      INSERT INTO sync_runs (
-        id, import_batch_id, trigger_type, status, started_at, completed_at, summary_json
-      )
-      VALUES (?, ?, 'manual_demo', 'completed', ?, ?, ?)
-    `).run(randomUUID(), batchId, startedAt, completedAt, JSON.stringify(summary));
-
-    db.exec("COMMIT");
-  } catch (error) {
-    db.exec("ROLLBACK");
-    throw error;
-  }
-
-  return {
-    batch: listImportBatches(1)[0],
     bootstrap: getBootstrap()
   };
 }
