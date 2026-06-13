@@ -52,14 +52,37 @@ import { notifyCorrectionRequested, notifyCorrectionDecided } from "./notify-cor
 const host = process.env.ARBEITSZEITEN_API_HOST ?? "127.0.0.1";
 const port = Number(process.env.ARBEITSZEITEN_API_PORT ?? 5175);
 
-function sendJson(response, statusCode, payload, extraHeaders = {}) {
+// P.1 (2026-06-13): CORS-Allowlist. Default ist das Workforce-Frontend (5174).
+// Sanexio-Portal (5176) wird mitakzeptiert, damit Embed-Patterns ohne weitere
+// API-Aenderung greifen. Tenant-spezifische Hosts (z.B. Praxis-Local-Flywheel)
+// kommen ueber ARBEITSZEITEN_EXTRA_ORIGINS (CSV), damit das Framework-Repo
+// tenant-frei bleibt.
+const CORS_DEFAULT_ORIGIN = "http://127.0.0.1:5174";
+const CORS_ALLOWED_ORIGINS = new Set([
+  CORS_DEFAULT_ORIGIN,
+  "http://127.0.0.1:5176",
+  "http://localhost:5176",
+  ...(process.env.ARBEITSZEITEN_EXTRA_ORIGINS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+]);
+
+function pickCorsOrigin(request) {
+  const origin = request?.headers?.origin;
+  if (origin && CORS_ALLOWED_ORIGINS.has(origin)) return origin;
+  return CORS_DEFAULT_ORIGIN;
+}
+
+function sendJson(response, statusCode, payload, extraHeaders = {}, request) {
   response.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
-    "Access-Control-Allow-Origin": "http://127.0.0.1:5174",
+    "Access-Control-Allow-Origin": pickCorsOrigin(request),
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Headers": "content-type, authorization",
     "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
+    "Vary": "Origin",
     ...extraHeaders
   });
   response.end(JSON.stringify(payload));
@@ -121,7 +144,7 @@ const server = createServer(async (request, response) => {
   const url = new URL(request.url ?? "/", `http://${host}:${port}`);
 
   if (request.method === "OPTIONS") {
-    sendJson(response, 204, {});
+    sendJson(response, 204, {}, {}, request);
     return;
   }
 

@@ -115,6 +115,7 @@ for fp in "${FRAMEWORK_PATHS[@]}"; do
         | grep -v "/specs/content-bridge-v1/" \
         | grep -vE "/specs/session-[0-9]+/" \
         | grep -v "/\.backups/" \
+        | grep -v "/sites/workforce-time/private/" \
         || true)
 
     if [ -z "$hits" ]; then

@@ -1,0 +1,54 @@
+# Sanexio Portal
+
+Login-gated Cortex-Hub mit Workforce-Time-Embed. Cyberpunk-Design, Read-only
+Second-Brain-Graph aus dem Nexus-Vault. Welle P.1 (2026-06-13).
+
+## Quick Start
+
+```bash
+cd sites/sanexio-portal
+npm install
+npm run dev    # → http://127.0.0.1:5176
+```
+
+Der `predev`-Hook generiert `public/graph.json` aus
+`~/Cortex/Nexus/Second Brain/` (read-only auf den Vault).
+
+## Build
+
+```bash
+npm run build  # tsc --noEmit + vite build → dist/
+```
+
+## Karten-Liste
+
+Datenquelle: `src/data/cards.ts`. Status `production` zeigt das aktive Modul,
+`locked` blendet ein Lock-Overlay + Toast ein. Aktuell freigeschaltet:
+
+| ID            | Status     | Ziel-URL                  |
+|---------------|------------|---------------------------|
+| workforce-time| production | `http://127.0.0.1:5174/`  |
+| cortex-qm     | locked     | —                         |
+| cortex-desk   | locked     | —                         |
+| cortex-cli    | locked     | —                         |
+| cortex-harness| locked     | —                         |
+| cortex-rename | locked     | —                         |
+| juvantis      | locked     | —                         |
+
+## Graph
+
+`scripts/build-graph-data.mjs` scannt alle `*.md` unter
+`~/Cortex/Nexus/Second Brain/`, parsed `[[Wiki-Links]]` als Kanten und
+schreibt `public/graph.json` (Top-320 Knoten nach Degree). Cluster werden
+nach Top-Level-Ordner gefärbt.
+
+Renderer: `src/components/SecondBrainGraph.tsx` (Cytoscape.js + fcose).
+
+## Praxis-Test
+
+Siehe `docs/PRAXIS_TEST.md`.
+
+## Local-Stage-Only
+
+Diese Site läuft ausschließlich auf der lokalen Praxis-Staging
+(Local-Flywheel). Kein Deploy auf .de- oder .com-Domains.

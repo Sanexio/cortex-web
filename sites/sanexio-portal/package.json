@@ -1,0 +1,32 @@
+{
+  "name": "@cortex-web/sanexio-portal",
+  "version": "0.1.0",
+  "description": "Sanexio-Portal — Login-gated Cortex-Hub mit Workforce-Time-Embed. Cyberpunk-Design, Read-only Second-Brain-Graph. Welle P.1 (2026-06-13).",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:graph": "node scripts/build-graph-data.mjs",
+    "prebuild": "npm run build:graph",
+    "predev": "node scripts/build-graph-data.mjs --quiet",
+    "dev": "vite --host 127.0.0.1 --port 5176",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 5176"
+  },
+  "dependencies": {
+    "cytoscape": "^3.30.2",
+    "cytoscape-fcose": "^2.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/cytoscape": "^3.21.7",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.7"
+  }
+}

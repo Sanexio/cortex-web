@@ -1,0 +1,6 @@
+node_modules/
+dist/
+public/graph.json
+.vite/
+.DS_Store
+*.log
