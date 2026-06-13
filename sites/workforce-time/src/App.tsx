@@ -1809,9 +1809,14 @@ function App() {
         return;
       }
 
-      if (payload.user?.totpVerified) {
+      // Wenn Backend kein TOTP-Enrollment verlangt und einen User
+      // zurueckliefert, ist die Session aktiv — auch wenn totpVerified
+      // nicht gesetzt ist (Dev-Mode ueberspringt 2FA komplett).
+      if (payload.user) {
         setAuthStatus("authenticated");
         setAuthMessage("Angemeldet");
+        setDevLoginUrl(null);
+        setMagicToken("");
         await refresh();
         if (typeof window !== "undefined") window.history.replaceState(null, "", window.location.pathname);
       }

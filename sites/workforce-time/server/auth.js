@@ -886,12 +886,18 @@ function consumeMagicLink(request, payload) {
   }
 
   let totpVerified = false;
-  if (row.totp_enrolled_at) {
+  // P.1 (2026-06-13): Dev-Mode = Magic-Link reicht, kein 2FA-Code abfragen.
+  // In Production bleibt der TOTP-Check aktiv.
+  if (row.totp_enrolled_at && !isDevelopment()) {
     const secretRow = currentTotpSecretRow(row.user_id);
     if (!secretRow || !payload.totp || !verifyTotpCode(decryptSecret(secretRow.secret_enc), payload.totp)) {
       insertAudit("login_fail_totp", { userId: row.user_id, request });
       throw authError("TOTP_REQUIRED", "Gueltiger Zwei-Faktor-Code erforderlich.");
     }
+    totpVerified = true;
+  } else if (row.totp_enrolled_at && isDevelopment()) {
+    // Im Dev-Mode behandeln wir bereits enrolled-TOTP als verified, damit
+    // der User-Flow nach Magic-Link-Klick durchlaeuft.
     totpVerified = true;
   }
 
@@ -921,7 +927,9 @@ function consumeMagicLink(request, payload) {
       data: {
         user: session ? publicUser(session) : null,
         tenant,
-        enroll_totp: !row.totp_enrolled_at
+        // Dev-Mode: kein 2FA-Enrollment-Zwang. In Production bleibt's
+        // an, wenn der User noch nicht enrolled ist.
+        enroll_totp: !isDevelopment() && !row.totp_enrolled_at
       }
     };
   } catch (error) {
