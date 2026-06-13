@@ -3,8 +3,17 @@ import { CARDS, type ProjectCard } from "./data/cards";
 import { ProjectCardView } from "./components/ProjectCard";
 import { LockedToast } from "./components/LockedToast";
 import { SecondBrainGraph } from "./components/SecondBrainGraph";
+import { LoginGate } from "./components/LoginGate";
 
 export default function App() {
+  return (
+    <LoginGate>
+      <Hub />
+    </LoginGate>
+  );
+}
+
+function Hub() {
   const [locked, setLocked] = useState<ProjectCard | null>(null);
   const activeCount = CARDS.filter((c) => c.status === "production").length;
   const lockedCount = CARDS.length - activeCount;

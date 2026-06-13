@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>de.sanexio.portal</string>
+
+    <key>WorkingDirectory</key>
+    <string>${HOME}/Cortex/projects/Cortex-Web/sites/sanexio-portal</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/opt/node@22/bin/npm</string>
+        <string>run</string>
+        <string>dev</string>
+        <string>--</string>
+        <string>--host</string>
+        <string>127.0.0.1</string>
+        <string>--port</string>
+        <string>5176</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
+        <key>NODE_ENV</key>
+        <string>development</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>${HOME}/Library/Logs/cortex-services/sanexio-portal.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>${HOME}/Library/Logs/cortex-services/sanexio-portal.err.log</string>
+
+    <key>ThrottleInterval</key>
+    <integer>15</integer>
+</dict>
+</plist>
