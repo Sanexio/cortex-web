@@ -4,7 +4,7 @@ import { ProjectCardView } from "./components/ProjectCard";
 import { LockedToast } from "./components/LockedToast";
 import { SecondBrainGraph } from "./components/SecondBrainGraph";
 import { LoginGate } from "./components/LoginGate";
-import { SanexioCortexDashboard } from "./components/SanexioCortexDashboard";
+import { AdminAuthModal } from "./components/AdminAuthModal";
 
 export default function App() {
   return (
@@ -90,7 +90,7 @@ function Hub() {
       )}
 
       {adminOpen && (
-        <SanexioCortexDashboard onClose={() => setAdminOpen(null)} />
+        <AdminAuthModal card={adminOpen} onClose={() => setAdminOpen(null)} />
       )}
     </div>
   );

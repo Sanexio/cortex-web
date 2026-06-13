@@ -31,11 +31,11 @@ export const CARDS: ProjectCard[] = [
     title: "Sanexio Cortex",
     subtitle: "Plattform-Dashboard",
     description:
-      "Admin-Dashboard zum Cortex-Ökosystem (Plattform-Fortschritt, Cluster-Sync, Live-Deploys, offene User-Aktionen). Manuell gepflegt.",
+      "Admin-Dashboard zum Cortex-Ökosystem (Plattform-Fortschritt, Cluster-Sync, Live-Deploys, offene User-Aktionen). Läuft als eigener Service (uvicorn).",
     status: "production",
     access: "admin",
     badge: "ADMIN",
-    internalRoute: "sanexio-cortex",
+    href: "http://127.0.0.1:9119/projects",
     tags: ["Dashboard", "Admin", "Cluster"],
   },
   {

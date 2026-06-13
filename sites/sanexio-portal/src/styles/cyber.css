@@ -618,7 +618,36 @@ body {
 .card-admin.card-hover { border-color: rgba(255, 0, 170, 0.55); box-shadow: 0 0 0 1px rgba(255, 0, 170, 0.42), 0 16px 38px rgba(255, 0, 170, 0.16); }
 .card-badge-admin { background: var(--neon-magenta); color: #0a0a0f; }
 
-/* === Admin overlay (Sanexio Cortex Dashboard) === */
+/* === Admin Auth Modal (Login vor 9119 Dashboard) === */
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(6, 6, 12, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  backdrop-filter: blur(8px);
+}
+.admin-modal { max-width: 460px; }
+.admin-modal .login-sub code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--neon-cyan);
+  background: rgba(0, 240, 255, 0.08);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.admin-modal-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 6px;
+}
+.admin-modal-actions .login-submit { flex: 1; }
+
+/* === Admin overlay (legacy, dead code; will be removed Welle P.2) === */
 .admin-overlay {
   position: fixed;
   inset: 0;
