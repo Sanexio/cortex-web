@@ -2191,7 +2191,14 @@ function App() {
             setActiveWeekStart={setActiveWeekStart}
           />
         ) : null}
-        {view === "stamp" ? <StampKioskView employees={data.employees} request={request} /> : null}
+        {view === "stamp" ? (
+          <StampKioskView
+            employees={data.employees}
+            shifts={data.shifts}
+            authUser={authUser}
+            request={request}
+          />
+        ) : null}
         {view === "admin" ? <AdminRolesView request={request} authUser={authUser} /> : null}
         {view === "settings" ? <SettingsView data={data} apiMessage={apiMessage} /> : null}
         {view === "design" ? <DesignView theme={theme} setTheme={setTheme} /> : null}
@@ -2533,6 +2540,7 @@ function Sidebar({
 }) {
   const [actionsOpen, setActionsOpen] = useState(false);
   const items: Array<{ view: ViewKey; label: string; icon: typeof Home }> = [
+    { view: "stamp", label: "Stempeluhr", icon: QrCode },
     { view: "plan", label: "Kalender", icon: CalendarDays },
     { view: "dashboard", label: "Übersicht", icon: Home },
     { view: "time", label: "Arbeitszeiten", icon: Clock3 },
@@ -2542,7 +2550,6 @@ function Sidebar({
     { view: "payroll", label: "Lohnabrechnung", icon: Coins },
     { view: "reports", label: "Auswertung", icon: BarChart3 },
     { view: "imports", label: "Import & Sync", icon: Database },
-    { view: "stamp", label: "Stempeluhr", icon: QrCode },
     { view: "admin", label: "Rollen-Admin", icon: ShieldCheck },
     { view: "settings", label: "Einstellungen", icon: Settings2 },
     { view: "design", label: "Design", icon: Palette }
@@ -6683,18 +6690,40 @@ function saveStampQueue(items: StampQueueItem[]) {
 
 function StampKioskView({
   employees,
+  shifts,
+  authUser,
   request
 }: {
   employees: Employee[];
+  shifts: Shift[];
+  authUser: AuthUser | null;
   request: <T>(path: string, init?: RequestInit) => Promise<T>;
 }) {
-  const [employeeId, setEmployeeId] = useState(employees[0]?.id ?? "");
+  // Berechtigung: Admins (und Sessions ohne authUser im Dev-Bypass)
+  // dürfen jeden Mitarbeitenden auswählen. Sonst ist der Kiosk auf den
+  // eigenen Mitarbeiter-Account gepinnt (authUser.employeeId).
+  const isAdmin = !authUser || authUser.role === "admin";
+  const ownEmployeeId = authUser?.employeeId ?? null;
+  const initialEmployeeId = !isAdmin && ownEmployeeId
+    ? ownEmployeeId
+    : employees[0]?.id ?? "";
+
+  const [employeeId, setEmployeeId] = useState(initialEmployeeId);
   const [state, setState] = useState<StampState>({ active: false });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [queueLen, setQueueLen] = useState(loadStampQueue().length);
   const [now, setNow] = useState(Date.now());
+
+  // Mitarbeiter-Dropdown vor Manipulation schützen: wenn der eingeloggte
+  // Nutzer kein Admin ist, muss der employeeId-State immer auf den
+  // eigenen MA zeigen — auch nach Re-Render mit geändertem authUser.
+  useEffect(() => {
+    if (!isAdmin && ownEmployeeId && employeeId !== ownEmployeeId) {
+      setEmployeeId(ownEmployeeId);
+    }
+  }, [isAdmin, ownEmployeeId, employeeId]);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -6766,6 +6795,41 @@ function StampKioskView({
   const elapsedH = Math.floor(elapsedMs / 3_600_000);
   const elapsedM = Math.floor((elapsedMs % 3_600_000) / 60_000);
 
+  // Heutige Schicht für den gewählten Mitarbeitenden bestimmen.
+  // „Schicht heute" = startDate ist heute (ISO-Date YYYY-MM-DD) und der
+  // Mitarbeitende ist Teil der assignments. Mehrere Schichten am gleichen
+  // Tag: wir picken die mit dem frühesten Start.
+  const today = new Date();
+  const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const todaysShift = employeeId
+    ? shifts
+        .filter((shift) =>
+          shift.startDate === todayIso &&
+          (shift.assignments ?? []).some((assignment) => assignment.id === employeeId)
+        )
+        .sort((a, b) => a.startTime.localeCompare(b.startTime))[0]
+    : undefined;
+  const shiftStartMs = todaysShift
+    ? new Date(`${todaysShift.startDate}T${todaysShift.startTime}:00`).getTime()
+    : null;
+  const shiftEndMs = todaysShift
+    ? new Date(`${todaysShift.endDate}T${todaysShift.endTime}:00`).getTime()
+    : null;
+  const hasShiftToday = todaysShift !== undefined;
+  const shiftHasEnded = shiftEndMs !== null && now >= shiftEndMs;
+  const canStart = hasShiftToday && !shiftHasEnded;
+
+  // Auto-End: wenn Stempelung läuft und Schicht-Endzeit überschritten,
+  // automatisch beenden. Wir triggern es einmal pro Schicht-End-Erkennung
+  // — nach `doOp("end")` reagiert state.active auf false und der Effect
+  // läuft nicht erneut.
+  useEffect(() => {
+    if (state.active && shiftEndMs !== null && now >= shiftEndMs && !busy) {
+      doOp("end").then(() => setInfo("Stempelung wurde automatisch zur geplanten Schicht-Endzeit beendet."));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.active, shiftEndMs, now, busy]);
+
   const bigBtnStyle: React.CSSProperties = {
     padding: "24px 32px",
     fontSize: "1.2em",
@@ -6786,17 +6850,75 @@ function StampKioskView({
               {queueLen > 0 ? ` · Offline-Queue: ${queueLen}` : ""}
             </p>
           </div>
-          <select
-            value={employeeId}
-            onChange={(event) => setEmployeeId(event.target.value)}
-            style={{ padding: "12px 16px", fontSize: "1.05em", borderRadius: 10 }}
-          >
-            <option value="">— Mitarbeitenden wählen —</option>
-            {employees.map((employee) => (
-              <option key={employee.id} value={employee.id}>{employee.name}</option>
-            ))}
-          </select>
+          {isAdmin ? (
+            <select
+              value={employeeId}
+              onChange={(event) => setEmployeeId(event.target.value)}
+              style={{ padding: "12px 16px", fontSize: "1.05em", borderRadius: 10 }}
+            >
+              <option value="">— Mitarbeitenden wählen —</option>
+              {employees.map((employee) => (
+                <option key={employee.id} value={employee.id}>{employee.name}</option>
+              ))}
+            </select>
+          ) : (
+            <span
+              style={{
+                padding: "12px 16px",
+                fontSize: "1.05em",
+                borderRadius: 10,
+                background: "var(--surface-muted)",
+                color: "var(--muted)"
+              }}
+              title="Nur Admins können Stempeluhr-Zeiten anderer Mitarbeitender steuern."
+            >
+              {currentEmp?.name ?? "Kein Konto verknüpft"}
+            </span>
+          )}
         </div>
+
+        {!hasShiftToday ? (
+          <p
+            role="status"
+            style={{
+              marginTop: 16,
+              padding: "12px 16px",
+              borderRadius: 10,
+              background: "var(--amber-soft)",
+              color: "var(--amber)"
+            }}
+          >
+            Für heute ist keine Dienstzeit hinterlegt. Die Stempeluhr lässt sich erst starten, wenn
+            eine Schicht im Plan eingetragen ist.
+          </p>
+        ) : shiftHasEnded ? (
+          <p
+            role="status"
+            style={{
+              marginTop: 16,
+              padding: "12px 16px",
+              borderRadius: 10,
+              background: "var(--blue-soft)",
+              color: "var(--blue)"
+            }}
+          >
+            Die geplante Schicht ({todaysShift?.startTime}–{todaysShift?.endTime}) ist bereits beendet.
+          </p>
+        ) : (
+          <p
+            role="status"
+            style={{
+              marginTop: 16,
+              padding: "12px 16px",
+              borderRadius: 10,
+              background: "var(--teal-soft)",
+              color: "var(--teal)"
+            }}
+          >
+            Geplante Dienstzeit heute: {todaysShift?.startTime}–{todaysShift?.endTime}
+            {shiftStartMs !== null && now < shiftStartMs ? " · Start ab geplanter Anfangszeit" : ""}
+          </p>
+        )}
 
         <div style={{ display: "flex", gap: 16, justifyContent: "center", alignItems: "baseline", marginTop: 24 }}>
           <div style={{ fontSize: "3.4em", fontWeight: 700, fontFamily: "monospace" }}>
@@ -6812,8 +6934,13 @@ function StampKioskView({
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 24 }}>
           <button
             type="button"
-            disabled={busy || state.active}
+            disabled={busy || state.active || !canStart}
             onClick={() => doOp("start")}
+            title={!hasShiftToday
+              ? "Keine Dienstzeit eingetragen — Start nicht möglich."
+              : shiftHasEnded
+                ? "Geplante Schicht ist beendet — kein Start mehr möglich."
+                : undefined}
             style={{ ...bigBtnStyle, background: "var(--color-success-soft, #dcfce7)", color: "var(--color-success, #047857)" }}
           >
             ▶︎ Start

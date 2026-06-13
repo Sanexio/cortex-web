@@ -2646,14 +2646,16 @@ button:disabled {
 .mini-avatar,
 .unassigned-mini,
 .mini-coverage {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-grid;
+  place-items: center;
   min-height: 22px;
   border-radius: 999px;
   font-size: 11px;
-  font-weight: 900;
-  line-height: 1;
+  font-weight: 700;
+  /* line-height 0 collapsed die line-box, sodass die Glyphen direkt
+   * um den geometrischen Anker zentriert werden — kein Apple-Font-
+   * Cap-Height-Bias mehr. */
+  line-height: 0;
   white-space: nowrap;
 }
 
@@ -3519,15 +3521,13 @@ tbody tr:hover,
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0;
-  line-height: 1;
+  /* line-height 0 collapsed die line-box, sodass die Glyphen exakt
+   * um den Container-Anker zentriert sind — kein Apple-Font-Cap-
+   * Bias mehr (vorher: line-height: 1 + padding-Compensation, das
+   * hat nicht ausgereicht). */
+  line-height: 0;
   text-align: center;
   white-space: nowrap;
-  /* Apple-/Chakra-Petch-Caps sitzen optisch leicht zu hoch in der
-   * line-box — ein 1px-Top-Padding zieht die Initialen in die echte
-   * geometrische Mitte. Bottom-Padding bleibt 0, sonst kippt die
-   * Korrektur wieder. */
-  padding-top: 1px;
-  padding-bottom: 0;
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.26),
     0 0 0 1px rgba(29, 29, 31, 0.06);
