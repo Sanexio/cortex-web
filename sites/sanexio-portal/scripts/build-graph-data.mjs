@@ -17,9 +17,12 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import os from "node:os";
+import { fileURLToPath } from "node:url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const VAULT = path.join(os.homedir(), "Cortex", "Nexus", "Second Brain");
-const OUT = path.join(process.cwd(), "public", "graph.json");
+// Output ist immer relativ zum Site-Root (scripts/ -> ../public/).
+const OUT = path.join(__dirname, "..", "public", "graph.json");
 const QUIET = process.argv.includes("--quiet");
 
 const CLUSTER_COLORS = [
