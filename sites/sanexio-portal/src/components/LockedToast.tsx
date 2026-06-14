@@ -12,7 +12,7 @@ export function LockedToast({ title, onClose }: Props) {
   }, [onClose]);
 
   return (
-    <div className="toast" role="status" aria-live="polite">
+    <div className="toast cyber-frame --pink" role="status" aria-live="polite">
       <span className="toast-icon" aria-hidden="true">
         ⨯
       </span>

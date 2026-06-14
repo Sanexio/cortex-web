@@ -92,7 +92,7 @@ export function LoginGate({ children }: Props) {
     return (
       <>
         {children}
-        <button type="button" className="logout-pin" onClick={logout} aria-label="Logout">
+        <button type="button" className="logout-pin btn btn--ghost" onClick={logout} aria-label="Logout">
           <span aria-hidden="true">⎋</span> {session.user} · Logout
         </button>
       </>
@@ -103,11 +103,11 @@ export function LoginGate({ children }: Props) {
     <div className="login-shell">
       <div className="grid-bg" aria-hidden="true" />
       <div className="scanline" aria-hidden="true" />
-      <form className="login-card" onSubmit={submit} autoComplete="off" noValidate>
-        <div className="login-eyebrow">
+      <form className="login-card cyber-frame" onSubmit={submit} autoComplete="off" noValidate>
+        <div className="login-eyebrow badge badge--dark">
           <span className="hero-dot" /> SANEXIO · ZUGANG
         </div>
-        <h1 className="login-title">
+        <h1 className="login-title t-h2">
           Sanexio <span className="hero-accent">Portal</span>
         </h1>
         <p className="login-sub">Mitarbeiter-Login zum Cortex-Hub.</p>
@@ -141,7 +141,7 @@ export function LoginGate({ children }: Props) {
           </p>
         )}
 
-        <button type="submit" className="login-submit" disabled={busy}>
+        <button type="submit" className="login-submit btn btn--primary" disabled={busy}>
           {busy ? "// connecting …" : "→ Authenticate"}
         </button>
 

@@ -98,11 +98,11 @@ export function AdminAuthModal({ card, onClose }: Props) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <form className="login-card admin-modal" onSubmit={submit} autoComplete="off" noValidate>
-        <div className="login-eyebrow">
+      <form className="login-card cyber-frame --pink admin-modal" onSubmit={submit} autoComplete="off" noValidate>
+        <div className="login-eyebrow badge badge--dark">
           <span className="hero-dot" /> SANEXIO · CORTEX · ADMIN
         </div>
-        <h1 className="login-title">{card.title}</h1>
+        <h1 className="login-title t-h2">{card.title}</h1>
         <p className="login-sub">
           Admin-Zugang erforderlich. Nach Login öffnet sich das Dashboard auf{" "}
           <code>{card.href}</code> in einem neuen Tab.
@@ -140,12 +140,12 @@ export function AdminAuthModal({ card, onClose }: Props) {
         <div className="admin-modal-actions">
           <button
             type="button"
-            className="admin-close"
+            className="admin-close btn btn--outline"
             onClick={onClose}
           >
             abbrechen
           </button>
-          <button type="submit" className="login-submit" disabled={busy}>
+          <button type="submit" className="login-submit btn btn--primary" disabled={busy}>
             {busy ? "// connecting …" : "→ Authenticate"}
           </button>
         </div>

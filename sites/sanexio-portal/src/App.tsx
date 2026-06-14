@@ -25,11 +25,11 @@ function Hub() {
       <div className="grid-bg" aria-hidden="true" />
       <div className="scanline" aria-hidden="true" />
 
-      <header className="hero">
-        <div className="hero-eyebrow">
+      <header className="hero section-accents">
+        <div className="hero-eyebrow badge badge--dark">
           <span className="hero-dot" /> SANEXIO · CORTEX HUB · v0.1
         </div>
-        <h1 className="hero-title">
+        <h1 className="hero-title t-h1">
           Sanexio <span className="hero-accent">Portal</span>
         </h1>
         <p className="hero-sub">
@@ -53,7 +53,7 @@ function Hub() {
 
       <main className="content">
         <section className="cards-section">
-          <h2 className="section-title">
+          <h2 className="section-title t-h4">
             <span className="section-marker">01</span> Projekte
           </h2>
           <div className="cards-grid">

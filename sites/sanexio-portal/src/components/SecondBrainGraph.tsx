@@ -188,9 +188,9 @@ export function SecondBrainGraph() {
   }, [data]);
 
   return (
-    <section className="graph-section">
+    <section className="graph-section section-accents">
       <header className="graph-head">
-        <h2 className="section-title">
+        <h2 className="section-title t-h4">
           <span className="section-marker">04</span> Second Brain · Graph
         </h2>
         <div className="graph-meta">
@@ -214,7 +214,7 @@ export function SecondBrainGraph() {
           )}
           <button
             type="button"
-            className="graph-refresh"
+            className="graph-refresh btn btn--outline"
             onClick={() => void refresh(true)}
             disabled={refreshing}
             aria-label="Graph aktualisieren"
@@ -227,7 +227,7 @@ export function SecondBrainGraph() {
           </button>
         </div>
       </header>
-      <div ref={containerRef} className="graph-canvas" aria-label="Second-Brain-Graph" />
+      <div ref={containerRef} className="graph-canvas cyber-frame" aria-label="Second-Brain-Graph" />
       {data && (
         <ul className="graph-legend" aria-label="Cluster-Legende">
           {data.clusters.map((c) => (

@@ -14,6 +14,7 @@ export function ProjectCardView({ card, onLockedClick, onAdminClick }: Props) {
 
   const className = [
     "card",
+    "cyber-frame",
     isLocked ? "card-locked" : "card-active",
     isAdmin ? "card-admin" : "",
     hover ? "card-hover" : "",
@@ -33,6 +34,7 @@ export function ProjectCardView({ card, onLockedClick, onAdminClick }: Props) {
           <span
             className={[
               "card-badge",
+              "badge",
               isAdmin ? "card-badge-admin" : "",
             ]
               .filter(Boolean)
@@ -42,17 +44,17 @@ export function ProjectCardView({ card, onLockedClick, onAdminClick }: Props) {
           </span>
         )}
         {isLocked && (
-          <span className="card-badge card-badge-locked" aria-label="locked">
+          <span className="card-badge badge badge--dark card-badge-locked" aria-label="locked">
             RESTRICTED
           </span>
         )}
       </div>
-      <h3 className="card-title">{card.title}</h3>
+      <h3 className="card-title t-h4">{card.title}</h3>
       <p className="card-subtitle">{card.subtitle}</p>
       <p className="card-desc">{card.description}</p>
       <ul className="card-tags">
         {card.tags.map((t) => (
-          <li key={t} className="card-tag">
+          <li key={t} className="card-tag badge badge--dark">
             {t}
           </li>
         ))}
