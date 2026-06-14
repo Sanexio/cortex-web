@@ -21,6 +21,10 @@ import {
   SWAP_REQUEST_STATUS,
   SWAP_REQUEST_STATUS_VALUES
 } from "./shift-constants.js";
+import {
+  CORRECTION_STATUS,
+  CORRECTION_STATUS_VALUES
+} from "./correction-constants.js";
 import { tenantConfigGet, tenantIsDemo, tenantPath } from "./tenant.js";
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -4474,24 +4478,24 @@ export function getCorrection(id) {
 
 export function listPendingCorrections() {
   const rows = db.prepare(`
-    SELECT id FROM time_entry_corrections WHERE status = 'open' ORDER BY created_at ASC
-  `).all();
+    SELECT id FROM time_entry_corrections WHERE status = ? ORDER BY created_at ASC
+  `).all(CORRECTION_STATUS.OPEN);
   return rows.map((r) => getCorrection(r.id));
 }
 
 export function approveCorrection(id, reviewerId, note) {
   const corr = getCorrection(id);
   if (!corr) throw new Error(`Korrektur nicht gefunden: ${id}`);
-  if (corr.status !== "open") throw new Error(`Korrektur ist nicht offen: ${corr.status}`);
+  if (corr.status !== CORRECTION_STATUS.OPEN) throw new Error(`Korrektur ist nicht offen: ${corr.status}`);
   if (corr.employeeId === reviewerId) {
     throw new Error("4-Augen-Prinzip verletzt: Reviewer darf nicht der Antragsteller sein");
   }
   const reviewedAt = new Date().toISOString();
   db.prepare(`
     UPDATE time_entry_corrections
-    SET status = 'approved', reviewer_id = ?, reviewed_at = ?, review_note = ?, updated_at = ?
+    SET status = ?, reviewer_id = ?, reviewed_at = ?, review_note = ?, updated_at = ?
     WHERE id = ?
-  `).run(reviewerId, reviewedAt, note ?? null, reviewedAt, id);
+  `).run(CORRECTION_STATUS.APPROVED, reviewerId, reviewedAt, note ?? null, reviewedAt, id);
   // Apply changes to time_entry (whitelist der erlaubten Felder)
   const oldEntry = db.prepare(`SELECT * FROM time_entries WHERE id = ?`).get(corr.timeEntryId);
   const changes = corr.requestedChanges;
@@ -4527,16 +4531,16 @@ export function approveCorrection(id, reviewerId, note) {
 export function rejectCorrection(id, reviewerId, note) {
   const corr = getCorrection(id);
   if (!corr) throw new Error(`Korrektur nicht gefunden: ${id}`);
-  if (corr.status !== "open") throw new Error(`Korrektur ist nicht offen: ${corr.status}`);
+  if (corr.status !== CORRECTION_STATUS.OPEN) throw new Error(`Korrektur ist nicht offen: ${corr.status}`);
   if (corr.employeeId === reviewerId) {
     throw new Error("4-Augen-Prinzip verletzt: Reviewer darf nicht der Antragsteller sein");
   }
   const reviewedAt = new Date().toISOString();
   db.prepare(`
     UPDATE time_entry_corrections
-    SET status = 'rejected', reviewer_id = ?, reviewed_at = ?, review_note = ?, updated_at = ?
+    SET status = ?, reviewer_id = ?, reviewed_at = ?, review_note = ?, updated_at = ?
     WHERE id = ?
-  `).run(reviewerId, reviewedAt, note ?? null, reviewedAt, id);
+  `).run(CORRECTION_STATUS.REJECTED, reviewerId, reviewedAt, note ?? null, reviewedAt, id);
   recordAuditEvent({
     entityType: "time_entry_correction",
     entityId: id,
@@ -4941,6 +4945,7 @@ ensureTimeEntryStatusGuard();
 ensureTimeEntryTypeGuard();
 ensureShiftAssignmentStatusGuard();
 ensureSwapRequestStatusGuard();
+ensureCorrectionStatusGuard();
 seed();
 ensureOperationalSeed();
 
@@ -4996,4 +5001,8 @@ function ensureShiftAssignmentStatusGuard() {
 
 function ensureSwapRequestStatusGuard() {
   installStatusGuard("shift_swap_requests", "status", SWAP_REQUEST_STATUS_VALUES);
+}
+
+function ensureCorrectionStatusGuard() {
+  installStatusGuard("time_entry_corrections", "status", CORRECTION_STATUS_VALUES);
 }
