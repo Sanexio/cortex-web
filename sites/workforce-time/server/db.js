@@ -15,6 +15,12 @@ import {
   TIME_ENTRY_TYPE,
   TIME_ENTRY_TYPE_VALUES
 } from "./time-entry-constants.js";
+import {
+  SHIFT_ASSIGNMENT_STATUS,
+  SHIFT_ASSIGNMENT_STATUS_VALUES,
+  SWAP_REQUEST_STATUS,
+  SWAP_REQUEST_STATUS_VALUES
+} from "./shift-constants.js";
 import { tenantConfigGet, tenantIsDemo, tenantPath } from "./tenant.js";
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -4110,8 +4116,8 @@ export function getSwapRequest(id) {
 }
 
 export function listOpenSwapRequests(filter = {}) {
-  const conditions = ["status = 'open'"];
-  const params = {};
+  const conditions = ["status = @openStatus"];
+  const params = { openStatus: SWAP_REQUEST_STATUS.OPEN };
   if (filter.targetEmployeeId) {
     conditions.push("(target_employee_id IS NULL OR target_employee_id = @targetEmployeeId)");
     params.targetEmployeeId = filter.targetEmployeeId;
@@ -4128,7 +4134,7 @@ export function listOpenSwapRequests(filter = {}) {
 export function acceptSwapRequest(id, accepterEmployeeId, note) {
   const swap = getSwapRequest(id);
   if (!swap) throw new Error(`Tausch-Anfrage nicht gefunden: ${id}`);
-  if (swap.status !== "open") throw new Error(`Tausch-Anfrage nicht offen: ${swap.status}`);
+  if (swap.status !== SWAP_REQUEST_STATUS.OPEN) throw new Error(`Tausch-Anfrage nicht offen: ${swap.status}`);
   if (swap.requesterEmployeeId === accepterEmployeeId) {
     throw new Error("Akzeptierer darf nicht der Antragsteller sein");
   }
@@ -4140,9 +4146,9 @@ export function acceptSwapRequest(id, accepterEmployeeId, note) {
   try {
     db.prepare(`
       UPDATE shift_swap_requests
-      SET status = 'accepted', decided_by_employee_id = ?, decided_at = ?, decision_note = ?, updated_at = ?
+      SET status = ?, decided_by_employee_id = ?, decided_at = ?, decision_note = ?, updated_at = ?
       WHERE id = ?
-    `).run(accepterEmployeeId, decidedAt, note ?? null, decidedAt, id);
+    `).run(SWAP_REQUEST_STATUS.ACCEPTED, accepterEmployeeId, decidedAt, note ?? null, decidedAt, id);
     // Plan-Update: requester-assignment durch accepter ersetzen.
     db.prepare(`
       DELETE FROM shift_assignments WHERE shift_id = ? AND employee_id = ?
@@ -4150,8 +4156,8 @@ export function acceptSwapRequest(id, accepterEmployeeId, note) {
     const assignmentId = `asg_${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
     db.prepare(`
       INSERT INTO shift_assignments (id, shift_id, employee_id, status)
-      VALUES (?, ?, ?, 'assigned')
-    `).run(assignmentId, swap.requesterShiftId, accepterEmployeeId);
+      VALUES (?, ?, ?, ?)
+    `).run(assignmentId, swap.requesterShiftId, accepterEmployeeId, SHIFT_ASSIGNMENT_STATUS.ASSIGNED);
     db.exec("COMMIT");
   } catch (err) {
     db.exec("ROLLBACK");
@@ -4172,16 +4178,16 @@ export function acceptSwapRequest(id, accepterEmployeeId, note) {
 export function declineSwapRequest(id, declinerEmployeeId, note) {
   const swap = getSwapRequest(id);
   if (!swap) throw new Error(`Tausch-Anfrage nicht gefunden: ${id}`);
-  if (swap.status !== "open") throw new Error(`Tausch-Anfrage nicht offen: ${swap.status}`);
+  if (swap.status !== SWAP_REQUEST_STATUS.OPEN) throw new Error(`Tausch-Anfrage nicht offen: ${swap.status}`);
   if (swap.requesterEmployeeId === declinerEmployeeId) {
     throw new Error("Antragsteller kann eigene Anfrage nicht ablehnen, nur stornieren");
   }
   const decidedAt = new Date().toISOString();
   db.prepare(`
     UPDATE shift_swap_requests
-    SET status = 'declined', decided_by_employee_id = ?, decided_at = ?, decision_note = ?, updated_at = ?
+    SET status = ?, decided_by_employee_id = ?, decided_at = ?, decision_note = ?, updated_at = ?
     WHERE id = ?
-  `).run(declinerEmployeeId, decidedAt, note ?? null, decidedAt, id);
+  `).run(SWAP_REQUEST_STATUS.DECLINED, declinerEmployeeId, decidedAt, note ?? null, decidedAt, id);
   recordAuditEvent({
     entityType: "shift_swap_request",
     entityId: id,
@@ -4196,16 +4202,16 @@ export function declineSwapRequest(id, declinerEmployeeId, note) {
 export function cancelSwapRequest(id, cancellerEmployeeId, note) {
   const swap = getSwapRequest(id);
   if (!swap) throw new Error(`Tausch-Anfrage nicht gefunden: ${id}`);
-  if (swap.status !== "open") throw new Error(`Tausch-Anfrage nicht offen: ${swap.status}`);
+  if (swap.status !== SWAP_REQUEST_STATUS.OPEN) throw new Error(`Tausch-Anfrage nicht offen: ${swap.status}`);
   if (swap.requesterEmployeeId !== cancellerEmployeeId) {
     throw new Error("Nur der Antragsteller darf stornieren");
   }
   const decidedAt = new Date().toISOString();
   db.prepare(`
     UPDATE shift_swap_requests
-    SET status = 'cancelled', decided_by_employee_id = ?, decided_at = ?, decision_note = ?, updated_at = ?
+    SET status = ?, decided_by_employee_id = ?, decided_at = ?, decision_note = ?, updated_at = ?
     WHERE id = ?
-  `).run(cancellerEmployeeId, decidedAt, note ?? null, decidedAt, id);
+  `).run(SWAP_REQUEST_STATUS.CANCELLED, cancellerEmployeeId, decidedAt, note ?? null, decidedAt, id);
   recordAuditEvent({
     entityType: "shift_swap_request",
     entityId: id,
@@ -4933,6 +4939,8 @@ migrate();
 ensureAbsenceStatusGuard();
 ensureTimeEntryStatusGuard();
 ensureTimeEntryTypeGuard();
+ensureShiftAssignmentStatusGuard();
+ensureSwapRequestStatusGuard();
 seed();
 ensureOperationalSeed();
 
@@ -4980,4 +4988,12 @@ function ensureTimeEntryStatusGuard() {
 
 function ensureTimeEntryTypeGuard() {
   installStatusGuard("time_entries", "entry_type", TIME_ENTRY_TYPE_VALUES);
+}
+
+function ensureShiftAssignmentStatusGuard() {
+  installStatusGuard("shift_assignments", "status", SHIFT_ASSIGNMENT_STATUS_VALUES);
+}
+
+function ensureSwapRequestStatusGuard() {
+  installStatusGuard("shift_swap_requests", "status", SWAP_REQUEST_STATUS_VALUES);
 }
