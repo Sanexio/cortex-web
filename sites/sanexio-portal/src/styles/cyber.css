@@ -1058,3 +1058,44 @@ body {
 /* Notes */
 .admin-notes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); }
 .admin-note { padding: 4px 0; }
+
+/* ARCHIV-Sync-Card */
+.archiv-section { margin-top: 32px; }
+.archiv-card { display: flex; flex-direction: column; gap: 14px; padding-bottom: 18px; }
+.archiv-pill {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  padding: 3px 8px; border: 1px solid rgba(245, 195, 0, 0.4); border-radius: 999px;
+  color: var(--ink-2); background: rgba(0, 0, 0, 0.3);
+}
+.archiv-pill--running { color: var(--neon-yellow); border-color: var(--neon-yellow); animation: archiv-pulse 1.4s ease-in-out infinite; }
+.archiv-pill--ok      { color: #6cff9b; border-color: rgba(108, 255, 155, 0.6); }
+.archiv-pill--err     { color: #ff4f80; border-color: rgba(255, 79, 128, 0.7); }
+@keyframes archiv-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+.archiv-meta {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
+  margin: 0; padding: 8px 10px; border: 1px dashed rgba(245, 195, 0, 0.25); border-radius: 4px;
+  background: rgba(0, 0, 0, 0.25);
+}
+.archiv-meta div { display: flex; flex-direction: column; gap: 2px; }
+.archiv-meta dt { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--ink-2); text-transform: uppercase; }
+.archiv-meta dd { margin: 0; font-family: var(--font-mono); font-size: 13px; color: var(--ink); }
+.archiv-folders { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.archiv-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.archiv-trigger:disabled { opacity: 0.45; cursor: not-allowed; }
+.archiv-message {
+  margin: 0; padding: 8px 10px; font-family: var(--font-mono); font-size: 12px;
+  color: var(--ink-2); border-left: 2px solid var(--neon-yellow); background: rgba(0, 0, 0, 0.25);
+}
+.archiv-log {
+  margin: 0; padding: 10px; max-height: 220px; overflow: auto;
+  font-family: var(--font-mono); font-size: 11px; line-height: 1.4;
+  color: var(--ink-2); background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(245, 195, 0, 0.2); border-radius: 4px;
+  white-space: pre-wrap; word-break: break-word;
+}
+@media (max-width: 760px) {
+  .archiv-meta { grid-template-columns: 1fr 1fr; }
+}

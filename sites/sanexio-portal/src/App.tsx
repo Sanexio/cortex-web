@@ -5,6 +5,7 @@ import { LockedToast } from "./components/LockedToast";
 import { SecondBrainGraph } from "./components/SecondBrainGraph";
 import { LoginGate } from "./components/LoginGate";
 import { AdminAuthModal } from "./components/AdminAuthModal";
+import { ArchivSyncCard } from "./components/ArchivSyncCard";
 
 export default function App() {
   return (
@@ -65,6 +66,15 @@ function Hub() {
                 onAdminClick={setAdminOpen}
               />
             ))}
+          </div>
+        </section>
+
+        <section className="cards-section archiv-section">
+          <h2 className="section-title t-h4">
+            <span className="section-marker">02</span> Admin · Sync
+          </h2>
+          <div className="cards-grid">
+            <ArchivSyncCard />
           </div>
         </section>
 
