@@ -28,10 +28,11 @@ Datenquelle: `src/data/cards.ts`. Status `production` zeigt das aktive Modul,
 | ID            | Status     | Ziel-URL                  |
 |---------------|------------|---------------------------|
 | workforce-time| production | `http://127.0.0.1:5174/`  |
+| sanexio-cortex| production | `http://127.0.0.1:9119/projects` |
 | cortex-qm     | locked     | —                         |
 | cortex-desk   | locked     | —                         |
 | cortex-cli    | locked     | —                         |
-| cortex-harness| locked     | —                         |
+| cortex-harness| production | `http://127.0.0.1:8765/harness` |
 | cortex-rename | locked     | —                         |
 | juvantis      | locked     | —                         |
 
