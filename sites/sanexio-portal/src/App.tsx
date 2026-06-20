@@ -17,6 +17,7 @@ export default function App() {
 
 function Hub() {
   const [locked, setLocked] = useState<ProjectCard | null>(null);
+  const [localUnavailable, setLocalUnavailable] = useState<ProjectCard | null>(null);
   const [adminOpen, setAdminOpen] = useState<ProjectCard | null>(null);
   const activeCount = CARDS.filter((c) => c.status === "production").length;
   const lockedCount = CARDS.length - activeCount;
@@ -64,6 +65,7 @@ function Hub() {
                 card={c}
                 onLockedClick={setLocked}
                 onAdminClick={setAdminOpen}
+                onLocalUnavailable={setLocalUnavailable}
               />
             ))}
           </div>
@@ -97,6 +99,14 @@ function Hub() {
 
       {locked && (
         <LockedToast title={locked.title} onClose={() => setLocked(null)} />
+      )}
+
+      {localUnavailable && (
+        <LockedToast
+          title="Dashboard-Server nicht geladen"
+          subtitle="Bitte com.cortex.dashboard-server per launchctl prüfen."
+          onClose={() => setLocalUnavailable(null)}
+        />
       )}
 
       {adminOpen && (

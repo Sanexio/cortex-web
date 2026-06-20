@@ -5,12 +5,42 @@ type Props = {
   card: ProjectCard;
   onLockedClick: (card: ProjectCard) => void;
   onAdminClick: (card: ProjectCard) => void;
+  onLocalUnavailable: (card: ProjectCard) => void;
 };
 
-export function ProjectCardView({ card, onLockedClick, onAdminClick }: Props) {
+export function ProjectCardView({ card, onLockedClick, onAdminClick, onLocalUnavailable }: Props) {
   const [hover, setHover] = useState(false);
   const isLocked = card.status === "locked";
   const isAdmin = card.access === "admin";
+
+  const openLocalHref = async () => {
+    if (!card.href) {
+      onLocalUnavailable(card);
+      return;
+    }
+
+    if (card.hrefRequiresLocal) {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 1000);
+      try {
+        const probe = await fetch("http://127.0.0.1:8765/api/plugins", {
+          mode: "no-cors",
+          signal: controller.signal,
+        });
+        if (probe.type !== "opaque" && !probe.ok) {
+          onLocalUnavailable(card);
+          return;
+        }
+      } catch {
+        onLocalUnavailable(card);
+        return;
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+
+    window.location.href = card.href;
+  };
 
   const className = [
     "card",
@@ -95,6 +125,21 @@ export function ProjectCardView({ card, onLockedClick, onAdminClick }: Props) {
         onMouseLeave={() => setHover(false)}
         onClick={() => onAdminClick(card)}
         aria-label={`${card.title} (admin)`}
+      >
+        {body}
+      </button>
+    );
+  }
+
+  if (card.hrefRequiresLocal || !card.href) {
+    return (
+      <button
+        type="button"
+        className={className}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onClick={openLocalHref}
+        aria-label={card.title}
       >
         {body}
       </button>

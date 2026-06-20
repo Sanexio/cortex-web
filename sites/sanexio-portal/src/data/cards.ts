@@ -8,6 +8,7 @@ export type ProjectCard = {
   access?: "open" | "admin";
   badge?: string;
   href?: string;
+  hrefRequiresLocal?: boolean;
   /** Interne Sub-Routen (z.B. "sanexio-cortex") für Admin-Apps im Portal selbst. */
   internalRoute?: string;
   tags: string[];
@@ -70,9 +71,13 @@ export const CARDS: ProjectCard[] = [
     title: "Cortex-Harness",
     subtitle: "Skill-Engine · Hermes-Agents",
     description:
-      "Adapter-Harness für Hermes-Style-Agents (interne KI-Engine), keine Visualisierung — nicht das Sanexio-Dashboard.",
-    status: "locked",
-    tags: ["Engine", "Agent"],
+      "Adapter-Harness für Hermes-Style-Agents (interne KI-Engine) mit lokalem Dashboard-Host für Runtime, Skills und Parity-Checks.",
+    status: "production",
+    access: "open",
+    badge: "LOCAL",
+    href: "http://127.0.0.1:8765/harness",
+    hrefRequiresLocal: true,
+    tags: ["Engine", "Agent", "Dashboard"],
   },
   {
     id: "cortex-rename",

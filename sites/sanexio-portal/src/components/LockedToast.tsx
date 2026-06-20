@@ -2,10 +2,11 @@ import { useEffect } from "react";
 
 type Props = {
   title: string;
+  subtitle?: string;
   onClose: () => void;
 };
 
-export function LockedToast({ title, onClose }: Props) {
+export function LockedToast({ title, subtitle, onClose }: Props) {
   useEffect(() => {
     const t = window.setTimeout(onClose, 3200);
     return () => window.clearTimeout(t);
@@ -18,7 +19,9 @@ export function LockedToast({ title, onClose }: Props) {
       </span>
       <div>
         <strong>{title}</strong>
-        <div className="toast-sub">Modul gesperrt — Mitarbeiter-Zugang erforderlich.</div>
+        <div className="toast-sub">
+          {subtitle ?? "Modul gesperrt — Mitarbeiter-Zugang erforderlich."}
+        </div>
       </div>
     </div>
   );
