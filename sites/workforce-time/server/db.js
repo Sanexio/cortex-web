@@ -3699,6 +3699,84 @@ export function updateTimeEntryStatus(id, status) {
   return getTimeEntry(id);
 }
 
+// T-LIVE-023 — Bulk-Status-Endpoint fuer Massen-Freigabe.
+// SESSION_RESUME Aufgabe 3: ~700 entwurf-Eintraege warten auf Freigabe.
+// Einzel-Klick-Loop ist nicht skalierbar; ein Batch-Call in einer
+// Transaktion ist robuster (Rollback bei Fehler, ein einziger
+// Cache-Invalidate auf Client-Seite).
+export function bulkUpdateTimeEntryStatus(ids, status, options = {}) {
+  if (!allowedStatuses.has(status)) {
+    throw new Error(`Ungueltiger Status: ${status}`);
+  }
+  if (!Array.isArray(ids)) {
+    throw new Error("ids muss ein Array sein");
+  }
+  if (ids.length === 0) {
+    return { ok: true, updated: 0, updatedIds: [], notFoundIds: [], skippedIds: [] };
+  }
+  // Schutzdeckel gegen ungewollte Massen-Mutation; aktuell ~700 entwurf-
+  // Eintraege im Live-Bestand, 2000 gibt Puffer.
+  if (ids.length > 2000) {
+    throw new Error("Maximal 2000 Eintraege pro Batch-Aufruf");
+  }
+  const requireFromStatus = options.requireFromStatus
+    && allowedStatuses.has(options.requireFromStatus)
+      ? options.requireFromStatus
+      : null;
+
+  const placeholders = ids.map(() => "?").join(",");
+  const existingRows = db.prepare(
+    `SELECT id, status FROM time_entries WHERE id IN (${placeholders})`
+  ).all(...ids);
+  const existing = new Map(existingRows.map((row) => [row.id, row.status]));
+
+  const updatedIds = [];
+  const notFoundIds = [];
+  const skippedIds = [];
+
+  db.exec("BEGIN");
+  try {
+    const updateStmt = db.prepare(`
+      UPDATE time_entries
+      SET status = ?, local_revision = local_revision + 1, updated_at = ?
+      WHERE id = ?
+    `);
+    const ts = now();
+    for (const id of ids) {
+      if (!existing.has(id)) {
+        notFoundIds.push(id);
+        continue;
+      }
+      const prevStatus = existing.get(id);
+      if (requireFromStatus && prevStatus !== requireFromStatus) {
+        skippedIds.push(id);
+        continue;
+      }
+      if (prevStatus === status) {
+        // Status unchanged — kein Update, kein Audit-Spam.
+        skippedIds.push(id);
+        continue;
+      }
+      updateStmt.run(status, ts, id);
+      insertAudit(
+        "time_entry",
+        id,
+        `Status gesetzt: ${statusLabels[status]}`,
+        options.reason ?? null,
+        { status: prevStatus },
+        { status }
+      );
+      updatedIds.push(id);
+    }
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+
+  return { ok: true, updated: updatedIds.length, updatedIds, notFoundIds, skippedIds };
+}
+
 export function updateTimeEntryBreaks(id, payload) {
   const existing = db.prepare(`
     SELECT paid_break_minutes, unpaid_break_minutes

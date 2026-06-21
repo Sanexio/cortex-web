@@ -49,7 +49,8 @@ import {
   updateEmployee,
   updateShift,
   updateTimeEntryBreaks,
-  updateTimeEntryStatus
+  updateTimeEntryStatus,
+  bulkUpdateTimeEntryStatus
 } from "./db.js";
 import { handleAuthRoute, requireWorkforceApiSession } from "./auth.js";
 import { notifyCorrectionRequested, notifyCorrectionDecided } from "./notify-correction.mjs";
@@ -230,6 +231,26 @@ const server = createServer(async (request, response) => {
       if (!requireAdmin(authGate, response)) return;
       const payload = await readJson(request);
       sendJson(response, 200, updateTimeEntryStatus(decodeURIComponent(statusMatch[1]), payload.status));
+      return;
+    }
+
+    // T-LIVE-023 — Bulk-Status-Endpoint (Massen-Freigabe).
+    if (request.method === "POST" && url.pathname === "/api/time-entries/bulk-status") {
+      if (!requireAdmin(authGate, response)) return;
+      const payload = await readJson(request);
+      try {
+        const result = bulkUpdateTimeEntryStatus(
+          Array.isArray(payload?.ids) ? payload.ids : [],
+          String(payload?.status ?? ""),
+          {
+            requireFromStatus: payload?.requireFromStatus ?? null,
+            reason: payload?.reason ?? null
+          }
+        );
+        sendJson(response, 200, result, {}, request);
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } }, {}, request);
+      }
       return;
     }
 

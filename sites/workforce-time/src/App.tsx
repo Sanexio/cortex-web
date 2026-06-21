@@ -1898,6 +1898,60 @@ function App() {
     }
   }
 
+  // T-LIVE-023 — Bulk-Status-Mutation (Massen-Freigabe).
+  // Fuer ~700 entwurf-Eintraege (SESSION_RESUME Aufgabe 3): ein Round-
+  // Trip statt N Einzel-Calls. Optimistic-Update aller ids; bei Fehler
+  // Rollback der Liste, kein partieller Sichtbarkeits-Drift.
+  async function bulkUpdateEntryStatus(
+    ids: string[],
+    status: Status,
+    requireFromStatus?: Status
+  ): Promise<{ updated: number; skipped: number; notFound: number }> {
+    if (ids.length === 0) return { updated: 0, skipped: 0, notFound: 0 };
+    const previous = data;
+    const idSet = new Set(ids);
+    setData((current) => ({
+      ...current,
+      timeEntries: current.timeEntries.map((entry) => {
+        if (!idSet.has(entry.id)) return entry;
+        if (requireFromStatus && entry.status !== requireFromStatus) return entry;
+        if (entry.status === status) return entry;
+        return {
+          ...entry,
+          status,
+          audit: [...entry.audit, `Status gesetzt: ${statusLabels[status]} (Bulk)`]
+        };
+      })
+    }));
+
+    setBusy(true);
+    try {
+      const result = await request<{
+        ok: boolean;
+        updated: number;
+        updatedIds: string[];
+        notFoundIds: string[];
+        skippedIds: string[];
+      }>("/api/time-entries/bulk-status", {
+        method: "POST",
+        body: JSON.stringify({ ids, status, requireFromStatus: requireFromStatus ?? null })
+      });
+      await refresh();
+      return {
+        updated: result.updated ?? 0,
+        skipped: result.skippedIds?.length ?? 0,
+        notFound: result.notFoundIds?.length ?? 0
+      };
+    } catch (err) {
+      setData(previous);
+      setApiConnected(false);
+      setApiMessage("Bulk-Freigabe fehlgeschlagen");
+      throw err;
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function updateEntryBreaks(id: string, unpaidBreakMinutes: number, paidBreakMinutes = 0) {
     const previous = data;
     setData((current) => ({
@@ -2234,6 +2288,7 @@ function App() {
             setActiveWeekStart={setActiveWeekStart}
             updateEntryStatus={updateEntryStatus}
             updateEntryBreaks={updateEntryBreaks}
+            bulkUpdateEntryStatus={bulkUpdateEntryStatus}
             setDialog={setDialog}
             request={request}
             authUser={authUser}
@@ -4995,6 +5050,7 @@ function TimeView({
   setActiveWeekStart,
   updateEntryStatus,
   updateEntryBreaks,
+  bulkUpdateEntryStatus,
   setDialog,
   request,
   authUser
@@ -5004,6 +5060,7 @@ function TimeView({
   setActiveWeekStart: (weekStart: string) => void;
   updateEntryStatus: (id: string, status: Status) => void;
   updateEntryBreaks: (id: string, unpaidBreakMinutes: number, paidBreakMinutes?: number) => void;
+  bulkUpdateEntryStatus: (ids: string[], status: Status, requireFromStatus?: Status) => Promise<{ updated: number; skipped: number; notFound: number }>;
   setDialog: (dialog: "time") => void;
   request: <T>(path: string, init?: RequestInit) => Promise<T>;
   authUser: AuthUser | null;
@@ -5016,6 +5073,9 @@ function TimeView({
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [columnsOpen, setColumnsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | undefined>(data.timeEntries[0]?.id);
+  // T-LIVE-023 — Bulk-Approve-State
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkResult, setBulkResult] = useState<string | null>(null);
   const [visibleColumns, setVisibleColumns] = useState(defaultVisibleColumns);
   const [filters, setFilters] = useState({
     location: "Alle",
@@ -5075,6 +5135,39 @@ function TimeView({
 
   const selectedEntry = weekEntries.find((entry) => entry.id === selectedId);
 
+  // T-LIVE-023 — gefilterte entwurf-Eintraege fuer Massen-Freigabe.
+  const draftEntries = useMemo(
+    () => filteredEntries.filter((entry) => entry.status === "entwurf"),
+    [filteredEntries]
+  );
+
+  async function bulkApproveDrafts() {
+    if (draftEntries.length === 0 || bulkBusy) return;
+    const confirmed = window.confirm(
+      `${draftEntries.length} entwurf-Eintraege im aktuellen Filter auf "freigegeben" setzen?\n\n` +
+        `Filter: ${activeTab === "requests" ? "nur Aenderungsantraege" : "alle"} · ` +
+        `Suche: ${search || "—"} · ` +
+        `Status-Filter: ${filters.status} · ` +
+        `Standort: ${filters.location} · ` +
+        `Bereich: ${filters.area}`
+    );
+    if (!confirmed) return;
+    setBulkBusy(true);
+    setBulkResult(null);
+    try {
+      const ids = draftEntries.map((entry) => entry.id);
+      const result = await bulkUpdateEntryStatus(ids, "freigegeben", "entwurf");
+      const parts = [`${result.updated} freigegeben`];
+      if (result.skipped) parts.push(`${result.skipped} uebersprungen`);
+      if (result.notFound) parts.push(`${result.notFound} nicht gefunden`);
+      setBulkResult(parts.join(" · "));
+    } catch {
+      setBulkResult("Fehler bei der Bulk-Freigabe");
+    } finally {
+      setBulkBusy(false);
+    }
+  }
+
   return (
     <section className="module-grid">
       <div className="time-module">
@@ -5103,6 +5196,46 @@ function TimeView({
 
         {columnsOpen ? (
           <ColumnPanel visibleColumns={visibleColumns} setVisibleColumns={setVisibleColumns} />
+        ) : null}
+
+        {/* T-LIVE-023 — Bulk-Approve-Bar */}
+        {draftEntries.length > 0 || bulkResult ? (
+          <div
+            className="bulk-approve-bar"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+              padding: "8px 12px",
+              margin: "8px 0",
+              background: "var(--color-warning-soft, #fef3c7)",
+              border: "1px solid var(--color-warning, #b45309)",
+              borderRadius: 8,
+              fontSize: "0.9em"
+            }}
+          >
+            <span>
+              {draftEntries.length > 0 ? (
+                <>
+                  <strong>{draftEntries.length}</strong> Entwurf-Eintraege im aktuellen Filter
+                  {bulkResult ? <span style={{ marginLeft: 12, color: "var(--color-success, #047857)" }}>· {bulkResult}</span> : null}
+                </>
+              ) : (
+                <span style={{ color: "var(--color-success, #047857)" }}>{bulkResult}</span>
+              )}
+            </span>
+            {draftEntries.length > 0 ? (
+              <button
+                type="button"
+                className="primary-button compact-action"
+                disabled={bulkBusy}
+                onClick={bulkApproveDrafts}
+              >
+                <Check size={14} /> {bulkBusy ? "Verarbeite …" : `Alle ${draftEntries.length} freigeben`}
+              </button>
+            ) : null}
+          </div>
         ) : null}
 
         <TimeTable
