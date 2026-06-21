@@ -384,11 +384,18 @@ async function captureLiveOrdio(options) {
     // probe at 1680px renders the 14-column table with all rows).
     const page = await browser.newPage({ viewport: { width: 1680, height: 1050 } });
     await page.goto(process.env.ORDIO_BASE_URL, { waitUntil: "domcontentloaded" });
-    // Ordio defaults to magic-link mode (probe 2026-06-05): password login
-    // sits behind the mode-switch button "Mit Benutzername & Passwort anmelden".
+    // T-LIVE-017 — Page muss voll geladen sein, bevor wir den Mode-Switch
+    // suchen. Ohne Wait greift `pwModeButton.count() === 0` noch und wir
+    // landen im Magic-Link-Modus statt im Passwort-Modus → fill auf
+    // #passwort wartet 30s vergebens. Probe 2026-06-20: Buttons erscheinen
+    // erst nach ~1-2s, daher waitForLoadState + waitForTimeout.
+    await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
+    await page.waitForTimeout(1500);
     const pwModeButton = page.getByRole("button", { name: /benutzername.*passwort|username.*password/i });
     if (await pwModeButton.count()) {
       await pwModeButton.first().click();
+      // Warte bis Password-Form gerendert ist
+      await page.waitForSelector("#passwort", { timeout: 10000 }).catch(() => {});
     }
     const userField = page
       .locator("#e-mail-oder-benutzername")
@@ -402,7 +409,10 @@ async function captureLiveOrdio(options) {
     await passwordField.first().fill(process.env.ORDIO_PASSWORD);
     // Exact-anchored name: avoid matching "Mit Google anmelden" / mode-switch.
     await page.getByRole("button", { name: /^(anmelden|login|sign in)$/i }).first().click();
-    await page.waitForLoadState("networkidle");
+    // T-LIVE-017 — Ordio hat Long-Poll/WebSocket, networkidle wird nie
+    // erreicht. Timeout + Fallback-Wait, sonst haengt der Lauf vor /e.
+    await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
+    await page.waitForTimeout(3000);
 
     await page.goto(new URL("/e", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
@@ -432,11 +442,17 @@ async function captureLiveOrdio(options) {
       const defaultRows = await extractWorkHoursRowsFromPage(page);
       const pickerSet = await applyWorkHoursPickerRange(page, range.start, range.end);
       const pickedRows = pickerSet ? await extractWorkHoursRowsFromPage(page) : [];
+      // T-LIVE-022 — Default-Fallback nur ohne erfolgreichen Picker.
+      // Vorher: bei pickerSet=true + pickedRows=0 wurde auf defaultRows
+      // (Ist-Monat = falscher Range) zurueckgefallen → Okt-2025-Re-Try
+      // schrieb 52 Juni-Eintraege in den Okt-Snapshot. Wenn Picker
+      // gesetzt wurde, vertrauen wir der (auch leeren) Picker-Tabelle.
+      const usedRows = pickerSet ? pickedRows : defaultRows;
       if (process.env.ORDIO_DEBUG) {
         await logWorkHoursDiagnostics(page, `${range.label}:${range.start}-${range.end}`);
-        console.error(`ORDIO_DEBUG Picker ${range.label}: default=${defaultRows.length}, picked=${pickedRows.length}, used=${pickedRows.length || defaultRows.length}`);
+        console.error(`ORDIO_DEBUG Picker ${range.label}: pickerSet=${pickerSet}, default=${defaultRows.length}, picked=${pickedRows.length}, used=${usedRows.length}`);
       }
-      workHoursRows.push(...(pickedRows.length > 0 ? pickedRows : defaultRows));
+      workHoursRows.push(...usedRows);
     }
     const absenceRows = await captureAbsences(page, options);
     const planRows = await capturePlan(page, options);
@@ -453,15 +469,19 @@ async function captureLiveOrdio(options) {
 }
 
 async function applyWorkHoursPickerRange(page, from, to) {
+  // T-LIVE-018 — Picker-Selector-Drift (probe 2026-06-20): Button heisst
+  // jetzt nicht mehr "Zeitraum wählen" sondern enthält direkt das aktive
+  // Datum, z.B. "15.06.2026 - 21.06.2026". Selector akzeptiert beides.
   const pickerButton = page
     .getByRole("button", { name: /zeitraum\s*w(?:ä|ae)hlen/i })
-    .or(page.getByLabel(/zeitraum\s*w(?:ä|ae)hlen/i));
+    .or(page.getByLabel(/zeitraum\s*w(?:ä|ae)hlen/i))
+    .or(page.getByRole("button", { name: /\d{2}\.\d{2}\.\d{4}\s*[-–—]\s*\d{2}\.\d{2}\.\d{4}/ }));
   if (!(await pickerButton.count())) {
     if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker nicht gefunden; Tabelle bleibt im Ordio-Default.");
     return false;
   }
   await pickerButton.first().click();
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(800);
 
   // Short, visible-only fill with hard timeout so a wrong guess fails
   // fast instead of hanging 30s on a hidden input.
@@ -475,13 +495,21 @@ async function applyWorkHoursPickerRange(page, from, to) {
     return false;
   };
 
-  const dateInputs = page.locator('input[type="date"]');
-  let filled = false;
-  if (await dateInputs.count() >= 2) {
-    filled = (await fillVisible(dateInputs.nth(0), from)) && (await fillVisible(dateInputs.nth(1), to));
+  // T-LIVE-019 — Reihenfolge invertiert: Calendar-Grid zuerst (nachweislich
+  // funktionierend im aktuellen Ordio-UI vom 2026-06-20), Input-Felder nur
+  // als Fallback fuer aeltere Versionen. Vorher wurden Input-Felder
+  // (Mitarbeiter-Suche!) faelschlich gematcht und fail-still.
+  let filled = await selectDateRangeInCalendarGrid(page, from, to);
+  if (!filled) {
+    const dateInputs = page.locator('input[type="date"]');
+    if (await dateInputs.count() >= 2) {
+      filled = (await fillVisible(dateInputs.nth(0), from)) && (await fillVisible(dateInputs.nth(1), to));
+    }
   }
   if (!filled) {
-    const textInputs = page.locator('input[type="text"], input[placeholder*="TT"], input[placeholder*="Datum"]');
+    // Nur Inputs *innerhalb* des Picker-Dialogs (nicht Mitarbeiter-Suchfeld)
+    const dialogScope = page.getByRole("dialog").last();
+    const textInputs = dialogScope.locator('input[type="text"], input[placeholder*="TT"], input[placeholder*="Datum"]');
     const fromDe = toGermanDate(from);
     const toDe = toGermanDate(to);
     if (await textInputs.count() >= 2) {
@@ -489,19 +517,23 @@ async function applyWorkHoursPickerRange(page, from, to) {
     }
   }
   if (!filled) {
-    filled = await selectDateRangeInCalendarGrid(page, from, to);
-    if (!filled) {
-      if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker: Kalendernavigation gescheitert; Default-Ansicht wird gelesen.");
-      await page.keyboard.press("Escape").catch(() => {});
-      return false;
-    }
+    if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker: alle Strategien gescheitert; Default-Ansicht wird gelesen.");
+    await page.keyboard.press("Escape").catch(() => {});
+    return false;
   }
 
-  const apply = page.getByRole("button", { name: /anwenden|übernehmen|uebernehmen|speichern|ok/i });
-  if (await apply.count()) await apply.first().click();
-  else await page.keyboard.press("Enter");
-  await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
-  await page.waitForTimeout(1200);
+  // T-LIVE-019 — Ordio-Picker hat KEINEN expliziten Apply-Button mehr
+  // (Probe 2026-06-20). Der Klick auf den End-Tag schliesst das Popover
+  // bereits. Klick ausserhalb als Belt-and-Suspenders.
+  const apply = page.getByRole("button", { name: /anwenden|übernehmen|uebernehmen|speichern|^ok$/i });
+  if (await apply.count()) {
+    await apply.first().click();
+  } else {
+    // Klick auf top-left Ecke, weit weg vom Popover
+    await page.mouse.click(50, 50).catch(() => {});
+  }
+  await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
+  await page.waitForTimeout(2000);
   return true;
 }
 
@@ -517,16 +549,45 @@ async function selectDateRangeInCalendarGrid(page, from, to) {
 }
 
 async function navigateCalendarToMonth(page, scope, dateString) {
+  // T-LIVE-021 — Hardened Picker-Navigation (Re-Try Okt-2025-Gap).
+  // Vorher: 250 ms statisch, keine Post-Click-Verifikation, 24 Step-Cap.
+  // Problem: bei ~8 Monaten Rückwärtsschritten verloren wir Klicks (DOM
+  // räumt Calendar zwischenzeitlich neu auf) und blieben im Ist-Monat.
+  // Neu: Post-Click Re-Read, Drift-Detection, adaptive Pause, 36 Steps.
   const target = monthIndex(dateString);
-  for (let step = 0; step < 24; step += 1) {
-    const current = monthIndexFromText(await scope.innerText({ timeout: 3000 }).catch(() => ""));
-    if (current === target) return true;
+  const readCurrent = async () =>
+    monthIndexFromText(await scope.innerText({ timeout: 3000 }).catch(() => ""));
+  let lastCurrent = await readCurrent();
+  let stallCount = 0;
+  for (let step = 0; step < 36; step += 1) {
+    if (lastCurrent === target) return true;
     const buttons = await visibleButtonBoxes(scope);
     if (!buttons.length) return false;
     const sorted = buttons.sort((left, right) => left.x - right.x);
-    const button = current === null || current < target ? sorted.at(-1) : sorted[0];
+    const button = lastCurrent === null || lastCurrent < target ? sorted.at(-1) : sorted[0];
     await button.locator.click({ timeout: 4000 });
-    await page.waitForTimeout(250);
+    // Adaptive Pause: bei Drift verlängern (600 → 1100 → 1600 ms).
+    const pause = 600 + stallCount * 500;
+    await page.waitForTimeout(pause);
+    const next = await readCurrent();
+    if (next === lastCurrent) {
+      // Klick hat nichts bewegt — entweder Race oder Selektor verfehlt.
+      // Einen Zusatz-Wait + erneutes Lesen, danach Klick wiederholen.
+      await page.waitForTimeout(700);
+      const retry = await readCurrent();
+      if (retry === lastCurrent) {
+        stallCount += 1;
+        if (process.env.ORDIO_DEBUG) {
+          console.error(`ORDIO_DEBUG Picker-Stall bei step ${step}, current=${lastCurrent}, target=${target}, stallCount=${stallCount}`);
+        }
+        if (stallCount >= 3) return false;
+        continue;
+      }
+      lastCurrent = retry;
+    } else {
+      lastCurrent = next;
+      stallCount = 0;
+    }
   }
   return false;
 }
