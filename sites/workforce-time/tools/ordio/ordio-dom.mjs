@@ -701,7 +701,41 @@ export function parsePlanHtml(html) {
     .filter((row) => row.date && row.startTime && row.endTime);
 }
 
+// T-LIVE-020 — Inkrementeller Scroll-Sammler fuer Ordio's virtualized
+// /work-hours-Tabelle. Bei Range "01.06.-30.06." sind ~150 rows verfuegbar,
+// aber der DOM zeigt nur ~35 gleichzeitig (Virtual Scrolling). Wir scrollen
+// in Schritten und sammeln rows per __rowId (de-dupliziert).
 export async function extractWorkHoursRowsFromPage(page) {
+  const collected = new Map();
+  const collectOnce = async () => {
+    const rows = await extractWorkHoursRowsFromPageSingle(page);
+    for (const row of rows) {
+      const key = row.__rowId || JSON.stringify(row.__cells);
+      collected.set(key, row);
+    }
+  };
+  // Initial-Snapshot + scroll Top → Bottom in mehreren Etappen.
+  await collectOnce();
+  for (let step = 0; step < 25; step += 1) {
+    const moved = await page.evaluate(() => {
+      let anyMoved = false;
+      for (const el of document.querySelectorAll("*")) {
+        if (el.scrollHeight > el.clientHeight + 100 && /auto|scroll/.test(getComputedStyle(el).overflowY)) {
+          const before = el.scrollTop;
+          el.scrollTop = before + 400;
+          if (el.scrollTop !== before) anyMoved = true;
+        }
+      }
+      return anyMoved;
+    });
+    if (!moved && step > 3) break;
+    await page.waitForTimeout(300);
+    await collectOnce();
+  }
+  return [...collected.values()];
+}
+
+async function extractWorkHoursRowsFromPageSingle(page) {
   return page.evaluate(() => {
     const clean = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
     const normalize = (value) => clean(value)
@@ -1063,9 +1097,21 @@ export function mapWorkHoursRows(rows, options = {}) {
     const startDate = isoDate(cellFor(row, ["datum", "Datum"], 1));
     const startTime = hhmm(cellFor(row, ["start", "Start"], 2));
     const endTime = hhmm(cellFor(row, ["ende", "Ende"], 3));
-    if (!employeeName || !startDate || !startTime || !endTime) continue;
-    if (options.from && startDate < options.from) continue;
-    if (options.to && startDate > options.to) continue;
+    if (!employeeName || !startDate || !startTime || !endTime) {
+      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG skip-row: name=${employeeName} date=${startDate} start=${startTime} end=${endTime}`);
+      continue;
+    }
+    // T-LIVE-016 — Date-Filter entfernt: der Picker iteriert ohnehin
+    // pro ISO-Woche, die /work-hours-Seite zeigt aber teils Bereiche
+    // ueber die Picker-Range hinaus an. Verlorene 140/175 Eintraege
+    // waren ein direkter Folgebug. Server-Side wird ohnehin nach
+    // source_id geuppertet — alte Einträge bleiben unangetastet.
+    if (options.from && startDate < options.from) {
+      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG range-soft-pass: date=${startDate} < from=${options.from} BEHIND -> wird ZUGELASSEN`);
+    }
+    if (options.to && startDate > options.to) {
+      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG range-soft-pass: date=${startDate} > to=${options.to} AHEAD -> wird ZUGELASSEN`);
+    }
 
     const resolved = mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees);
     const employeeSourceId = resolved.employeeSourceId;

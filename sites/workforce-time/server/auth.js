@@ -1155,6 +1155,27 @@ export async function handleAuthRoute({ request, response, url, readJson, sendJs
 
     if (request.method === "GET" && url.pathname === "/api/auth/me") {
       const session = sessionFromRequest(request);
+      // T-LIVE-001 — Im Dev-Bypass (WORKFORCE_AUTH_DISABLE=1, nie production)
+      // gibt der me-Endpoint einen Synthetic-Admin zurueck. Sonst rendert der
+      // SPA-Client AuthShell, obwohl alle anderen Endpoints offen sind, und
+      // das Dashboard ist unsichtbar — Dev-Friction ohne Sicherheitsgewinn.
+      if (!session && !authEnforcementEnabled()) {
+        jsonOk(sendJson, response, {
+          authenticated: true,
+          user: {
+            id: 0,
+            email: "dev@local",
+            displayName: "Dev-Bypass",
+            employeeId: null,
+            role: "admin",
+            totpVerified: true,
+            tenantSlug: null,
+            lastLoginAt: new Date().toISOString()
+          },
+          tenant: tenantAuthContext(request)
+        });
+        return true;
+      }
       jsonOk(sendJson, response, {
         authenticated: Boolean(session),
         user: session ? publicUser(session) : null,

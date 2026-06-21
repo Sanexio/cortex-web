@@ -2,7 +2,12 @@ import { createServer } from "node:http";
 import {
   acceptSwapRequest,
   approveCorrection,
+  assignStampContext,
+  autoEndExpiredStamps,
   buildEmployeeMonthlySollIst,
+  buildEmployeeShiftHours,
+  getAuditEmployeeHours,
+  renderAuditCsv,
   buildPayrollExport,
   buildTeamSollIstSummary,
   calculateAbsenceQuota,
@@ -22,6 +27,7 @@ import {
   getHealth,
   getStampState,
   getSwapRequest,
+  listActiveStampSessions,
   listAllPendingApprovals,
   listAuthUsersWithRoles,
   listOpenSwapRequests,
@@ -235,6 +241,58 @@ const server = createServer(async (request, response) => {
       return;
     }
 
+    // T-LIVE-001 — Admin-View aller aktiven Sessions (claude-chat, 2026-06-20).
+    if (request.method === "GET" && url.pathname === "/api/stamp/state/all") {
+      if (!requireAdmin(authGate, response)) return;
+      try {
+        sendJson(response, 200, { ok: true, sessions: listActiveStampSessions() }, {}, request);
+      } catch (err) {
+        sendJson(response, 500, { ok: false, error: { code: "server_error", message: err.message } }, {}, request);
+      }
+      return;
+    }
+
+    // T-LIVE-001 — Per-Schicht-Stundenliste eines Mitarbeiters.
+    // Mitarbeiter darf nur eigene Daten lesen; Admin darf jeden abfragen.
+    if (request.method === "GET" && url.pathname === "/api/stamp/shift-hours") {
+      const requestedEmployeeId = url.searchParams.get("employeeId");
+      const isAdminActor = authGate.enforced === false || authGate.session?.role === "admin";
+      const targetEmployeeId = isAdminActor
+        ? (requestedEmployeeId ?? actorEmployeeId(authGate, requestedEmployeeId))
+        : actorEmployeeId(authGate, requestedEmployeeId);
+      if (!targetEmployeeId) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: "employeeId fehlt" } }, {}, request);
+        return;
+      }
+      try {
+        const rows = buildEmployeeShiftHours(
+          targetEmployeeId,
+          url.searchParams.get("from"),
+          url.searchParams.get("to")
+        );
+        sendJson(response, 200, { ok: true, employeeId: targetEmployeeId, shifts: rows }, {}, request);
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } }, {}, request);
+      }
+      return;
+    }
+
+    // T-LIVE-002 — Schicht/Praxis nachtraeglich an Stempel-Session zuordnen.
+    if (request.method === "POST" && url.pathname === "/api/stamp/assign-context") {
+      const payload = await readJson(request);
+      const isAdminActor = authGate.enforced === false || authGate.session?.role === "admin";
+      const targetEmployeeId = isAdminActor
+        ? (payload?.employeeId ?? actorEmployeeId(authGate, payload?.employeeId))
+        : actorEmployeeId(authGate, payload?.employeeId);
+      try {
+        const result = assignStampContext(targetEmployeeId, payload || {});
+        sendJson(response, 200, result, {}, request);
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } }, {}, request);
+      }
+      return;
+    }
+
     // T-004a Stempeluhr.
     const stampOpMatch = url.pathname.match(/^\/api\/stamp\/(start|end|break-start|break-end|state)$/);
     if (stampOpMatch) {
@@ -365,13 +423,42 @@ const server = createServer(async (request, response) => {
       }
       return;
     }
+    // T-LIVE-009 — Stunden-Audit.
+    if (request.method === "GET" && url.pathname === "/api/audit/employee-hours") {
+      if (!requireAdmin(authGate, response)) return;
+      const employeeId = url.searchParams.get("employeeId");
+      const from = url.searchParams.get("from");
+      const to = url.searchParams.get("to");
+      const format = (url.searchParams.get("format") || "json").toLowerCase();
+      try {
+        const audit = getAuditEmployeeHours(employeeId, from, to);
+        if (format === "csv") {
+          const body = renderAuditCsv(audit);
+          response.writeHead(200, {
+            "Content-Type": "text/csv; charset=utf-8",
+            "Cache-Control": "no-store",
+            "Content-Disposition": `attachment; filename="audit-${employeeId}-${from}-${to}.csv"`,
+            "Access-Control-Allow-Origin": pickCorsOrigin(request),
+            "Access-Control-Allow-Credentials": "true"
+          });
+          response.end(body);
+        } else {
+          sendJson(response, 200, { ok: true, audit }, {}, request);
+        }
+      } catch (err) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } }, {}, request);
+      }
+      return;
+    }
+
     if (request.method === "GET" && url.pathname === "/api/reports/team/monthly") {
       if (!requireAdmin(authGate, response)) return;
       const year = Number(url.searchParams.get("year") || new Date().getFullYear());
       const month = Number(url.searchParams.get("month") || (new Date().getMonth() + 1));
       const format = (url.searchParams.get("format") || "json").toLowerCase();
+      const locationId = url.searchParams.get("locationId") || null;
       try {
-        const result = buildTeamSollIstSummary(year, month);
+        const result = buildTeamSollIstSummary(year, month, { locationId });
         if (format === "csv") {
           const body = renderTeamSollIstCsv(result);
           response.writeHead(200, {
@@ -583,6 +670,24 @@ server.listen(port, host, () => {
   console.log(`Arbeitszeiten API laeuft auf http://${host}:${port}`);
   console.log(`SQLite-Datenbank: ${databasePath}`);
 });
+
+// T-LIVE-001 — Serverseitiges Auto-End. Tickt alle 60 s, schliesst laufende
+// Stempelungen, deren geplante Schicht-Endzeit verstrichen ist (oder die ein
+// 12 h-Hartlimit ueberschreiten). Robuster als der clientseitige Effect, der
+// nur bei offenem Kiosk-Tab feuert. Deaktivierbar via WORKFORCE_AUTO_END=0.
+const autoEndDisabled = String(process.env.WORKFORCE_AUTO_END ?? "1") === "0";
+if (!autoEndDisabled) {
+  const intervalMs = Number(process.env.WORKFORCE_AUTO_END_INTERVAL_MS ?? 60_000);
+  const autoEndTimer = setInterval(() => {
+    try {
+      const closed = autoEndExpiredStamps();
+      if (closed > 0) console.log(`[auto-end] ${closed} Session(s) geschlossen`);
+    } catch (err) {
+      console.warn(`[auto-end] tick failed: ${err?.message ?? err}`);
+    }
+  }, intervalMs);
+  autoEndTimer.unref?.();
+}
 
 process.on("SIGTERM", () => {
   server.close(() => process.exit(0));

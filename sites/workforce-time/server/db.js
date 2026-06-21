@@ -469,6 +469,10 @@ function applyMigrationBaseline(snapshot) {
 function loadEmployeeResolutionMaps(sourceSystem) {
   const employeeBySourceId = new Map();
   const employeeByName = new Map();
+  // T-LIVE-015 — Token-Match fuer Namen mit unterschiedlicher Reihenfolge
+  // oder Titeln. Ordio liefert "Nachname Vorname", DB hat ggf. "Dr. Vorname
+  // Nachname" — exact-match scheitert, Token-Match findet beide.
+  const employeeByTokens = [];
 
   db.prepare(`
     SELECT employee_id, source_id
@@ -486,10 +490,19 @@ function loadEmployeeResolutionMaps(sourceSystem) {
     const nameKey = String(row.display_name ?? "").trim().toLowerCase();
     if (nameKey) {
       employeeByName.set(nameKey, row.id);
+      // Tokens: Wortsegmente >=3 Zeichen, ohne Titel und Punkte
+      const tokens = nameKey
+        .replace(/\./g, " ")
+        .split(/\s+/)
+        .map((t) => t.trim())
+        .filter((t) => t.length >= 3 && !["dr", "med", "med."].includes(t));
+      if (tokens.length > 0) {
+        employeeByTokens.push({ tokens: new Set(tokens), id: row.id });
+      }
     }
   });
 
-  return { employeeBySourceId, employeeByName };
+  return { employeeBySourceId, employeeByName, employeeByTokens };
 }
 
 function minutes(value) {
@@ -2209,6 +2222,7 @@ function buildWorkforceConfigForBootstrap() {
       "MFA-Zeiten werden nur über die Mitarbeiter-ID gezählt; der Arbeitsbereich ist Herkunft der Buchung, keine feste Zuordnung."
     ),
     shiftSchema: tenantConfigGet("workforce.shift_schema", []) ?? [],
+    workAreaCategories: tenantConfigGet("workforce.work_area_categories", {}) ?? {},
     isDemo: tenantIsDemo()
   };
 }
@@ -3169,19 +3183,32 @@ function asArray(value) {
 
 function normalizeImportedStatus(value) {
   const status = String(value ?? "").toLowerCase();
-  if (status.includes("schichtunabhaengig") || status.includes("schichtunabhängig")) {
-    return "konflikt";
-  }
+  // T-LIVE-007 — BUGFIX 2026-06-20: vorher wurde "Schichtunabhaengig erfasst"
+  // auf status='konflikt' gemapped. Das ist falsch: "Schichtunabhaengig" ist
+  // eine valide Buchungsart (entry_type), kein Status-Konflikt. Folge: 483
+  // legitime Zeitbuchungen lagen als "konflikt" in der DB und sind nicht in
+  // den Lohn-Ist eingeflossen (Status-Filter freigegeben). Korrekt: dieses
+  // Token wirkt nur auf den entry_type (siehe normalizeImportedEntryType);
+  // der Status selbst ergibt sich aus dem Erfassungs-/Bestaetigt-Tokens.
   if (status.includes("aenderungsantrag") || status.includes("änderungsantrag")) {
     return status.includes("genehmigt") ? "freigegeben" : "aenderungsantrag";
   }
   if (status.includes("bestätigt") || status.includes("bestaetigt") || status.includes("genehmigt")) {
     return "freigegeben";
   }
-  if (status.includes("erfasst")) {
+  if (status.includes("erfasst") || status.includes("schichtunabhaengig") || status.includes("schichtunabhängig")) {
     return "entwurf";
   }
   return allowedStatuses.has(value) ? value : "entwurf";
+}
+
+function normalizeImportedEntryType(value) {
+  // Schichtunabhaengig-Marker bleibt der einzige Type-Indikator aus Ordio.
+  const status = String(value ?? "").toLowerCase();
+  if (status.includes("schichtunabhaengig") || status.includes("schichtunabhängig")) {
+    return "Schichtunabhaengig";
+  }
+  return "Arbeitszeit";
 }
 
 function normalizeAbsenceStatus(value) {
@@ -3304,7 +3331,7 @@ function normalizeImportSnapshot(snapshot) {
         area: String(record.area ?? "Ohne Bereich").trim() || "Ohne Bereich",
         location: String(record.location ?? defaultLocation).trim() || defaultLocation,
         status: importedStatus,
-        type: importedStatus === "konflikt" ? "Schichtunabhaengig" : "Arbeitszeit",
+        type: normalizeImportedEntryType(record.status),
         paidBreakMinutes: minutes(record.paidBreakMinutes),
         unpaidBreakMinutes: Math.max(0, parseDurationMinutes(record.unpaidBreakMinutes ?? record.breakDuration ?? 0)),
         note: typeof record.note === "string" && record.note.trim() ? record.note.trim() : null,
@@ -3357,17 +3384,46 @@ function normalizeImportSnapshot(snapshot) {
   };
 }
 
-function resolveImportedEmployeeId(record, employeeBySourceId, employeeByName) {
+function resolveImportedEmployeeId(record, employeeBySourceId, employeeByName, employeeByTokens) {
   if (record.employeeId && db.prepare("SELECT id FROM employees WHERE id = ?").get(record.employeeId)) {
     return record.employeeId;
+  }
+
+  // T-LIVE-015 — Name-Match hat Prioritaet vor SourceId-Match. Ordio liefert
+  // nicht-eindeutige employeeSourceIds (mehrere MAs koennen denselben
+  // "employee-number-N"-String haben), was sonst zu Daten-Cross-Contamination
+  // fuehrt (Eintraege wandern auf falschen Mitarbeiter in der DB).
+  const nameKey = String(record.employeeName ?? "").trim().toLowerCase();
+  if (nameKey) {
+    const exact = employeeByName.get(nameKey);
+    if (exact) return exact;
+    // Token-Match: Reihenfolge der Worte und Titel ignorieren.
+    if (employeeByTokens && employeeByTokens.length > 0) {
+      const recordTokens = nameKey
+        .replace(/\./g, " ")
+        .split(/\s+/)
+        .map((t) => t.trim())
+        .filter((t) => t.length >= 3 && !["dr", "med", "med."].includes(t));
+      // Beste Uebereinstimmung: maximale Anzahl gemeinsamer Tokens, mindestens 2.
+      let best = null;
+      let bestCount = 0;
+      for (const candidate of employeeByTokens) {
+        let common = 0;
+        for (const t of recordTokens) if (candidate.tokens.has(t)) common++;
+        if (common >= 2 && common > bestCount) {
+          best = candidate.id;
+          bestCount = common;
+        }
+      }
+      if (best) return best;
+    }
   }
 
   if (record.employeeSourceId && employeeBySourceId.has(String(record.employeeSourceId))) {
     return employeeBySourceId.get(String(record.employeeSourceId));
   }
 
-  const nameKey = String(record.employeeName ?? "").trim().toLowerCase();
-  return nameKey ? employeeByName.get(nameKey) ?? null : null;
+  return null;
 }
 
 function hideDemoDataForRealImport(sourceSystem) {
@@ -3422,7 +3478,7 @@ export function runExternalSnapshotImport(snapshotPath = importSnapshotPath) {
     errorCount: 0
   };
 
-  const { employeeBySourceId, employeeByName } = loadEmployeeResolutionMaps(snapshot.sourceSystem);
+  const { employeeBySourceId, employeeByName, employeeByTokens } = loadEmployeeResolutionMaps(snapshot.sourceSystem);
 
   db.exec("BEGIN");
   try {
@@ -3531,7 +3587,7 @@ export function runExternalSnapshotImport(snapshotPath = importSnapshotPath) {
     }
 
     for (const timeEntry of snapshot.timeEntries) {
-      const employeeId = resolveImportedEmployeeId(timeEntry, employeeBySourceId, employeeByName);
+      const employeeId = resolveImportedEmployeeId(timeEntry, employeeBySourceId, employeeByName, employeeByTokens);
       if (!employeeId) {
         summary.errorCount += 1;
         continue;
@@ -3547,7 +3603,7 @@ export function runExternalSnapshotImport(snapshotPath = importSnapshotPath) {
     }
 
     for (const absence of snapshot.absences) {
-      const employeeId = resolveImportedEmployeeId(absence, employeeBySourceId, employeeByName);
+      const employeeId = resolveImportedEmployeeId(absence, employeeBySourceId, employeeByName, employeeByTokens);
       if (!employeeId) {
         summary.errorCount += 1;
         continue;
@@ -3934,7 +3990,73 @@ export function stampBreakEnd(employeeId, options = {}) {
 
 export function getStampState(employeeId) {
   const active = getActiveTimeEntry(employeeId);
-  if (!active) return { active: false };
+  const todayIso = new Date().toISOString().slice(0, 10);
+  // Tages-Aggregat: Summe der bereits abgeschlossenen Stempel-Sessions heute
+  // (status != 'laufend'). Live-Sekunden der laufenden Session werden im
+  // Client dazuaddiert, damit der Counter ohne Backend-Roundtrip live tickt.
+  const completedRows = db.prepare(`
+    SELECT starts_at, ends_at, unpaid_break_minutes
+      FROM time_entries
+     WHERE employee_id = ?
+       AND date(starts_at) = ?
+       AND status != ?
+  `).all(employeeId, todayIso, TIME_ENTRY_STATUS.LAUFEND);
+  let todayCompletedSeconds = 0;
+  for (const row of completedRows) {
+    const s = Date.parse(row.starts_at);
+    const e = Date.parse(row.ends_at);
+    if (Number.isFinite(s) && Number.isFinite(e)) {
+      const gross = Math.max(0, Math.floor((e - s) / 1000));
+      const breakSec = Math.max(0, Number(row.unpaid_break_minutes ?? 0) * 60);
+      todayCompletedSeconds += Math.max(0, gross - breakSec);
+    }
+  }
+  // Heutige Schicht-Info fuer Kontext im Widget
+  const shift = db.prepare(`
+    SELECT s.id, s.starts_at, s.ends_at, l.name AS location_name, w.name AS area_name
+      FROM shift_assignments sa
+      JOIN shifts s ON s.id = sa.shift_id
+      LEFT JOIN locations l ON l.id = s.location_id
+      LEFT JOIN work_areas w ON w.id = s.work_area_id
+     WHERE sa.employee_id = ?
+       AND date(s.starts_at) = ?
+     ORDER BY s.starts_at ASC LIMIT 1
+  `).get(employeeId, todayIso);
+  const shiftInfo = shift ? {
+    shiftId: shift.id,
+    startsAt: shift.starts_at,
+    endsAt: shift.ends_at,
+    locationName: shift.location_name,
+    areaName: shift.area_name
+  } : null;
+  // T-LIVE-011 — Zugeordnete Praxis/Bereich der aktuellen oder zuletzt
+  // abgeschlossenen Session heute. Wenn der MA per assign-context eine
+  // Praxis manuell zugewiesen hat, soll das Widget die Auswahl reflektieren
+  // (statt weiter "ohne Schicht" zu zeigen).
+  const assignedRow = active ? db.prepare(`
+    SELECT te.location_id, te.work_area_id, l.name AS location_name, w.name AS area_name
+      FROM time_entries te
+      LEFT JOIN locations l ON l.id = te.location_id
+      LEFT JOIN work_areas w ON w.id = te.work_area_id
+     WHERE te.id = ?
+  `).get(active.id) : db.prepare(`
+    SELECT te.location_id, te.work_area_id, l.name AS location_name, w.name AS area_name
+      FROM time_entries te
+      LEFT JOIN locations l ON l.id = te.location_id
+      LEFT JOIN work_areas w ON w.id = te.work_area_id
+     WHERE te.employee_id = ?
+       AND date(te.starts_at) = ?
+     ORDER BY te.starts_at DESC LIMIT 1
+  `).get(employeeId, todayIso);
+  const assignedContext = assignedRow ? {
+    locationId: assignedRow.location_id,
+    locationName: assignedRow.location_name,
+    workAreaId: assignedRow.work_area_id,
+    areaName: assignedRow.area_name
+  } : null;
+  if (!active) {
+    return { active: false, todayCompletedSeconds, shift: shiftInfo, assigned: assignedContext };
+  }
   const openBreak = db.prepare(`SELECT started_at FROM stamp_active_breaks WHERE time_entry_id = ?`).get(active.id);
   return {
     active: true,
@@ -3942,8 +4064,194 @@ export function getStampState(employeeId) {
     startsAt: active.starts_at,
     onBreak: !!openBreak,
     breakStartedAt: openBreak?.started_at ?? null,
-    accruedUnpaidBreakMinutes: Number(active.unpaid_break_minutes ?? 0)
+    accruedUnpaidBreakMinutes: Number(active.unpaid_break_minutes ?? 0),
+    todayCompletedSeconds,
+    shift: shiftInfo,
+    assigned: assignedContext
   };
+}
+
+// T-LIVE-002 — Nachtraegliche Zuordnung Schicht/Praxis fuer eine
+// Stempel-Session, die ohne Schicht im Plan gestartet wurde
+// (Default-Fallback-Standort ersetzen).
+export function assignStampContext(employeeId, payload = {}) {
+  if (!employeeId) throw new Error("employeeId ist Pflicht");
+  // Ziel-Eintrag waehlen: explizit per timeEntryId, sonst laufende Session,
+  // sonst die letzte heute abgeschlossene Session.
+  let target = null;
+  const todayIso = new Date().toISOString().slice(0, 10);
+  if (payload.timeEntryId) {
+    target = db.prepare(`SELECT id, employee_id FROM time_entries WHERE id = ?`).get(payload.timeEntryId);
+  } else {
+    target = getActiveTimeEntry(employeeId)
+      ?? db.prepare(`
+        SELECT id, employee_id FROM time_entries
+         WHERE employee_id = ? AND date(starts_at) = ?
+         ORDER BY starts_at DESC LIMIT 1
+      `).get(employeeId, todayIso);
+  }
+  if (!target) throw new Error("Keine Session gefunden, der ein Kontext zugewiesen werden koennte");
+  if (target.employee_id !== employeeId) throw new Error("Session gehoert einem anderen Mitarbeiter");
+
+  let locationId = payload.locationId ? String(payload.locationId) : null;
+  let workAreaId = payload.workAreaId ? String(payload.workAreaId) : null;
+
+  // Wenn shiftId gesetzt: location/area aus der Schicht ableiten und ueberschreiben.
+  if (payload.shiftId) {
+    const shift = db.prepare(`SELECT location_id, work_area_id FROM shifts WHERE id = ?`).get(payload.shiftId);
+    if (!shift) throw new Error(`Schicht nicht gefunden: ${payload.shiftId}`);
+    locationId = shift.location_id;
+    workAreaId = shift.work_area_id;
+  }
+  if (!locationId || !workAreaId) throw new Error("locationId und workAreaId (oder shiftId) sind Pflicht");
+  // Sanity: existieren die Refs? Client kann ID ODER Anzeige-Name uebergeben.
+  const locRow = db.prepare(`SELECT id FROM locations WHERE id = ? OR name = ? LIMIT 1`).get(locationId, locationId);
+  if (!locRow) throw new Error(`Standort nicht gefunden: ${locationId}`);
+  locationId = locRow.id;
+  const areaRow = db.prepare(`SELECT id FROM work_areas WHERE id = ? OR name = ? LIMIT 1`).get(workAreaId, workAreaId);
+  if (!areaRow) throw new Error(`Bereich nicht gefunden: ${workAreaId}`);
+  workAreaId = areaRow.id;
+
+  db.prepare(`
+    UPDATE time_entries
+       SET location_id = ?, work_area_id = ?, updated_at = CURRENT_TIMESTAMP
+     WHERE id = ?
+  `).run(locationId, workAreaId, target.id);
+  recordAuditEvent({
+    entityType: "time_entry",
+    entityId: target.id,
+    actorType: payload.actorType || "user",
+    actorId: payload.actorId || employeeId,
+    action: "stamp_assign_context",
+    newValue: { locationId, workAreaId, shiftId: payload.shiftId || null }
+  });
+  return { ok: true, timeEntryId: target.id, locationId, workAreaId };
+}
+
+// T-LIVE-001 — Aktive Sessions, Per-Schicht-/Per-Location-Aggregation,
+// serverseitiges Auto-End (claude-chat, 2026-06-20).
+export function listActiveStampSessions() {
+  const rows = db.prepare(`
+    SELECT te.id, te.employee_id, te.starts_at, te.work_area_id, te.location_id,
+           te.unpaid_break_minutes,
+           e.display_name AS employee_name,
+           l.name AS location_name,
+           w.name AS work_area_name,
+           sab.started_at AS break_started_at
+      FROM time_entries te
+      LEFT JOIN employees e ON e.id = te.employee_id
+      LEFT JOIN locations l ON l.id = te.location_id
+      LEFT JOIN work_areas w ON w.id = te.work_area_id
+      LEFT JOIN stamp_active_breaks sab ON sab.time_entry_id = te.id
+     WHERE te.status = ?
+     ORDER BY te.starts_at ASC
+  `).all(TIME_ENTRY_STATUS.LAUFEND);
+  return rows.map((r) => ({
+    timeEntryId: r.id,
+    employeeId: r.employee_id,
+    employeeName: r.employee_name,
+    startsAt: r.starts_at,
+    locationId: r.location_id,
+    locationName: r.location_name,
+    workAreaId: r.work_area_id,
+    workAreaName: r.work_area_name,
+    onBreak: !!r.break_started_at,
+    breakStartedAt: r.break_started_at,
+    accruedUnpaidBreakMinutes: Number(r.unpaid_break_minutes ?? 0)
+  }));
+}
+
+function grossMinutesRow(row) {
+  const start = Date.parse(row.starts_at);
+  const end = Date.parse(row.ends_at);
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return 0;
+  return Math.max(0, Math.floor((end - start) / 60000));
+}
+
+// Per-Schicht-Stundenliste fuer einen Mitarbeiter: pro shift_assignment
+// die Summe der time_entries, die zur Location der Schicht passen und im
+// Zeitfenster der Schicht liegen.
+export function buildEmployeeShiftHours(employeeId, fromIso, toIso) {
+  if (!employeeId) throw new Error("employeeId ist Pflicht");
+  const from = fromIso ? String(fromIso).slice(0, 10) : null;
+  const to = toIso ? String(toIso).slice(0, 10) : null;
+  const params = { employeeId };
+  let where = "sa.employee_id = @employeeId";
+  if (from) { where += " AND date(s.starts_at) >= @from"; params.from = from; }
+  if (to)   { where += " AND date(s.starts_at) <= @to";   params.to   = to;   }
+  const shifts = db.prepare(`
+    SELECT s.id, s.starts_at, s.ends_at, s.location_id, s.work_area_id,
+           l.name AS location_name, w.name AS work_area_name
+      FROM shift_assignments sa
+      JOIN shifts s    ON s.id  = sa.shift_id
+      LEFT JOIN locations l ON l.id = s.location_id
+      LEFT JOIN work_areas w ON w.id = s.work_area_id
+     WHERE ${where}
+     ORDER BY s.starts_at ASC
+  `).all(params);
+  const result = [];
+  for (const sh of shifts) {
+    const entries = db.prepare(`
+      SELECT starts_at, ends_at, unpaid_break_minutes, paid_break_minutes, status
+        FROM time_entries
+       WHERE employee_id = ?
+         AND location_id = ?
+         AND starts_at >= ?
+         AND starts_at < ?
+    `).all(employeeId, sh.location_id, sh.starts_at, sh.ends_at);
+    let net = 0; let gross = 0;
+    for (const e of entries) {
+      gross += grossMinutesRow(e);
+      net   += netWorkedMinutes(e);
+    }
+    result.push({
+      shiftId: sh.id,
+      startsAt: sh.starts_at,
+      endsAt: sh.ends_at,
+      locationId: sh.location_id,
+      locationName: sh.location_name,
+      workAreaId: sh.work_area_id,
+      workAreaName: sh.work_area_name,
+      grossMinutes: gross,
+      netMinutes: net,
+      entryCount: entries.length
+    });
+  }
+  return result;
+}
+
+// Serverseitiges Auto-End: schliesst laufende Stempelungen, sobald die
+// geplante Schicht-Endzeit ueberschritten ist. Robuster als der
+// clientseitige Effect im Kiosk (der nur bei offenem Tab laeuft).
+// Fallback: 12 h-Hartlimit nach Stempel-Start.
+export function autoEndExpiredStamps(now = new Date()) {
+  const active = listActiveStampSessions();
+  if (active.length === 0) return 0;
+  const todayIso = now.toISOString().slice(0, 10);
+  let closed = 0;
+  for (const session of active) {
+    const shift = db.prepare(`
+      SELECT s.ends_at
+        FROM shift_assignments sa
+        JOIN shifts s ON s.id = sa.shift_id
+       WHERE sa.employee_id = ?
+         AND date(s.starts_at) = ?
+       ORDER BY s.starts_at ASC LIMIT 1
+    `).get(session.employeeId, todayIso);
+    const hardCutoffMs = Date.parse(session.startsAt) + 12 * 3600 * 1000;
+    const shiftEndMs = shift ? Date.parse(shift.ends_at) : null;
+    const cutoffMs = shiftEndMs && Number.isFinite(shiftEndMs)
+      ? Math.min(shiftEndMs, hardCutoffMs)
+      : hardCutoffMs;
+    if (now.getTime() < cutoffMs) continue;
+    try {
+      stampEnd(session.employeeId, { actorType: "auto", actorId: "system", note: "Auto-End nach Schicht-Ende" });
+      closed += 1;
+    } catch (err) {
+      console.warn(`[auto-end] ${session.employeeId}: ${err?.message ?? err}`);
+    }
+  }
+  return closed;
 }
 
 // T-007a — Freigabe-Aggregator Backend (claude-chat, 2026-06-04).
@@ -4252,17 +4560,110 @@ function getEmployeeWeeklyTargetHours(employeeId) {
   return 40;
 }
 
+// T-LIVE-003 — Hessen-Feiertage (claude-chat, 2026-06-20).
+// Computus (Oster-Berechnung nach Gauss) + fixe Feiertage.
+function easterSundayUtc(year) {
+  const a = year % 19;
+  const b = Math.floor(year / 100);
+  const c = year % 100;
+  const d = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
+function germanHolidaysHessen(year) {
+  const easter = easterSundayUtc(year);
+  const addDays = (date, days) => {
+    const result = new Date(date);
+    result.setUTCDate(result.getUTCDate() + days);
+    return result;
+  };
+  const isoDay = (d) =>
+    `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+  return new Set([
+    `${year}-01-01`, // Neujahr
+    isoDay(addDays(easter, -2)), // Karfreitag
+    isoDay(addDays(easter, 1)),  // Ostermontag
+    `${year}-05-01`, // Tag der Arbeit
+    isoDay(addDays(easter, 39)), // Christi Himmelfahrt
+    isoDay(addDays(easter, 50)), // Pfingstmontag
+    isoDay(addDays(easter, 60)), // Fronleichnam (HE)
+    `${year}-10-03`, // Tag der Deutschen Einheit
+    `${year}-12-25`, // 1. Weihnachtstag
+    `${year}-12-26`  // 2. Weihnachtstag
+  ]);
+}
+
+// T-LIVE-013 — Intervall-Union pro Tag (claude-chat, 2026-06-20).
+// Ordio liefert pro Arbeitstag oft mehrere ueberlappende time_entries
+// (Anwesenheits-Spur + Schicht-Spur). Additive Summation verdoppelt
+// dadurch die Brutto-Werte. Union pro Tag liefert die echte
+// Anwesenheit: pro Tag werden alle Intervalle nach Start sortiert,
+// ueberlappende Intervalle gemergt, abschliessend pro Intervall
+// (ends-starts)-unpaidBreak summiert. Negative Intervalle (end<=start,
+// z.B. Mitternacht-Wrap-Bug) werden uebersprungen.
+function unionNetMinutesByDay(rows) {
+  const byDay = new Map();
+  for (const r of rows) {
+    if (!r?.starts_at) continue;
+    const day = String(r.starts_at).slice(0, 10);
+    if (!byDay.has(day)) byDay.set(day, []);
+    byDay.get(day).push(r);
+  }
+  let total = 0;
+  for (const dayRows of byDay.values()) {
+    const sorted = [...dayRows].sort((a, b) => String(a.starts_at).localeCompare(String(b.starts_at)));
+    const intervals = [];
+    let cur = null;
+    for (const r of sorted) {
+      const s = Date.parse(r.starts_at);
+      const e = Date.parse(r.ends_at);
+      if (!Number.isFinite(s) || !Number.isFinite(e) || e <= s) continue;
+      const br = Math.max(0, Number(r.unpaid_break_minutes || 0));
+      if (cur && s <= cur.end) {
+        cur.end = Math.max(cur.end, e);
+        // Bei Merge: gewichteten Break uebernehmen (max statt sum, weil
+        // ueberlappende Eintraege die gleiche reale Pause beschreiben).
+        cur.break = Math.max(cur.break, br);
+      } else {
+        if (cur) intervals.push(cur);
+        cur = { start: s, end: e, break: br };
+      }
+    }
+    if (cur) intervals.push(cur);
+    for (const i of intervals) {
+      const gross = Math.floor((i.end - i.start) / 60000);
+      total += Math.max(0, gross - i.break);
+    }
+  }
+  return total;
+}
+
 function workingDaysInMonth(year, month) {
   const last = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  const holidays = germanHolidaysHessen(year);
   let count = 0;
   for (let d = 1; d <= last; d++) {
-    const dow = new Date(Date.UTC(year, month - 1, d)).getUTCDay();
-    if (dow !== 0 && dow !== 6) count++;
+    const date = new Date(Date.UTC(year, month - 1, d));
+    const dow = date.getUTCDay();
+    if (dow === 0 || dow === 6) continue;
+    const iso = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    if (holidays.has(iso)) continue;
+    count++;
   }
   return count;
 }
 
-export function buildEmployeeMonthlySollIst(employeeId, year, month) {
+export function buildEmployeeMonthlySollIst(employeeId, year, month, options = {}) {
   const yearNum = Number(year);
   const monthNum = Number(month);
   if (!Number.isInteger(yearNum) || yearNum < 2000 || yearNum > 2100) {
@@ -4276,20 +4677,51 @@ export function buildEmployeeMonthlySollIst(employeeId, year, month) {
   const monthStart = `${yearNum}-${String(monthNum).padStart(2, "0")}-01`;
   const last = new Date(Date.UTC(yearNum, monthNum, 0)).getUTCDate();
   const monthEnd = `${yearNum}-${String(monthNum).padStart(2, "0")}-${String(last).padStart(2, "0")}`;
-  const rows = db.prepare(`
-    SELECT starts_at, ends_at, unpaid_break_minutes
+  const locationRef = options.locationId ? String(options.locationId) : null;
+  const baseParams = { employeeId, monthStart, monthEnd };
+  let locationClause = "";
+  if (locationRef) {
+    // Akzeptiere ID oder Name (Bootstrap-Payload liefert nur Location-Namen).
+    const row = db.prepare(`
+      SELECT id FROM locations WHERE id = ? OR name = ? LIMIT 1
+    `).get(locationRef, locationRef);
+    baseParams.locationId = row?.id ?? locationRef;
+    locationClause = " AND location_id = @locationId";
+  }
+  // T-LIVE-006 — BUGFIX: vorher hartcodiert `status IN ('completed','approved')`
+  // — englische Strings, die nach dem 2026-06-14-Drift NIE in der DB
+  // vorkommen. Folge: Ist-Stunden im Monatsreport waren stets 0, das
+  // Soll-Ist-Display zeigte fuer JEDEN Mitarbeiter ein riesiges Defizit.
+  // Korrekt: TIME_ENTRY_STATUS.FREIGEGEBEN (= 'freigegeben'), das ist der
+  // Lohn-relevante Status. Konflikt/Entwurf/Aenderungsantrag bleiben raus,
+  // da nicht abgerechnungs-fertig.
+  // T-LIVE-013 — Alle relevanten time_entries des Monats laden, dann
+  // pro Tag UNION der Intervalle. Vermeidet die Doppel-Zaehlung der
+  // ueberlappenden Ordio-Datensaetze (Anwesenheits-Spur + Schicht-Spur).
+  const allParams = { employeeId, monthStart, monthEnd };
+  if (locationClause) allParams.locationId = baseParams.locationId;
+  const allRows = db.prepare(`
+    SELECT starts_at, ends_at, unpaid_break_minutes, status
     FROM time_entries
     WHERE employee_id = @employeeId
       AND date(starts_at) >= @monthStart
       AND date(starts_at) <= @monthEnd
-      AND status IN ('completed', 'approved')
-  `).all({ employeeId, monthStart, monthEnd });
-  let totalNetMinutes = 0;
+      AND removed_from_source = 0
+      AND status != 'laufend'
+      ${locationClause}
+  `).all(allParams);
+
+  const freigegebenRows = allRows.filter((r) => r.status === TIME_ENTRY_STATUS.FREIGEGEBEN);
+  const totalNetMinutes = unionNetMinutesByDay(freigegebenRows);
+  const grossPresenceMinutes = unionNetMinutesByDay(allRows);
+  const pendingApprovalMinutes = Math.max(0, grossPresenceMinutes - totalNetMinutes);
+
+  // dayBuckets/overlongDays weiterhin pro Tag aggregieren (auf
+  // freigegebener Basis, da dieselbe Semantik wie bisher).
   const dayBuckets = new Map();
-  for (const r of rows) {
+  for (const r of freigegebenRows) {
     const day = r.starts_at.slice(0, 10);
     const minutes = netWorkedMinutes(r);
-    totalNetMinutes += minutes;
     dayBuckets.set(day, (dayBuckets.get(day) || 0) + minutes);
   }
   const overlongDays = [];
@@ -4298,7 +4730,34 @@ export function buildEmployeeMonthlySollIst(employeeId, year, month) {
   }
   const weeklyTarget = getEmployeeWeeklyTargetHours(employeeId);
   const workingDays = workingDaysInMonth(yearNum, monthNum);
-  const sollMinutes = Math.round((weeklyTarget / 5) * workingDays * 60);
+  // T-LIVE-004 — Modell B (Lohnabrechnungs-Standard): konstantes Monats-Soll
+  // = weeklyHours × 13/3 (entspricht 52 Wochen / 12 Monate). Feiertage am
+  // Werktag reduzieren das individuelle Soll um den Tagesanteil
+  // (weeklyHours/5). Damit bleibt das Soll monatlich vergleichbar (~173,33 h
+  // bei 40h-Vertrag), Feiertage senken es jedoch korrekt.
+  const lastDay = new Date(Date.UTC(yearNum, monthNum, 0)).getUTCDate();
+  const holidays = germanHolidaysHessen(yearNum);
+  let workdayHolidaysInMonth = 0;
+  for (let d = 1; d <= lastDay; d++) {
+    const date = new Date(Date.UTC(yearNum, monthNum - 1, d));
+    const dow = date.getUTCDay();
+    if (dow === 0 || dow === 6) continue;
+    const iso = `${yearNum}-${String(monthNum).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    if (holidays.has(iso)) workdayHolidaysInMonth++;
+  }
+  const baseSollMinutes = (weeklyTarget * 13 / 3) * 60;
+  const holidayReductionMinutes = (weeklyTarget / 5) * 60 * workdayHolidaysInMonth;
+  const sollMinutes = Math.max(0, Math.round(baseSollMinutes - holidayReductionMinutes));
+  // MA in aggregation_group mit skip_plausibility_check (z.B. Praxis-Chef)
+  // werden als "nicht-stempelnd" markiert; Ranking-Widget kann sie ausblenden.
+  const aggregationGroupsConfig = tenantConfigGet("workforce.aggregation_groups", []) ?? [];
+  const empNameLower = String(emp.name || "").toLowerCase();
+  const inSkipGroup = aggregationGroupsConfig.some((group) => {
+    if (!group?.skip_plausibility_check) return false;
+    const tokens = group.employee_match_tokens || [];
+    return tokens.some((t) => empNameLower.includes(String(t).toLowerCase()));
+  });
+
   return {
     employeeId,
     employeeName: emp.name,
@@ -4306,17 +4765,346 @@ export function buildEmployeeMonthlySollIst(employeeId, year, month) {
     month: monthNum,
     weeklyTargetHours: weeklyTarget,
     workingDaysInMonth: workingDays,
+    workdayHolidaysInMonth,
+    sollModel: "constant_with_holiday_reduction",
     sollMinutes,
     istMinutes: totalNetMinutes,
+    pendingApprovalMinutes,
+    grossPresenceMinutes,
     differenceMinutes: totalNetMinutes - sollMinutes,
     daysWithEntries: dayBuckets.size,
-    overlongDays
+    overlongDays,
+    locationId: locationRef || null,
+    nonStamping: inSkipGroup
   };
 }
 
-export function buildTeamSollIstSummary(year, month) {
+export function buildTeamSollIstSummary(year, month, options = {}) {
   const employees = db.prepare(`SELECT id FROM employees`).all();
-  return employees.map((e) => buildEmployeeMonthlySollIst(e.id, year, month));
+  return employees.map((e) => buildEmployeeMonthlySollIst(e.id, year, month, options));
+}
+
+// T-LIVE-009 — Stunden-Audit (claude-chat, 2026-06-20).
+// Read-only Forensik-Endpoint: liefert Roh-time_entries, Statusverteilung,
+// Plausibilitaetsindikatoren und Konflikt-Block fuer einen Mitarbeiter im
+// Zeitraum. Praesentiert dieselbe Datenbasis wie der Soll-Ist-Report, aber
+// ohne Status-Filter und mit kombinierten Sicht auf Schichten+Buchungen.
+function minutesBetween(startsAt, endsAt) {
+  const s = Date.parse(startsAt);
+  const e = Date.parse(endsAt);
+  if (!Number.isFinite(s) || !Number.isFinite(e) || e <= s) return 0;
+  return Math.floor((e - s) / 60000);
+}
+
+export function getAuditEmployeeHours(employeeId, fromIso, toIso, options = {}) {
+  if (!employeeId) throw new Error("employeeId ist Pflicht");
+  const emp = db.prepare(`SELECT id, display_name FROM employees WHERE id = ?`).get(employeeId);
+  if (!emp) throw new Error(`Mitarbeiter nicht gefunden: ${employeeId}`);
+  const from = String(fromIso || "").slice(0, 10);
+  const to = String(toIso || "").slice(0, 10);
+  if (!from || !to) throw new Error("from und to (YYYY-MM-DD) sind Pflicht");
+
+  const entries = db.prepare(`
+    SELECT te.id, te.starts_at, te.ends_at, te.status, te.entry_type,
+           te.paid_break_minutes, te.unpaid_break_minutes, te.note,
+           te.source_system, te.source_id, te.imported_at, te.created_at, te.updated_at,
+           l.name AS location_name, w.name AS work_area_name,
+           te.location_id, te.work_area_id
+      FROM time_entries te
+      LEFT JOIN locations l ON l.id = te.location_id
+      LEFT JOIN work_areas w ON w.id = te.work_area_id
+     WHERE te.employee_id = ?
+       AND date(te.starts_at) >= ?
+       AND date(te.starts_at) <= ?
+       AND te.removed_from_source = 0
+     ORDER BY te.starts_at ASC
+  `).all(employeeId, from, to);
+
+  // Aufgewertete Eintraege: brutto/netto pro Eintrag
+  const entriesWithHours = entries.map((e) => {
+    const grossMin = minutesBetween(e.starts_at, e.ends_at);
+    const breakMin = Number(e.unpaid_break_minutes || 0);
+    const netMin = Math.max(0, grossMin - breakMin);
+    return {
+      id: e.id,
+      startsAt: e.starts_at,
+      endsAt: e.ends_at,
+      status: e.status,
+      entryType: e.entry_type,
+      paidBreakMinutes: Number(e.paid_break_minutes || 0),
+      unpaidBreakMinutes: breakMin,
+      grossMinutes: grossMin,
+      netMinutes: netMin,
+      locationId: e.location_id,
+      locationName: e.location_name,
+      workAreaId: e.work_area_id,
+      workAreaName: e.work_area_name,
+      note: e.note,
+      sourceSystem: e.source_system,
+      sourceId: e.source_id,
+      importedAt: e.imported_at,
+      createdAt: e.created_at,
+      updatedAt: e.updated_at
+    };
+  });
+
+  // Statusverteilung
+  const byStatus = {};
+  for (const e of entriesWithHours) {
+    const slot = byStatus[e.status] || { count: 0, netMinutes: 0, grossMinutes: 0 };
+    slot.count += 1;
+    slot.netMinutes += e.netMinutes;
+    slot.grossMinutes += e.grossMinutes;
+    byStatus[e.status] = slot;
+  }
+
+  // KPI-Aggregate
+  const grossTotalMin = entriesWithHours.reduce((s, e) => s + e.grossMinutes, 0);
+  const netApprovedMin = entriesWithHours
+    .filter((e) => e.status === TIME_ENTRY_STATUS.FREIGEGEBEN)
+    .reduce((s, e) => s + e.netMinutes, 0);
+
+  // Plan-Sicht: Schichten im Zeitraum (inkl. Plan-Sollstunden)
+  const shifts = db.prepare(`
+    SELECT s.id, s.starts_at, s.ends_at, s.location_id, s.work_area_id,
+           l.name AS location_name, w.name AS work_area_name
+      FROM shift_assignments sa
+      JOIN shifts s ON s.id = sa.shift_id
+      LEFT JOIN locations l ON l.id = s.location_id
+      LEFT JOIN work_areas w ON w.id = s.work_area_id
+     WHERE sa.employee_id = ?
+       AND date(s.starts_at) >= ?
+       AND date(s.starts_at) <= ?
+     ORDER BY s.starts_at ASC
+  `).all(employeeId, from, to);
+  // T-LIVE-010 — Mass-Assignment-Filter (claude-chat, 2026-06-20).
+  // Ordio weist Praxis-weite Schichten kollektiv allen dort taetigen MAs zu
+  // (alle diese Schichten haben work_area "Ohne Bereich"). Das blaeht den
+  // Plan-Stunden-Wert pro MA auf das 10-15-fache auf und produziert
+  // massenhaft falsche Plan-vs-Ist-Mismatches. Heuristik:
+  // Schichten mit area "Ohne Bereich" sind Mass-Assignment-Artefakte und
+  // zaehlen NICHT zur effektiven Plan-Berechnung. Echte Schichten haben
+  // immer einen konkreten Bereich (Sprechstunde, Anmeldung, Labor, etc.).
+  // Quelle: Ordio-Datenmodell-Eigenschaft, verschwindet mit dem Cortex-eigenen
+  // Schichtmodul.
+  const effectiveShifts = shifts.filter((sh) => sh.work_area_name && sh.work_area_name !== "Ohne Bereich");
+  const massAssignmentCount = shifts.length - effectiveShifts.length;
+  const plannedMinutes = effectiveShifts.reduce((s, sh) => s + minutesBetween(sh.starts_at, sh.ends_at), 0);
+  const rawPlannedMinutes = shifts.reduce((s, sh) => s + minutesBetween(sh.starts_at, sh.ends_at), 0);
+
+  // ------------------- Plausibilitaets-Indikatoren -------------------
+  const indicators = [];
+
+  // (a) Schicht ohne Erfassung am Tag (Plan-Lucke). Nur effektive Schichten;
+  // Mass-Assignment-Artefakte wuerden hier sonst falsche "fehlende Erfassung"
+  // melden, in Faellen in denen der MA gar nicht zustaendig ist.
+  const entryDays = new Set(entriesWithHours.map((e) => e.startsAt.slice(0, 10)));
+  for (const sh of effectiveShifts) {
+    const day = sh.starts_at.slice(0, 10);
+    if (!entryDays.has(day)) {
+      indicators.push({
+        type: "shift_without_entry",
+        severity: "warning",
+        day,
+        shiftId: sh.id,
+        detail: `Geplante Schicht ${sh.starts_at.slice(11, 16)}–${sh.ends_at.slice(11, 16)} ohne Zeitbuchung`
+      });
+    }
+  }
+
+  // (b) Erfassung ohne Schicht (Schichtunabhaengig oder Plan-Luecke). Auch
+  // hier nur effektive Schichten — Mass-Assignment-Tage waeren sonst als
+  // "Schichten vorhanden" markiert, obwohl der MA dort nichts zu tun hatte.
+  const shiftDays = new Set(effectiveShifts.map((s) => s.starts_at.slice(0, 10)));
+  for (const e of entriesWithHours) {
+    const day = e.startsAt.slice(0, 10);
+    if (!shiftDays.has(day) && e.entryType !== "Schichtunabhaengig") {
+      indicators.push({
+        type: "entry_without_shift",
+        severity: "info",
+        day,
+        entryId: e.id,
+        detail: `Erfassung ${e.startsAt.slice(11, 16)}–${e.endsAt.slice(11, 16)} ohne geplante Schicht (Type: ${e.entryType})`
+      });
+    }
+  }
+
+  // (c) Lange Tage > 10h
+  const byDay = new Map();
+  for (const e of entriesWithHours) {
+    const day = e.startsAt.slice(0, 10);
+    byDay.set(day, (byDay.get(day) || 0) + e.grossMinutes);
+  }
+  for (const [day, mins] of byDay.entries()) {
+    if (mins > 600) {
+      indicators.push({
+        type: "overlong_day",
+        severity: "warning",
+        day,
+        detail: `Brutto ${(mins / 60).toFixed(1)} h am ${day} (> 10 h)`
+      });
+    }
+  }
+
+  // (d) Status Entwurf aelter als 14 Tage
+  const now = Date.now();
+  for (const e of entriesWithHours) {
+    if (e.status !== TIME_ENTRY_STATUS.ENTWURF) continue;
+    const ts = Date.parse(e.startsAt);
+    if (Number.isFinite(ts) && (now - ts) > 14 * 86400000) {
+      indicators.push({
+        type: "stale_draft",
+        severity: "warning",
+        day: e.startsAt.slice(0, 10),
+        entryId: e.id,
+        detail: `Entwurf seit ${e.startsAt.slice(0, 10)} ohne Freigabe`
+      });
+    }
+  }
+
+  // (e) Mindestpause unterschritten (> 6h Arbeit: 30 min; > 9h: 45 min)
+  for (const e of entriesWithHours) {
+    const totalBreak = e.paidBreakMinutes + e.unpaidBreakMinutes;
+    let required = 0;
+    if (e.grossMinutes > 9 * 60) required = 45;
+    else if (e.grossMinutes > 6 * 60) required = 30;
+    if (required > 0 && totalBreak < required) {
+      indicators.push({
+        type: "break_too_short",
+        severity: "danger",
+        day: e.startsAt.slice(0, 10),
+        entryId: e.id,
+        detail: `Pause ${totalBreak} min, Mindestpause ${required} min (§4 ArbZG)`
+      });
+    }
+  }
+
+  // ------------------- Konflikt-Block -------------------
+  // Status-Konflikt (entry-Level): status='konflikt' nach dem Repair-Lauf.
+  const statusConflicts = entriesWithHours.filter((e) => e.status === TIME_ENTRY_STATUS.KONFLIKT);
+
+  // Source-Sync-Konflikte (Sync-Drift in sync_conflicts-Tabelle, falls vorhanden)
+  let syncConflicts = [];
+  try {
+    syncConflicts = db.prepare(`
+      SELECT id, source_entity, field_name, source_value_json, local_value_json,
+             status, detected_at, resolved_at, resolution_note
+        FROM sync_conflicts
+       WHERE status = 'open'
+       ORDER BY detected_at DESC
+       LIMIT 50
+    `).all();
+  } catch {
+    syncConflicts = [];
+  }
+
+  // Plan-vs-Ist-Mismatch pro Tag (geplante Minuten vs. gestempelte Minuten).
+  // Respektiert aggregation_groups.skip_plausibility_check — z.B. bei
+  // Praxis-Chefs, die oft formell in vielen Schichten gleichzeitig stehen,
+  // aber nur ihre reale Anwesenheit stempeln (nonStamping-Sondergruppe).
+  const aggregationGroups = tenantConfigGet("workforce.aggregation_groups", []) ?? [];
+  const skipPlausibilityCheck = aggregationGroups.some((group) => {
+    if (!group?.skip_plausibility_check) return false;
+    const tokens = group.employee_match_tokens || [];
+    const empNameLower = String(emp.display_name || "").toLowerCase();
+    return tokens.some((t) => empNameLower.includes(String(t).toLowerCase()));
+  });
+  const planVsActual = [];
+  if (!skipPlausibilityCheck) {
+    for (const day of new Set([...byDay.keys(), ...shiftDays])) {
+      const plannedDayMin = effectiveShifts
+        .filter((s) => s.starts_at.slice(0, 10) === day)
+        .reduce((sum, s) => sum + minutesBetween(s.starts_at, s.ends_at), 0);
+      const actualDayMin = byDay.get(day) || 0;
+      const delta = actualDayMin - plannedDayMin;
+      if (Math.abs(delta) >= 60) {
+        planVsActual.push({
+          day,
+          plannedMinutes: plannedDayMin,
+          actualMinutes: actualDayMin,
+          deltaMinutes: delta
+        });
+      }
+    }
+  }
+
+  return {
+    employee: { id: emp.id, name: emp.display_name },
+    period: { from, to },
+    kpis: {
+      grossTotalMinutes: grossTotalMin,
+      netApprovedMinutes: netApprovedMin,
+      plannedMinutes,
+      rawPlannedMinutes,
+      planVsActualDeltaMinutes: grossTotalMin - plannedMinutes,
+      entryCount: entriesWithHours.length,
+      indicatorCount: indicators.length,
+      massAssignmentExcludedCount: massAssignmentCount
+    },
+    byStatus,
+    entries: entriesWithHours,
+    shifts: shifts.map((s) => ({
+      id: s.id,
+      startsAt: s.starts_at,
+      endsAt: s.ends_at,
+      locationName: s.location_name,
+      workAreaName: s.work_area_name,
+      plannedMinutes: minutesBetween(s.starts_at, s.ends_at),
+      isMassAssignment: s.work_area_name === "Ohne Bereich"
+    })),
+    indicators,
+    conflicts: {
+      statusConflicts,
+      syncConflicts,
+      planVsActual,
+      plausibilityCheckSkipped: skipPlausibilityCheck,
+      massAssignmentExcludedCount: massAssignmentCount
+    }
+  };
+}
+
+export function renderAuditCsv(audit) {
+  const sep = ";";
+  const escape = (val) => {
+    if (val == null) return "";
+    const s = String(val);
+    if (s.includes(sep) || s.includes("\n") || s.includes('"')) {
+      return `"${s.replace(/"/g, '""')}"`;
+    }
+    return s;
+  };
+  const lines = [];
+  // BOM fuer Excel UTF-8
+  lines.push(
+    [
+      "datum", "start", "ende", "brutto_min", "pause_unbezahlt_min", "pause_bezahlt_min",
+      "netto_min", "status", "entry_type", "praxis", "bereich", "quelle",
+      "source_id", "imported_at", "note", "entry_id"
+    ].join(sep)
+  );
+  for (const e of audit.entries) {
+    lines.push(
+      [
+        e.startsAt.slice(0, 10),
+        e.startsAt.slice(11, 16),
+        e.endsAt.slice(11, 16),
+        e.grossMinutes,
+        e.unpaidBreakMinutes,
+        e.paidBreakMinutes,
+        e.netMinutes,
+        e.status,
+        e.entryType,
+        escape(e.locationName),
+        escape(e.workAreaName),
+        escape(e.sourceSystem),
+        escape(e.sourceId),
+        e.importedAt || "",
+        escape(e.note),
+        e.id
+      ].join(sep)
+    );
+  }
+  return "\ufeff" + lines.join("\n");
 }
 
 export function renderTeamSollIstCsv(report) {
@@ -4393,6 +5181,57 @@ export function detectShiftConflicts(payload) {
         detail: `${row.absence_type} ${row.starts_on}–${row.ends_on} genehmigt`,
         conflictingAbsenceId: row.id
       });
+    }
+
+    // T-LIVE-003 — Wochenstunden-Limit (claude-chat, 2026-06-20).
+    // Verhindert dass die Summe der geplanten Schichten der Woche das
+    // vereinbarte weekly_hours-Soll des Mitarbeiters ueberschreitet.
+    const weeklyTargetHours = getEmployeeWeeklyTargetHours(employeeId);
+    if (weeklyTargetHours > 0) {
+      // ISO-Woche um startsAt: Montag-Sonntag
+      const refDate = new Date(startsAt);
+      const dayOfWeek = (refDate.getUTCDay() + 6) % 7; // Mo=0..So=6
+      const weekStart = new Date(refDate);
+      weekStart.setUTCDate(refDate.getUTCDate() - dayOfWeek);
+      weekStart.setUTCHours(0, 0, 0, 0);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setUTCDate(weekStart.getUTCDate() + 7);
+      const weekStartIso = weekStart.toISOString();
+      const weekEndIso = weekEnd.toISOString();
+      // Mass-Assignment-Schichten ("Ohne Bereich") aus dem Wochenstunden-
+      // Limit-Check ausschliessen — siehe T-LIVE-010 in getAuditEmployeeHours.
+      const otherShifts = db.prepare(`
+        SELECT shifts.id, shifts.starts_at, shifts.ends_at
+          FROM shift_assignments
+          JOIN shifts ON shifts.id = shift_assignments.shift_id
+          LEFT JOIN work_areas ON work_areas.id = shifts.work_area_id
+         WHERE shift_assignments.employee_id = @employeeId
+           AND (@excludeShiftId IS NULL OR shifts.id <> @excludeShiftId)
+           AND shifts.starts_at >= @weekStart
+           AND shifts.starts_at <  @weekEnd
+           AND COALESCE(work_areas.name, '') <> 'Ohne Bereich'
+      `).all({ employeeId, excludeShiftId, weekStart: weekStartIso, weekEnd: weekEndIso });
+      let alreadyMinutes = 0;
+      for (const s of otherShifts) {
+        const a = Date.parse(s.starts_at), b = Date.parse(s.ends_at);
+        if (Number.isFinite(a) && Number.isFinite(b) && b > a) {
+          alreadyMinutes += Math.floor((b - a) / 60000);
+        }
+      }
+      const newMinutes = Math.max(0, Math.floor((Date.parse(endsAt) - Date.parse(startsAt)) / 60000));
+      const limitMinutes = Math.round(weeklyTargetHours * 60);
+      if (alreadyMinutes + newMinutes > limitMinutes) {
+        const over = alreadyMinutes + newMinutes - limitMinutes;
+        conflicts.push({
+          employeeId,
+          type: "weekly_hours_exceeded",
+          detail: `Wochen-Soll ${weeklyTargetHours} h ueberschritten: bereits ${(alreadyMinutes/60).toFixed(1)} h geplant, +${(newMinutes/60).toFixed(1)} h neu = ${((alreadyMinutes+newMinutes)/60).toFixed(1)} h (+${(over/60).toFixed(1)} h ueber Soll)`,
+          weeklyTargetHours,
+          plannedMinutes: alreadyMinutes,
+          additionalMinutes: newMinutes,
+          overMinutes: over
+        });
+      }
     }
   }
   return { conflicts };

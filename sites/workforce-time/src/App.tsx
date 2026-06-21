@@ -50,7 +50,7 @@ type ShiftConflictCheckPayload = {
 };
 const ShiftConflictContext = createContext<((payload: ShiftConflictCheckPayload) => Promise<ShiftConflict[]>) | null>(null);
 
-type ViewKey = "dashboard" | "plan" | "time" | "absences" | "approvals" | "employees" | "payroll" | "reports" | "imports" | "stamp" | "admin" | "settings" | "design";
+type ViewKey = "dashboard" | "plan" | "time" | "absences" | "approvals" | "employees" | "payroll" | "reports" | "audit" | "imports" | "stamp" | "admin" | "settings" | "design";
 
 type ThemeKey = "default" | "cyberpunk";
 
@@ -483,6 +483,7 @@ type WorkforceConfig = {
   tolerances: WorkforceTolerances;
   defaultCalculationNote: string;
   shiftSchema: ShiftSchemaGroup[];
+  workAreaCategories: Record<string, string[]>;
   isDemo: boolean;
 };
 
@@ -497,6 +498,7 @@ const defaultWorkforceConfig: WorkforceConfig = {
   defaultCalculationNote:
     "MFA-Zeiten werden nur über die Mitarbeiter-ID gezählt; der Arbeitsbereich ist Herkunft der Buchung, keine feste Zuordnung.",
   shiftSchema: [],
+  workAreaCategories: {},
   isDemo: false
 };
 
@@ -826,6 +828,7 @@ const viewMeta: Record<ViewKey, { title: string; eyebrow: string }> = {
   employees: { title: "Mitarbeiter", eyebrow: "Stammdaten" },
   payroll: { title: "Lohnabrechnung", eyebrow: "DATEV-Export · Monatsstunden" },
   reports: { title: "Auswertung", eyebrow: "Soll vs. Ist · Monatsbericht" },
+  audit: { title: "Stunden-Audit", eyebrow: "Forensik · Roh-Buchungen · Konflikte" },
   imports: { title: "Import & Sync", eyebrow: "Migration" },
   stamp: { title: "Stempeluhr", eyebrow: "Kiosk-Modus" },
   admin: { title: "Benutzer & Rollen", eyebrow: "Rollen-Verwaltung" },
@@ -1465,6 +1468,12 @@ function isCountedMonthlyPersonTime(employee: Employee, entry: TimeEntry, range:
   if (entry.employeeId !== employee.id) return false;
   if (!dateInRange(entry.startDate, range.start, range.end)) return false;
   const group = aggregationGroupForEmployee(employee);
+  // T-LIVE-014 — Bei skip_plausibility_check-Gruppen (z.B. Praxis-Chef)
+  // alle Bereiche zaehlen. countable_area_match_tokens sind ueberholt,
+  // sobald der MA als Sondergruppe markiert ist — sonst zeigt das Widget
+  // unsinnigerweise 0 h, weil die Token-Liste die echten Bereichsnamen
+  // (z.B. "Sprechstunde Gruneburgweg") nicht matched.
+  if (group?.skip_plausibility_check) return true;
   return group ? areaMatchesGroup(entry.area, group) : true;
 }
 
@@ -1474,8 +1483,53 @@ function employeeMonthTimeEntries(employee: Employee, entries: TimeEntry[], rang
     .sort((first, second) => `${first.startDate}T${first.startTime}`.localeCompare(`${second.startDate}T${second.startTime}`));
 }
 
+// T-LIVE-013 — Intervall-Union pro Tag (Frontend-Pendant zur Server-Logik).
+// Verhindert Doppel-Zaehlung der ueberlappenden Ordio-Datensaetze
+// (Anwesenheits-Spur + Schicht-Spur). Pro Tag Sortierung nach Start,
+// Merge ueberlappender Intervalle, abschliessend Brutto-minus-unpaidBreak
+// pro Intervall summiert. Negative Intervalle werden uebersprungen.
+function unionNetMinutesPerDay(entries: TimeEntry[]): number {
+  const byDay = new Map<string, TimeEntry[]>();
+  for (const entry of entries) {
+    const day = entry.startDate;
+    if (!byDay.has(day)) byDay.set(day, []);
+    byDay.get(day)!.push(entry);
+  }
+  let total = 0;
+  for (const dayEntries of byDay.values()) {
+    const sorted = [...dayEntries].sort((a, b) =>
+      `${a.startDate}T${a.startTime}`.localeCompare(`${b.startDate}T${b.startTime}`)
+    );
+    let curStart: number | null = null;
+    let curEnd = 0;
+    let curBreak = 0;
+    const intervals: Array<{ start: number; end: number; brk: number }> = [];
+    for (const e of sorted) {
+      const s = parseDateTime(e.startDate, e.startTime).getTime();
+      const en = parseDateTime(e.endDate, e.endTime).getTime();
+      if (!Number.isFinite(s) || !Number.isFinite(en) || en <= s) continue;
+      const br = Math.max(0, e.unpaidBreakMinutes || 0);
+      if (curStart !== null && s <= curEnd) {
+        curEnd = Math.max(curEnd, en);
+        curBreak = Math.max(curBreak, br);
+      } else {
+        if (curStart !== null) intervals.push({ start: curStart, end: curEnd, brk: curBreak });
+        curStart = s;
+        curEnd = en;
+        curBreak = br;
+      }
+    }
+    if (curStart !== null) intervals.push({ start: curStart, end: curEnd, brk: curBreak });
+    for (const i of intervals) {
+      const gross = Math.floor((i.end - i.start) / 60000);
+      total += Math.max(0, gross - i.brk);
+    }
+  }
+  return total;
+}
+
 function employeeMonthTimeMinutes(employee: Employee, entries: TimeEntry[], range: { start: string; end: string }) {
-  return employeeMonthTimeEntries(employee, entries, range).reduce((sum, entry) => sum + minutesBetween(entry), 0);
+  return unionNetMinutesPerDay(employeeMonthTimeEntries(employee, entries, range));
 }
 
 function monthlyNeedsPlausibilityReview(employee: Employee, actualMinutes: number, targetMinutes: number) {
@@ -2005,6 +2059,12 @@ function App() {
         Aktualisieren
       </button>
     ),
+    audit: (
+      <button className="secondary-button" onClick={refresh}>
+        <RefreshCw size={17} />
+        Aktualisieren
+      </button>
+    ),
     imports: (
       <button className="primary-button" onClick={runDeltaImport} disabled={busy}>
         <RefreshCw size={18} />
@@ -2120,6 +2180,21 @@ function App() {
           </div>
         </header>
 
+        {/* T-LIVE-001 — Live-Stempeluhr global oberhalb jeder View, damit
+            prominenter Timer auf der „ersten Seite" garantiert sichtbar ist,
+            unabhaengig davon, welche View der Nutzer gewaehlt hat. */}
+        <div style={{ padding: "0 24px", marginTop: 16 }}>
+          <LiveTimerBoard
+            request={request}
+            authUser={authUser}
+            employees={data.employees}
+            setView={navigateView}
+            locations={data.locations}
+            workAreas={data.workAreas}
+            workAreaCategories={data.workforce?.workAreaCategories ?? {}}
+          />
+        </div>
+
         {view === "dashboard" ? (
           <DashboardView
             activeWeekStart={visibleWeekStart}
@@ -2133,6 +2208,8 @@ function App() {
             }
             onOpenShift={() => openShiftDialogForWeek()}
             onShowCalculation={setCalculation}
+            request={request}
+            authUser={authUser}
           />
         ) : null}
         {view === "plan" ? (
@@ -2181,7 +2258,8 @@ function App() {
           <EmployeesView data={data} request={request} refresh={refresh} />
         ) : null}
         {view === "payroll" ? <PayrollView request={request} employees={data.employees} /> : null}
-        {view === "reports" ? <ReportsView request={request} /> : null}
+        {view === "reports" ? <ReportsView request={request} locations={data.locations} /> : null}
+        {view === "audit" ? <AuditView request={request} employees={data.employees} /> : null}
         {view === "imports" ? (
           <ImportsView
             data={data}
@@ -2549,6 +2627,7 @@ function Sidebar({
     { view: "employees", label: "Mitarbeiter", icon: Users },
     { view: "payroll", label: "Lohnabrechnung", icon: Coins },
     { view: "reports", label: "Auswertung", icon: BarChart3 },
+    { view: "audit", label: "Stunden-Audit", icon: Activity },
     { view: "imports", label: "Import & Sync", icon: Database },
     { view: "admin", label: "Rollen-Admin", icon: ShieldCheck },
     { view: "settings", label: "Einstellungen", icon: Settings2 },
@@ -2725,6 +2804,852 @@ function OperationalAlertsBanner({
   );
 }
 
+// T-LIVE-001 — Prominenter Live-Timer auf der Uebersicht.
+// Mitarbeiter sehen nur den eigenen Timer (gross, mit Sekunde-Tick + Start/Pause/Ende-Buttons).
+// Admins sehen zusaetzlich die Liste aller aktuell laufenden Stempel-Sessions.
+// State-Quelle: /api/stamp/state (Self) bzw. /api/stamp/state/all (Admin).
+type LiveSession = {
+  timeEntryId: string;
+  employeeId: string;
+  employeeName: string;
+  startsAt: string;
+  locationId: string | null;
+  locationName: string | null;
+  workAreaId: string | null;
+  workAreaName: string | null;
+  onBreak: boolean;
+  breakStartedAt: string | null;
+  accruedUnpaidBreakMinutes: number;
+};
+
+function formatHMS(ms: number): string {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+function LiveTimerBoard({
+  request,
+  authUser,
+  employees,
+  setView,
+  locations,
+  workAreas,
+  workAreaCategories
+}: {
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  authUser: AuthUser | null;
+  employees: Employee[];
+  setView: (view: ViewKey) => void;
+  locations: string[];
+  workAreas: string[];
+  workAreaCategories: Record<string, string[]>;
+}) {
+  const isAdmin = !authUser || authUser.role === "admin";
+  const ownEmployeeId = authUser?.employeeId ?? null;
+  const [selfState, setSelfState] = useState<StampState>({ active: false });
+  const [allSessions, setAllSessions] = useState<LiveSession[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [now, setNow] = useState(Date.now());
+  const [adminExpanded, setAdminExpanded] = useState(false);
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [assignLocation, setAssignLocation] = useState<string>("");
+  const [assignArea, setAssignArea] = useState<string>("");
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  async function fetchSelf() {
+    if (!ownEmployeeId) return;
+    try {
+      const res = await request<StampState>(`/api/stamp/state?employeeId=${encodeURIComponent(ownEmployeeId)}`);
+      setSelfState(res ?? { active: false });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Self-State nicht ladbar");
+    }
+  }
+
+  async function fetchAll() {
+    if (!isAdmin) return;
+    try {
+      const res = await request<{ ok: boolean; sessions: LiveSession[] }>("/api/stamp/state/all");
+      setAllSessions(Array.isArray(res?.sessions) ? res.sessions : []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Active-Sessions nicht ladbar");
+    }
+  }
+
+  useEffect(() => {
+    fetchSelf();
+    fetchAll();
+    const id = window.setInterval(() => {
+      fetchSelf();
+      fetchAll();
+    }, 15_000);
+    return () => window.clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ownEmployeeId, isAdmin]);
+
+  async function doOp(op: "start" | "end" | "break-start" | "break-end") {
+    if (!ownEmployeeId) {
+      setError("Kein Mitarbeiter-Account mit diesem Login verknuepft.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await request(`/api/stamp/${op}`, {
+        method: "POST",
+        body: JSON.stringify({ employeeId: ownEmployeeId })
+      });
+      await fetchSelf();
+      await fetchAll();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Stempel-Aktion fehlgeschlagen");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function submitAssignContext() {
+    if (!ownEmployeeId) return;
+    if (!assignLocation || !assignArea) {
+      setError("Bitte Praxis und Bereich waehlen.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await request(`/api/stamp/assign-context`, {
+        method: "POST",
+        body: JSON.stringify({
+          employeeId: ownEmployeeId,
+          locationId: assignLocation,
+          workAreaId: assignArea
+        })
+      });
+      setAssignOpen(false);
+      await fetchSelf();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Zuordnung fehlgeschlagen");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const selfElapsedMs = selfState.active && selfState.startsAt
+    ? now - new Date(selfState.startsAt).getTime()
+    : 0;
+  const ownEmployee = ownEmployeeId
+    ? employees.find((e) => e.id === ownEmployeeId) ?? null
+    : null;
+
+  const statusLabel = selfState.active
+    ? selfState.onBreak ? "Pause" : "laufend"
+    : "gestoppt";
+  const statusColor = selfState.active
+    ? selfState.onBreak ? "var(--color-warning, #b45309)" : "var(--color-success, #047857)"
+    : "var(--muted, #6b7280)";
+
+  return (
+    <section
+      className="live-timer-bar"
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: 12,
+        padding: "8px 14px",
+        borderRadius: 12,
+        background: "var(--surface-muted, #f3f4f6)",
+        border: "1px solid var(--color-line, #e5e7eb)",
+        fontSize: "0.9em",
+        minHeight: 0
+      }}
+      title="Live-Stempeluhr"
+    >
+      {/* Self-Timer Block: kompakt, einzeilig */}
+      {ownEmployeeId ? (
+        <>
+          <span style={{ fontWeight: 600, whiteSpace: "nowrap" }}>
+            {ownEmployee?.name ?? "Stempeluhr"}
+          </span>
+          <span
+            style={{
+              fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+              fontSize: "1.15em",
+              fontWeight: 700,
+              minWidth: 84,
+              textAlign: "center"
+            }}
+            title="Laufzeit der aktuellen Stempel-Session"
+          >
+            {selfState.active ? formatHMS(selfElapsedMs) : "00:00:00"}
+          </span>
+          <span style={{ color: statusColor, fontSize: "0.85em", whiteSpace: "nowrap" }}>
+            {statusLabel}
+          </span>
+          {/* Kumulative Tagessumme: bereits abgeschlossene Sessions + Live-Sekunden */}
+          <span
+            style={{
+              fontSize: "0.85em",
+              color: "var(--muted, #6b7280)",
+              whiteSpace: "nowrap",
+              borderLeft: "1px solid var(--color-line, #e5e7eb)",
+              paddingLeft: 10
+            }}
+            title="Kumulative Anwesenheit heute (abgeschlossene Sessions + laufende)"
+          >
+            Heute Σ {formatHMS(((selfState.todayCompletedSeconds ?? 0) * 1000) + (selfState.active ? selfElapsedMs : 0))}
+          </span>
+          {/* Schicht-Kontext, manuelle Zuordnung oder Fallback-Hinweis (drei Faelle).
+              Prio 1: echte Schicht im Plan -> graue Pille mit Zeitspanne.
+              Prio 2: keine Schicht, aber Praxis/Bereich ueber assign-context
+                      gesetzt -> gruene Pille "zugeordnet".
+              Prio 3: gar nichts -> rote "ohne Schicht"-Pille. */}
+          {selfState.shift ? (
+            <span
+              style={{
+                fontSize: "0.8em",
+                color: "var(--muted, #6b7280)",
+                whiteSpace: "nowrap"
+              }}
+              title={`Schicht ${selfState.shift.startsAt.slice(11,16)}–${selfState.shift.endsAt.slice(11,16)} · ${selfState.shift.locationName ?? "—"}`}
+            >
+              {`· ${selfState.shift.locationName ?? "—"} ${selfState.shift.startsAt.slice(11,16)}–${selfState.shift.endsAt.slice(11,16)}`}
+            </span>
+          ) : selfState.assigned && selfState.assigned.locationName ? (
+            <span
+              style={{
+                fontSize: "0.8em",
+                color: "var(--color-success, #047857)",
+                background: "var(--teal-soft, #d1fae5)",
+                padding: "2px 8px",
+                borderRadius: 6,
+                fontWeight: 600,
+                whiteSpace: "nowrap"
+              }}
+              title={`Manuell zugeordnet: ${selfState.assigned.locationName} / ${selfState.assigned.areaName ?? "—"}`}
+            >
+              ✓ {selfState.assigned.locationName}{selfState.assigned.areaName ? ` · ${selfState.assigned.areaName}` : ""}
+            </span>
+          ) : (
+            <span
+              style={{
+                fontSize: "0.8em",
+                color: "var(--color-danger, #b91c1c)",
+                background: "var(--color-warning-soft, #fef3c7)",
+                padding: "2px 8px",
+                borderRadius: 6,
+                fontWeight: 600,
+                whiteSpace: "nowrap"
+              }}
+              title="Ohne Schicht im Plan greift ein Default-Standort"
+            >
+              ohne Schicht
+            </span>
+          )}
+          {/* Zuordnungs-Button: bei keiner Plan-Schicht
+              - kein assigned: "+ Praxis/Bereich zuordnen" (rot)
+              - bereits assigned: "Schichtwechsel" (neutral)
+              Sichtbar wenn aktive Session laeuft oder heute schon gestempelt. */}
+          {!selfState.shift && (selfState.active || (selfState.todayCompletedSeconds ?? 0) > 0) ? (
+            <button
+              type="button"
+              onClick={() => setAssignOpen((v) => !v)}
+              style={{
+                padding: "4px 10px",
+                fontSize: "0.85em",
+                borderRadius: 6,
+                border: selfState.assigned?.locationName
+                  ? "1px solid var(--color-line, #e5e7eb)"
+                  : "1px solid var(--color-danger, #b91c1c)",
+                background: assignOpen
+                  ? (selfState.assigned?.locationName ? "var(--text, #1d1d1f)" : "var(--color-danger, #b91c1c)")
+                  : "transparent",
+                color: assignOpen
+                  ? "white"
+                  : (selfState.assigned?.locationName ? "var(--text)" : "var(--color-danger, #b91c1c)"),
+                cursor: "pointer",
+                whiteSpace: "nowrap"
+              }}
+              title={selfState.assigned?.locationName
+                ? "Andere Praxis / anderen Bereich wählen"
+                : "Praxis und Bereich der aktuellen oder zuletzt abgeschlossenen Session zuweisen"}
+            >
+              {assignOpen
+                ? "× Abbrechen"
+                : selfState.assigned?.locationName
+                  ? "⇄ Schichtwechsel"
+                  : "+ Praxis/Bereich zuordnen"}
+            </button>
+          ) : null}
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            <button
+              type="button"
+              disabled={busy || selfState.active}
+              onClick={() => doOp("start")}
+              style={{
+                padding: "4px 10px",
+                fontSize: "0.85em",
+                borderRadius: 6,
+                border: "1px solid var(--color-success, #047857)",
+                background: selfState.active ? "transparent" : "var(--color-success, #047857)",
+                color: selfState.active ? "var(--muted)" : "white",
+                cursor: busy || selfState.active ? "not-allowed" : "pointer"
+              }}
+            >Start</button>
+            <button
+              type="button"
+              disabled={busy || !selfState.active}
+              onClick={() => doOp("end")}
+              style={{
+                padding: "4px 10px",
+                fontSize: "0.85em",
+                borderRadius: 6,
+                border: "1px solid var(--color-danger, #b91c1c)",
+                background: !selfState.active ? "transparent" : "var(--color-danger, #b91c1c)",
+                color: !selfState.active ? "var(--muted)" : "white",
+                cursor: busy || !selfState.active ? "not-allowed" : "pointer"
+              }}
+            >Ende</button>
+            <button
+              type="button"
+              disabled={busy || !selfState.active || !!selfState.onBreak}
+              onClick={() => doOp("break-start")}
+              style={{ padding: "4px 10px", fontSize: "0.85em", borderRadius: 6, border: "1px solid var(--color-line)", background: "transparent" }}
+            >Pause</button>
+            <button
+              type="button"
+              disabled={busy || !selfState.active || !selfState.onBreak}
+              onClick={() => doOp("break-end")}
+              style={{ padding: "4px 10px", fontSize: "0.85em", borderRadius: 6, border: "1px solid var(--color-line)", background: "transparent" }}
+            >Weiter</button>
+          </div>
+        </>
+      ) : (
+        <span style={{ color: "var(--muted, #6b7280)", fontSize: "0.85em" }}>
+          Stempeluhr · kein Mitarbeiter mit diesem Login verknuepft
+        </span>
+      )}
+
+      {/* Admin-Live-Counter + Expand */}
+      {isAdmin ? (
+        <button
+          type="button"
+          onClick={() => setAdminExpanded((v) => !v)}
+          style={{
+            marginLeft: "auto",
+            padding: "4px 10px",
+            fontSize: "0.85em",
+            borderRadius: 6,
+            border: "1px solid var(--color-line)",
+            background: "transparent",
+            cursor: "pointer"
+          }}
+          title="Alle laufenden Stempel-Sessions anzeigen"
+        >
+          {allSessions.length} aktiv {adminExpanded ? "▴" : "▾"}
+        </button>
+      ) : null}
+
+      {error ? (
+        <span style={{ color: "var(--color-danger, #b91c1c)", fontSize: "0.85em", flexBasis: "100%" }}>
+          {error}
+        </span>
+      ) : null}
+
+      {/* Inline-Auswahl: Praxis + Bereich fuer die letzte/laufende Session */}
+      {assignOpen ? (
+        <div
+          style={{
+            flexBasis: "100%",
+            marginTop: 8,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 8,
+            alignItems: "center",
+            padding: "8px 10px",
+            borderRadius: 8,
+            background: "var(--surface, #fff)",
+            border: "1px solid var(--color-danger, #b91c1c)"
+          }}
+        >
+          <span style={{ fontSize: "0.85em", fontWeight: 600 }}>Praxis</span>
+          <select
+            value={assignLocation}
+            onChange={(e) => {
+              setAssignLocation(e.target.value);
+              // Bei Praxis-Wechsel den Bereich zuruecksetzen, damit kein
+              // praxisfremder Bereich versehentlich ausgewaehlt bleibt.
+              setAssignArea("");
+            }}
+            style={{ padding: "4px 8px", fontSize: "0.85em", borderRadius: 6 }}
+          >
+            <option value="">— waehlen —</option>
+            {Object.keys(workAreaCategories).map((category) => (
+              <option
+                key={category}
+                value={category}
+                disabled={!locations.includes(category)}
+                title={!locations.includes(category) ? "Standort im Datenbestand noch nicht angelegt" : ""}
+              >
+                {category}
+              </option>
+            ))}
+          </select>
+          <span style={{ fontSize: "0.85em", fontWeight: 600 }}>Bereich</span>
+          <select
+            value={assignArea}
+            onChange={(e) => setAssignArea(e.target.value)}
+            disabled={!assignLocation}
+            style={{ padding: "4px 8px", fontSize: "0.85em", borderRadius: 6 }}
+          >
+            <option value="">{assignLocation ? "— waehlen —" : "— erst Praxis waehlen —"}</option>
+            {(workAreaCategories[assignLocation] ?? []).map((area) => (
+              <option key={area} value={area}>{area}</option>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={busy || !assignLocation || !assignArea}
+            onClick={submitAssignContext}
+            style={{
+              padding: "4px 12px",
+              fontSize: "0.85em",
+              borderRadius: 6,
+              border: "1px solid var(--color-success, #047857)",
+              background: !assignLocation || !assignArea ? "transparent" : "var(--color-success, #047857)",
+              color: !assignLocation || !assignArea ? "var(--muted)" : "white",
+              cursor: busy ? "not-allowed" : "pointer"
+            }}
+          >
+            Zuweisen
+          </button>
+          <span style={{ fontSize: "0.78em", color: "var(--muted, #6b7280)" }}>
+            Wirkt auf die {selfState.active ? "laufende" : "zuletzt abgeschlossene"} Session.
+          </span>
+        </div>
+      ) : null}
+
+      {/* Ausgeklappte Admin-Tabelle: full-width, drueckt darunter, nicht den oberen Header */}
+      {isAdmin && adminExpanded ? (
+        <div style={{ flexBasis: "100%", marginTop: 8, overflowX: "auto" }}>
+          {allSessions.length === 0 ? (
+            <p style={{ margin: 0, color: "var(--muted, #6b7280)", fontSize: "0.85em" }}>
+              Aktuell ist niemand gestempelt.
+            </p>
+          ) : (
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85em" }}>
+              <thead>
+                <tr style={{ textAlign: "left", color: "var(--muted, #6b7280)" }}>
+                  <th style={{ padding: "4px 6px" }}>Mitarbeiter</th>
+                  <th style={{ padding: "4px 6px" }}>Praxis</th>
+                  <th style={{ padding: "4px 6px" }}>Bereich</th>
+                  <th style={{ padding: "4px 6px" }}>Start</th>
+                  <th style={{ padding: "4px 6px", textAlign: "right" }}>Laufzeit</th>
+                  <th style={{ padding: "4px 6px" }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allSessions.map((session) => {
+                  const elapsed = now - new Date(session.startsAt).getTime();
+                  return (
+                    <tr key={session.timeEntryId} style={{ borderTop: "1px solid var(--color-line, #e5e7eb)" }}>
+                      <td style={{ padding: "4px 6px" }}>{session.employeeName ?? session.employeeId}</td>
+                      <td style={{ padding: "4px 6px" }}>{session.locationName ?? "—"}</td>
+                      <td style={{ padding: "4px 6px" }}>{session.workAreaName ?? "—"}</td>
+                      <td style={{ padding: "4px 6px" }}>
+                        {new Date(session.startsAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
+                      </td>
+                      <td style={{ padding: "4px 6px", textAlign: "right", fontFamily: "ui-monospace, monospace" }}>
+                        {formatHMS(elapsed)}
+                      </td>
+                      <td style={{ padding: "4px 6px" }}>
+                        {session.onBreak ? "Pause" : "aktiv"}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+// T-LIVE-001 — Per-Schicht-Stundenliste fuer den eingeloggten Mitarbeiter.
+// Beantwortet: „Wie viele Stunden habe ich in dieser einen Praxis je Schicht
+// verbracht?" Quelle: /api/stamp/shift-hours.
+type ShiftHoursRow = {
+  shiftId: string;
+  startsAt: string;
+  endsAt: string;
+  locationId: string | null;
+  locationName: string | null;
+  workAreaName: string | null;
+  grossMinutes: number;
+  netMinutes: number;
+  entryCount: number;
+};
+
+function EmployeeShiftHoursSection({
+  request,
+  employeeId
+}: {
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  employeeId: string | null;
+}) {
+  const today = new Date();
+  const monthStartIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-01`;
+  const monthEndIso = (() => {
+    const last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    return `${last.getFullYear()}-${String(last.getMonth() + 1).padStart(2, "0")}-${String(last.getDate()).padStart(2, "0")}`;
+  })();
+  const [rows, setRows] = useState<ShiftHoursRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!employeeId) return;
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    request<{ ok: boolean; shifts: ShiftHoursRow[] }>(
+      `/api/stamp/shift-hours?employeeId=${encodeURIComponent(employeeId)}&from=${monthStartIso}&to=${monthEndIso}`
+    )
+      .then((res) => {
+        if (cancelled) return;
+        setRows(Array.isArray(res?.shifts) ? res.shifts : []);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Schicht-Stunden nicht ladbar");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [employeeId, monthStartIso, monthEndIso, request]);
+
+  if (!employeeId) return null;
+  const totalNet = rows.reduce((sum, r) => sum + r.netMinutes, 0);
+
+  // Gruppiert nach Standort: liefert pro Praxis die Summe der Schicht-Netto-Stunden.
+  const byLocation = new Map<string, { name: string; minutes: number; count: number }>();
+  for (const row of rows) {
+    const key = row.locationId ?? "unbekannt";
+    const name = row.locationName ?? "Unbekannt";
+    const existing = byLocation.get(key) ?? { name, minutes: 0, count: 0 };
+    existing.minutes += row.netMinutes;
+    existing.count += 1;
+    byLocation.set(key, existing);
+  }
+
+  return (
+    <div>
+      <h3 style={{ marginTop: 0, marginBottom: 8 }}>
+        Meine Schichten · {today.toLocaleDateString("de-DE", { month: "long", year: "numeric" })}
+      </h3>
+      {error ? (
+        <p style={{ margin: 0, color: "var(--color-danger, #b91c1c)" }}>{error}</p>
+      ) : null}
+      {loading ? (
+        <p style={{ margin: 0, color: "var(--muted, #6b7280)" }}>Laedt …</p>
+      ) : rows.length === 0 ? (
+        <p style={{ margin: 0, color: "var(--muted, #6b7280)" }}>
+          Keine Schichten in diesem Monat.
+        </p>
+      ) : (
+        <>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
+            {Array.from(byLocation.values()).map((loc) => (
+              <div
+                key={loc.name}
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: 10,
+                  background: "var(--surface-muted, #f3f4f6)",
+                  fontSize: "0.9em"
+                }}
+              >
+                <strong>{loc.name}</strong>: {(loc.minutes / 60).toFixed(2)} h
+                <span style={{ color: "var(--muted, #6b7280)" }}> · {loc.count} Schicht(en)</span>
+              </div>
+            ))}
+            <div
+              style={{
+                padding: "8px 14px",
+                borderRadius: 10,
+                background: "var(--teal-soft, #d1fae5)",
+                fontSize: "0.9em"
+              }}
+            >
+              <strong>Gesamt</strong>: {(totalNet / 60).toFixed(2)} h
+            </div>
+          </div>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.92em" }}>
+              <thead>
+                <tr style={{ textAlign: "left" }}>
+                  <th style={{ padding: "6px 8px" }}>Datum</th>
+                  <th style={{ padding: "6px 8px" }}>Zeit</th>
+                  <th style={{ padding: "6px 8px" }}>Praxis</th>
+                  <th style={{ padding: "6px 8px" }}>Bereich</th>
+                  <th style={{ padding: "6px 8px", textAlign: "right" }}>Netto</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => {
+                  const start = new Date(row.startsAt);
+                  const end = new Date(row.endsAt);
+                  return (
+                    <tr key={row.shiftId} style={{ borderTop: "1px solid var(--color-line, #e5e7eb)" }}>
+                      <td style={{ padding: "6px 8px" }}>
+                        {start.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit" })}
+                      </td>
+                      <td style={{ padding: "6px 8px" }}>
+                        {start.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}–
+                        {end.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
+                      </td>
+                      <td style={{ padding: "6px 8px" }}>{row.locationName ?? "—"}</td>
+                      <td style={{ padding: "6px 8px" }}>{row.workAreaName ?? "—"}</td>
+                      <td style={{ padding: "6px 8px", textAlign: "right", fontFamily: "ui-monospace, monospace" }}>
+                        {(row.netMinutes / 60).toFixed(2)} h
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// T-LIVE-008 — Stunden-Ranking auf der Startseite (claude-chat, 2026-06-20).
+// Listet alle MAs absteigend nach Ist-Stunden des aktuellen Monats; zeigt
+// Progress-Bar gegen das individuelle Monats-Soll. Quelle: /api/reports/team/monthly
+// (Admin-only; greift im Dev-Bypass auch fuer Nicht-Admins, Production fail-closed).
+type RankingRow = {
+  employeeId: string;
+  employeeName: string;
+  weeklyTargetHours: number;
+  sollMinutes: number;
+  istMinutes: number;
+  pendingApprovalMinutes?: number;
+  grossPresenceMinutes?: number;
+  differenceMinutes: number;
+  nonStamping?: boolean;
+};
+
+function WorkHoursRankingPanel({
+  request,
+  authUser,
+  employees
+}: {
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  authUser: AuthUser | null;
+  employees: Employee[];
+}) {
+  const isAdmin = !authUser || authUser.role === "admin";
+  const today = new Date();
+  const [year, setYear] = useState(today.getFullYear());
+  const [month, setMonth] = useState(today.getMonth() + 1);
+  const [rows, setRows] = useState<RankingRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    request<{ ok: boolean; report: RankingRow[] }>(`/api/reports/team/monthly?year=${year}&month=${month}`)
+      .then((res) => {
+        if (cancelled) return;
+        const data = Array.isArray(res?.report) ? res.report : [];
+        // T-LIVE-012 — Sortierung nach Brutto-Anwesenheit (freigegeben + wartend),
+        // nicht nur nach Lohn-Ist. Sonst werden MAs mit Approval-Backlog faelschlich
+        // als unproduktiv eingestuft.
+        setRows([...data].sort((a, b) => (b.grossPresenceMinutes ?? b.istMinutes) - (a.grossPresenceMinutes ?? a.istMinutes)));
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Ranking nicht ladbar");
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [year, month, isAdmin, request]);
+
+  if (!isAdmin) return null;
+
+  const monthNames = [
+    "Januar", "Februar", "März", "April", "Mai", "Juni",
+    "Juli", "August", "September", "Oktober", "November", "Dezember"
+  ];
+  // Praxis-Chef / Mit-Inhaber aus Ranking ausklammern: sie stempeln nicht
+  // regulaer und wuerden strukturell immer am Ende landen.
+  const stampingRows = rows.filter((r) => !r.nonStamping);
+  const nonStampingRows = rows.filter((r) => r.nonStamping);
+  const maxGross = stampingRows.length > 0
+    ? Math.max(...stampingRows.map((r) => r.grossPresenceMinutes ?? r.istMinutes), 1)
+    : 1;
+  const empById = new Map(employees.map((e) => [e.id, e]));
+  const totalBacklog = stampingRows.reduce((s, r) => s + (r.pendingApprovalMinutes ?? 0), 0);
+
+  return (
+    <section className="wide-panel" style={{ padding: 20, marginTop: 16 }}>
+      <div className="section-heading">
+        <div>
+          <h2 style={{ margin: 0 }}>Stunden-Ranking</h2>
+          <p className="section-eyebrow" style={{ margin: 0 }}>
+            Wer hat im Monat am meisten geleistet — absteigend sortiert.
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <select value={year} onChange={(e) => setYear(Number(e.target.value))}>
+            {[today.getFullYear() - 1, today.getFullYear(), today.getFullYear() + 1].map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+          <select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+            {monthNames.map((n, i) => (
+              <option key={n} value={i + 1}>{n}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      {error ? (
+        <p style={{ color: "var(--color-danger, #b91c1c)" }}>{error}</p>
+      ) : loading ? (
+        <p style={{ color: "var(--muted, #6b7280)" }}>Lädt …</p>
+      ) : rows.length === 0 ? (
+        <p style={{ color: "var(--muted, #6b7280)" }}>Keine Daten.</p>
+      ) : (
+        <>
+          {totalBacklog > 0 && (
+            <div style={{
+              padding: "8px 12px",
+              borderRadius: 8,
+              background: "var(--color-warning-soft, #fef3c7)",
+              color: "var(--color-warning, #b45309)",
+              fontSize: "0.85em",
+              marginBottom: 10
+            }}>
+              <strong>{(totalBacklog/60).toFixed(0)} h</strong> stempelter Anwesenheit warten auf Freigabe (Status „Entwurf"/„Änderungsantrag").
+              In der View „Freigaben" abarbeiten, damit diese in den Lohn-Ist fließen.
+            </div>
+          )}
+          <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+            {stampingRows.map((r, idx) => {
+              const emp = empById.get(r.employeeId);
+              const grossMin = r.grossPresenceMinutes ?? r.istMinutes;
+              const grossHours = grossMin / 60;
+              const istHours = r.istMinutes / 60;
+              const pendingHours = (r.pendingApprovalMinutes ?? 0) / 60;
+              const sollHours = r.sollMinutes / 60;
+              const pctOfSoll = r.sollMinutes > 0 ? Math.min(150, Math.round((grossMin / r.sollMinutes) * 100)) : 0;
+              const barWidth = Math.round((grossMin / maxGross) * 100);
+              const sollDelta = grossMin - r.sollMinutes;
+              const deltaPositive = sollDelta >= 0;
+              return (
+                <li
+                  key={r.employeeId}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "32px 36px 1fr auto auto auto",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "8px 12px",
+                    borderRadius: 10,
+                    background: idx === 0 ? "var(--teal-soft, #d1fae5)" : "var(--surface-muted, #f8f9fb)"
+                  }}
+                >
+                  <span
+                    style={{
+                      textAlign: "center",
+                      fontWeight: 700,
+                      fontSize: "1.05em",
+                      color: idx < 3 ? "var(--text)" : "var(--muted, #6b7280)"
+                    }}
+                    title={`Platz ${idx + 1}`}
+                  >
+                    {idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`}
+                  </span>
+                  {emp ? (
+                    <span className="avatar" style={employeeAvatarStyle(emp)}>
+                      {compactInitials(emp.initials)}
+                    </span>
+                  ) : <span />}
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {r.employeeName}
+                    </div>
+                    <div style={{
+                      height: 6,
+                      borderRadius: 3,
+                      background: "var(--color-line, #e5e7eb)",
+                      marginTop: 4,
+                      overflow: "hidden"
+                    }}>
+                      <div style={{
+                        width: `${barWidth}%`,
+                        height: "100%",
+                        background: idx === 0 ? "var(--color-success, #047857)" : "var(--text, #1d1d1f)"
+                      }} />
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right", fontFamily: "ui-monospace, monospace", fontSize: "0.95em", minWidth: 80 }}
+                       title="Brutto-Anwesenheit (freigegeben + wartend)">
+                    <strong>{grossHours.toFixed(1)} h</strong>
+                    <div style={{ color: "var(--muted, #6b7280)", fontSize: "0.75em" }}>Anwesenheit</div>
+                  </div>
+                  <div style={{ textAlign: "right", fontFamily: "ui-monospace, monospace", fontSize: "0.85em", minWidth: 75 }}
+                       title="Status freigegeben (Lohn-Ist) vs. wartend (Entwurf)">
+                    <div style={{ color: "var(--color-success, #047857)" }}>{istHours.toFixed(1)} h ✓</div>
+                    {pendingHours > 0 && (
+                      <div style={{ color: "var(--color-warning, #b45309)", fontSize: "0.9em" }}>+{pendingHours.toFixed(1)} h ⏳</div>
+                    )}
+                  </div>
+                  <div style={{
+                    textAlign: "right",
+                    fontFamily: "ui-monospace, monospace",
+                    fontSize: "0.85em",
+                    color: "var(--muted, #6b7280)",
+                    minWidth: 60
+                  }}
+                       title={`Soll: ${sollHours.toFixed(0)} h · ${pctOfSoll}% erreicht`}>
+                    <div style={{ color: deltaPositive ? "var(--color-success, #047857)" : "var(--color-danger, #b91c1c)", fontWeight: 600 }}>
+                      {pctOfSoll}%
+                    </div>
+                    <div style={{ fontSize: "0.85em" }}>/ {sollHours.toFixed(0)} h</div>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+          {nonStampingRows.length > 0 && (
+            <div style={{ marginTop: 12, padding: "8px 12px", borderRadius: 8, background: "var(--surface-muted, #f3f4f6)", fontSize: "0.85em", color: "var(--muted, #6b7280)" }}>
+              <strong>Nicht im Ranking:</strong> {nonStampingRows.map((r) => r.employeeName).join(", ")}{" "}
+              <span style={{ fontSize: "0.9em" }}>— als nicht-stempelnde Sondergruppe (z. B. Praxisinhaber) markiert.</span>
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
 function DashboardView({
   activeWeekStart,
   data,
@@ -2734,7 +3659,9 @@ function DashboardView({
   onEditShift,
   onPlanShift,
   onOpenShift,
-  onShowCalculation
+  onShowCalculation,
+  request,
+  authUser
 }: {
   activeWeekStart: string;
   data: BootstrapPayload;
@@ -2745,6 +3672,8 @@ function DashboardView({
   onPlanShift: (template: ShiftSlotTemplate, day: string) => void;
   onOpenShift: () => void;
   onShowCalculation: (details: CalculationDetails) => void;
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  authUser: AuthUser | null;
 }) {
   const weekStart = activeWeekStart;
   const weekEnd = addDays(weekStart, 6);
@@ -2867,6 +3796,8 @@ function DashboardView({
           </button>
         </div>
       </section>
+
+      <WorkHoursRankingPanel request={request} authUser={authUser} employees={data.employees} />
 
       <section className="core-strip">
         <CoreMetric
@@ -6263,16 +7194,352 @@ function formatMinutesAsHours(minutes: number): string {
   return `${sign}${hh}:${String(mm).padStart(2, "0")} h`;
 }
 
-function ReportsView({
-  request
+// T-LIVE-009 — Stunden-Audit-View (claude-chat, 2026-06-20).
+// Forensik-Tool fuer Admins: pro MA Roh-Buchungen, Statusverteilung,
+// Plausibilitaets-Indikatoren, Konflikt-Block, CSV-Export.
+type AuditEntry = {
+  id: string;
+  startsAt: string;
+  endsAt: string;
+  status: string;
+  entryType: string;
+  paidBreakMinutes: number;
+  unpaidBreakMinutes: number;
+  grossMinutes: number;
+  netMinutes: number;
+  locationName: string | null;
+  workAreaName: string | null;
+  note: string | null;
+  sourceSystem: string | null;
+  sourceId: string | null;
+  importedAt: string | null;
+};
+type AuditIndicator = { type: string; severity: string; day?: string; entryId?: string; shiftId?: string; detail: string };
+type AuditPlanVsActual = { day: string; plannedMinutes: number; actualMinutes: number; deltaMinutes: number };
+type AuditPayload = {
+  employee: { id: string; name: string };
+  period: { from: string; to: string };
+  kpis: { grossTotalMinutes: number; netApprovedMinutes: number; plannedMinutes: number; rawPlannedMinutes?: number; planVsActualDeltaMinutes: number; entryCount: number; indicatorCount: number; massAssignmentExcludedCount?: number };
+  byStatus: Record<string, { count: number; netMinutes: number; grossMinutes: number }>;
+  entries: AuditEntry[];
+  shifts: Array<{ id: string; startsAt: string; endsAt: string; locationName: string | null; workAreaName: string | null; plannedMinutes: number }>;
+  indicators: AuditIndicator[];
+  conflicts: {
+    statusConflicts: AuditEntry[];
+    syncConflicts: Array<{ id: string; source_entity: string; field_name: string; status: string; detected_at: string }>;
+    planVsActual: AuditPlanVsActual[];
+    plausibilityCheckSkipped?: boolean;
+    massAssignmentExcludedCount?: number;
+  };
+};
+
+function AuditView({
+  request,
+  employees
 }: {
   request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  employees: Employee[];
+}) {
+  const today = new Date();
+  const monthStart = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-01`;
+  const monthEnd = (() => {
+    const last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    return `${last.getFullYear()}-${String(last.getMonth() + 1).padStart(2, "0")}-${String(last.getDate()).padStart(2, "0")}`;
+  })();
+  const [employeeId, setEmployeeId] = useState(employees[0]?.id ?? "");
+  const [from, setFrom] = useState(monthStart);
+  const [to, setTo] = useState(monthEnd);
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [audit, setAudit] = useState<AuditPayload | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!employeeId) return;
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    request<{ ok: boolean; audit: AuditPayload }>(
+      `/api/audit/employee-hours?employeeId=${encodeURIComponent(employeeId)}&from=${from}&to=${to}`
+    )
+      .then((res) => { if (!cancelled) setAudit(res?.audit ?? null); })
+      .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : "Audit nicht ladbar"); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [employeeId, from, to, request]);
+
+  const csvUrl = `/api/audit/employee-hours?employeeId=${encodeURIComponent(employeeId)}&from=${from}&to=${to}&format=csv`;
+  const statusColors: Record<string, string> = {
+    freigegeben: "var(--color-success, #047857)",
+    entwurf: "var(--text, #1d1d1f)",
+    konflikt: "var(--color-danger, #b91c1c)",
+    aenderungsantrag: "var(--color-warning, #b45309)",
+    laufend: "var(--color-info, #1d4ed8)"
+  };
+  const severityColors: Record<string, string> = {
+    danger: "var(--color-danger, #b91c1c)",
+    warning: "var(--color-warning, #b45309)",
+    info: "var(--color-info, #1d4ed8)"
+  };
+
+  const filteredEntries = audit && statusFilter
+    ? audit.entries.filter((e) => e.status === statusFilter)
+    : audit?.entries ?? [];
+
+  return (
+    <div className="payroll-view">
+      <section className="wide-panel">
+        <div className="section-heading">
+          <div>
+            <h2>Stunden-Audit · {audit?.employee?.name ?? "—"}</h2>
+            <p className="section-eyebrow">
+              {loading ? "Lädt …" : error ? `Fehler: ${error}` : `${audit?.kpis.entryCount ?? 0} Buchungen · ${audit?.kpis.indicatorCount ?? 0} Hinweise`}
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <Field label="Mitarbeiter">
+              <select value={employeeId} onChange={(e) => setEmployeeId(e.target.value)}>
+                {employees.map((emp) => (
+                  <option key={emp.id} value={emp.id}>{emp.name}</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Von">
+              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+            </Field>
+            <Field label="Bis">
+              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+            </Field>
+            <a href={csvUrl} className="secondary-button" style={{ textDecoration: "none", display: "inline-flex", gap: 6, alignItems: "center" }} download>
+              <Download size={16} /> CSV
+            </a>
+          </div>
+        </div>
+
+        {audit && (
+          <>
+            {audit.kpis.massAssignmentExcludedCount && audit.kpis.massAssignmentExcludedCount > 0 ? (
+              <div style={{
+                marginTop: 12,
+                padding: "10px 14px",
+                borderRadius: 8,
+                background: "var(--color-info-soft, #dbeafe)",
+                color: "var(--color-info, #1d4ed8)",
+                fontSize: "0.88em"
+              }}>
+                <strong>{audit.kpis.massAssignmentExcludedCount} Schicht(en)</strong> mit Bereich „Ohne Bereich" wurden aus
+                Plan-Stunden und Plan-vs-Ist-Check ausgeklammert (Ordio-Mass-Assignment-Artefakt; Roh-Plan war{" "}
+                {audit.kpis.rawPlannedMinutes ? (audit.kpis.rawPlannedMinutes / 60).toFixed(1) : "?"} h).
+              </div>
+            ) : null}
+            {/* KPI-Kacheln */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginTop: 16 }}>
+              {[
+                ["Brutto gesamt", (audit.kpis.grossTotalMinutes / 60).toFixed(1) + " h", "alle Buchungen, vor Pause"],
+                ["Lohn-Ist (freigegeben)", (audit.kpis.netApprovedMinutes / 60).toFixed(1) + " h", "Netto, nur freigegeben"],
+                ["Plan-Stunden", (audit.kpis.plannedMinutes / 60).toFixed(1) + " h", "geplante Schichten"],
+                ["Plan-Ist-Delta", (audit.kpis.planVsActualDeltaMinutes >= 0 ? "+" : "") + (audit.kpis.planVsActualDeltaMinutes / 60).toFixed(1) + " h", "Brutto minus Plan"]
+              ].map(([label, value, hint]) => (
+                <div key={label} style={{ padding: "10px 14px", borderRadius: 10, background: "var(--surface-muted, #f3f4f6)" }}>
+                  <div style={{ fontSize: "0.8em", color: "var(--muted, #6b7280)" }}>{label}</div>
+                  <div style={{ fontSize: "1.4em", fontWeight: 700, fontFamily: "ui-monospace, monospace" }}>{value}</div>
+                  <div style={{ fontSize: "0.75em", color: "var(--muted, #6b7280)" }}>{hint}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Statusverteilung als horizontaler Stacked-Bar */}
+            <div style={{ marginTop: 18 }}>
+              <h3 style={{ marginTop: 0, marginBottom: 8 }}>Statusverteilung (klick zum filtern)</h3>
+              <div style={{ display: "flex", height: 24, borderRadius: 6, overflow: "hidden", background: "var(--color-line, #e5e7eb)" }}>
+                {Object.entries(audit.byStatus).map(([status, info]) => {
+                  const totalCount = Object.values(audit.byStatus).reduce((s, x) => s + x.count, 0);
+                  const pct = totalCount > 0 ? (info.count / totalCount) * 100 : 0;
+                  return (
+                    <div
+                      key={status}
+                      onClick={() => setStatusFilter(statusFilter === status ? "" : status)}
+                      style={{
+                        width: pct + "%",
+                        background: statusColors[status] || "var(--text)",
+                        opacity: statusFilter && statusFilter !== status ? 0.35 : 1,
+                        cursor: "pointer",
+                        color: "white",
+                        fontSize: "0.7em",
+                        textAlign: "center",
+                        padding: "4px 0",
+                        whiteSpace: "nowrap"
+                      }}
+                      title={`${status}: ${info.count} Buchungen, ${(info.grossMinutes/60).toFixed(1)} h brutto, ${(info.netMinutes/60).toFixed(1)} h netto`}
+                    >
+                      {pct > 10 ? `${status} (${info.count})` : ""}
+                    </div>
+                  );
+                })}
+              </div>
+              {statusFilter ? (
+                <div style={{ marginTop: 6, fontSize: "0.85em" }}>
+                  Filter: <strong>{statusFilter}</strong>{" "}
+                  <button type="button" onClick={() => setStatusFilter("")} style={{ marginLeft: 6, fontSize: "0.9em" }}>×</button>
+                </div>
+              ) : null}
+            </div>
+
+            {/* Konflikt-Block */}
+            <div style={{ marginTop: 20, padding: 14, borderRadius: 10, border: "1px solid var(--color-danger, #b91c1c)", background: "var(--surface, #fff)" }}>
+              <h3 style={{ marginTop: 0, marginBottom: 10, color: "var(--color-danger, #b91c1c)" }}>
+                Konflikte ({audit.conflicts.statusConflicts.length + audit.conflicts.syncConflicts.length + audit.conflicts.planVsActual.length})
+              </h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
+                <div>
+                  <strong style={{ fontSize: "0.9em" }}>Status-Konflikte ({audit.conflicts.statusConflicts.length})</strong>
+                  <div style={{ fontSize: "0.8em", color: "var(--muted)" }}>Einträge mit Status=konflikt</div>
+                  {audit.conflicts.statusConflicts.length === 0 ? (
+                    <div style={{ color: "var(--muted)", fontSize: "0.85em", marginTop: 6 }}>keine</div>
+                  ) : (
+                    <ul style={{ margin: "6px 0 0", paddingLeft: 16, fontSize: "0.85em" }}>
+                      {audit.conflicts.statusConflicts.slice(0, 8).map((e) => (
+                        <li key={e.id}>{e.startsAt.slice(0, 10)} {e.startsAt.slice(11, 16)}–{e.endsAt.slice(11, 16)} · {e.entryType}</li>
+                      ))}
+                      {audit.conflicts.statusConflicts.length > 8 ? <li>… und {audit.conflicts.statusConflicts.length - 8} weitere</li> : null}
+                    </ul>
+                  )}
+                </div>
+                <div>
+                  <strong style={{ fontSize: "0.9em" }}>Sync-Konflikte ({audit.conflicts.syncConflicts.length})</strong>
+                  <div style={{ fontSize: "0.8em", color: "var(--muted)" }}>sync_conflicts-Tabelle, offen</div>
+                  {audit.conflicts.syncConflicts.length === 0 ? (
+                    <div style={{ color: "var(--muted)", fontSize: "0.85em", marginTop: 6 }}>keine</div>
+                  ) : (
+                    <ul style={{ margin: "6px 0 0", paddingLeft: 16, fontSize: "0.85em" }}>
+                      {audit.conflicts.syncConflicts.slice(0, 8).map((c) => (
+                        <li key={c.id}>{c.source_entity} · {c.field_name} · {c.detected_at.slice(0, 10)}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div>
+                  <strong style={{ fontSize: "0.9em" }}>Plan-vs-Ist-Mismatches ({audit.conflicts.planVsActual.length})</strong>
+                  <div style={{ fontSize: "0.8em", color: "var(--muted)" }}>Δ ≥ 1 h pro Tag</div>
+                  {audit.conflicts.plausibilityCheckSkipped ? (
+                    <div style={{ marginTop: 6, padding: "6px 10px", borderRadius: 6, background: "var(--surface-muted)", fontSize: "0.8em" }}>
+                      Plausibilitäts-Check übersprungen (aggregation_groups: skip_plausibility_check)
+                    </div>
+                  ) : audit.conflicts.planVsActual.length === 0 ? (
+                    <div style={{ color: "var(--muted)", fontSize: "0.85em", marginTop: 6 }}>keine</div>
+                  ) : (
+                    <ul style={{ margin: "6px 0 0", paddingLeft: 16, fontSize: "0.85em" }}>
+                      {audit.conflicts.planVsActual.slice(0, 8).map((p) => (
+                        <li key={p.day} style={{ color: p.deltaMinutes < 0 ? "var(--color-danger)" : "var(--color-success)" }}>
+                          {p.day}: Plan {(p.plannedMinutes/60).toFixed(1)} h · Ist {(p.actualMinutes/60).toFixed(1)} h · Δ {p.deltaMinutes >= 0 ? "+" : ""}{(p.deltaMinutes/60).toFixed(1)} h
+                        </li>
+                      ))}
+                      {audit.conflicts.planVsActual.length > 8 ? <li>… und {audit.conflicts.planVsActual.length - 8} weitere</li> : null}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Plausibilitaets-Indikatoren */}
+            {audit.indicators.length > 0 && (
+              <div style={{ marginTop: 20 }}>
+                <h3 style={{ marginTop: 0, marginBottom: 8 }}>Hinweise ({audit.indicators.length})</h3>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {Object.entries(
+                    audit.indicators.reduce<Record<string, { count: number; severity: string }>>((acc, ind) => {
+                      const k = ind.type;
+                      acc[k] = acc[k] || { count: 0, severity: ind.severity };
+                      acc[k].count += 1;
+                      return acc;
+                    }, {})
+                  ).map(([type, info]) => (
+                    <span
+                      key={type}
+                      style={{
+                        padding: "4px 10px",
+                        borderRadius: 6,
+                        background: severityColors[info.severity] + "22",
+                        color: severityColors[info.severity],
+                        fontSize: "0.8em",
+                        fontWeight: 600
+                      }}
+                    >
+                      {type}: {info.count}
+                    </span>
+                  ))}
+                </div>
+                <details style={{ marginTop: 10 }}>
+                  <summary style={{ cursor: "pointer", fontSize: "0.9em" }}>Details ({audit.indicators.length})</summary>
+                  <ul style={{ margin: "8px 0 0", paddingLeft: 16, fontSize: "0.85em" }}>
+                    {audit.indicators.map((ind, idx) => (
+                      <li key={idx} style={{ color: severityColors[ind.severity] }}>
+                        {ind.day ? ind.day + " · " : ""}<strong>{ind.type}</strong>: {ind.detail}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </div>
+            )}
+
+            {/* Detail-Tabelle */}
+            <div style={{ marginTop: 20, overflowX: "auto" }}>
+              <h3 style={{ marginTop: 0, marginBottom: 8 }}>
+                Buchungen ({filteredEntries.length}{statusFilter ? ` von ${audit.entries.length}` : ""})
+              </h3>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85em" }}>
+                <thead>
+                  <tr style={{ textAlign: "left", color: "var(--muted)" }}>
+                    <th style={{ padding: "4px 6px" }}>Datum</th>
+                    <th style={{ padding: "4px 6px" }}>Zeit</th>
+                    <th style={{ padding: "4px 6px", textAlign: "right" }}>Brutto</th>
+                    <th style={{ padding: "4px 6px", textAlign: "right" }}>Pause</th>
+                    <th style={{ padding: "4px 6px", textAlign: "right" }}>Netto</th>
+                    <th style={{ padding: "4px 6px" }}>Status</th>
+                    <th style={{ padding: "4px 6px" }}>Typ</th>
+                    <th style={{ padding: "4px 6px" }}>Praxis</th>
+                    <th style={{ padding: "4px 6px" }}>Bereich</th>
+                    <th style={{ padding: "4px 6px" }}>Quelle</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredEntries.map((e) => (
+                    <tr key={e.id} style={{ borderTop: "1px solid var(--color-line, #e5e7eb)" }}>
+                      <td style={{ padding: "4px 6px" }}>{e.startsAt.slice(0, 10)}</td>
+                      <td style={{ padding: "4px 6px" }}>{e.startsAt.slice(11, 16)}–{e.endsAt.slice(11, 16)}</td>
+                      <td style={{ padding: "4px 6px", textAlign: "right", fontFamily: "ui-monospace, monospace" }}>{(e.grossMinutes / 60).toFixed(2)} h</td>
+                      <td style={{ padding: "4px 6px", textAlign: "right" }}>{e.unpaidBreakMinutes} min</td>
+                      <td style={{ padding: "4px 6px", textAlign: "right", fontFamily: "ui-monospace, monospace" }}>{(e.netMinutes / 60).toFixed(2)} h</td>
+                      <td style={{ padding: "4px 6px", color: statusColors[e.status] || "inherit", fontWeight: 600 }}>{e.status}</td>
+                      <td style={{ padding: "4px 6px" }}>{e.entryType}</td>
+                      <td style={{ padding: "4px 6px" }}>{e.locationName ?? "—"}</td>
+                      <td style={{ padding: "4px 6px" }}>{e.workAreaName ?? "—"}</td>
+                      <td style={{ padding: "4px 6px", color: "var(--muted)" }}>{e.sourceSystem ?? "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function ReportsView({
+  request,
+  locations
+}: {
+  request: <T>(path: string, init?: RequestInit) => Promise<T>;
+  locations: string[];
 }) {
   const today = new Date();
   const defaultMonth = today.getMonth() === 0 ? 12 : today.getMonth();
   const defaultYear = today.getMonth() === 0 ? today.getFullYear() - 1 : today.getFullYear();
   const [year, setYear] = useState(defaultYear);
   const [month, setMonth] = useState(defaultMonth);
+  const [locationId, setLocationId] = useState<string>("");
   const [rows, setRows] = useState<TeamSollIstRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -6281,8 +7548,9 @@ function ReportsView({
     let cancelled = false;
     setLoading(true);
     setErrorMessage(null);
+    const locParam = locationId ? `&locationId=${encodeURIComponent(locationId)}` : "";
     request<{ ok: boolean; report: TeamSollIstRow[] }>(
-      `/api/reports/team/monthly?year=${year}&month=${month}`
+      `/api/reports/team/monthly?year=${year}&month=${month}${locParam}`
     )
       .then((res) => {
         if (cancelled) return;
@@ -6299,7 +7567,7 @@ function ReportsView({
     return () => {
       cancelled = true;
     };
-  }, [year, month, request]);
+  }, [year, month, locationId, request]);
 
   const monthNames = [
     "Januar", "Februar", "März", "April", "Mai", "Juni",
@@ -6319,7 +7587,8 @@ function ReportsView({
   );
 
   function csvUrl() {
-    return `/api/reports/team/monthly?year=${year}&month=${month}&format=csv`;
+    const locParam = locationId ? `&locationId=${encodeURIComponent(locationId)}` : "";
+    return `/api/reports/team/monthly?year=${year}&month=${month}&format=csv${locParam}`;
   }
 
   return (
@@ -6348,6 +7617,14 @@ function ReportsView({
               <select value={month} onChange={(event) => setMonth(Number(event.target.value))}>
                 {monthNames.map((name, index) => (
                   <option key={name} value={index + 1}>{name}</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Praxis / Standort">
+              <select value={locationId} onChange={(event) => setLocationId(event.target.value)}>
+                <option value="">Alle Standorte</option>
+                {locations.map((loc) => (
+                  <option key={loc} value={loc}>{loc}</option>
                 ))}
               </select>
             </Field>
@@ -6666,6 +7943,20 @@ type StampState = {
   onBreak?: boolean;
   breakStartedAt?: string | null;
   accruedUnpaidBreakMinutes?: number;
+  todayCompletedSeconds?: number;
+  shift?: {
+    shiftId: string;
+    startsAt: string;
+    endsAt: string;
+    locationName: string | null;
+    areaName: string | null;
+  } | null;
+  assigned?: {
+    locationId: string | null;
+    locationName: string | null;
+    workAreaId: string | null;
+    areaName: string | null;
+  } | null;
 };
 type StampQueueItem = { op: "start" | "end" | "break-start" | "break-end"; employeeId: string; queuedAt: string };
 const STAMP_QUEUE_KEY = "workforce-time:stamp-queue:v1";

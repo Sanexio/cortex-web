@@ -1351,7 +1351,7 @@ button:disabled {
 .day-heading span,
 .list-row small,
 .person-card small,
-.person-card span,
+.person-card span:not(.avatar),
 .shift-topline small,
 .muted-inline {
   color: var(--muted);
@@ -2653,19 +2653,17 @@ button:disabled {
 .mini-avatar,
 .unassigned-mini,
 .mini-coverage {
+  /* T-LIVE-005 — Wechsel auf abgerundetes Quadrat (Squircle), siehe
+   * Begruendung bei .avatar. Padding-Hack entfernt; Flex-Centering reicht. */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 22px;
-  border-radius: 999px;
+  border-radius: 7px;
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
-  /* Caps-only Initialen sitzen ohne Descender visuell zu hoch in der
-   * line-box. Top-Padding skaliert mit Container-Höhe — Iteration 6
-   * (2026-06-13) auf ~33 % gehoben. */
-  padding-top: 8px;
-  padding-bottom: 0;
+  padding: 0;
   white-space: nowrap;
 }
 
@@ -2860,8 +2858,9 @@ button:disabled {
 .avatar.tiny {
   width: 28px;
   height: 28px;
-  font-size: 10px;
-  padding-top: 9px;
+  font-size: 11px;
+  border-radius: 8px;
+  padding: 0;
 }
 
 .people-grid {
@@ -3503,11 +3502,11 @@ tbody tr:hover,
 }
 
 .employee-cell strong,
-.employee-cell span {
+.employee-cell span:not(.avatar) {
   display: block;
 }
 
-.employee-cell span,
+.employee-cell span:not(.avatar),
 .muted-time {
   color: var(--muted);
   font-size: 12px;
@@ -3519,6 +3518,14 @@ tbody tr:hover,
 }
 
 .avatar {
+  /* T-LIVE-005 — Wechsel von Kreis auf abgerundetes Quadrat (Squircle).
+   * Begruendung: Caps-only Initialen haben keinen Descender, daher liegt
+   * der visuelle Schwerpunkt nicht auf der line-box-Mitte. Im Kreis fuehrt
+   * das zu wahrgenommen verschobenen Buchstaben (Iteration 6 vom 2026-06-13
+   * korrigierte es mit padding-top, was aber font-/renderer-abhaengig
+   * inkonsistent blieb). Das Squircle ist in beiden Achsen geometrisch
+   * symmetrisch — Flex-Centering ohne Padding-Hack ergibt zuverlaessig
+   * mittige Glyphen, unabhaengig von Font und Browser. */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3526,7 +3533,7 @@ tbody tr:hover,
   width: 34px;
   height: 34px;
   aspect-ratio: 1;
-  border-radius: 999px;
+  border-radius: 10px;
   background: var(--text);
   color: #ffffff;
   overflow: hidden;
@@ -3534,25 +3541,20 @@ tbody tr:hover,
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1;
-  /* Caps-only Initialen haben keinen Descender und ankern an der
-   * Baseline — der visuelle Schwerpunkt liegt oberhalb der line-box-
-   * Mitte. Top-Padding ~33 % der Container-Höhe schiebt die Glyphen
-   * auf die optische Mitte (UX-Feedback 2026-06-13 Iteration 6).
-   * .avatar.tiny / .large unten skalieren das Padding proportional. */
-  padding-top: 12px;
-  padding-bottom: 0;
+  padding: 0;
   text-align: center;
   white-space: nowrap;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.26),
-    0 0 0 1px rgba(29, 29, 31, 0.06);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    0 1px 2px rgba(29, 29, 31, 0.08);
 }
 
 .avatar.large {
   width: 46px;
   height: 46px;
-  font-size: 13px;
-  padding-top: 14px;
+  font-size: 14px;
+  border-radius: 12px;
+  padding: 0;
 }
 
 .employee-cell .avatar,
@@ -3801,11 +3803,11 @@ tbody tr:hover,
 }
 
 .detail-person strong,
-.detail-person span {
+.detail-person span:not(.avatar) {
   display: block;
 }
 
-.detail-person span {
+.detail-person span:not(.avatar) {
   color: var(--muted);
 }
 
