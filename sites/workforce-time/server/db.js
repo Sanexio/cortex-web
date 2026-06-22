@@ -3996,29 +3996,37 @@ export function stampStart(employeeId, options = {}) {
 export function stampEnd(employeeId, options = {}) {
   const active = getActiveTimeEntry(employeeId);
   if (!active) throw new Error("Keine laufende Stempel-Session");
-  // Falls noch eine Pause läuft, automatisch beenden.
+  // options.endsAt erlaubt dem Auto-End-Pfad, den logischen Schluss-Zeitpunkt
+  // (Schicht-Ende bzw. 12 h-Hartlimit) zu setzen statt der Tick-Wallclock-Zeit.
+  // So driftet ends_at nicht um die Tick-Latenz (bis 60 s) ueber den
+  // tatsaechlichen Endzeitpunkt hinaus.
+  const endsAtIso = options.endsAt
+    ? new Date(options.endsAt).toISOString()
+    : new Date().toISOString();
+  const endsAtMs = Date.parse(endsAtIso);
+  // Falls noch eine Pause läuft, automatisch beenden — gegen endsAt, nicht
+  // gegen Date.now(). Bei Auto-End sonst gleicher Drift wie ends_at.
   const openBreak = db.prepare(`SELECT started_at FROM stamp_active_breaks WHERE time_entry_id = ?`).get(active.id);
   let unpaidExtra = 0;
   if (openBreak) {
-    unpaidExtra = Math.max(0, Math.floor((Date.now() - Date.parse(openBreak.started_at)) / 60000));
+    unpaidExtra = Math.max(0, Math.floor((endsAtMs - Date.parse(openBreak.started_at)) / 60000));
     db.prepare(`DELETE FROM stamp_active_breaks WHERE time_entry_id = ?`).run(active.id);
   }
-  const endsAt = new Date().toISOString();
   const newUnpaid = Number(active.unpaid_break_minutes ?? 0) + unpaidExtra;
   db.prepare(`
     UPDATE time_entries
     SET ends_at = ?, status = ?, unpaid_break_minutes = ?, updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
-  `).run(endsAt, TIME_ENTRY_STATUS.ENTWURF, newUnpaid, active.id);
+  `).run(endsAtIso, TIME_ENTRY_STATUS.ENTWURF, newUnpaid, active.id);
   recordAuditEvent({
     entityType: "time_entry",
     entityId: active.id,
     actorType: options.actorType || "kiosk",
     actorId: options.actorId || employeeId,
     action: "stamp_end",
-    newValue: { endsAt, unpaidBreakMinutes: newUnpaid }
+    newValue: { endsAt: endsAtIso, unpaidBreakMinutes: newUnpaid }
   });
-  return { ok: true, timeEntryId: active.id, endsAt };
+  return { ok: true, timeEntryId: active.id, endsAt: endsAtIso };
 }
 
 export function stampBreakStart(employeeId, options = {}) {
@@ -4318,12 +4326,17 @@ export function autoEndExpiredStamps(now = new Date()) {
     `).get(session.employeeId, todayIso);
     const hardCutoffMs = Date.parse(session.startsAt) + 12 * 3600 * 1000;
     const shiftEndMs = shift ? Date.parse(shift.ends_at) : null;
-    const cutoffMs = shiftEndMs && Number.isFinite(shiftEndMs)
-      ? Math.min(shiftEndMs, hardCutoffMs)
-      : hardCutoffMs;
+    const useShiftCutoff = shiftEndMs && Number.isFinite(shiftEndMs) && shiftEndMs < hardCutoffMs;
+    const cutoffMs = useShiftCutoff ? shiftEndMs : hardCutoffMs;
     if (now.getTime() < cutoffMs) continue;
     try {
-      stampEnd(session.employeeId, { actorType: "auto", actorId: "system", note: "Auto-End nach Schicht-Ende" });
+      stampEnd(session.employeeId, {
+        actorType: "auto",
+        actorId: "system",
+        note: useShiftCutoff ? "Auto-End nach Schicht-Ende" : "Auto-End nach 12 h-Hartlimit",
+        // Endzeit auf den logischen Cutoff setzen, nicht auf die Tick-Wallclock.
+        endsAt: new Date(cutoffMs).toISOString()
+      });
       closed += 1;
     } catch (err) {
       console.warn(`[auto-end] ${session.employeeId}: ${err?.message ?? err}`);
