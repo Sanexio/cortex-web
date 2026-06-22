@@ -84,7 +84,7 @@ Kurzfristig:
 
 - bestehende Auth-Events beibehalten.
 - Rollenwechsel mit altem/neuem Wert auditieren.
-- Ordio-Import-CLI bei `--post` und Import-API mit Batch-Zusammenfassung
+- Legacy-Import-CLI bei `--post` und Import-API mit Batch-Zusammenfassung
   auditieren.
 
 Mittelfristig:

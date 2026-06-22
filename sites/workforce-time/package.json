@@ -15,14 +15,14 @@
     "test:auth": "node --test server/auth-smoke.test.mjs",
     "test:smtp": "node --test server/smtp.test.mjs",
     "test:payroll": "node --test server/payroll-export.test.mjs",
-    "test:ordio": "node --test tools/ordio/ordio-delta.test.mjs",
+    "test:legacy-import": "node --test tools/legacy-import/legacy-delta.test.mjs",
     "test:backup": "node --test tools/backup-restore.test.mjs",
     "test:setup": "node --test tools/setup-workforce-tenant.test.mjs server/auth-tenant.test.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "extract-tenant-seed": "node tools/extract-tenant-seed.mjs",
     "build:handbuch": "node tools/build-handbuch.mjs",
     "restore-db": "bash tools/restore-db.sh",
-    "ordio:delta": "node tools/ordio/ordio-delta.mjs"
+    "legacy-import:delta": "node tools/legacy-import/legacy-delta.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

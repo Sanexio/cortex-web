@@ -16,27 +16,32 @@ import {
   parseEmployeesHtml,
   parsePlanHtml,
   parseWorkHoursHtml
-} from "./ordio-dom.mjs";
+} from "./legacy-dom.mjs";
+
+// Quell-Import-Host (Vendor-URL) ist ENV-pflichtig — kein Default-Fallback im Code.
+// Setze LEGACY_SOURCE_HOST und LEGACY_SOURCE_DOMAIN in .cortex/secrets/legacy-import.env.
+const LEGACY_SOURCE_HOST = process.env.LEGACY_SOURCE_HOST || "";
+const LEGACY_SOURCE_DOMAIN = process.env.LEGACY_SOURCE_DOMAIN || "";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(here, "../..");
-const defaultFixturePath = resolve(here, "fixtures/ordio-delta.fixture.json");
+const defaultFixturePath = resolve(here, "fixtures/legacy-delta.fixture.json");
 const defaultSnapshotPath = resolve(projectRoot, "private/imports/import-snapshot.json");
-const defaultSecretPath = resolve(homedir(), ".cortex/secrets/ordio.env");
+const defaultSecretPath = resolve(homedir(), ".cortex/secrets/legacy-import.env");
 
 function usage() {
-  return `Usage: node tools/ordio/ordio-delta.mjs [--dry-run] [--fixture path] [--out path] [--post] [--live]
+  return `Usage: node tools/legacy-import/legacy-delta.mjs [--dry-run] [--fixture path] [--out path] [--post] [--live]
 
 Options:
   --dry-run              Map and validate only. Does not write or POST.
-  --fixture <path>       Read Ordio-like JSON or work-hours HTML from a local fixture/export.
+  --fixture <path>       Read Import-like JSON or work-hours HTML from a local fixture/export.
   --out <path>           Snapshot file for POST /api/imports/delta-snapshot.
   --post                 POST the written snapshot path to the local API.
   --api-url <url>        API base URL. Default: http://127.0.0.1:5175.
   --from <YYYY-MM-DD>    Delta start. Default: 2026-05-25.
   --to <YYYY-MM-DD>      Delta end. Default: today.
-  --live                 Capture read-only Ordio browser data via Playwright.
-  --secrets-file <path>  Presence gate for live mode. Default: ~/.cortex/secrets/ordio.env.
+  --live                 Capture read-only Legacy-Import browser data via Playwright.
+  --secrets-file <path>  Presence gate for live mode. Default: ~/.cortex/secrets/legacy-import.env.
 `;
 }
 
@@ -156,17 +161,17 @@ function loadTenantReconciliationConfig() {
       defaultWorkArea: workforce.default_work_area_name
     };
   } catch (error) {
-    if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG tenant.config konnte nicht gelesen werden: ${error.message}`);
+    if (process.env.LEGACY_DEBUG) console.error(`LEGACY_DEBUG tenant.config konnte nicht gelesen werden: ${error.message}`);
     return {};
   }
 }
 
-export function mapOrdioPayload(rawInput, options = {}) {
+export function mapImportPayload(rawInput, options = {}) {
   const raw = normalizeEntityCollections(rawInput);
   const tenantReconciliation = raw.reconciliation ?? loadTenantReconciliationConfig();
   const capturedAt = text(raw.capturedAt ?? raw.exportedAt, new Date().toISOString());
-  const sourceSystem = text(raw.sourceSystem, "ordio");
-  const defaultLocation = text(raw.defaultLocation ?? tenantReconciliation.defaultLocation, "Ordio");
+  const sourceSystem = text(raw.sourceSystem, "legacy_import");
+  const defaultLocation = text(raw.defaultLocation ?? tenantReconciliation.defaultLocation, "Legacy-Import");
   const rawEmployees = asArray(raw.employees ?? raw.staff ?? raw.users);
   const commonResolverOptions = {
     capturedAt,
@@ -329,7 +334,7 @@ export function mapOrdioPayload(rawInput, options = {}) {
       absences: absencesFromDom.stats,
       plan: plan.stats
     },
-    note: "Ordio-Delta-Snapshot read-only erfasst; Import erfolgt ueber /api/imports/delta-snapshot."
+    note: "Legacy-Delta-Snapshot read-only erfasst; Import erfolgt ueber /api/imports/delta-snapshot."
   };
 }
 
@@ -355,7 +360,7 @@ export function snapshotSummary(snapshot) {
 
 export function validateSnapshot(snapshot) {
   const errors = [];
-  if (snapshot.sourceSystem !== "ordio") errors.push("sourceSystem muss 'ordio' sein");
+  if (snapshot.sourceSystem !== "legacy_import") errors.push("sourceSystem muss 'legacy_import' sein");
   if (!snapshot.capturedAt) errors.push("capturedAt fehlt");
   if (snapshot.employees.length === 0) errors.push("keine Mitarbeiter im Snapshot");
   const unresolvedTimes = snapshot.timeEntries.filter((entry) => !entry.employeeSourceId && !entry.employeeName);
@@ -365,25 +370,25 @@ export function validateSnapshot(snapshot) {
   return { ok: errors.length === 0, errors };
 }
 
-async function captureLiveOrdio(options) {
+async function captureLiveImport(options) {
   if (!existsSync(options.secretsFile)) {
-    throw new Error(`Ordio-Credentials nicht verfuegbar: ${options.secretsFile}`);
+    throw new Error(`Legacy-Credentials nicht verfuegbar: ${options.secretsFile}`);
   }
-  // Backwards-compat: the deposited ordio.env template (2026-06-04) uses
-  // ORDIO_USER; newer docs say ORDIO_EMAIL. Accept both.
-  const ordioEmail = process.env.ORDIO_EMAIL || process.env.ORDIO_USER || "";
-  if (!process.env.ORDIO_BASE_URL) throw new Error("ORDIO_BASE_URL fehlt in der Laufzeitumgebung");
-  if (!ordioEmail) throw new Error("ORDIO_EMAIL (oder ORDIO_USER) fehlt in der Laufzeitumgebung");
-  if (!process.env.ORDIO_PASSWORD) throw new Error("ORDIO_PASSWORD fehlt in der Laufzeitumgebung");
+  // Backwards-compat: the deposited legacy-import.env template (2026-06-04) uses
+  // LEGACY_USER; newer docs say LEGACY_EMAIL. Accept both.
+  const legacyEmail = process.env.LEGACY_EMAIL || process.env.LEGACY_USER || "";
+  if (!process.env.LEGACY_BASE_URL) throw new Error("LEGACY_BASE_URL fehlt in der Laufzeitumgebung");
+  if (!legacyEmail) throw new Error("LEGACY_EMAIL (oder LEGACY_USER) fehlt in der Laufzeitumgebung");
+  if (!process.env.LEGACY_PASSWORD) throw new Error("LEGACY_PASSWORD fehlt in der Laufzeitumgebung");
 
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
   try {
-    // Wide viewport: at the default 1280px Ordio collapses /work-hours
+    // Wide viewport: at the default 1280px Quell-UI collapses /work-hours
     // into a responsive card layout without a <table> (verified 2026-06-05,
     // probe at 1680px renders the 14-column table with all rows).
     const page = await browser.newPage({ viewport: { width: 1680, height: 1050 } });
-    await page.goto(process.env.ORDIO_BASE_URL, { waitUntil: "domcontentloaded" });
+    await page.goto(process.env.LEGACY_BASE_URL, { waitUntil: "domcontentloaded" });
     // T-LIVE-017 — Page muss voll geladen sein, bevor wir den Mode-Switch
     // suchen. Ohne Wait greift `pwModeButton.count() === 0` noch und wir
     // landen im Magic-Link-Modus statt im Passwort-Modus → fill auf
@@ -401,20 +406,20 @@ async function captureLiveOrdio(options) {
       .locator("#e-mail-oder-benutzername")
       .or(page.locator('input[autocomplete="username"]'))
       .or(page.getByLabel(/e-?mail|benutzer|user/i));
-    await userField.first().fill(ordioEmail);
+    await userField.first().fill(legacyEmail);
     const passwordField = page
       .locator("#passwort")
       .or(page.locator('input[type="password"]'))
       .or(page.getByLabel(/passwort|password/i));
-    await passwordField.first().fill(process.env.ORDIO_PASSWORD);
+    await passwordField.first().fill(process.env.LEGACY_PASSWORD);
     // Exact-anchored name: avoid matching "Mit Google anmelden" / mode-switch.
     await page.getByRole("button", { name: /^(anmelden|login|sign in)$/i }).first().click();
-    // T-LIVE-017 — Ordio hat Long-Poll/WebSocket, networkidle wird nie
+    // T-LIVE-017 — Quell-Import hat Long-Poll/WebSocket, networkidle wird nie
     // erreicht. Timeout + Fallback-Wait, sonst haengt der Lauf vor /e.
     await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
     await page.waitForTimeout(3000);
 
-    await page.goto(new URL("/e", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
+    await page.goto(new URL("/e", process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(2500);
     // /e is a virtualized table: without scrolling only ~2 of N rows
@@ -435,7 +440,7 @@ async function captureLiveOrdio(options) {
 
     const workHoursRows = [];
     for (const range of isoWeeksInRange(options.from, options.to)) {
-      await page.goto(new URL("/work-hours", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
+      await page.goto(new URL("/work-hours", process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
       await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
       await page.waitForTimeout(2000);
@@ -448,21 +453,21 @@ async function captureLiveOrdio(options) {
       // schrieb 52 Juni-Eintraege in den Okt-Snapshot. Wenn Picker
       // gesetzt wurde, vertrauen wir der (auch leeren) Picker-Tabelle.
       const usedRows = pickerSet ? pickedRows : defaultRows;
-      if (process.env.ORDIO_DEBUG) {
+      if (process.env.LEGACY_DEBUG) {
         await logWorkHoursDiagnostics(page, `${range.label}:${range.start}-${range.end}`);
-        console.error(`ORDIO_DEBUG Picker ${range.label}: pickerSet=${pickerSet}, default=${defaultRows.length}, picked=${pickedRows.length}, used=${usedRows.length}`);
+        console.error(`LEGACY_DEBUG Picker ${range.label}: pickerSet=${pickerSet}, default=${defaultRows.length}, picked=${pickedRows.length}, used=${usedRows.length}`);
       }
       workHoursRows.push(...usedRows);
     }
     const absenceRows = await captureAbsences(page, options);
     const planRows = await capturePlan(page, options);
-    if (process.env.ORDIO_DEBUG) {
-      console.error(`ORDIO_DEBUG Mitarbeiterzeilen: ${employeeRows.length}`);
-      console.error(`ORDIO_DEBUG Arbeitszeitzeilen vor Dedupe: ${workHoursRows.length}`);
-      console.error(`ORDIO_DEBUG Abwesenheitszeilen: ${absenceRows.length}`);
-      console.error(`ORDIO_DEBUG Planzeilen: ${planRows.length}`);
+    if (process.env.LEGACY_DEBUG) {
+      console.error(`LEGACY_DEBUG Mitarbeiterzeilen: ${employeeRows.length}`);
+      console.error(`LEGACY_DEBUG Arbeitszeitzeilen vor Dedupe: ${workHoursRows.length}`);
+      console.error(`LEGACY_DEBUG Abwesenheitszeilen: ${absenceRows.length}`);
+      console.error(`LEGACY_DEBUG Planzeilen: ${planRows.length}`);
     }
-    return { sourceSystem: "ordio", capturedAt: new Date().toISOString(), employeeRows, workHoursRows, absenceRows, planRows };
+    return { sourceSystem: "legacy_import", capturedAt: new Date().toISOString(), employeeRows, workHoursRows, absenceRows, planRows };
   } finally {
     await browser.close();
   }
@@ -477,7 +482,7 @@ async function applyWorkHoursPickerRange(page, from, to) {
     .or(page.getByLabel(/zeitraum\s*w(?:ä|ae)hlen/i))
     .or(page.getByRole("button", { name: /\d{2}\.\d{2}\.\d{4}\s*[-–—]\s*\d{2}\.\d{2}\.\d{4}/ }));
   if (!(await pickerButton.count())) {
-    if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker nicht gefunden; Tabelle bleibt im Ordio-Default.");
+    if (process.env.LEGACY_DEBUG) console.error("LEGACY_DEBUG Zeitraum-Picker nicht gefunden; Tabelle bleibt im Quell-Default.");
     return false;
   }
   await pickerButton.first().click();
@@ -496,7 +501,7 @@ async function applyWorkHoursPickerRange(page, from, to) {
   };
 
   // T-LIVE-019 — Reihenfolge invertiert: Calendar-Grid zuerst (nachweislich
-  // funktionierend im aktuellen Ordio-UI vom 2026-06-20), Input-Felder nur
+  // funktionierend im aktuellen Legacy-UI vom 2026-06-20), Input-Felder nur
   // als Fallback fuer aeltere Versionen. Vorher wurden Input-Felder
   // (Mitarbeiter-Suche!) faelschlich gematcht und fail-still.
   let filled = await selectDateRangeInCalendarGrid(page, from, to);
@@ -517,12 +522,12 @@ async function applyWorkHoursPickerRange(page, from, to) {
     }
   }
   if (!filled) {
-    if (process.env.ORDIO_DEBUG) console.error("ORDIO_DEBUG Zeitraum-Picker: alle Strategien gescheitert; Default-Ansicht wird gelesen.");
+    if (process.env.LEGACY_DEBUG) console.error("LEGACY_DEBUG Zeitraum-Picker: alle Strategien gescheitert; Default-Ansicht wird gelesen.");
     await page.keyboard.press("Escape").catch(() => {});
     return false;
   }
 
-  // T-LIVE-019 — Ordio-Picker hat KEINEN expliziten Apply-Button mehr
+  // T-LIVE-019 — Legacy-Picker hat KEINEN expliziten Apply-Button mehr
   // (Probe 2026-06-20). Der Klick auf den End-Tag schliesst das Popover
   // bereits. Klick ausserhalb als Belt-and-Suspenders.
   const apply = page.getByRole("button", { name: /anwenden|übernehmen|uebernehmen|speichern|^ok$/i });
@@ -577,8 +582,8 @@ async function navigateCalendarToMonth(page, scope, dateString) {
       const retry = await readCurrent();
       if (retry === lastCurrent) {
         stallCount += 1;
-        if (process.env.ORDIO_DEBUG) {
-          console.error(`ORDIO_DEBUG Picker-Stall bei step ${step}, current=${lastCurrent}, target=${target}, stallCount=${stallCount}`);
+        if (process.env.LEGACY_DEBUG) {
+          console.error(`LEGACY_DEBUG Picker-Stall bei step ${step}, current=${lastCurrent}, target=${target}, stallCount=${stallCount}`);
         }
         if (stallCount >= 3) return false;
         continue;
@@ -654,13 +659,13 @@ function toGermanDate(dateString) {
 }
 
 async function captureAbsences(page, options) {
-  // Ordio /absences zeigt immer nur den aktuellen Monat. URL-Parameter
+  // Quell-Import /absences zeigt immer nur den aktuellen Monat. URL-Parameter
   // werden ignoriert; einziger Hebel sind die Navigations-Pfeile mit
   // aria-label="Vorheriger Zeitraum" / "Nächster Zeitraum".
   // Strategie: erst 11 Monate rückwärts (Januar erreichen), dort sammeln,
   // dann 12 Schritte vorwärts (= jeder Monat des Jahres + 1 Monat in die
   // Zukunft). Bars werden über sourceId dedupliziert.
-  await page.goto(new URL("/absences", process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
+  await page.goto(new URL("/absences", process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
   await page.waitForTimeout(3500);
 
@@ -682,7 +687,7 @@ async function captureAbsences(page, options) {
       collected.push(row);
       added += 1;
     }
-    if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG Absences ${label}: DOM=${rowBased.length} Bars, +${added} neu, total=${collected.length}`);
+    if (process.env.LEGACY_DEBUG) console.error(`LEGACY_DEBUG Absences ${label}: DOM=${rowBased.length} Bars, +${added} neu, total=${collected.length}`);
   }
 
   async function clickArrow(direction) {
@@ -705,7 +710,7 @@ async function captureAbsences(page, options) {
   for (let i = 1; i <= 11; i += 1) {
     const ok = await clickArrow("prev");
     if (!ok) {
-      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG prev-Pfeil nicht klickbar bei step ${i}`);
+      if (process.env.LEGACY_DEBUG) console.error(`LEGACY_DEBUG prev-Pfeil nicht klickbar bei step ${i}`);
       break;
     }
     await collectCurrent(`prev-${i}`);
@@ -715,7 +720,7 @@ async function captureAbsences(page, options) {
   for (let i = 1; i <= 12; i += 1) {
     const ok = await clickArrow("next");
     if (!ok) {
-      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG next-Pfeil nicht klickbar bei step ${i}`);
+      if (process.env.LEGACY_DEBUG) console.error(`LEGACY_DEBUG next-Pfeil nicht klickbar bei step ${i}`);
       break;
     }
     await collectCurrent(`next-${i}`);
@@ -728,7 +733,7 @@ async function captureAbsences(page, options) {
 async function capturePlan(page, options) {
   const rows = [];
   for (const week of isoWeeksInRange(options.from, options.to)) {
-    await page.goto(new URL(`/plan/9405/${week.label}`, process.env.ORDIO_BASE_URL).href, { waitUntil: "domcontentloaded" });
+    await page.goto(new URL(`/plan/9405/${week.label}`, process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(3500);
     rows.push(...await extractPlanRowsFromPage(page, { label: week.label, days: isoWeekDays(week.label) }));
@@ -748,7 +753,7 @@ async function logWorkHoursDiagnostics(page, week) {
       }))
     };
   });
-  console.error(`ORDIO_DEBUG week ${week}:`, JSON.stringify(diag, null, 2));
+  console.error(`LEGACY_DEBUG week ${week}:`, JSON.stringify(diag, null, 2));
 }
 
 export function isoWeeksInRange(from, to) {
@@ -807,7 +812,7 @@ async function postImportSnapshot(options) {
       "Content-Type": "application/json",
       ...(cookieEnv ? { Cookie: cookieEnv } : {})
     },
-    body: JSON.stringify({ source: "ordio-snapshot", path: options.out })
+    body: JSON.stringify({ source: "legacy-snapshot", path: options.out })
   });
   const body = await response.text();
   if (!response.ok) {
@@ -818,25 +823,25 @@ async function postImportSnapshot(options) {
 
 export async function run(options) {
   const raw = options.live
-    ? await captureLiveOrdio(options)
+    ? await captureLiveImport(options)
     : readFixture(options.fixture);
-  const snapshot = mapOrdioPayload(raw, options);
+  const snapshot = mapImportPayload(raw, options);
   const validation = validateSnapshot(snapshot);
   const summary = snapshotSummary(snapshot);
-  if (process.env.ORDIO_DEBUG && snapshot.unresolvedEmployees?.length) {
+  if (process.env.LEGACY_DEBUG && snapshot.unresolvedEmployees?.length) {
     const initials = snapshot.unresolvedEmployees.map((entry) => entry.initials || "?").filter(Boolean);
-    console.error(`ORDIO_DEBUG unaufgeloeste Mitarbeiter-Initialen: ${[...new Set(initials)].join(", ")}`);
+    console.error(`LEGACY_DEBUG unaufgeloeste Mitarbeiter-Initialen: ${[...new Set(initials)].join(", ")}`);
   }
-  if (process.env.ORDIO_DEBUG && snapshot.unresolvedAreas?.length) {
+  if (process.env.LEGACY_DEBUG && snapshot.unresolvedAreas?.length) {
     const names = snapshot.unresolvedAreas.map((entry) => entry.name).filter(Boolean);
-    console.error(`ORDIO_DEBUG unaufgeloeste Bereiche: ${[...new Set(names)].join(", ")}`);
+    console.error(`LEGACY_DEBUG unaufgeloeste Bereiche: ${[...new Set(names)].join(", ")}`);
   }
-  if (process.env.ORDIO_DEBUG && snapshot.unresolvedLocations?.length) {
+  if (process.env.LEGACY_DEBUG && snapshot.unresolvedLocations?.length) {
     const names = snapshot.unresolvedLocations.map((entry) => entry.name).filter(Boolean);
-    console.error(`ORDIO_DEBUG unaufgeloeste Standorte: ${[...new Set(names)].join(", ")}`);
+    console.error(`LEGACY_DEBUG unaufgeloeste Standorte: ${[...new Set(names)].join(", ")}`);
   }
-  if (process.env.ORDIO_DEBUG && snapshot.debugStats) {
-    console.error("ORDIO_DEBUG Mapping-Stats:", JSON.stringify(snapshot.debugStats, null, 2));
+  if (process.env.LEGACY_DEBUG && snapshot.debugStats) {
+    console.error("LEGACY_DEBUG Mapping-Stats:", JSON.stringify(snapshot.debugStats, null, 2));
   }
 
   if (!validation.ok) {
@@ -858,7 +863,7 @@ function readFixture(path) {
   const content = readFileSync(path, "utf8");
   if (/\.html?$/i.test(path) || /^\s*<!doctype html/i.test(content) || /^\s*<html[\s>]/i.test(content)) {
     return {
-      sourceSystem: "ordio",
+      sourceSystem: "legacy_import",
       capturedAt: new Date().toISOString(),
       employeeRows: parseEmployeesHtml(content),
       workHoursRows: parseWorkHoursHtml(content),

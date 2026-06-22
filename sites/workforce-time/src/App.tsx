@@ -1484,7 +1484,7 @@ function employeeMonthTimeEntries(employee: Employee, entries: TimeEntry[], rang
 }
 
 // T-LIVE-013 — Intervall-Union pro Tag (Frontend-Pendant zur Server-Logik).
-// Verhindert Doppel-Zaehlung der ueberlappenden Ordio-Datensaetze
+// Verhindert Doppel-Zaehlung der ueberlappenden Legacy-Datensaetze
 // (Anwesenheits-Spur + Schicht-Spur). Pro Tag Sortierung nach Start,
 // Merge ueberlappender Intervalle, abschliessend Brutto-minus-unpaidBreak
 // pro Intervall summiert. Negative Intervalle werden uebersprungen.
@@ -7461,7 +7461,7 @@ function AuditView({
                 fontSize: "0.88em"
               }}>
                 <strong>{audit.kpis.massAssignmentExcludedCount} Schicht(en)</strong> mit Bereich „Ohne Bereich" wurden aus
-                Plan-Stunden und Plan-vs-Ist-Check ausgeklammert (Ordio-Mass-Assignment-Artefakt; Roh-Plan war{" "}
+                Plan-Stunden und Plan-vs-Ist-Check ausgeklammert (Sammelzuweisungs-Artefakt aus dem Quell-Import; Roh-Plan war{" "}
                 {audit.kpis.rawPlannedMinutes ? (audit.kpis.rawPlannedMinutes / 60).toFixed(1) : "?"} h).
               </div>
             ) : null}

@@ -77,7 +77,7 @@ der Quell-DB, idempotent ueber `source_id`.
   Trunk-Code. Tokens leben in `tenant.config.json` und `seed.json`.
 - SQLite-DB und Importartefakte werden nicht versioniert
   (Tenant-`.gitignore`).
-- Kein automatischer Schreibzugriff auf Quell-Systeme (Ordio).
+- Kein automatischer Schreibzugriff auf das Quell-Import-System.
 - UX-Regel: keine toten Planungsflaechen — siehe
   `_rules/UX_INTERACTION_CONTRACT.md`.
 

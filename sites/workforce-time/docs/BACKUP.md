@@ -105,7 +105,7 @@ Ein Backup gilt erst als Backup, wenn ein Restore daraus bewiesen wurde.
 
 | Anlass | Ablauf |
 |---|---|
-| Vor Ordio-Import | `tools/backup-db.sh`, anschließend `tools/backup-db.sh --verify-only <backup>` |
+| Vor Legacy-Import | `tools/backup-db.sh`, anschließend `tools/backup-db.sh --verify-only <backup>` |
 | Fehlgeschlagener Import | API stoppen, jüngstes geprüftes Backup mit `tools/restore-db.sh --apply --keep-current` einspielen, API starten, `/api/health` prüfen |
 | Servermigration | Backup auf Zielsystem kopieren, Restore-Dry-Run ausführen, erst danach echten Restore |
 | Quartalsprobe | Restore in Temp-DB, API gegen Temp-DB starten, danach Temp-Verzeichnis löschen |

@@ -32,7 +32,7 @@
     ],
     "beforeImport": [
       "bash sites/workforce-time/tools/backup-db.sh",
-      "npm --prefix sites/workforce-time run ordio:delta -- --dry-run"
+      "npm --prefix sites/workforce-time run legacy-import:delta -- --dry-run"
     ]
   },
   "secrets": [
@@ -41,7 +41,7 @@
   ],
   "notes": [
     "Tenant SQLite databases, imports and backups must stay outside Cortex-Web git.",
-    "Live Ordio credentials are intentionally not part of this manifest.",
+    "Live legacy-import credentials are intentionally not part of this manifest.",
     "A future cortex add workforce-time command can consume this manifest directly."
   ]
 }

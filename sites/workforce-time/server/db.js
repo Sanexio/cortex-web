@@ -470,7 +470,7 @@ function loadEmployeeResolutionMaps(sourceSystem) {
   const employeeBySourceId = new Map();
   const employeeByName = new Map();
   // T-LIVE-015 — Token-Match fuer Namen mit unterschiedlicher Reihenfolge
-  // oder Titeln. Ordio liefert "Nachname Vorname", DB hat ggf. "Dr. Vorname
+  // oder Titeln. Quell-Import liefert "Nachname Vorname", DB hat ggf. "Dr. Vorname
   // Nachname" — exact-match scheitert, Token-Match findet beide.
   const employeeByTokens = [];
 
@@ -2885,7 +2885,7 @@ function upsertImportedNamedEntity(
   return { id: localId, name };
 }
 
-function upsertImportedEmployee(batchId, record, summary, sourceSystem = "ordio", importedAt = now()) {
+function upsertImportedEmployee(batchId, record, summary, sourceSystem = "legacy_import", importedAt = now()) {
   const sourceId = String(record.sourceId ?? record.id ?? record.displayName);
   const localId = localIdFromSource("emp", sourceId);
   const payload = { ...record, sourceId, updatedAt: record.updatedAt ?? importedAt };
@@ -2942,7 +2942,7 @@ function upsertImportedEmployee(batchId, record, summary, sourceSystem = "ordio"
   return localId;
 }
 
-function upsertImportedShift(batchId, record, summary, sourceSystem = "ordio", importedAt = now()) {
+function upsertImportedShift(batchId, record, summary, sourceSystem = "legacy_import", importedAt = now()) {
   const sourceId = String(record.sourceId ?? record.id);
   const localId = localIdFromSource("shift", sourceId);
   const payload = { ...record, sourceId, updatedAt: record.updatedAt ?? importedAt };
@@ -3016,7 +3016,7 @@ function upsertImportedShift(batchId, record, summary, sourceSystem = "ordio", i
   return localId;
 }
 
-function upsertImportedAbsence(batchId, record, summary, sourceSystem = "ordio", importedAt = now()) {
+function upsertImportedAbsence(batchId, record, summary, sourceSystem = "legacy_import", importedAt = now()) {
   const sourceId = String(record.sourceId ?? record.id);
   const localId = localIdFromSource("absence", sourceId);
   const payload = { ...record, sourceId, updatedAt: record.updatedAt ?? importedAt };
@@ -3075,7 +3075,7 @@ function upsertImportedAbsence(batchId, record, summary, sourceSystem = "ordio",
   return localId;
 }
 
-function upsertImportedTimeEntry(batchId, record, summary, sourceSystem = "ordio", importedAt = now()) {
+function upsertImportedTimeEntry(batchId, record, summary, sourceSystem = "legacy_import", importedAt = now()) {
   const sourceId = String(record.sourceId ?? record.id);
   const localId = localIdFromSource("time", sourceId);
   const payload = { ...record, sourceId, updatedAt: record.updatedAt ?? importedAt };
@@ -3203,7 +3203,7 @@ function normalizeImportedStatus(value) {
 }
 
 function normalizeImportedEntryType(value) {
-  // Schichtunabhaengig-Marker bleibt der einzige Type-Indikator aus Ordio.
+  // Schichtunabhaengig-Marker bleibt der einzige Type-Indikator aus Quell-Import.
   const status = String(value ?? "").toLowerCase();
   if (status.includes("schichtunabhaengig") || status.includes("schichtunabhängig")) {
     return "Schichtunabhaengig";
@@ -3229,7 +3229,7 @@ function endDateFor(startDate, startTime, endDate, endTime) {
 function normalizeImportSnapshot(snapshot) {
   const importedAt = now();
   const sourceUpdatedAt = String(snapshot.capturedAt ?? snapshot.sourceUpdatedAt ?? snapshot.updatedAt ?? importedAt);
-  const sourceSystem = String(snapshot.sourceSystem ?? "ordio");
+  const sourceSystem = String(snapshot.sourceSystem ?? "legacy_import");
   const defaultLocation = String(snapshot.defaultLocation ?? defaultLocationName);
 
   const employees = asArray(snapshot.employees)
@@ -3389,7 +3389,7 @@ function resolveImportedEmployeeId(record, employeeBySourceId, employeeByName, e
     return record.employeeId;
   }
 
-  // T-LIVE-015 — Name-Match hat Prioritaet vor SourceId-Match. Ordio liefert
+  // T-LIVE-015 — Name-Match hat Prioritaet vor SourceId-Match. Quell-Import liefert
   // nicht-eindeutige employeeSourceIds (mehrere MAs koennen denselben
   // "employee-number-N"-String haben), was sonst zu Daten-Cross-Contamination
   // fuehrt (Eintraege wandern auf falschen Mitarbeiter in der DB).
@@ -3427,7 +3427,7 @@ function resolveImportedEmployeeId(record, employeeBySourceId, employeeByName, e
 }
 
 function hideDemoDataForRealImport(sourceSystem) {
-  if (!String(sourceSystem).startsWith("ordio")) {
+  if (!String(sourceSystem).startsWith("legacy_import")) {
     return;
   }
 
@@ -3435,7 +3435,7 @@ function hideDemoDataForRealImport(sourceSystem) {
     db.prepare(`
       UPDATE ${table}
       SET removed_from_source = 1, updated_at = ?
-      WHERE source_system IS NULL OR source_system IN ('demo_seed', 'ordio_demo')
+      WHERE source_system IS NULL OR source_system IN ('demo_seed', 'legacy_demo')
     `).run(now());
   }
 
@@ -3443,14 +3443,14 @@ function hideDemoDataForRealImport(sourceSystem) {
     db.prepare(`
       UPDATE ${table}
       SET removed_from_source = 1, updated_at = ?
-      WHERE source_system IS NULL OR source_system IN ('demo_seed', 'ordio_demo', 'local_schema', 'local')
+      WHERE source_system IS NULL OR source_system IN ('demo_seed', 'legacy_demo', 'local_schema', 'local')
     `).run(now());
   }
 
   db.prepare(`
     UPDATE source_records
     SET removed_from_source = 1
-    WHERE source_system IN ('demo_seed', 'ordio_demo')
+    WHERE source_system IN ('demo_seed', 'legacy_demo')
   `).run();
 }
 
@@ -4682,7 +4682,7 @@ function germanHolidaysHessen(year) {
 }
 
 // T-LIVE-013 — Intervall-Union pro Tag (claude-chat, 2026-06-20).
-// Ordio liefert pro Arbeitstag oft mehrere ueberlappende time_entries
+// Quell-Import liefert pro Arbeitstag oft mehrere ueberlappende time_entries
 // (Anwesenheits-Spur + Schicht-Spur). Additive Summation verdoppelt
 // dadurch die Brutto-Werte. Union pro Tag liefert die echte
 // Anwesenheit: pro Tag werden alle Intervalle nach Start sortiert,
@@ -4775,7 +4775,7 @@ export function buildEmployeeMonthlySollIst(employeeId, year, month, options = {
   // da nicht abgerechnungs-fertig.
   // T-LIVE-013 — Alle relevanten time_entries des Monats laden, dann
   // pro Tag UNION der Intervalle. Vermeidet die Doppel-Zaehlung der
-  // ueberlappenden Ordio-Datensaetze (Anwesenheits-Spur + Schicht-Spur).
+  // ueberlappenden Legacy-Datensaetze (Anwesenheits-Spur + Schicht-Spur).
   const allParams = { employeeId, monthStart, monthEnd };
   if (locationClause) allParams.locationId = baseParams.locationId;
   const allRows = db.prepare(`
@@ -4956,14 +4956,14 @@ export function getAuditEmployeeHours(employeeId, fromIso, toIso, options = {}) 
      ORDER BY s.starts_at ASC
   `).all(employeeId, from, to);
   // T-LIVE-010 — Mass-Assignment-Filter (claude-chat, 2026-06-20).
-  // Ordio weist Praxis-weite Schichten kollektiv allen dort taetigen MAs zu
+  // Quell-Import weist Praxis-weite Schichten kollektiv allen dort taetigen MAs zu
   // (alle diese Schichten haben work_area "Ohne Bereich"). Das blaeht den
   // Plan-Stunden-Wert pro MA auf das 10-15-fache auf und produziert
   // massenhaft falsche Plan-vs-Ist-Mismatches. Heuristik:
   // Schichten mit area "Ohne Bereich" sind Mass-Assignment-Artefakte und
   // zaehlen NICHT zur effektiven Plan-Berechnung. Echte Schichten haben
   // immer einen konkreten Bereich (Sprechstunde, Anmeldung, Labor, etc.).
-  // Quelle: Ordio-Datenmodell-Eigenschaft, verschwindet mit dem Cortex-eigenen
+  // Quelle: Datenmodell-Eigenschaft des Quell-Imports, verschwindet mit dem Cortex-eigenen
   // Schichtmodul.
   const effectiveShifts = shifts.filter((sh) => sh.work_area_name && sh.work_area_name !== "Ohne Bereich");
   const massAssignmentCount = shifts.length - effectiveShifts.length;
@@ -5870,7 +5870,7 @@ ensureOperationalSeed();
  * Schutzschicht gegen Status-Drift in absence_requests.
  *
  * Hintergrund: Im Code waren historisch englische Status-Strings
- * ('approved', 'open') hartcodiert, während die DB nach Ordio-Import
+ * ('approved', 'open') hartcodiert, während die DB nach Legacy-Import
  * deutsche Werte ('genehmigt', 'offen') trug. Folge: SQL-Filter
  * matchten nicht und der Resturlaub wurde falsch berechnet.
  *

@@ -2,7 +2,7 @@
 //
 // Hintergrund (2026-06-14): Die App war ursprünglich mit englischen
 // Status- und Type-Strings entwickelt ('vacation', 'approved', 'open').
-// Beim späteren Integrationsschritt mit Ordio kamen deutsche Strings
+// Beim späteren Integrationsschritt mit dem Quell-Import kamen deutsche Strings
 // ('Bezahlter Urlaub', 'genehmigt', 'offen') in die DB. SQL-Filter
 // wurden nur teilweise nachgezogen — Folge: calculateAbsenceQuota
 // matched nie, alle Mitarbeitenden sahen 28 d Resturlaub trotz
@@ -40,8 +40,8 @@ export const VACATION_ABSENCE_TYPES = Object.freeze([
 
 /**
  * Vollständige Whitelist aller bekannten absence_type-Strings aus
- * Ordio. Wird zur Validierung neuer Einträge im App-Formular benutzt
- * (createAbsenceRequest). Wenn Ordio einen neuen Typ einführt, muss
+ * Quell-Import. Wird zur Validierung neuer Einträge im App-Formular benutzt
+ * (createAbsenceRequest). Wenn der Quell-Import einen neuen Typ einführt, muss
  * er hier ergänzt werden, sonst wird der Import abgelehnt.
  */
 export const KNOWN_ABSENCE_TYPES = Object.freeze([

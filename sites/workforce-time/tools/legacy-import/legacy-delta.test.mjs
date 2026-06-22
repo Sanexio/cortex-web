@@ -5,22 +5,22 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { mapOrdioPayload, parseArgs, run, snapshotSummary, validateSnapshot } from "./ordio-delta.mjs";
+import { mapImportPayload, parseArgs, run, snapshotSummary, validateSnapshot } from "./legacy-delta.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const fixturePath = join(here, "fixtures/ordio-delta.fixture.json");
+const fixturePath = join(here, "fixtures/legacy-delta.fixture.json");
 const htmlFixturePath = join(here, "fixtures/work-hours.fixture.html");
 
 test("parseArgs defaults to dry-run fixture mode without credentials", () => {
   const options = parseArgs([]);
   assert.equal(options.dryRun, true);
-  assert.match(options.fixture, /ordio-delta\.fixture\.json$/);
+  assert.match(options.fixture, /legacy-delta\.fixture\.json$/);
   assert.equal(options.live, false);
 });
 
-test("mapOrdioPayload creates import snapshot shape expected by db import", () => {
-  const snapshot = mapOrdioPayload({
-    sourceSystem: "ordio",
+test("mapImportPayload creates import snapshot shape expected by db import", () => {
+  const snapshot = mapImportPayload({
+    sourceSystem: "legacy_import",
     capturedAt: "2026-06-05T10:00:00.000Z",
     employees: [{ id: "e1", displayName: "Fixture Person", roleTitle: "MFA" }],
     shifts: [{ id: "s1", date: "2026-05-25", startTime: "08:00", endTime: "12:00", assignments: ["e1"] }],
@@ -45,7 +45,7 @@ test("mapOrdioPayload creates import snapshot shape expected by db import", () =
 });
 
 test("run writes snapshot only outside dry-run", async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), "ordio-delta-"));
+  const tempDir = await mkdtemp(join(tmpdir(), "legacy-import-delta-"));
   const out = join(tempDir, "import-snapshot.json");
   try {
     const dry = await run(parseArgs(["--dry-run", "--out", out]));
@@ -54,7 +54,7 @@ test("run writes snapshot only outside dry-run", async () => {
     const written = await run(parseArgs(["--fixture", fixturePath, "--out", out]));
     assert.equal(written.wrote, out);
     const snapshot = JSON.parse(await readFile(out, "utf8"));
-    assert.equal(snapshot.sourceSystem, "ordio");
+    assert.equal(snapshot.sourceSystem, "legacy_import");
     assert.ok(snapshot.employees.length > 0);
   } finally {
     await rm(tempDir, { recursive: true, force: true });

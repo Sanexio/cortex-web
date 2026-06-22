@@ -25,7 +25,7 @@ function stableHash(value, length = 16) {
 }
 
 function normalizeName(value) {
-  return displayNameFromOrdioName(value)
+  return displayNameFromImportName(value)
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -124,7 +124,7 @@ function minutes(value) {
   return numeric ? Number(numeric[0]) : 0;
 }
 
-function displayNameFromOrdioName(value) {
+function displayNameFromImportName(value) {
   const name = cleanText(value);
   if (!name.includes(",")) return name;
   const [last, first] = name.split(",", 2).map((part) => part.trim()).filter(Boolean);
@@ -174,7 +174,7 @@ function cellFor(row, names, fallbackIndex = null) {
     const key = normalizeKey(name);
     // Exact header match first.
     if (row[key]) return row[key];
-    // Then substring match — real Ordio headers are compound, e.g. the
+    // Then substring match — real source headers are compound, e.g. the
     // name column is "name_nachname_vorname", not bare "name" (verified
     // live 2026-06-05). Match the first column key containing the needle.
     const hit = dataKeys.find((candidate) => candidate.includes(key) && row[candidate]);
@@ -246,7 +246,7 @@ export function parseEmployeesHtml(html) {
     const headers = cellTexts(headerRow, "th");
     const normalizedHeaders = headers.map(normalizeKey);
     const hasName = normalizedHeaders.some((header) => header.includes("name"));
-    // Ordio's personnel-number column header is "PNr." (→ "pnr"), not
+    // Legacy-Import's personnel-number column header is "PNr." (→ "pnr"), not
     // "Personalnummer" (verified live 2026-06-05 via deep probe).
     const hasNumber = normalizedHeaders.some((header) => header.includes("personal") || header.includes("nummer") || header === "pnr" || header.includes("pnr"));
     if (!hasName || !hasNumber) continue;
@@ -256,7 +256,7 @@ export function parseEmployeesHtml(html) {
       headers.forEach((header, index) => {
         row[normalizeKey(header)] = cells[index] ?? "";
       });
-      const name = displayNameFromOrdioName(cellFor(row, ["name", "Name"], 0));
+      const name = displayNameFromImportName(cellFor(row, ["name", "Name"], 0));
       const number = cellFor(row, ["pnr", "personalnummer", "personal", "nummer", "Personalnummer"], 1);
       if (name && number) rows.push({ displayName: name, employeeNumber: cleanText(number), sourceId: employeeNumberSourceId(number) });
     }
@@ -269,7 +269,7 @@ export function parseEmployeesHtml(html) {
     const sourceId = employeeNumberSourceId(text);
     if (!sourceId) continue;
     const withoutNumber = text.replace(/\b(?:pnr|personal(?:nummer)?|mitarbeiter(?:nummer)?|employee)?\s*#?\s*[0-9]{1,8}\b/i, "").trim();
-    if (withoutNumber) rows.push({ displayName: displayNameFromOrdioName(withoutNumber), employeeNumber: sourceId.replace("employee-number-", ""), sourceId });
+    if (withoutNumber) rows.push({ displayName: displayNameFromImportName(withoutNumber), employeeNumber: sourceId.replace("employee-number-", ""), sourceId });
   }
   return rows;
 }
@@ -336,9 +336,9 @@ function personNameFromLines(lines) {
     .map((line) => cleanText(line).replace(/^\d+\s+(?!tag(?:e)?\b|day(?:s)?\b)/i, ""))
     .filter((line) => line && !isDurationLine(line) && !isAbsenceTypeLine(line) && !isDateLikeLine(line));
   const withComma = candidates.find((line) => line.includes(","));
-  if (withComma) return displayNameFromOrdioName(withComma);
+  if (withComma) return displayNameFromImportName(withComma);
   const twoWords = candidates.find((line) => normalizeName(line).split(" ").filter(Boolean).length >= 2);
-  return twoWords ? displayNameFromOrdioName(twoWords) : "";
+  return twoWords ? displayNameFromImportName(twoWords) : "";
 }
 
 function parseAbsenceLabel(label, fallbackText = "") {
@@ -351,7 +351,7 @@ function parseAbsenceLabel(label, fallbackText = "") {
   const type = firstLine && !firstLineLooksLikeEmployee && !isDurationLine(firstLine) ? firstLine : "";
   const legacy = cleanText(label || fallbackText).match(/Zeitraum\s+f(?:ü|ue)r\s+(.+?)\s+am\s+(\d{1,2}\.\d{1,2}\.\d{2,4})/i);
   return {
-    employeeName: employeeName || (legacy ? displayNameFromOrdioName(legacy[1]) : ""),
+    employeeName: employeeName || (legacy ? displayNameFromImportName(legacy[1]) : ""),
     startsOn: range?.startsOn || isoDateFromText(legacy?.[2] || ""),
     endsOn: range?.endsOn || isoDateFromText(legacy?.[2] || ""),
     type
@@ -408,10 +408,10 @@ function rowsFromAbsencePayload(root, employeeMap = new Map()) {
       const parsed = parseAbsenceLabel(value.tooltip ?? "", value.label ?? "");
       const tooltipLines = cleanLines(value.tooltip ?? "");
       const sourceId = sourceIdFromAbsenceId(value.id);
-      const rowEmployee = displayNameFromOrdioName(context.employeeName || employeeMap.get(context.employeeId) || "");
+      const rowEmployee = displayNameFromImportName(context.employeeName || employeeMap.get(context.employeeId) || "");
       const label = cleanText(value.label);
       const labelIsEmployee = rowEmployee && normalizeName(label) === normalizeName(rowEmployee);
-      // Ordio-Timeline (verifiziert 2026-06-06): Balken sind eine FLACHE
+      // Legacy-Timeline (verifiziert 2026-06-06): Balken sind eine FLACHE
       // Liste ohne Employee-Wrapper. Das `label` ist bei Urlaub der
       // MITARBEITERNAME, bei Spezial-Typen (Krankheit/Feiertagsausgleich/…)
       // der TYP. Bei Typ-Bars ist der Mitarbeiter in keiner erreichbaren
@@ -419,7 +419,7 @@ function rowsFromAbsencePayload(root, employeeMap = new Map()) {
       // die Dauer „1 Tag" aus tooltip[3] als Name nehmen).
       const labelIsKnownType = /\b(urlaub|krank|krankheit|feiertag|feiertagsausgleich|fortbildung|abwesen|^frei$|elternzeit|mutterschutz|sonderurlaub|gleitzeit|berufsschule|schule|unbezahlt|bildungsurlaub|kur|reha|pflege|home\s?office|dienstreise|seminar)\b/i.test(label);
       const labelLooksLikeName = label && !labelIsKnownType && !isDurationLine(label) && !parseDateRangeLine(label) && /[A-Za-zÀ-ÿ].*(?:\s|,).*[A-Za-zÀ-ÿ]/.test(label);
-      const resolvedEmployeeName = displayNameFromOrdioName(rowEmployee || (labelLooksLikeName ? label : "") || (labelIsEmployee ? label : ""));
+      const resolvedEmployeeName = displayNameFromImportName(rowEmployee || (labelLooksLikeName ? label : "") || (labelIsEmployee ? label : ""));
       if (!seen.has(sourceId)) {
         seen.add(sourceId);
         rows.push({
@@ -542,7 +542,7 @@ function absenceRowEmployeeFromContext(html, index) {
   const employeeAttr = attrValue(context, "data-employee");
   const employeeNumber = attrValue(context, "data-pnr") || attrValue(context, "data-employee-number") || attrValue(context, "data-personnel-number");
   const rowHeader = context.match(/<(?:th|div|span)\b[^>]*(?:role=["']rowheader["']|data-testid=["'][^"']*(?:employee|row-header|name)[^"']*["'])[^>]*>([\s\S]*?)<\/(?:th|div|span)>/i)?.[1];
-  const rowEmployee = displayNameFromOrdioName(employeeAttr || personNameFromLines(cleanLines(rowHeader || context)));
+  const rowEmployee = displayNameFromImportName(employeeAttr || personNameFromLines(cleanLines(rowHeader || context)));
   return { rowEmployee, rowEmployeeNumber: cleanText(employeeNumber) };
 }
 
@@ -560,9 +560,9 @@ function planContextDate(html, index) {
 }
 
 function planAssignmentNames(text, explicitName) {
-  if (explicitName) return [displayNameFromOrdioName(explicitName)];
+  if (explicitName) return [displayNameFromImportName(explicitName)];
   const match = text.match(/\b(?:Mitarbeiter|Name):?\s*([^|,;\n]+(?:,\s*[^|,;\n]+)?)/i);
-  return match ? [displayNameFromOrdioName(match[1])] : [];
+  return match ? [displayNameFromImportName(match[1])] : [];
 }
 
 function parsePlanTextFields(value) {
@@ -583,7 +583,7 @@ function parsePlanTextFields(value) {
     endTime,
     area: cleanText(areaLabeled || areaLine || ""),
     location: cleanText(locationLabeled || locationLine || ""),
-    employeeName: displayNameFromOrdioName(employeeLabeled || employeeLine || "")
+    employeeName: displayNameFromImportName(employeeLabeled || employeeLine || "")
   };
 }
 
@@ -671,7 +671,7 @@ export function parseAbsencesHtml(html) {
       const text = cleanText(block);
       const parsed = parseAbsenceLabel(aria, text);
       const row = absenceRowEmployeeFromContext(html, index);
-      const employeeName = displayNameFromOrdioName(attrValue(block, "data-employee") || row.rowEmployee || parsed.employeeName || "");
+      const employeeName = displayNameFromImportName(attrValue(block, "data-employee") || row.rowEmployee || parsed.employeeName || "");
       const startDate = isoDateFromText(attrValue(block, "data-start") || attrValue(block, "data-date")) || parsed.startsOn || isoDateFromText(text);
       const endDate = isoDateFromText(attrValue(block, "data-end"), startDate?.slice(0, 4)) || parsed.endsOn || startDate;
       const type = attrValue(block, "data-type") || parsed.type || text.match(/\b(Urlaub|Krankheit|Krank|Feiertagsausgleich|Fortbildung|Abwesenheit|Fehltag)\b/i)?.[1] || "Abwesenheit";
@@ -693,7 +693,7 @@ export function parsePlanHtml(html) {
       const startTime = hhmm(attrValue(block, "data-start")) || textFields.startTime || hhmm(text);
       const endTime = hhmm(attrValue(block, "data-end")) || textFields.endTime || hhmm(text.replace(startTime || "", ""));
       const area = attrValue(block, "data-area") || textFields.area || "Ohne Bereich";
-      const location = attrValue(block, "data-location") || textFields.location || "Ordio";
+      const location = attrValue(block, "data-location") || textFields.location || "Legacy-Import";
       const employeeRaw = attrValue(block, "data-employee") || textFields.employeeName || "";
       const assignmentNames = planAssignmentNames(text, employeeRaw);
       return { __rowId: testId, sourceId, date, startTime, endTime, area: cleanText(area), location: cleanText(location), assignmentNames };
@@ -701,7 +701,7 @@ export function parsePlanHtml(html) {
     .filter((row) => row.date && row.startTime && row.endTime);
 }
 
-// T-LIVE-020 — Inkrementeller Scroll-Sammler fuer Ordio's virtualized
+// T-LIVE-020 — Inkrementeller Scroll-Sammler fuer Legacy-Import's virtualized
 // /work-hours-Tabelle. Bei Range "01.06.-30.06." sind ~150 rows verfuegbar,
 // aber der DOM zeigt nur ~35 gleichzeitig (Virtual Scrolling). Wir scrollen
 // in Schritten und sammeln rows per __rowId (de-dupliziert).
@@ -785,7 +785,7 @@ export async function extractEmployeeRowsFromPage(page) {
       return match ? match[1] : "";
     };
 
-    // Ordio's personnel-number column header is "PNr." (→ "pnr"), not
+    // Legacy-Import's personnel-number column header is "PNr." (→ "pnr"), not
     // "Personalnummer" (verified live 2026-06-05).
     const isNumberKey = (key) => key.includes("personal") || key.includes("nummer") || key.includes("pnr");
     for (const table of document.querySelectorAll("table")) {
@@ -883,7 +883,7 @@ export async function extractAbsenceRowsFromPage(page) {
       }
       return { rowEmployee: "", rowEmployeeNumber: "" };
     };
-    // Ordio-Timeline (verifiziert 2026-06-06): flache Bar-Liste ohne
+    // Legacy-Timeline (verifiziert 2026-06-06): flache Bar-Liste ohne
     // Employee-Row. Das Bar-LABEL (= aria-label Zeile 1 / sichtbarer Text)
     // ist bei Urlaub der Mitarbeitername, bei Spezial-Typen der Typ.
     const labelKnownType = (v) => /\b(urlaub|krank|krankheit|feiertag|feiertagsausgleich|fortbildung|abwesen|elternzeit|mutterschutz|sonderurlaub|gleitzeit|berufsschule|schule|unbezahlt|bildungsurlaub|kur|reha|pflege|home\s?office|dienstreise|seminar)\b/i.test(clean(v)) || isType(v);
@@ -1002,7 +1002,7 @@ export function buildEmployeeResolver({ employeeRows = [], existingEmployees = [
     else if (current.sourceId !== value.sourceId) map.set(key, { ...current, ambiguous: true });
   };
   const add = (record) => {
-    const displayName = displayNameFromOrdioName(record.displayName ?? record.display_name ?? record.name ?? "");
+    const displayName = displayNameFromImportName(record.displayName ?? record.display_name ?? record.name ?? "");
     const sourceId = cleanText(record.sourceId ?? record.source_id ?? employeeNumberSourceId(record.employeeNumber ?? record.employee_number) ?? "");
     if (!displayName || !sourceId) return;
     const value = { sourceId, displayName, match: "name" };
@@ -1017,8 +1017,8 @@ export function buildEmployeeResolver({ employeeRows = [], existingEmployees = [
   return {
     resolve(rowOrName) {
       const displayName = typeof rowOrName === "string"
-        ? displayNameFromOrdioName(rowOrName)
-        : displayNameFromOrdioName(cellFor(rowOrName, ["name", "Name"], 0));
+        ? displayNameFromImportName(rowOrName)
+        : displayNameFromImportName(cellFor(rowOrName, ["name", "Name"], 0));
       const numberId = typeof rowOrName === "string"
         ? null
         : employeeNumberSourceId(cellFor(rowOrName, ["pnr", "personalnummer", "personal", "nummer", "Personalnummer"], null));
@@ -1045,8 +1045,8 @@ export function buildEmployeeResolver({ employeeRows = [], existingEmployees = [
 function mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees) {
   const resolved = resolver.resolve(employeeName);
   const displayName = typeof employeeName === "string"
-    ? displayNameFromOrdioName(employeeName)
-    : displayNameFromOrdioName(employeeName?.name ?? employeeName?.displayName ?? employeeName?.display_name ?? "");
+    ? displayNameFromImportName(employeeName)
+    : displayNameFromImportName(employeeName?.name ?? employeeName?.displayName ?? employeeName?.display_name ?? "");
   if (resolved.sourceId) {
     return {
       employeeSourceId: resolved.sourceId,
@@ -1080,7 +1080,7 @@ export function mapWorkHoursRows(rows, options = {}) {
   const locationResolver = options.locationResolver ?? buildNameResolver({
     knownNames: options.canonicalLocations ?? [],
     aliases: options.locationAliases ?? {},
-    fallbackName: options.defaultLocation || "Ordio"
+    fallbackName: options.defaultLocation || "Legacy-Import"
   });
   const areaResolver = options.areaResolver ?? buildNameResolver({
     knownNames: options.canonicalWorkAreas ?? [],
@@ -1093,12 +1093,12 @@ export function mapWorkHoursRows(rows, options = {}) {
   const unresolvedLocations = new Map();
 
   for (const row of rows) {
-    const employeeName = displayNameFromOrdioName(cellFor(row, ["name", "Name"], 0));
+    const employeeName = displayNameFromImportName(cellFor(row, ["name", "Name"], 0));
     const startDate = isoDate(cellFor(row, ["datum", "Datum"], 1));
     const startTime = hhmm(cellFor(row, ["start", "Start"], 2));
     const endTime = hhmm(cellFor(row, ["ende", "Ende"], 3));
     if (!employeeName || !startDate || !startTime || !endTime) {
-      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG skip-row: name=${employeeName} date=${startDate} start=${startTime} end=${endTime}`);
+      if (process.env.LEGACY_DEBUG) console.error(`LEGACY_DEBUG skip-row: name=${employeeName} date=${startDate} start=${startTime} end=${endTime}`);
       continue;
     }
     // T-LIVE-016 — Date-Filter entfernt: der Picker iteriert ohnehin
@@ -1107,16 +1107,16 @@ export function mapWorkHoursRows(rows, options = {}) {
     // waren ein direkter Folgebug. Server-Side wird ohnehin nach
     // source_id geuppertet — alte Einträge bleiben unangetastet.
     if (options.from && startDate < options.from) {
-      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG range-soft-pass: date=${startDate} < from=${options.from} BEHIND -> wird ZUGELASSEN`);
+      if (process.env.LEGACY_DEBUG) console.error(`LEGACY_DEBUG range-soft-pass: date=${startDate} < from=${options.from} BEHIND -> wird ZUGELASSEN`);
     }
     if (options.to && startDate > options.to) {
-      if (process.env.ORDIO_DEBUG) console.error(`ORDIO_DEBUG range-soft-pass: date=${startDate} > to=${options.to} AHEAD -> wird ZUGELASSEN`);
+      if (process.env.LEGACY_DEBUG) console.error(`LEGACY_DEBUG range-soft-pass: date=${startDate} > to=${options.to} AHEAD -> wird ZUGELASSEN`);
     }
 
     const resolved = mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees);
     const employeeSourceId = resolved.employeeSourceId;
     const areaResolved = areaResolver.resolve(cellFor(row, ["bereich", "Bereich"], 8) || "Ohne Bereich");
-    const locationResolved = locationResolver.resolve(cellFor(row, ["standort", "Standort"], 9) || options.defaultLocation || "Ordio");
+    const locationResolved = locationResolver.resolve(cellFor(row, ["standort", "Standort"], 9) || options.defaultLocation || "Legacy-Import");
     if (!areaResolved.resolved) unresolvedAreas.set(areaResolved.raw, { name: areaResolved.raw, mappedTo: areaResolved.name, reason: "no_work_area_match" });
     if (!locationResolved.resolved) unresolvedLocations.set(locationResolved.raw, { name: locationResolved.raw, mappedTo: locationResolved.name, reason: "no_location_match" });
     const area = areaResolved.name;
@@ -1130,7 +1130,7 @@ export function mapWorkHoursRows(rows, options = {}) {
       employeesBySourceId.set(employeeSourceId, resolved.employee);
     }
     const unresolvedNote = employeeSourceId ? "" : "UNRESOLVED_EMPLOYEE: keine bestehende employee-source_id gefunden";
-    const note = [violation ? `Ordio-Verstoss: ${violation}` : "", unresolvedNote].filter(Boolean).join(" | ") || null;
+    const note = [violation ? `Plan-Verstoss: ${violation}` : "", unresolvedNote].filter(Boolean).join(" | ") || null;
     areasByName.set(area, { sourceId: `area_${stableHash(area)}`, name: area, updatedAt: capturedAt });
     locationsByName.set(location, { sourceId: `location_${stableHash(location)}`, name: location, updatedAt: capturedAt });
     const entry = {
@@ -1183,12 +1183,12 @@ export function mapAbsenceRows(rows, options = {}) {
   const stats = { extracted: rows.length, afterDateFilter: 0, afterResolve: 0, mapped: 0 };
   for (const row of rows) {
     const parsed = parseAbsenceLabel(row.ariaLabel ?? "", row.rawText ?? "");
-    // NICHT auf parsed.employeeName zurueckfallen: bei Ordios flacher
+    // NICHT auf parsed.employeeName zurueckfallen: bei Legacy-Imports flacher
     // Timeline ist tooltip[3] die Dauer („1 Tag"), kein Name. Mitarbeiter
     // nur aus rowEmployee (DOM-Row) oder row.employeeName (label-als-Name
     // bei Urlaub-Bars, gesetzt in rowsFromAbsencePayload). Typ-Bars ohne
     // erreichbaren Mitarbeiter fallen mangels employeeName sauber raus.
-    const employeeName = displayNameFromOrdioName(row.rowEmployee || row.employeeName || "");
+    const employeeName = displayNameFromImportName(row.rowEmployee || row.employeeName || "");
     const startsOn = isoDateFromText(row.startsOn) || parsed.startsOn || isoDateFromText(row.rawText);
     const endsOn = isoDateFromText(row.endsOn, startsOn?.slice(0, 4)) || parsed.endsOn || startsOn;
     if (!employeeName || !startsOn || !endsOn) continue;
@@ -1241,7 +1241,7 @@ export function mapPlanRows(rows, options = {}) {
   const locationResolver = options.locationResolver ?? buildNameResolver({
     knownNames: options.canonicalLocations ?? [],
     aliases: options.locationAliases ?? {},
-    fallbackName: options.defaultLocation || "Ordio"
+    fallbackName: options.defaultLocation || "Legacy-Import"
   });
   const unresolvedEmployees = new Map();
   const unresolvedAreas = new Map();
@@ -1267,7 +1267,7 @@ export function mapPlanRows(rows, options = {}) {
     }
     const assignmentSourceIds = [];
     for (const name of assignmentNames) {
-      const employeeName = displayNameFromOrdioName(name);
+      const employeeName = displayNameFromImportName(name);
       const resolved = mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees);
       if (resolved.employee) {
         employeesBySourceId.set(resolved.employeeSourceId, resolved.employee);
@@ -1276,7 +1276,7 @@ export function mapPlanRows(rows, options = {}) {
     }
     if (assignmentNames.length === 0 || assignmentSourceIds.length > 0) stats.afterResolve += 1;
     const areaResolved = areaResolver.resolve(areaCandidate || "Ohne Bereich");
-    const locationResolved = locationResolver.resolve(row.location || options.defaultLocation || "Ordio");
+    const locationResolved = locationResolver.resolve(row.location || options.defaultLocation || "Legacy-Import");
     if (!areaResolved.resolved) unresolvedAreas.set(areaResolved.raw, { name: areaResolved.raw, mappedTo: areaResolved.name, reason: "no_work_area_match" });
     if (!locationResolved.resolved) unresolvedLocations.set(locationResolved.raw, { name: locationResolved.raw, mappedTo: locationResolved.name, reason: "no_location_match" });
     const area = areaResolved.name;

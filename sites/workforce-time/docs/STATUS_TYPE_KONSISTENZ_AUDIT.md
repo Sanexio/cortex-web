@@ -15,7 +15,7 @@ zweistellige Urlaubstage genommen hatten.
 **Wurzel**: Der Code stammte aus einer Phase, in der die App
 ausschließlich englische Status-/Type-Strings nutzte (`'vacation'`,
 `'approved'`, `'open'`, `'running'`, `'regular'`). Mit dem späteren
-Anschluss an **Ordio** kamen deutsche Strings (`'genehmigt'`,
+Anschluss an den **Legacy-Import** kamen deutsche Strings (`'genehmigt'`,
 `'offen'`, `'Bezahlter Urlaub'`, `'Arbeitszeit'`) in die DB. Die
 SQL-Filter im Code wurden nur teilweise mit umgestellt — drei Stellen
 wurden vergessen, eine sehr brisant.
@@ -135,7 +135,7 @@ Wochenenden zählen nicht mit.
   registrieren.
 - **Sprachen-Konvention dokumentieren**: Welche Tabelle hat welche
   Sprache? Aktuell: `absence_requests` + `time_entries` deutsch
-  (Ordio-Importpfad), `shift_assignments` + `shift_swap_requests` +
+  (Legacy-Import-Pfad), `shift_assignments` + `shift_swap_requests` +
   `time_entry_corrections` englisch (interner Workflow).
 - **`Object.freeze` ist Pflicht** für Konstanten-Module — verhindert
   versehentliche Mutation.

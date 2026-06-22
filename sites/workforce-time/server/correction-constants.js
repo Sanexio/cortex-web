@@ -8,7 +8,7 @@
 //
 // DB und Code nutzen englische Strings konsistent ('open',
 // 'approved', 'rejected'). Anders als absence_requests / time_entries
-// gibt es hier keinen Ordio-Importpfad — Korrekturen entstehen
+// gibt es hier keinen Legacy-Import-Pfad — Korrekturen entstehen
 // ausschließlich im App-Workflow. Trotzdem als Konstanten gekapselt
 // und mit DB-Trigger abgesichert, damit das Konsistenz-Pattern über
 // alle Domänen einheitlich bleibt.

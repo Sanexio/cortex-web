@@ -1,9 +1,9 @@
 // Einmal-Scrape: /e-Mitarbeitertabelle → Name + E-Mail + PNr.
-// Läuft auf Mini-02 (Ordio-Zugang). Schreibt /tmp/ordio-employees.json.
+// Läuft auf Mini-02 (Legacy-Import-Zugang). Schreibt /tmp/legacy-import-employees.json.
 import { writeFileSync } from "node:fs";
-const BASE = process.env.ORDIO_BASE_URL;
-const EMAIL = process.env.ORDIO_EMAIL || process.env.ORDIO_USER || "";
-const PW = process.env.ORDIO_PASSWORD || "";
+const BASE = process.env.LEGACY_BASE_URL;
+const EMAIL = process.env.LEGACY_EMAIL || process.env.LEGACY_USER || "";
+const PW = process.env.LEGACY_PASSWORD || "";
 const { chromium } = await import("playwright");
 const browser = await chromium.launch({ headless: true });
 try {
@@ -44,6 +44,6 @@ try {
     }
     return [];
   });
-  writeFileSync("/tmp/ordio-employees.json", JSON.stringify(rows, null, 2));
+  writeFileSync("/tmp/legacy-import-employees.json", JSON.stringify(rows, null, 2));
   console.log(`geschrieben: ${rows.length} Mitarbeiter, davon mit E-Mail: ${rows.filter((r) => r.email).length}, mit PNr: ${rows.filter((r) => r.pnr).length}`);
 } finally { await browser.close(); }

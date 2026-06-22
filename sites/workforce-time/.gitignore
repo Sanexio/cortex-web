@@ -5,5 +5,5 @@ dist
 .env.local
 npm-debug.log*
 private/
-*.ordio-export.*
-*.ordio-snapshot.*
+*.legacy-export.*
+*.legacy-snapshot.*

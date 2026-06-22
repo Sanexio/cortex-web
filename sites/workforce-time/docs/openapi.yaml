@@ -68,7 +68,7 @@ components:
         email: { type: string, format: email, nullable: true }
         role: { type: string }
         weeklyTargetHours: { type: number, format: float, minimum: 0 }
-        sourceSystem: { type: string, nullable: true, description: "z.B. 'ordio'" }
+        sourceSystem: { type: string, nullable: true, description: "z.B. 'legacy_import'" }
         sourceId: { type: string, nullable: true }
         payrollPersonnelNumber: { type: string, nullable: true }
         active: { type: boolean, default: true }
@@ -155,7 +155,7 @@ components:
         id: { type: string }
         source:
           type: string
-          enum: [demo, ordio-snapshot]
+          enum: [demo, legacy-snapshot]
         status:
           type: string
           enum: [pending, running, completed, failed]
@@ -413,7 +413,7 @@ paths:
 
   /api/imports/delta-snapshot:
     post:
-      summary: Externen Snapshot importieren (Ordio etc.).
+      summary: Externen Snapshot importieren (Legacy-Import etc.).
       tags: [Imports]
       security: [{ sessionCookie: [] }]
       requestBody:
@@ -423,7 +423,7 @@ paths:
             schema:
               type: object
               properties:
-                source: { type: string, enum: [ordio-snapshot] }
+                source: { type: string, enum: [legacy-snapshot] }
                 payload: { type: object }
       responses:
         "200":

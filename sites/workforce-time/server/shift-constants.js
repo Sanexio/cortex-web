@@ -4,7 +4,7 @@
 // Hintergrund (2026-06-14): shifts hat keine status-Spalte (nur
 // removed_from_source). shift_assignments + shift_swap_requests
 // nutzen englische Strings sowohl in der DB als auch im Code — anders
-// als absence_requests / time_entries, wo der Ordio-Importpfad
+// als absence_requests / time_entries, wo der Legacy-Import-Pfad
 // deutsche Strings reinbringt. Dieser Audit hat KEINEN Drift in der
 // Swap-Logik gefunden; das Modul existiert als Single Source of Truth,
 // damit der Konsistenz-Pattern über alle Domänen einheitlich ist

@@ -1,10 +1,14 @@
 #!/usr/bin/env node
-// Debug probe for the Ordio login page structure. Read-only, no
+// Debug probe for the legacy-import login page structure. Read-only, no
 // credentials used — dumps form fields, buttons, iframes and overlay
-// hints so the locators in ordio-delta.mjs can match the real page.
+// hints so the locators in legacy-delta.mjs can match the real page.
 // Output goes to stdout; optional screenshot to --shot <path> (keep
 // outside the repo, e.g. /tmp). Usage:
-//   ORDIO_BASE_URL=... node tools/ordio/ordio-probe.mjs [--shot /tmp/ordio-login.png]
+//   LEGACY_BASE_URL=... node tools/legacy-import/legacy-probe.mjs [--shot /tmp/legacy-login.png]
+
+// Quell-Import-Host (Vendor-URL) ist ENV-pflichtig — kein Default-Fallback im Code.
+const LEGACY_SOURCE_HOST = process.env.LEGACY_SOURCE_HOST || "";
+const LEGACY_SOURCE_DOMAIN = process.env.LEGACY_SOURCE_DOMAIN || "";
 
 const args = process.argv.slice(2);
 const shotIdx = args.indexOf("--shot");
@@ -25,7 +29,7 @@ const deepIdx = args.indexOf("--deep");
 const deepPath = deepIdx >= 0 ? args[deepIdx + 1] : null;
 // --picker: open /work-hours, click "Zeitraum wählen", dump the date
 // picker popover STRUCTURE (buttons, nav controls, inputs, aria-labels)
-// so the interactive paging in ordio-delta can drive it. No data values.
+// so the interactive paging in legacy-import-delta can drive it. No data values.
 const pickerProbe = args.includes("--picker");
 // --absrows: dump /absences grid row→employee linkage. For each
 // absence-bar, walk ancestors to find the row container + its left
@@ -52,9 +56,9 @@ const rawIdx = args.indexOf("--raw");
 const rawPath = rawIdx >= 0 ? args[rawIdx + 1] : null;
 const rawSelector = rawIdx >= 0 ? args[rawIdx + 2] : null;
 
-const baseUrl = process.env.ORDIO_BASE_URL;
+const baseUrl = process.env.LEGACY_BASE_URL;
 if (!baseUrl) {
-  console.error("ORDIO_BASE_URL fehlt in der Laufzeitumgebung");
+  console.error("LEGACY_BASE_URL fehlt in der Laufzeitumgebung");
   process.exit(1);
 }
 
@@ -79,8 +83,8 @@ try {
   const page = await browser.newPage({ viewport: { width: 1680, height: 1050 } });
 
   async function loginPassword() {
-    const email = process.env.ORDIO_EMAIL || process.env.ORDIO_USER || "";
-    const password = process.env.ORDIO_PASSWORD || "";
+    const email = process.env.LEGACY_EMAIL || process.env.LEGACY_USER || "";
+    const password = process.env.LEGACY_PASSWORD || "";
     if (!email || !password) { console.error("Credentials fehlen"); process.exit(1); }
     await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 45000 });
     const pw = page.getByRole("button", { name: /benutzername.*passwort|username.*password/i });
@@ -169,7 +173,7 @@ try {
       try {
         const req = res.request();
         const url = res.url();
-        if (!/ordio\.com\/(api|absences)/i.test(url)) return;
+        if (!new RegExp(LEGACY_SOURCE_DOMAIN.replace(/\./g, "\\.") + "/(api|absences)", "i").test(url)) return;
         let body = "";
         try { body = (await res.body()).toString("utf8"); } catch { return; }
         const low = body.toLowerCase();
@@ -178,7 +182,7 @@ try {
         const hasAbs = /absence|urlaub|krank|abwesen|holiday|disease|vacation/i.test(low);
         const hasEmp = /employee|user_id|staff|"label"/i.test(low);
         if (hasDate && hasAbs) {
-          hits.push({ method: req.method(), url: url.replace(/^https:\/\/app\.ordio\.com/, "").slice(0, 120), ct: (res.headers()["content-type"] || "").split(";")[0], bytes: body.length, hasEmp, sampleKeys: (() => { try { const j = JSON.parse(body); return Array.isArray(j) ? `array(${j.length})` : Object.keys(j).slice(0, 12); } catch { return "non-json(rsc?)"; } })() });
+          hits.push({ method: req.method(), url: url.replace(new RegExp("^https://" + LEGACY_SOURCE_HOST.replace(/\./g, "\\.")), "").slice(0, 120), ct: (res.headers()["content-type"] || "").split(";")[0], bytes: body.length, hasEmp, sampleKeys: (() => { try { const j = JSON.parse(body); return Array.isArray(j) ? `array(${j.length})` : Object.keys(j).slice(0, 12); } catch { return "non-json(rsc?)"; } })() });
         }
       } catch { /* ignore */ }
     });
@@ -417,10 +421,10 @@ try {
   }
 
   if (postLogin) {
-    const email = process.env.ORDIO_EMAIL || process.env.ORDIO_USER || "";
-    const password = process.env.ORDIO_PASSWORD || "";
+    const email = process.env.LEGACY_EMAIL || process.env.LEGACY_USER || "";
+    const password = process.env.LEGACY_PASSWORD || "";
     if (!email || !password) {
-      console.error("ORDIO_EMAIL/ORDIO_USER oder ORDIO_PASSWORD fehlt");
+      console.error("LEGACY_EMAIL/LEGACY_USER oder LEGACY_PASSWORD fehlt");
       process.exit(1);
     }
     const apiLog = [];
@@ -428,7 +432,7 @@ try {
       const contentType = response.headers()["content-type"] ?? "";
       if (!contentType.includes("json")) return;
       const url = response.url();
-      if (!/ordio/i.test(url)) return;
+      if (!/legacy-import/i.test(url)) return;
       let payload = null;
       try { payload = await response.json(); } catch { return; }
       apiLog.push({
@@ -482,7 +486,7 @@ try {
     const reqLog = new Set();
     page.on("request", (request) => {
       const url = request.url();
-      if (/app\.ordio\.com\/(api|graphql)/i.test(url)) {
+      if (new RegExp(LEGACY_SOURCE_HOST.replace(/\./g, "\\.") + "/(api|graphql)", "i").test(url)) {
         reqLog.add(`${request.method()} ${url.length > 150 ? url.slice(0, 150) + "…" : url}`);
       }
     });
@@ -562,7 +566,7 @@ try {
 
   console.log(JSON.stringify(summary, null, 2));
 
-  // Step 2: Ordio hides password login behind a mode-switch button.
+  // Step 2: Legacy-Import hides password login behind a mode-switch button.
   const pwButton = page.getByRole("button", { name: /benutzername.*passwort|username.*password/i });
   if (await pwButton.count()) {
     await pwButton.first().click();

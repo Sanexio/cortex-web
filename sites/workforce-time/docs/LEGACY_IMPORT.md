@@ -1,37 +1,37 @@
-# Ordio-Delta-Import
+# Legacy-Delta-Import
 
-Diese Pipeline bereitet den Delta-Import seit der letzten Ordio-Baseline
-vom **2026-05-24** vor. Sie ist read-only gegen Ordio und schreibt erst
+Diese Pipeline bereitet den Delta-Import seit der letzten Legacy-Import-Baseline
+vom **2026-05-24** vor. Sie ist read-only gegen Legacy-Import und schreibt erst
 dann in Workforce-Time, wenn der Import explizit ausgelöst wird.
 
 ## Sicherheitsrahmen
 
-- Ordio wird nur im Browser gelesen. Keine Schreibaktionen, keine
+- Legacy-Import wird nur im Browser gelesen. Keine Schreibaktionen, keine
   Kündigungs-, Lösch- oder Stammdatenänderungen.
 - Keine Screenshots, HAR-Dateien oder Echtdaten ins Repo schreiben.
 - Secrets werden nicht geloggt. Der Live-Lauf startet nur, wenn
-  `~/.cortex/secrets/ordio.env` vorhanden ist und die Laufzeitumgebung
-  `ORDIO_BASE_URL`, `ORDIO_EMAIL` (oder `ORDIO_USER`), `ORDIO_PASSWORD` enthält.
+  `~/.cortex/secrets/legacy-import.env` vorhanden ist und die Laufzeitumgebung
+  `LEGACY_BASE_URL`, `LEGACY_EMAIL` (oder `LEGACY_USER`), `LEGACY_PASSWORD` enthält.
 - Stop-Kriterien: unbekannte Login-Hürde, 2FA/CAPTCHA, sichtbare
-  Schreibdialoge, unerwartete Ordio-Fehler, Snapshot-Validierungsfehler.
+  Schreibdialoge, unerwartete Legacy-Import-Fehler, Snapshot-Validierungsfehler.
 
 ## Dry-Run ohne Credentials
 
 ```bash
-npm run ordio:delta -- --dry-run
-npm run test:ordio
+npm run legacy-import:delta -- --dry-run
+npm run test:legacy-import
 ```
 
 Ohne `--fixture` und ohne `--live` nutzt die CLI automatisch die
-anonymisierte Fixture unter `tools/ordio/fixtures/`. Der Dry-Run mappt
+anonymisierte Fixture unter `tools/legacy-import/fixtures/`. Der Dry-Run mappt
 auf das Snapshot-Format, validiert Pflichtbezüge und gibt nur Zählwerte
 aus.
 
 ## Snapshot aus Fixture oder Export
 
 ```bash
-npm run ordio:delta -- \
-  --fixture /pfad/zu/ordio-export.json \
+npm run legacy-import:delta -- \
+  --fixture /pfad/zu/legacy-import-export.json \
   --out private/imports/import-snapshot.json
 ```
 
@@ -44,10 +44,10 @@ Echtdaten im Git erzeugen.
 
 ```bash
 set -a
-source ~/.cortex/secrets/ordio.env
+source ~/.cortex/secrets/legacy-import.env
 set +a
 
-npm run ordio:delta -- \
+npm run legacy-import:delta -- \
   --live \
   --dry-run \
   --from 2026-05-25 \
@@ -68,7 +68,7 @@ Vor dem echten Import:
 4. API lokal mit Admin-Session starten.
 
 ```bash
-npm run ordio:delta -- \
+npm run legacy-import:delta -- \
   --fixture /pfad/zu/geprueftem-snapshot-rohexport.json \
   --out private/imports/import-snapshot.json \
   --post
@@ -77,7 +77,7 @@ npm run ordio:delta -- \
 `--post` sendet an `POST /api/imports/delta-snapshot`:
 
 ```json
-{ "source": "ordio-snapshot", "path": "private/imports/import-snapshot.json" }
+{ "source": "legacy-snapshot", "path": "private/imports/import-snapshot.json" }
 ```
 
 Wenn Auth aktiv ist, muss `WORKFORCE_SESSION_COOKIE` in der Umgebung

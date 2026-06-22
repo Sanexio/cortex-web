@@ -16,12 +16,12 @@ import {
   parseEmployeesHtml,
   parsePlanHtml,
   parseWorkHoursHtml
-} from "./ordio-dom.mjs";
-import { isoWeeksInRange, mapOrdioPayload, snapshotSummary, validateSnapshot } from "./ordio-delta.mjs";
+} from "./legacy-dom.mjs";
+import { isoWeeksInRange, mapImportPayload, snapshotSummary, validateSnapshot } from "./legacy-delta.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-test("parseWorkHoursHtml extracts synthetic Ordio table rows without real data", async () => {
+test("parseWorkHoursHtml extracts synthetic Legacy-Import table rows without real data", async () => {
   const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
   const rows = parseWorkHoursHtml(html);
 
@@ -47,7 +47,7 @@ test("work-hours DOM rows map to snapshot time_entries with stable source ids", 
   assert.equal(mapped.timeEntries[0].startDate, "2026-05-25");
   assert.equal(mapped.timeEntries[0].unpaidBreakMinutes, 15);
   assert.equal(mapped.timeEntries[1].unpaidBreakMinutes, 30);
-  assert.equal(mapped.timeEntries[1].note, "Ordio-Verstoss: Pausenregel");
+  assert.equal(mapped.timeEntries[1].note, "Plan-Verstoss: Pausenregel");
 });
 
 test("unresolved employees are marked without creating synthetic employee records", async () => {
@@ -160,7 +160,7 @@ test("absence duration labels are not treated as employees", () => {
 
 test("embedded absences payload maps bars through employee group and api map", () => {
   const html = `<!doctype html>
-    <script type="application/json" id="ordio-fixture">
+    <script type="application/json" id="legacy-import-fixture">
       {
         "employees": [
           {
@@ -272,12 +272,12 @@ test("plan mapper does not import resolvable employee names as work areas", () =
   assert.equal(mapped.unresolvedLocations.length, 0);
 });
 
-test("HTML fixture can flow through existing ordio snapshot mapper", async () => {
+test("HTML fixture can flow through existing legacy-import snapshot mapper", async () => {
   const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
   const rows = parseWorkHoursHtml(html);
-  const snapshot = mapOrdioPayload(
+  const snapshot = mapImportPayload(
     {
-      sourceSystem: "ordio",
+      sourceSystem: "legacy_import",
       capturedAt: "2026-06-05T12:00:00.000Z",
       employeeRows: parseEmployeesHtml(html),
       workHoursRows: rows,
