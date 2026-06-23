@@ -1146,6 +1146,11 @@ export function mapWorkHoursRows(rows, options = {}) {
       status: cleanText(cellFor(row, ["status", "Status"], 7)) || "erfasst",
       paidBreakMinutes: 0,
       unpaidBreakMinutes: minutes(cellFor(row, ["pause", "Pause"], 5)),
+      // Quell-System liefert eine vorgerechnete "Arbeitszeit"-Spalte (typ.
+      // Brutto - Pause, ggf. mit Tarif-Pausen-Logik). Wir lesen sie als
+      // Ground-Truth mit ein, damit Reportings den Quell-Wert spiegeln
+      // koennen, statt selber zu rechnen.
+      sourceWorkMinutes: minutes(cellFor(row, ["arbeitszeit", "Arbeitszeit"], 4)),
       note,
       updatedAt: capturedAt
     };

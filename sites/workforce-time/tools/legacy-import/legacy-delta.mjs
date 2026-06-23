@@ -279,6 +279,9 @@ export function mapImportPayload(rawInput, options = {}) {
       status: text(record.status, "erfasst"),
       paidBreakMinutes: Number(record.paidBreakMinutes ?? 0) || 0,
       unpaidBreakMinutes: Number(record.unpaidBreakMinutes ?? record.breakDuration ?? 0) || 0,
+      sourceWorkMinutes: Number.isFinite(Number(record.sourceWorkMinutes))
+        ? Number(record.sourceWorkMinutes)
+        : null,
       note: text(record.note) || null,
       updatedAt: record.updatedAt ?? capturedAt
     };
