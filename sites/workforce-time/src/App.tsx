@@ -1133,7 +1133,8 @@ function recordsForSlot<T extends ScheduleRecord>(records: T[], slot: ShiftSlotT
   return records.filter((record) => shiftSegmentForRecord(record) === slot.segmentId);
 }
 
-function shiftSlotsForTemplate(template: ShiftTemplate): ShiftSlotTemplate[] {
+function shiftSlotsForTemplate(template: ShiftTemplate | undefined | null): ShiftSlotTemplate[] {
+  if (!template) return [];
   return shiftSegments.map((segment) => ({
     ...template,
     id: `${template.id}-${segment.id}`,
