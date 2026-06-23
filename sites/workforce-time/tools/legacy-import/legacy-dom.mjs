@@ -1139,7 +1139,7 @@ export function mapWorkHoursRows(rows, options = {}) {
       employeeName,
       startDate,
       startTime,
-      endDate: endTime <= startTime ? null : startDate,
+      endDate: endTime <= startTime ? addDays(startDate, 1) : startDate,
       endTime,
       area,
       location,
