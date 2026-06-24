@@ -828,6 +828,9 @@ function migrate() {
 
   addColumnIfMissing("employees", "email", "TEXT");
   addColumnIfMissing("employees", "weekly_hours", "REAL");
+  // Ordio liefert eine vorgerechnete Arbeitszeit pro Stempel (Brutto - Pause,
+  // capped bei 0 wenn Pause > Brutto). Wir spiegeln das als Source-of-Truth.
+  addColumnIfMissing("time_entries", "source_work_minutes", "INTEGER");
 }
 
 function addColumnIfMissing(table, column, ddl) {
@@ -3133,9 +3136,9 @@ function upsertImportedTimeEntry(batchId, record, summary, sourceSystem = "legac
       INSERT INTO time_entries (
         id, employee_id, starts_at, ends_at, work_area_id, location_id, status,
         entry_type, paid_break_minutes, unpaid_break_minutes, note,
-        source_system, source_id, imported_at, updated_at
+        source_system, source_id, source_work_minutes, imported_at, updated_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT (id) DO UPDATE SET
         employee_id = excluded.employee_id,
         starts_at = excluded.starts_at,
@@ -3149,6 +3152,7 @@ function upsertImportedTimeEntry(batchId, record, summary, sourceSystem = "legac
         note = excluded.note,
         source_system = excluded.source_system,
         source_id = excluded.source_id,
+        source_work_minutes = excluded.source_work_minutes,
         imported_at = excluded.imported_at,
         updated_at = excluded.updated_at,
         removed_from_source = 0
@@ -3166,6 +3170,7 @@ function upsertImportedTimeEntry(batchId, record, summary, sourceSystem = "legac
       record.note,
       sourceSystem,
       sourceId,
+      Number.isFinite(Number(record.sourceWorkMinutes)) ? Number(record.sourceWorkMinutes) : null,
       importedAt,
       importedAt
     );
@@ -3334,6 +3339,9 @@ function normalizeImportSnapshot(snapshot) {
         type: normalizeImportedEntryType(record.status),
         paidBreakMinutes: minutes(record.paidBreakMinutes),
         unpaidBreakMinutes: Math.max(0, parseDurationMinutes(record.unpaidBreakMinutes ?? record.breakDuration ?? 0)),
+        sourceWorkMinutes: Number.isFinite(Number(record.sourceWorkMinutes))
+          ? Number(record.sourceWorkMinutes)
+          : null,
         note: typeof record.note === "string" && record.note.trim() ? record.note.trim() : null,
         updatedAt: record.updatedAt ?? sourceUpdatedAt
       };
@@ -4278,7 +4286,8 @@ export function buildEmployeeShiftHours(employeeId, fromIso, toIso) {
   const result = [];
   for (const sh of shifts) {
     const entries = db.prepare(`
-      SELECT starts_at, ends_at, unpaid_break_minutes, paid_break_minutes, status
+      SELECT starts_at, ends_at, unpaid_break_minutes, paid_break_minutes, status,
+             source_work_minutes
         FROM time_entries
        WHERE employee_id = ?
          AND location_id = ?
@@ -4627,7 +4636,15 @@ export function cancelSwapRequest(id, cancellerEmployeeId, note) {
 }
 
 // T-009a — Reporting/Auswertung Backend (claude-chat, 2026-06-04).
+// T-LIVE-024 — Wenn Quell-System (Ordio) eine eigene Arbeitszeit-Spalte
+// liefert (source_work_minutes), nutzen wir die als Ground-Truth, damit
+// Reporting exakt mit der Ordio-UI uebereinstimmt. Sonst Fallback auf
+// lokale Brutto - Unpaid-Pause Berechnung.
 function netWorkedMinutes(row) {
+  if (row?.source_work_minutes != null && Number.isFinite(Number(row.source_work_minutes))) {
+    const src = Number(row.source_work_minutes);
+    return src > 0 ? src : 0;
+  }
   const start = Date.parse(row.starts_at);
   const end = Date.parse(row.ends_at);
   if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return 0;
@@ -4792,7 +4809,7 @@ export function buildEmployeeMonthlySollIst(employeeId, year, month, options = {
   const allParams = { employeeId, monthStart, monthEnd };
   if (locationClause) allParams.locationId = baseParams.locationId;
   const allRows = db.prepare(`
-    SELECT starts_at, ends_at, unpaid_break_minutes, status
+    SELECT starts_at, ends_at, unpaid_break_minutes, status, source_work_minutes
     FROM time_entries
     WHERE employee_id = @employeeId
       AND date(starts_at) >= @monthStart
