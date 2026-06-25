@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-20T08:20:24.206Z",
+  "generated_at": "2026-06-25T21:11:17.814Z",
   "stats": {
     "nodes": 320,
-    "edges": 1691,
-    "files_scanned": 413
+    "edges": 1682,
+    "files_scanned": 415
   },
   "clusters": [
     {
@@ -60,7 +60,7 @@
       "id": "30 Tutorials/_MOC Tutorials",
       "label": "_MOC Tutorials",
       "cluster": "30 Tutorials",
-      "degree": 146
+      "degree": 148
     },
     {
       "id": "40 Regeln/_MOC Regeln",
@@ -81,21 +81,15 @@
       "degree": 60
     },
     {
-      "id": "DASHBOARD",
-      "label": "DASHBOARD",
-      "cluster": "ROOT",
-      "degree": 58
-    },
-    {
       "id": "10 Projekte/_MOC Projekte",
       "label": "_MOC Projekte",
       "cluster": "10 Projekte",
       "degree": 55
     },
     {
-      "id": "15 Workflows/Telegram-Bridge",
-      "label": "Telegram-Bridge",
-      "cluster": "15 Workflows",
+      "id": "DASHBOARD",
+      "label": "DASHBOARD",
+      "cluster": "ROOT",
       "degree": 52
     },
     {
@@ -105,16 +99,22 @@
       "degree": 51
     },
     {
+      "id": "15 Workflows/Telegram-Bridge",
+      "label": "Telegram-Bridge",
+      "cluster": "15 Workflows",
+      "degree": 50
+    },
+    {
       "id": "15 Workflows/File-Renamer",
       "label": "File-Renamer",
       "cluster": "15 Workflows",
-      "degree": 48
+      "degree": 47
     },
     {
       "id": "15 Workflows/Doc-Workflow",
       "label": "Doc-Workflow",
       "cluster": "15 Workflows",
-      "degree": 45
+      "degree": 44
     },
     {
       "id": "30 Tutorials/Cortex/_MOC Cortex",
@@ -165,12 +165,6 @@
       "degree": 30
     },
     {
-      "id": "10 Projekte/Juvantis",
-      "label": "Juvantis",
-      "cluster": "10 Projekte",
-      "degree": 27
-    },
-    {
       "id": "30 Tutorials/Netzwerk & Sysadmin/Netzwerk Grundlagen",
       "label": "Netzwerk Grundlagen",
       "cluster": "30 Tutorials",
@@ -181,6 +175,12 @@
       "label": "LERNPFAD",
       "cluster": "30 Tutorials",
       "degree": 27
+    },
+    {
+      "id": "10 Projekte/Juvantis",
+      "label": "Juvantis",
+      "cluster": "10 Projekte",
+      "degree": 26
     },
     {
       "id": "30 Tutorials/Arbeitsweise & Prozess/Arbeitsweise Grundlagen",
@@ -201,15 +201,15 @@
       "degree": 25
     },
     {
-      "id": "15 Workflows/Praxis-QM",
-      "label": "Praxis-QM",
-      "cluster": "15 Workflows",
-      "degree": 25
-    },
-    {
       "id": "10 Projekte/Cortex-Web",
       "label": "Cortex-Web",
       "cluster": "10 Projekte",
+      "degree": 24
+    },
+    {
+      "id": "15 Workflows/Praxis-QM",
+      "label": "Praxis-QM",
+      "cluster": "15 Workflows",
       "degree": 24
     },
     {
@@ -247,12 +247,6 @@
       "label": "Proxmox Grundlagen",
       "cluster": "30 Tutorials",
       "degree": 23
-    },
-    {
-      "id": "10 Projekte/_MOC Projekte nach Gerät",
-      "label": "_MOC Projekte nach Gerät",
-      "cluster": "10 Projekte",
-      "degree": 22
     },
     {
       "id": "30 Tutorials/Terminal/Terminal Grundlagen",
@@ -387,6 +381,12 @@
       "degree": 18
     },
     {
+      "id": "30 Tutorials/Cortex/16 Harness — Wie Claude arbeitet",
+      "label": "16 Harness — Wie Claude arbeitet",
+      "cluster": "30 Tutorials",
+      "degree": 18
+    },
+    {
       "id": "30 Tutorials/Webentwicklung/Webentwicklung Grundlagen",
       "label": "Webentwicklung Grundlagen",
       "cluster": "30 Tutorials",
@@ -409,6 +409,12 @@
       "label": "_MOC Wissen",
       "cluster": "ROOT",
       "degree": 18
+    },
+    {
+      "id": "10 Projekte/_MOC Projekte nach Gerät",
+      "label": "_MOC Projekte nach Gerät",
+      "cluster": "10 Projekte",
+      "degree": 17
     },
     {
       "id": "15 Workflows/_MOC Workflows",
@@ -435,28 +441,22 @@
       "degree": 17
     },
     {
-      "id": "30 Tutorials/Cortex/16 Harness — Wie Claude arbeitet",
-      "label": "16 Harness — Wie Claude arbeitet",
-      "cluster": "30 Tutorials",
-      "degree": 17
-    },
-    {
       "id": "60 Tools/universal_extract",
       "label": "universal_extract",
       "cluster": "60 Tools",
       "degree": 17
     },
     {
-      "id": "10 Projekte/cortex-agent",
-      "label": "cortex-agent",
-      "cluster": "10 Projekte",
-      "degree": 15
-    },
-    {
       "id": "30 Tutorials/Cortex/13 Slash-Commands und CLI",
       "label": "13 Slash-Commands und CLI",
       "cluster": "30 Tutorials",
       "degree": 15
+    },
+    {
+      "id": "10 Projekte/cortex-agent",
+      "label": "cortex-agent",
+      "cluster": "10 Projekte",
+      "degree": 14
     },
     {
       "id": "30 Tutorials/Cortex/12 Externe Dienste",
@@ -675,12 +675,6 @@
       "degree": 9
     },
     {
-      "id": "15 Workflows/SmartQ Dashboard",
-      "label": "SmartQ Dashboard",
-      "cluster": "15 Workflows",
-      "degree": 9
-    },
-    {
       "id": "30 Tutorials/Arbeitsweise & Prozess/09-vault-graph-vernetzung",
       "label": "09-vault-graph-vernetzung",
       "cluster": "30 Tutorials",
@@ -780,6 +774,18 @@
       "id": "00 Kontext/Nutzer-Kontext",
       "label": "Nutzer-Kontext",
       "cluster": "00 Kontext",
+      "degree": 8
+    },
+    {
+      "id": "15 Workflows/SmartQ Dashboard",
+      "label": "SmartQ Dashboard",
+      "cluster": "15 Workflows",
+      "degree": 8
+    },
+    {
+      "id": "30 Tutorials/Cortex/17 Erklär-Pflicht",
+      "label": "17 Erklär-Pflicht",
+      "cluster": "30 Tutorials",
       "degree": 8
     },
     {
@@ -897,18 +903,6 @@
       "degree": 7
     },
     {
-      "id": "10 Projekte/Gaming",
-      "label": "Gaming",
-      "cluster": "10 Projekte",
-      "degree": 7
-    },
-    {
-      "id": "30 Tutorials/Cortex/17 Erklär-Pflicht",
-      "label": "17 Erklär-Pflicht",
-      "cluster": "30 Tutorials",
-      "degree": 7
-    },
-    {
       "id": "30 Tutorials/Terminal/Git Konzepte/Git Grundlagen",
       "label": "Git Grundlagen",
       "cluster": "30 Tutorials",
@@ -1015,6 +1009,12 @@
       "label": "2026-06-11_second-brain-konsolidier…",
       "cluster": "90 Sessions",
       "degree": 7
+    },
+    {
+      "id": "10 Projekte/Gaming",
+      "label": "Gaming",
+      "cluster": "10 Projekte",
+      "degree": 6
     },
     {
       "id": "30 Tutorials/Netzwerk & Sysadmin/09-cortex-mesh-tailscale",
@@ -2568,23 +2568,7 @@
     },
     {
       "source": "10 Projekte/_MOC Projekte nach Gerät",
-      "target": "10 Projekte/Gaming"
-    },
-    {
-      "source": "10 Projekte/_MOC Projekte nach Gerät",
-      "target": "10 Projekte/Juvantis"
-    },
-    {
-      "source": "10 Projekte/_MOC Projekte nach Gerät",
-      "target": "10 Projekte/cortex-agent"
-    },
-    {
-      "source": "10 Projekte/_MOC Projekte nach Gerät",
       "target": "10 Projekte/praxis-webseite"
-    },
-    {
-      "source": "10 Projekte/_MOC Projekte nach Gerät",
-      "target": "15 Workflows/Telegram-Bridge"
     },
     {
       "source": "10 Projekte/_MOC Projekte nach Gerät",
@@ -3709,6 +3693,10 @@
     {
       "source": "30 Tutorials/Cortex/16 Harness — Wie Claude arbeitet",
       "target": "30 Tutorials/Cortex/09 Self-Learning-Layer"
+    },
+    {
+      "source": "30 Tutorials/Cortex/16 Harness — Wie Claude arbeitet",
+      "target": "30 Tutorials/Cortex/17 Erklär-Pflicht"
     },
     {
       "source": "30 Tutorials/Cortex/16 Harness — Wie Claude arbeitet",
@@ -8428,35 +8416,11 @@
     },
     {
       "source": "DASHBOARD",
-      "target": "15 Workflows/Telegram-Bridge"
-    },
-    {
-      "source": "DASHBOARD",
-      "target": "15 Workflows/Doc-Workflow"
-    },
-    {
-      "source": "DASHBOARD",
-      "target": "15 Workflows/File-Renamer"
-    },
-    {
-      "source": "DASHBOARD",
-      "target": "15 Workflows/Praxis-QM"
-    },
-    {
-      "source": "DASHBOARD",
-      "target": "15 Workflows/SmartQ Dashboard"
-    },
-    {
-      "source": "DASHBOARD",
       "target": "HOME"
     },
     {
       "source": "DASHBOARD",
       "target": "10 Projekte/_MOC Projekte"
-    },
-    {
-      "source": "DASHBOARD",
-      "target": "10 Projekte/_MOC Projekte nach Gerät"
     },
     {
       "source": "DASHBOARD",
