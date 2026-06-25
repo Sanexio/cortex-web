@@ -442,23 +442,30 @@ async function captureLiveImport(options) {
     const employeeRows = await extractEmployeeRowsFromPage(page);
 
     const workHoursRows = [];
+    // T-LIVE-025 — Picker-Range-Drift fix: bei Wochen-Ranges mit Tag-am-
+    // Wochenrand (Mo/So) verliert Ordio's Picker Tage am Range-Anfang
+    // (Probe 2026-06-25: 22.-28.06 -> nur 23-26 geliefert). Workaround:
+    // pro Tag separat scrapen statt pro Woche. Quell-System fasst
+    // Single-Day-Ranges zuverlaessig.
+    const allDays = [];
     for (const range of isoWeeksInRange(options.from, options.to)) {
+      let cursor = range.start;
+      while (cursor <= range.end) {
+        allDays.push(cursor);
+        cursor = addDays(cursor, 1);
+      }
+    }
+    for (const day of allDays) {
       await page.goto(new URL("/work-hours", process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
       await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
       await page.waitForTimeout(2000);
       const defaultRows = await extractWorkHoursRowsFromPage(page);
-      const pickerSet = await applyWorkHoursPickerRange(page, range.start, range.end);
+      const pickerSet = await applyWorkHoursPickerRange(page, day, day);
       const pickedRows = pickerSet ? await extractWorkHoursRowsFromPage(page) : [];
-      // T-LIVE-022 — Default-Fallback nur ohne erfolgreichen Picker.
-      // Vorher: bei pickerSet=true + pickedRows=0 wurde auf defaultRows
-      // (Ist-Monat = falscher Range) zurueckgefallen → Okt-2025-Re-Try
-      // schrieb 52 Juni-Eintraege in den Okt-Snapshot. Wenn Picker
-      // gesetzt wurde, vertrauen wir der (auch leeren) Picker-Tabelle.
       const usedRows = pickerSet ? pickedRows : defaultRows;
       if (process.env.LEGACY_DEBUG) {
-        await logWorkHoursDiagnostics(page, `${range.label}:${range.start}-${range.end}`);
-        console.error(`LEGACY_DEBUG Picker ${range.label}: pickerSet=${pickerSet}, default=${defaultRows.length}, picked=${pickedRows.length}, used=${usedRows.length}`);
+        console.error(`LEGACY_DEBUG Day ${day}: pickerSet=${pickerSet}, default=${defaultRows.length}, picked=${pickedRows.length}, used=${usedRows.length}`);
       }
       workHoursRows.push(...usedRows);
     }
