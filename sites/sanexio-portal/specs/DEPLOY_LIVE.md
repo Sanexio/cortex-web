@@ -1,7 +1,8 @@
 # Sanexio-Portal Live-Deployment — Architektur-Spec
 
-Status: **READY-FOR-CPANEL-ACTION** (2026-06-25 23:18).
-Blocker: cPanel-Subdomain `portal.sanexio.de` muss angelegt werden.
+Status: **LIVE** seit 2026-06-25 23:24.
+URL: https://portal.sanexio.de (HTTPS via Let's Encrypt AutoSSL, valid).
+Letzter Deploy: 2026-06-25 23:24 via `tools/deploy-to-portal-sanexio-de.sh --commit`.
 
 ## Ziel
 
