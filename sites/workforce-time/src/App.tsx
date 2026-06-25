@@ -156,6 +156,10 @@ type TimeEntry = {
   type: EntryType;
   paidBreakMinutes: number;
   unpaidBreakMinutes: number;
+  // Quell-System-Arbeitszeit (z.B. Ordio "Arbeitszeit"-Spalte). Wenn
+  // gesetzt: Ground-Truth fuer Reporting; sonst Fallback auf
+  // grossMinutes - unpaidBreakMinutes.
+  sourceWorkMinutes?: number | null;
   note?: string;
   audit: string[];
   sourceSystem?: string | null;
@@ -841,6 +845,11 @@ function parseDateTime(date: string, time: string) {
 }
 
 function minutesBetween(entry: TimeEntry) {
+  // Quell-System-Arbeitszeit (Ordio "Arbeitszeit"-Spalte) ist Ground-Truth,
+  // wenn vorhanden. Sonst lokale Berechnung: Brutto minus unbezahlte Pause.
+  if (entry.sourceWorkMinutes != null && Number.isFinite(entry.sourceWorkMinutes)) {
+    return Math.max(0, entry.sourceWorkMinutes);
+  }
   const start = parseDateTime(entry.startDate, entry.startTime).getTime();
   const end = parseDateTime(entry.endDate, entry.endTime).getTime();
   const rawMinutes = Math.max(0, Math.round((end - start) / 60000));
@@ -857,6 +866,18 @@ function grossMinutes(entry: TimeEntry) {
   const start = parseDateTime(entry.startDate, entry.startTime).getTime();
   const end = parseDateTime(entry.endDate, entry.endTime).getTime();
   return Math.max(0, Math.round((end - start) / 60000));
+}
+
+// Netto-Arbeitsminuten. Wenn das Quell-System (z.B. Ordio) eine eigene
+// Arbeitszeit liefert (entry.sourceWorkMinutes), gilt das als
+// Ground-Truth — damit Reporting in workforce-time exakt mit der
+// Quell-UI uebereinstimmt. Sonst Fallback: Brutto minus unbezahlte
+// Pause. Backend macht das gleiche in netWorkedMinutes (server/db.js).
+function netMinutes(entry: TimeEntry) {
+  if (entry.sourceWorkMinutes != null && Number.isFinite(entry.sourceWorkMinutes)) {
+    return Math.max(0, entry.sourceWorkMinutes);
+  }
+  return Math.max(0, grossMinutes(entry) - entry.unpaidBreakMinutes);
 }
 
 function requiredBreakMinutes(entry: TimeEntry) {

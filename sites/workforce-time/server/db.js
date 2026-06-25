@@ -1518,6 +1518,10 @@ function rowToTimeEntry(row, audit) {
     type: row.entry_type,
     paidBreakMinutes: row.paid_break_minutes,
     unpaidBreakMinutes: row.unpaid_break_minutes,
+    sourceWorkMinutes:
+      row.source_work_minutes != null && Number.isFinite(Number(row.source_work_minutes))
+        ? Number(row.source_work_minutes)
+        : null,
     note: row.note ?? undefined,
     audit,
     sourceSystem: row.source_system,
