@@ -4643,7 +4643,8 @@ export function cancelSwapRequest(id, cancellerEmployeeId, note) {
 // T-LIVE-024 — Wenn Quell-System (Ordio) eine eigene Arbeitszeit-Spalte
 // liefert (source_work_minutes), nutzen wir die als Ground-Truth, damit
 // Reporting exakt mit der Ordio-UI uebereinstimmt. Sonst Fallback auf
-// lokale Brutto - Unpaid-Pause Berechnung.
+// lokale Brutto - Unpaid-Pause Berechnung. Sub-60s-Stempel = 0 (immer
+// Stempeluhr-Test-Artefakte).
 function netWorkedMinutes(row) {
   if (row?.source_work_minutes != null && Number.isFinite(Number(row.source_work_minutes))) {
     const src = Number(row.source_work_minutes);
@@ -4652,7 +4653,9 @@ function netWorkedMinutes(row) {
   const start = Date.parse(row.starts_at);
   const end = Date.parse(row.ends_at);
   if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return 0;
-  const gross = Math.floor((end - start) / 60000);
+  const grossSec = Math.floor((end - start) / 1000);
+  if (grossSec < 60) return 0;
+  const gross = Math.round(grossSec / 60);
   const unpaidBreak = Number(row.unpaid_break_minutes ?? 0);
   const net = gross - unpaidBreak;
   return net > 0 ? net : 0;

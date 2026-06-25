@@ -850,9 +850,14 @@ function minutesBetween(entry: TimeEntry) {
   if (entry.sourceWorkMinutes != null && Number.isFinite(entry.sourceWorkMinutes)) {
     return Math.max(0, entry.sourceWorkMinutes);
   }
+  // Sub-Sekunden-Stempel sind immer Stempeluhr-Test-Artefakte (Klick-Klick
+  // ohne echte Arbeit). Werden mit 0 Min gezaehlt, sonst verfaelschen sie
+  // Brutto-Summen sobald sie zufaellig nicht-null Dauer bekommen.
   const start = parseDateTime(entry.startDate, entry.startTime).getTime();
   const end = parseDateTime(entry.endDate, entry.endTime).getTime();
-  const rawMinutes = Math.max(0, Math.round((end - start) / 60000));
+  const rawSeconds = Math.max(0, Math.round((end - start) / 1000));
+  if (rawSeconds < 60) return 0;
+  const rawMinutes = Math.round(rawSeconds / 60);
   return Math.max(0, rawMinutes - entry.unpaidBreakMinutes);
 }
 
