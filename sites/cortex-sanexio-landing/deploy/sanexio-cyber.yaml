@@ -1,23 +1,23 @@
 # Sanexio Cyber — User-Theme fuer cortex-harness Dashboard.
-# Reduziert auf theme-systemkonforme Felder (Palette/Typography/Layout/
-# ColorOverrides/ComponentStyles). customCSS bewusst leer — generische
-# Selectors (.card, .surface, body::before) hatten die Dashboard-UI
-# zerschossen (Stracke-Direktive 2026-06-28: customCSS raus).
-# Schema: cortex-harness/web_server.py::_normalise_theme_definition.
+# Portal-Aesthetik (sanexio-portal/cyber.css) als reines Token-Theme.
+# REGEL: nur theme-systemkonforme Felder — palette, typography, layout,
+# colorOverrides, componentStyles. KEIN customCSS, weil generic
+# selectors die Dashboard-UI gebrochen haben (Stracke-Erfahrung 2026-06-28).
+# Aufbau und Funktion des Dashboards bleiben unangetastet.
 
 name: sanexio-cyber
 label: Sanexio Cyber
-description: "Cyber-Look — Portal-Aesthetik mit Barlow Condensed + Neon Yellow/Cyan/Magenta auf tactical Black"
+description: "Portal-Look — Barlow Condensed + Neon Yellow/Cyan/Magenta auf tactical Black (#0c0c0c)"
 
 palette:
   background:
     hex: "#0c0c0c"
     alpha: 1.0
   midground:
-    hex: "#f5c300"   # neon-yellow — primary accent
+    hex: "#f5c300"   # neon-yellow — primary accent (Portal-Yellow)
     alpha: 1.0
   foreground:
-    hex: "#00ddf5"   # neon-cyan — secondary accent
+    hex: "#00ddf5"   # neon-cyan — secondary accent (Portal-Cyan)
     alpha: 0.0
   warmGlow: "rgba(245, 195, 0, 0.35)"
   noiseOpacity: 0.5
@@ -55,3 +55,7 @@ componentStyles:
   badge:
     background: "#f5c300"
     color: "#000000"
+  sidebar:
+    borderColor: "rgba(245, 195, 0, 0.18)"
+  header:
+    borderColor: "rgba(245, 195, 0, 0.18)"
