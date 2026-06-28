@@ -1,0 +1,55 @@
+# Apex — Cortex-Harness-Dashboard auf cortex-sanexio.tech
+# Stracke-Direktive 2026-06-27: cortex-harness ist DAS Dashboard.
+# Stracke-Direktive 2026-06-28: Statische Cyber-Landing auf `/`,
+#   Dashboard rueckt auf `/dashboard/`, alle anderen Routes
+#   (assets, api, sub-routes) bleiben direkt am cortex-harness.
+# Wichtig: cortex-dashboard erwartet Host-Header == upstream-hostport.
+cortex-sanexio.tech, www.cortex-sanexio.tech {
+    encode gzip
+    log {
+        output file /var/log/caddy/cortex-apex-access.log {
+            roll_size 100mb
+            roll_keep 7
+        }
+        format json
+    }
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # Statische Landing-Page (Cyber-Look) — exakt auf `/` und `/index.html`
+    @landing_root path / /index.html
+    handle @landing_root {
+        root * /srv/sanexio/apps/cortex-sanexio-landing
+        file_server
+    }
+    # Landing-Page-Assets (CSS + Favicon)
+    @landing_assets path /landing.css /favicon.svg
+    handle @landing_assets {
+        root * /srv/sanexio/apps/cortex-sanexio-landing
+        file_server
+    }
+
+    # Dashboard auf /dashboard/* — cortex-harness mit X-Forwarded-Prefix
+    # handle_path strippt das Prefix automatisch fuer den upstream,
+    # X-Forwarded-Prefix sagt der SPA, wo sie wirklich liegt.
+    redir /dashboard /dashboard/ permanent
+    handle_path /dashboard/* {
+        reverse_proxy localhost:9119 {
+            header_up Host {upstream_hostport}
+            header_up X-Forwarded-Host {host}
+            header_up X-Forwarded-Prefix /dashboard
+        }
+    }
+
+    # Alle anderen Routes (/assets, /api, /second-brain, ...) -> cortex-harness
+    handle {
+        reverse_proxy localhost:9119 {
+            header_up Host {upstream_hostport}
+            header_up X-Forwarded-Host {host}
+        }
+    }
+}

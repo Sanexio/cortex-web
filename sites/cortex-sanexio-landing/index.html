@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0c0c0c" />
+    <meta name="color-scheme" content="dark" />
+    <title>Cortex · Sanexio</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+    />
+    <link rel="stylesheet" href="/landing.css" />
+    <meta name="robots" content="noindex,nofollow" />
+  </head>
+  <body>
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="scanline" aria-hidden="true"></div>
+
+    <div class="app">
+      <header class="hero section-accents">
+        <div class="hero-eyebrow badge badge--dark">
+          <span class="hero-dot"></span> SANEXIO · CORTEX · VPS · v1
+        </div>
+        <h1 class="hero-title t-h1">
+          SANEXIO <span class="hero-accent">Cortex</span>
+        </h1>
+        <p class="hero-sub">
+          Server-Authority-Plattform &mdash; produktive Services auf
+          <strong>cortex-sanexio.tech</strong>.
+          <br />
+          Aktive Services: <strong id="active-count">4</strong> · Hostinger KVM 2 · Frankfurt
+        </p>
+        <ul class="hero-meta">
+          <li><span class="meta-label">stage</span> production</li>
+          <li><span class="meta-label">host</span> cortex-sanexio.tech</li>
+          <li><span class="meta-label">build</span> <span id="build-date">2026-06-28</span></li>
+        </ul>
+      </header>
+
+      <main class="content">
+        <section class="cards-section">
+          <h2 class="section-title t-h4">
+            <span class="section-marker">01</span> Services
+          </h2>
+          <div class="cards-grid">
+
+            <a class="card card--prod cyber-frame" href="/dashboard/">
+              <div class="card-head">
+                <span class="card-badge badge--prod">PRODUCTION</span>
+                <span class="card-id">cortex-harness</span>
+              </div>
+              <h3 class="card-title t-h3">Cortex<br/>Dashboard</h3>
+              <p class="card-sub">Plattform-Cockpit · Sessions · Memory</p>
+              <p class="card-desc">
+                Hauptkonsole des Cortex-Ökosystems &mdash; Plugins, Heartbeats,
+                Plattform-Fortschritt. Vendored cortex-harness.
+              </p>
+              <ul class="card-tags">
+                <li>Dashboard</li><li>Sessions</li><li>Memory</li>
+              </ul>
+              <span class="card-cta">Öffnen →</span>
+            </a>
+
+            <a class="card card--prod cyber-frame" href="/second-brain">
+              <div class="card-head">
+                <span class="card-badge badge--prod">PRODUCTION</span>
+                <span class="card-id">second-brain</span>
+              </div>
+              <h3 class="card-title t-h3">Second<br/>Brain</h3>
+              <p class="card-sub">Vault-Graph · 416 Knoten · Tutorials</p>
+              <p class="card-desc">
+                Obsidian-Vault-Spiegelung mit Volltext-Suche, Tutorials und
+                Knoten-Graph. Wissens-Anker des Cortex-Stacks.
+              </p>
+              <ul class="card-tags">
+                <li>Vault</li><li>Tutorials</li><li>FTS</li>
+              </ul>
+              <span class="card-cta">Öffnen →</span>
+            </a>
+
+            <a class="card card--prod cyber-frame" href="https://workforce-time.cortex-sanexio.tech/">
+              <div class="card-head">
+                <span class="card-badge badge--prod">PRODUCTION</span>
+                <span class="card-id">workforce-time</span>
+              </div>
+              <h3 class="card-title t-h3">Workforce<br/>Time</h3>
+              <p class="card-sub">Arbeitszeit · Schichtplanung</p>
+              <p class="card-desc">
+                Arbeitszeit- und Schichtmanagement für die Praxis-Teams.
+                Login via Magic-Link + optionalem TOTP.
+              </p>
+              <ul class="card-tags">
+                <li>Workforce</li><li>Login</li><li>Live</li>
+              </ul>
+              <span class="card-cta">Öffnen →</span>
+            </a>
+
+            <a class="card card--prod cyber-frame" href="https://pg-kalkulation.cortex-sanexio.tech/">
+              <div class="card-head">
+                <span class="card-badge badge--prod">PRODUCTION</span>
+                <span class="card-id">pg-kalkulation</span>
+              </div>
+              <h3 class="card-title t-h3">Pg-<br/>Kalkulation</h3>
+              <p class="card-sub">Kostenkalkulation Grüneburgweg</p>
+              <p class="card-desc">
+                Kalkulationstool für Standort Grüneburgweg.
+                Login: <code>root</code> / <code>root</code>.
+              </p>
+              <ul class="card-tags">
+                <li>Kalkulation</li><li>Finanzen</li>
+              </ul>
+              <span class="card-cta">Öffnen →</span>
+            </a>
+
+          </div>
+        </section>
+
+        <section class="cards-section">
+          <h2 class="section-title t-h4">
+            <span class="section-marker">02</span> Stack
+          </h2>
+          <div class="stack-grid">
+            <div class="stack-item">
+              <span class="stack-label">edge</span>
+              <span class="stack-value">Caddy 2.11.4</span>
+            </div>
+            <div class="stack-item">
+              <span class="stack-label">runtime</span>
+              <span class="stack-value">systemd</span>
+            </div>
+            <div class="stack-item">
+              <span class="stack-label">os</span>
+              <span class="stack-value">Debian 12.14</span>
+            </div>
+            <div class="stack-item">
+              <span class="stack-label">host</span>
+              <span class="stack-value">Hostinger KVM 2</span>
+            </div>
+            <div class="stack-item">
+              <span class="stack-label">region</span>
+              <span class="stack-value">Frankfurt</span>
+            </div>
+            <div class="stack-item">
+              <span class="stack-label">ip</span>
+              <span class="stack-value">76.13.10.38</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="portal-footer">
+        <span>// cortex-sanexio.tech · server-authority · 2026</span>
+        <span>
+          <a href="https://portal.sanexio.de/" class="footer-link" target="_blank" rel="noopener">
+            Portal (Mitarbeitende) →
+          </a>
+        </span>
+      </footer>
+    </div>
+
+    <script>
+      document.getElementById("build-date").textContent =
+        new Date().toISOString().slice(0, 10);
+    </script>
+  </body>
+</html>
