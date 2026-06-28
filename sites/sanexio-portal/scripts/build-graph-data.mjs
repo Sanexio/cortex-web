@@ -14,12 +14,18 @@
  *   node scripts/build-graph-data.mjs --quiet    (silence non-error output)
  */
 import { promises as fs } from "node:fs";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 import os from "node:os";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const VAULT = path.join(os.homedir(), "Cortex", "Nexus", "Second Brain");
+export const PROJECTS_ROOT = path.join(os.homedir(), "Cortex", "projects");
+const REPO_CLUSTER = "__repos";
+const REPO_CLUSTER_COLOR = "#ff007a";
+const REPO_DISCOVERY_NAME_EXCLUDES = new Set([".git", "_archive", "_bare", "tmp", "outputs", "Templates"]);
+const REPO_MENTION_EDGE_CAP = 5;
 // Output ist immer relativ zum Site-Root (scripts/ -> ../public/).
 const OUT = path.join(__dirname, "..", "public", "graph.json");
 const QUIET = process.argv.includes("--quiet");
@@ -96,6 +102,37 @@ function resolveLink(target, byBasename, byNoteId) {
   const baseHit = byBasename.get(norm);
   if (baseHit && baseHit.length === 1) return baseHit[0];
   return null;
+}
+
+async function discoverRepositories() {
+  const out = [];
+  let entries;
+  try {
+    entries = await fs.readdir(PROJECTS_ROOT, { withFileTypes: true });
+  } catch {
+    return out;
+  }
+  for (const e of entries) {
+    if (!e.isDirectory()) continue;
+    if (e.name.startsWith(".") || REPO_DISCOVERY_NAME_EXCLUDES.has(e.name)) continue;
+    const repoPath = path.join(PROJECTS_ROOT, e.name);
+    let head_sha = "";
+    let head_subject = "";
+    try {
+      const raw = execFileSync("git", ["-C", repoPath, "log", "-1", "--format=%h%n%s"], {
+        encoding: "utf-8",
+        timeout: 5000,
+        stdio: ["ignore", "pipe", "ignore"],
+      });
+      const lines = raw.split("\n");
+      head_sha = lines[0] || "";
+      head_subject = lines[1] || "";
+    } catch {
+      // kein Git-Repo oder Timeout — Repo trotzdem listen, ohne Git-Daten
+    }
+    out.push({ name: e.name, path: repoPath, head_sha, head_subject });
+  }
+  return out;
 }
 
 export async function buildGraph({ quiet = true } = {}) {
@@ -182,19 +219,70 @@ export async function buildGraph({ quiet = true } = {}) {
     outEdges.push(e);
   }
 
+  // Repo-Knoten: ein Knoten pro Top-Level-Repo unter ~/Cortex/projects/.
+  // Dynamisch: bei jedem Build-Lauf werden Git-HEAD-Subject + SHA frisch
+  // gelesen. Edges Repo->Note bei Repo-Name-Mention in Notes (max
+  // REPO_MENTION_EDGE_CAP pro Repo).
+  const repos = await discoverRepositories();
+  const noteBodies = new Map();
+  for (const n of notes) {
+    if (!keptSet.has(n.noteId)) continue;
+    try {
+      noteBodies.set(n.noteId, (await fs.readFile(n.file, "utf-8")).toLowerCase());
+    } catch {
+      noteBodies.set(n.noteId, "");
+    }
+  }
+  const repoNodes = [];
+  const repoEdges = [];
+  for (const r of repos) {
+    const repoId = `__repo/${r.name}`;
+    const label = r.head_sha
+      ? `${r.name} @ ${r.head_sha}`
+      : r.name;
+    repoNodes.push({
+      id: repoId,
+      label,
+      cluster: REPO_CLUSTER,
+      degree: 0,
+      meta: { kind: "repository", head_sha: r.head_sha, head_subject: r.head_subject, path: r.path },
+    });
+    const needle = r.name.toLowerCase();
+    let added = 0;
+    for (const [noteId, body] of noteBodies) {
+      if (added >= REPO_MENTION_EDGE_CAP) break;
+      if (body.includes(needle)) {
+        repoEdges.push({ source: noteId, target: repoId });
+        added += 1;
+      }
+    }
+  }
+  for (const e of repoEdges) {
+    const n = outNodes.find((x) => x.id === e.source);
+    if (n) n.degree += 1;
+    const r = repoNodes.find((x) => x.id === e.target);
+    if (r) r.degree += 1;
+  }
+
+  const allNodes = [...outNodes, ...repoNodes];
+  const allEdges = [...outEdges, ...repoEdges];
+  const allClusters = [
+    ...clustersSorted.map(([id]) => ({ id, color: clusterColor.get(id) ?? FALLBACK_COLOR })),
+    ...(repoNodes.length ? [{ id: REPO_CLUSTER, color: REPO_CLUSTER_COLOR, label: "Repositories" }] : []),
+  ];
+
   const payload = {
     generated_at: new Date().toISOString(),
     stats: {
-      nodes: outNodes.length,
-      edges: outEdges.length,
+      nodes: allNodes.length,
+      edges: allEdges.length,
       files_scanned: files.length,
+      repository_nodes: repoNodes.length,
+      repository_edges: repoEdges.length,
     },
-    clusters: clustersSorted.map(([id]) => ({
-      id,
-      color: clusterColor.get(id) ?? FALLBACK_COLOR,
-    })),
-    nodes: outNodes,
-    edges: outEdges,
+    clusters: allClusters,
+    nodes: allNodes,
+    edges: allEdges,
   };
 
   return payload;
