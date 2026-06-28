@@ -27,11 +27,13 @@ import {
   getHealth,
   getStampState,
   getSwapRequest,
+  listNotificationsForUser,
   listActiveStampSessions,
   listAllPendingApprovals,
   listAuthUsersWithRoles,
   listOpenSwapRequests,
   listPendingCorrections,
+  markNotificationReadForUser,
   rejectCorrection,
   renderPayrollExportCsv,
   renderPayrollExportDatevLodas,
@@ -167,6 +169,33 @@ const server = createServer(async (request, response) => {
     const authGate = requireWorkforceApiSession(request);
     if (!authGate.ok) {
       sendJson(response, authGate.status, { ok: false, error: authGate.error });
+      return;
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/notifications") {
+      const authUserId = authGate.session?.user_id;
+      sendJson(response, 200, authUserId ? listNotificationsForUser(authUserId) : []);
+      return;
+    }
+
+    const notificationReadMatch = url.pathname.match(/^\/api\/notifications\/([^/]+)\/read$/);
+    if (request.method === "POST" && notificationReadMatch) {
+      const authUserId = authGate.session?.user_id;
+      if (!authUserId) {
+        sendJson(response, 400, { ok: false, error: { code: "bad_request", message: "Auth-User fehlt" } }, {}, request);
+        return;
+      }
+      try {
+        sendJson(
+          response,
+          200,
+          markNotificationReadForUser(decodeURIComponent(notificationReadMatch[1]), authUserId),
+          {},
+          request
+        );
+      } catch (err) {
+        sendJson(response, 404, { ok: false, error: { code: "not_found", message: err.message } }, {}, request);
+      }
       return;
     }
 
@@ -518,7 +547,7 @@ const server = createServer(async (request, response) => {
         const result = requestTimeEntryCorrection(decodeURIComponent(correctionRequestMatch[1]), payload);
         sendJson(response, 201, { ok: true, correction: result });
         notifyCorrectionRequested(result).catch((err) => {
-          console.warn(`[notify-correction] requested mail failed: ${err?.message ?? err}`);
+          console.warn(`[notify-correction] requested notification failed: ${err?.message ?? err}`);
         });
       } catch (err) {
         sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
@@ -547,7 +576,7 @@ const server = createServer(async (request, response) => {
         );
         sendJson(response, 200, { ok: true, correction: result });
         notifyCorrectionDecided(result, "approve").catch((err) => {
-          console.warn(`[notify-correction] approve mail failed: ${err?.message ?? err}`);
+          console.warn(`[notify-correction] approve notification failed: ${err?.message ?? err}`);
         });
       } catch (err) {
         sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
@@ -566,7 +595,7 @@ const server = createServer(async (request, response) => {
         );
         sendJson(response, 200, { ok: true, correction: result });
         notifyCorrectionDecided(result, "reject").catch((err) => {
-          console.warn(`[notify-correction] reject mail failed: ${err?.message ?? err}`);
+          console.warn(`[notify-correction] reject notification failed: ${err?.message ?? err}`);
         });
       } catch (err) {
         sendJson(response, 400, { ok: false, error: { code: "bad_request", message: err.message } });
