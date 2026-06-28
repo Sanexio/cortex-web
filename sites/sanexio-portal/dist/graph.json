@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-28T11:01:19.756Z",
+  "generated_at": "2026-06-28T11:22:56.652Z",
   "stats": {
-    "nodes": 342,
+    "nodes": 343,
     "edges": 1726,
     "files_scanned": 416,
-    "repository_nodes": 22,
+    "repository_nodes": 23,
     "repository_edges": 44
   },
   "clusters": [
@@ -1997,13 +1997,13 @@
     },
     {
       "id": "__repo/Cortex-Web",
-      "label": "Cortex-Web @ 8be7906",
+      "label": "Cortex-Web @ 722f889",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "8be7906",
-        "head_subject": "Revert \"feat(sanexio-portal): graph repo-knoten visuell + click + tooltip\"",
+        "head_sha": "722f889",
+        "head_subject": "feat(theme): sanexio-cyber als User-Theme im Dashboard-Switcher",
         "path": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web"
       }
     },
@@ -2069,13 +2069,13 @@
     },
     {
       "id": "__repo/_ai-cooperation-outbox",
-      "label": "_ai-cooperation-outbox @ 4527ced",
+      "label": "_ai-cooperation-outbox @ d056b0c",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "4527ced",
-        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-06-26T21:57:25Z",
+        "head_sha": "d056b0c",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-06-28T11:07:27Z",
         "path": "/Users/cluster-mini-02/Cortex/projects/_ai-cooperation-outbox"
       }
     },
@@ -2117,13 +2117,13 @@
     },
     {
       "id": "__repo/cortex-archive",
-      "label": "cortex-archive @ 767f9b3",
+      "label": "cortex-archive @ 8fae65e",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "767f9b3",
-        "head_subject": "Mini-02 workforce-time-local Stack stillgelegt + archiviert",
+        "head_sha": "8fae65e",
+        "head_subject": "master-commit: WIP @Cluster-Mini-3 2026-06-28T11:04:48Z",
         "path": "/Users/cluster-mini-02/Cortex/projects/cortex-archive"
       }
     },
@@ -2153,14 +2153,26 @@
     },
     {
       "id": "__repo/cortex-harness",
-      "label": "cortex-harness @ 444d2bf",
+      "label": "cortex-harness @ ea48ea0",
       "cluster": "__repos",
       "degree": 2,
       "meta": {
         "kind": "repository",
-        "head_sha": "444d2bf",
-        "head_subject": "ui: SystemActions + GatewayDot Tooltips entfernen",
+        "head_sha": "ea48ea0",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-06-28T11:07:27Z",
         "path": "/Users/cluster-mini-02/Cortex/projects/cortex-harness"
+      }
+    },
+    {
+      "id": "__repo/cortex-prx-kalkulation",
+      "label": "cortex-prx-kalkulation @ 5511ccc",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "5511ccc",
+        "head_subject": "Welle 6 / Phase A: Algorithmus-Spec + Aufnahme-Start-Cap",
+        "path": "/Users/cluster-mini-02/Cortex/projects/cortex-prx-kalkulation"
       }
     },
     {

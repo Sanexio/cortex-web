@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CARDS, type ProjectCard } from "./data/cards";
 import { ProjectCardView } from "./components/ProjectCard";
 import { LockedToast } from "./components/LockedToast";
-import { SecondBrainGraph } from "./components/SecondBrainGraph";
+import { SecondBrainPluginHost } from "./components/SecondBrainPluginHost";
 import { LoginGate } from "./components/LoginGate";
 import { AdminAuthModal } from "./components/AdminAuthModal";
 import { ArchivSyncCard } from "./components/ArchivSyncCard";
@@ -87,7 +87,7 @@ function Hub({ onLogout }: HubProps) {
           </div>
         </section>
 
-        <SecondBrainGraph />
+        <SecondBrainPluginHost />
       </main>
 
       <footer className="portal-footer">
