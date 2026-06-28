@@ -19,9 +19,14 @@ type GraphData = {
 
 const FALLBACK_CLUSTER_COLOR = "#5e6166";
 const REFRESH_INTERVAL_MS = 60_000;
-// /api/graph wird von der Vite-Middleware on-demand gebaut (Dev-Server).
-// /graph.json ist das statische Build-Artefakt (Production / Preview).
-const ENDPOINTS = ["/api/graph", "/graph.json"];
+// Dynamische Quelle: VPS regeneriert alle 5 Min via systemd-Timer
+// (sanexio-portal-graph.timer), Caddy serviert das public mit CORS.
+// Fallback: Vite-Middleware (Dev) + lokales Build-Artefakt (Preview).
+const ENDPOINTS = [
+  "https://cortex-sanexio.tech/portal-graph.json",
+  "/api/graph",
+  "/graph.json",
+];
 
 async function fetchGraph(signal: AbortSignal): Promise<GraphData> {
   let lastErr: unknown;
