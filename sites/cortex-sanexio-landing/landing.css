@@ -523,6 +523,49 @@ code {
 }
 .footer-link { color: var(--neon-cyan); }
 .footer-link:hover { color: var(--neon-yellow); }
+.footer-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+/* Theme-Switcher Toggle */
+.theme-toggle {
+  appearance: none;
+  background: rgba(0, 221, 245, 0.04);
+  color: var(--ink-2);
+  border: 1px solid rgba(0, 221, 245, 0.28);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.3s;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+.theme-toggle:hover {
+  background: rgba(245, 195, 0, 0.08);
+  color: var(--neon-yellow);
+  border-color: var(--neon-yellow);
+  box-shadow: var(--glow-y);
+}
+.theme-toggle-label { color: var(--ink-2); }
+.theme-toggle-value {
+  color: var(--neon-yellow);
+  font-weight: 700;
+}
+.theme-toggle-sep { color: rgba(255, 255, 255, 0.2); }
+.theme-toggle-action {
+  color: var(--neon-cyan);
+  letter-spacing: 0.18em;
+}
+.theme-toggle:hover .theme-toggle-action { color: var(--neon-yellow); }
 
 /* Responsive */
 @media (max-width: 640px) {

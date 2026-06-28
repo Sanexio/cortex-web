@@ -20,6 +20,15 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
         Referrer-Policy "strict-origin-when-cross-origin"
     }
 
+    # Theme-Switcher: Cookie cortex_theme=dashboard -> direct redirect zu /dashboard/.
+    # Default (kein Cookie oder cortex_theme=cyber) -> Cyber-Landing.
+    # Matcher prueft Glob-Pattern auf Cookie-Header, nur fuer Apex-Root.
+    @dashboard_default {
+        path /
+        header Cookie *cortex_theme=dashboard*
+    }
+    redir @dashboard_default /dashboard/ 302
+
     # Statische Landing-Page (Cyber-Look) — exakt auf `/` und `/index.html`
     @landing_root path / /index.html
     handle @landing_root {
