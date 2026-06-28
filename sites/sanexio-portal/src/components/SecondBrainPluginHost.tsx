@@ -168,7 +168,8 @@ function ensurePluginLoaded(): Promise<void> {
         .sb-side, .sb-side-panel, .sb-note-detail, .sb-detail,
         .sb-tutorial, .sb-recent, .sb-last-used { display: none !important; }
         .sb-graph-card { width: 100% !important; height: 600px !important; }
-        .sb-graph-canvas { cursor: default !important; pointer-events: none !important; }
+        /* Canvas-Interaktion erlaubt: Hover + Drag fuer Force-Simulation,
+           Click-Navigation wirkungslos weil Detail-Pane oben ausgeblendet. */
       `;
       document.head.appendChild(style);
     }

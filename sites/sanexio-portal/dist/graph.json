@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-28T11:36:04.350Z",
+  "generated_at": "2026-06-28T11:57:56.175Z",
   "stats": {
     "nodes": 343,
     "edges": 1726,
@@ -1997,13 +1997,13 @@
     },
     {
       "id": "__repo/Cortex-Web",
-      "label": "Cortex-Web @ 6f4ef43",
+      "label": "Cortex-Web @ 61a19dc",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "6f4ef43",
-        "head_subject": "fix(sanexio-portal): plugin stats.filtered_nodes set + edges/nodes counts",
+        "head_sha": "61a19dc",
+        "head_subject": "fix(theme): sanexio-cyber ohne customCSS — Dashboard-UI brach",
         "path": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web"
       }
     },
@@ -2165,13 +2165,13 @@
     },
     {
       "id": "__repo/cortex-prx-kalkulation",
-      "label": "cortex-prx-kalkulation @ bc5c67b",
+      "label": "cortex-prx-kalkulation @ b9fbac5",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "bc5c67b",
-        "head_subject": "Welle 6 / Phase C: Interaktives PG-Algorithmus-Tool",
+        "head_sha": "b9fbac5",
+        "head_subject": "Welle 6.2 / Phase D2: Reset-Button + Monat-Picker fuer UMV-Tool",
         "path": "/Users/cluster-mini-02/Cortex/projects/cortex-prx-kalkulation"
       }
     },
