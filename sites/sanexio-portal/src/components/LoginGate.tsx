@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "sanexio.portal.session";
 const SESSION_VERSION = 1;
+const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
+const ACTIVITY_EVENTS = ["mousemove", "keydown", "click", "touchstart"] as const;
 
 // P.1 Dev-Login. Welle P.2 ersetzt diesen Block durch
 // magic-link-/per-employee-Auth (siehe Workforce-Time auth.js).
@@ -18,7 +20,7 @@ type Session = {
 
 function loadSession(): Session | null {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Session;
     if (parsed.v !== SESSION_VERSION) return null;
@@ -30,7 +32,7 @@ function loadSession(): Session | null {
 
 function persistSession(session: Session): void {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
   } catch {
     /* quota or disabled — Login bleibt session-only */
   }
@@ -38,14 +40,19 @@ function persistSession(session: Session): void {
 
 function clearSession(): void {
   try {
-    window.localStorage.removeItem(STORAGE_KEY);
+    window.sessionStorage.removeItem(STORAGE_KEY);
   } catch {
     /* ignored */
   }
 }
 
+type AuthControls = {
+  session: Session;
+  logout: () => void;
+};
+
 type Props = {
-  children: React.ReactNode;
+  children: React.ReactNode | ((auth: AuthControls) => React.ReactNode);
 };
 
 export function LoginGate({ children }: Props) {
@@ -58,6 +65,37 @@ export function LoginGate({ children }: Props) {
   useEffect(() => {
     if (session) document.body.classList.add("is-authed");
     else document.body.classList.remove("is-authed");
+  }, [session]);
+
+  useEffect(() => {
+    if (!session) return undefined;
+
+    let idleTimer: number | undefined;
+
+    function expireSession() {
+      clearSession();
+      setSession(null);
+      setUser("");
+      setPass("");
+      setError("Sitzung wegen Inaktivitaet beendet. Bitte erneut anmelden.");
+    }
+
+    function resetIdleTimer() {
+      if (idleTimer !== undefined) window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(expireSession, IDLE_TIMEOUT_MS);
+    }
+
+    ACTIVITY_EVENTS.forEach((eventName) => {
+      window.addEventListener(eventName, resetIdleTimer);
+    });
+    resetIdleTimer();
+
+    return () => {
+      if (idleTimer !== undefined) window.clearTimeout(idleTimer);
+      ACTIVITY_EVENTS.forEach((eventName) => {
+        window.removeEventListener(eventName, resetIdleTimer);
+      });
+    };
   }, [session]);
 
   function submit(e: React.FormEvent) {
@@ -86,17 +124,11 @@ export function LoginGate({ children }: Props) {
     setSession(null);
     setUser("");
     setPass("");
+    setError(null);
   }
 
   if (session) {
-    return (
-      <>
-        {children}
-        <button type="button" className="logout-pin btn btn--ghost" onClick={logout} aria-label="Logout">
-          <span aria-hidden="true">⎋</span> {session.user} · Logout
-        </button>
-      </>
-    );
+    return <>{typeof children === "function" ? children({ session, logout }) : children}</>;
   }
 
   return (
@@ -146,7 +178,7 @@ export function LoginGate({ children }: Props) {
         </button>
 
         <p className="login-hint">
-          // dev-stage · welle P.1 · localStorage session
+          // dev-stage · welle P.1 · sessionStorage session
         </p>
       </form>
     </div>

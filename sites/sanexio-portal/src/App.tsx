@@ -9,13 +9,15 @@ import { ArchivSyncCard } from "./components/ArchivSyncCard";
 
 export default function App() {
   return (
-    <LoginGate>
-      <Hub />
-    </LoginGate>
+    <LoginGate>{({ logout }) => <Hub onLogout={logout} />}</LoginGate>
   );
 }
 
-function Hub() {
+type HubProps = {
+  onLogout: () => void;
+};
+
+function Hub({ onLogout }: HubProps) {
   const [locked, setLocked] = useState<ProjectCard | null>(null);
   const [localUnavailable, setLocalUnavailable] = useState<ProjectCard | null>(null);
   const [adminOpen, setAdminOpen] = useState<ProjectCard | null>(null);
@@ -28,8 +30,13 @@ function Hub() {
       <div className="scanline" aria-hidden="true" />
 
       <header className="hero section-accents">
-        <div className="hero-eyebrow badge badge--dark">
-          <span className="hero-dot" /> SANEXIO · CORTEX HUB · v0.1
+        <div className="hero-topbar">
+          <div className="hero-eyebrow badge badge--dark">
+            <span className="hero-dot" /> SANEXIO · CORTEX HUB · v0.1
+          </div>
+          <button type="button" className="hero-logout" onClick={onLogout}>
+            Logout
+          </button>
         </div>
         <h1 className="hero-title t-h1">
           SANEXIO <span className="hero-accent">Portal</span>
