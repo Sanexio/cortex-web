@@ -20,7 +20,7 @@ export function LockedToast({ title, subtitle, onClose }: Props) {
       <div>
         <strong>{title}</strong>
         <div className="toast-sub">
-          {subtitle ?? "Modul gesperrt — Mitarbeiter-Zugang erforderlich."}
+          {subtitle ?? <>Modul gesperrt &mdash; noch nicht freigeschaltet.</>}
         </div>
       </div>
     </div>

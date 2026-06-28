@@ -110,7 +110,7 @@ export function LoginGate({ children }: Props) {
         <h1 className="login-title t-h2">
           Sanexio <span className="hero-accent">Portal</span>
         </h1>
-        <p className="login-sub">Mitarbeiter-Login zum Cortex-Hub.</p>
+        <p className="login-sub">Login fuer Mitarbeitende und Aerzte.</p>
 
         <label className="login-field">
           <span className="login-label">User</span>

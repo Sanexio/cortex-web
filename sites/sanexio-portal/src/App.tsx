@@ -32,23 +32,23 @@ function Hub() {
           <span className="hero-dot" /> SANEXIO · CORTEX HUB · v0.1
         </div>
         <h1 className="hero-title t-h1">
-          Sanexio <span className="hero-accent">Portal</span>
+          SANEXIO <span className="hero-accent">Portal</span>
         </h1>
         <p className="hero-sub">
-          Mitarbeiter-Zugang zu Praxiszentrum Cortex.
+          Praxis-Cortex-Plattform &mdash; Module fuer Mitarbeitende und Aerzte.
           <br />
           Aktive Module: <strong>{activeCount}</strong> · Gesperrt:{" "}
           <strong>{lockedCount}</strong>
         </p>
         <ul className="hero-meta">
           <li>
-            <span className="meta-label">stage</span> local-flywheel
+            <span className="meta-label">stage</span> production
           </li>
           <li>
-            <span className="meta-label">host</span> 127.0.0.1:5176
+            <span className="meta-label">host</span> portal.sanexio.de
           </li>
           <li>
-            <span className="meta-label">build</span> P.1 · 2026-06-13
+            <span className="meta-label">build</span> 2026-06-28
           </li>
         </ul>
       </header>
