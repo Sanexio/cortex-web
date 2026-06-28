@@ -1,9 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import cytoscape, { type Core, type ElementsDefinition } from "cytoscape";
+import cytoscape, { type Core, type ElementsDefinition, type EventObjectNode } from "cytoscape";
 // @ts-expect-error fcose ships without local declarations in current version
 import fcose from "cytoscape-fcose";
 
 cytoscape.use(fcose);
+
+type RepoNodeMeta = {
+  kind?: string;
+  head_sha?: string;
+  head_subject?: string;
+  path?: string;
+};
+
+type GraphNode = {
+  id: string;
+  label: string;
+  cluster: string;
+  degree: number;
+  meta?: RepoNodeMeta;
+};
 
 type GraphData = {
   generated_at: string;
@@ -12,8 +27,8 @@ type GraphData = {
     edges: number;
     files_scanned: number;
   };
-  clusters: { id: string; color: string }[];
-  nodes: { id: string; label: string; cluster: string; degree: number }[];
+  clusters: { id: string; color: string; label?: string }[];
+  nodes: GraphNode[];
   edges: { source: string; target: string }[];
 };
 
@@ -108,6 +123,11 @@ export function SecondBrainGraph() {
 
     const clusterColors = new Map<string, string>();
     for (const c of data.clusters) clusterColors.set(c.id, c.color);
+    const tooltip = document.createElement("div");
+    tooltip.className = "graph-repo-tooltip";
+    tooltip.setAttribute("role", "tooltip");
+    tooltip.setAttribute("aria-hidden", "true");
+    containerRef.current.appendChild(tooltip);
 
     const elements: ElementsDefinition = {
       nodes: data.nodes.map((n) => ({
@@ -117,6 +137,7 @@ export function SecondBrainGraph() {
           cluster: n.cluster,
           degree: n.degree,
           color: clusterColors.get(n.cluster) ?? FALLBACK_CLUSTER_COLOR,
+          meta: n.meta ?? null,
         },
       })),
       edges: data.edges
@@ -154,6 +175,22 @@ export function SecondBrainGraph() {
           },
         },
         {
+          selector: "node[cluster = '__repos']",
+          style: {
+            shape: "round-rectangle",
+            width: 40,
+            height: 24,
+            "background-color": "#ff007a",
+            "border-color": "#ffea00",
+            "border-width": 2,
+            "font-size": 11,
+            "font-weight": "bold",
+            color: "#0a0a0f",
+            "text-outline-color": "#ff007a",
+            "text-outline-width": 3,
+          },
+        },
+        {
           selector: "edge",
           style: {
             width: 1,
@@ -186,8 +223,55 @@ export function SecondBrainGraph() {
     cyRef.current = cy;
     cy.fit(undefined, 32);
 
+    const showRepoTooltip = (evt: EventObjectNode) => {
+      const node = evt.target;
+      const id = node.id();
+      const name = id.split("/").pop() ?? id;
+      const meta = node.data("meta") as RepoNodeMeta | null;
+      const rendered = node.renderedPosition();
+
+      tooltip.innerHTML = "";
+      const title = document.createElement("strong");
+      title.textContent = name;
+      const sha = document.createElement("span");
+      sha.textContent = meta?.head_sha ? `HEAD ${meta.head_sha}` : "HEAD unknown";
+      const subject = document.createElement("span");
+      subject.textContent = meta?.head_subject ?? "No HEAD subject available";
+      tooltip.append(title, sha, subject);
+
+      tooltip.style.left = `${rendered.x + 14}px`;
+      tooltip.style.top = `${rendered.y + 14}px`;
+      tooltip.style.opacity = "1";
+      tooltip.style.transform = "translate3d(0, 0, 0)";
+      tooltip.setAttribute("aria-hidden", "false");
+    };
+
+    const hideRepoTooltip = () => {
+      tooltip.style.opacity = "0";
+      tooltip.style.transform = "translate3d(0, 6px, 0)";
+      tooltip.setAttribute("aria-hidden", "true");
+    };
+
+    cy.on("tap", "node[cluster = '__repos']", (evt) => {
+      const id = evt.target.id();
+      const name = id.split("/").pop();
+      const slug = name?.toLowerCase().replace(/^_+/, "");
+      if (!slug) return;
+      window.open(
+        `https://github.com/Sanexio/${slug}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+    cy.on("mouseover", "node[cluster = '__repos']", (evt) =>
+      showRepoTooltip(evt as EventObjectNode)
+    );
+    cy.on("mouseout", "node[cluster = '__repos']", hideRepoTooltip);
+    cy.on("pan zoom resize", hideRepoTooltip);
+
     return () => {
       cy.destroy();
+      tooltip.remove();
       cyRef.current = null;
     };
   }, [data]);
@@ -242,7 +326,7 @@ export function SecondBrainGraph() {
                 style={{ background: c.color }}
                 aria-hidden="true"
               />
-              {c.id}
+              {c.label ?? (c.id === "__repos" ? "Repositories" : c.id)}
             </li>
           ))}
         </ul>
