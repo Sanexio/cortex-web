@@ -13,7 +13,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
     />
-    <link rel="stylesheet" href="/landing.css?v=2026-06-28-7" />
+    <link rel="stylesheet" href="/landing.css?v=2026-06-28-8" />
     <meta name="robots" content="noindex,nofollow" />
   </head>
   <body>
@@ -21,21 +21,6 @@
     <div class="scanline" aria-hidden="true"></div>
 
     <div class="app">
-      <!-- Theme-Switcher als prominenter Top-Right-Pin (unabhaengig von Scroll) -->
-      <div class="topbar">
-        <button
-          type="button"
-          id="theme-toggle"
-          class="theme-toggle"
-          aria-label="Default-Page umschalten zwischen Cyber-Landing und Dashboard"
-        >
-          <span class="theme-toggle-label">DEFAULT:</span>
-          <span class="theme-toggle-value" id="theme-toggle-value">CYBER</span>
-          <span class="theme-toggle-sep">·</span>
-          <span class="theme-toggle-action">WECHSELN →</span>
-        </button>
-      </div>
-
       <header class="hero section-accents">
         <div class="hero-eyebrow badge badge--dark">
           <span class="hero-dot"></span> SANEXIO · CORTEX · VPS · v1
@@ -185,29 +170,9 @@
       document.getElementById("build-date").textContent =
         new Date().toISOString().slice(0, 10);
 
-      // Theme-Switcher: Cookie cortex_theme=cyber|dashboard, 1y, SameSite=Lax.
-      // Bei `dashboard` redirected Caddy `/` zu `/dashboard/` (siehe Caddyfile).
-      (function () {
-        const COOKIE = "cortex_theme";
-        const readCookie = (name) =>
-          document.cookie
-            .split(";")
-            .map((s) => s.trim().split("="))
-            .find(([k]) => k === name)?.[1];
-        const setCookie = (value) => {
-          const oneYear = 60 * 60 * 24 * 365;
-          document.cookie =
-            COOKIE + "=" + value + "; Path=/; Max-Age=" + oneYear + "; SameSite=Lax";
-        };
-        const current = readCookie(COOKIE) || "cyber";
-        const valueEl = document.getElementById("theme-toggle-value");
-        valueEl.textContent = current.toUpperCase();
-        document.getElementById("theme-toggle").addEventListener("click", () => {
-          const next = (readCookie(COOKIE) || "cyber") === "cyber" ? "dashboard" : "cyber";
-          setCookie(next);
-          window.location.reload();
-        });
-      })();
+      // Page-Toggle entfernt: das Cyber-Theme ist jetzt als 'sanexio-cyber'
+      // im Dashboard-Theme-Switcher selbst auswaehlbar (Welle 3, 2026-06-28).
+      // Die Landing-Page bleibt als informative Startseite erhalten.
     </script>
   </body>
 </html>
