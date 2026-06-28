@@ -2,8 +2,7 @@
 // Wird aus api.js fire-and-forget aufgerufen; Notify-Fehler duerfen den
 // HTTP-Erfolg des eigentlichen Vorgangs nicht blockieren.
 
-// TODO(notifications): Re-enable SMTP fallback when notification channels are configurable.
-// import { sendSmtpMail, mailFrom } from "./auth.js";
+// SMTP-Fallback bewusst entfernt — Server-Authority-Architektur 2026-06-28.
 import {
   createNotification,
   createNotificationsForUsers,
