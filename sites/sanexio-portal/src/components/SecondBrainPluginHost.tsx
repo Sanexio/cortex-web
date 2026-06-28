@@ -57,7 +57,13 @@ async function fetchProxy(input: string | URL | Request, init?: RequestInit): Pr
         aliases: [] as string[],
       })),
       edges: data.edges.map((e) => ({ from: e.source, to: e.target, kind: "wikilink", inferred: false })),
-      stats: data.stats || {},
+      stats: {
+        ...(data.stats || {}),
+        filtered_nodes: data.nodes.length,
+        filtered_edges: data.edges.length,
+        nodes: data.nodes.length,
+        edges: data.edges.length,
+      },
     };
     return new Response(JSON.stringify(transformed), {
       status: 200,

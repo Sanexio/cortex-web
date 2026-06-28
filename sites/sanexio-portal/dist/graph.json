@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-28T11:22:56.652Z",
+  "generated_at": "2026-06-28T11:26:00.625Z",
   "stats": {
     "nodes": 343,
     "edges": 1726,
@@ -1997,13 +1997,13 @@
     },
     {
       "id": "__repo/Cortex-Web",
-      "label": "Cortex-Web @ 722f889",
+      "label": "Cortex-Web @ 49a169f",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "722f889",
-        "head_subject": "feat(theme): sanexio-cyber als User-Theme im Dashboard-Switcher",
+        "head_sha": "49a169f",
+        "head_subject": "feat(sanexio-portal): cortex-harness second-brain-plugin als 1:1 host",
         "path": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web"
       }
     },
@@ -2165,13 +2165,13 @@
     },
     {
       "id": "__repo/cortex-prx-kalkulation",
-      "label": "cortex-prx-kalkulation @ 5511ccc",
+      "label": "cortex-prx-kalkulation @ 2ba3288",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "5511ccc",
-        "head_subject": "Welle 6 / Phase A: Algorithmus-Spec + Aufnahme-Start-Cap",
+        "head_sha": "2ba3288",
+        "head_subject": "Welle 6 / Phase B: Interaktives UMV-Algorithmus-Tool",
         "path": "/Users/cluster-mini-02/Cortex/projects/cortex-prx-kalkulation"
       }
     },
