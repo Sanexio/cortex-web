@@ -1313,8 +1313,12 @@ export function authEnforcementEnabled() {
 export function requireWorkforceApiSession(request) {
   if (!authEnforcementEnabled()) return { ok: true, session: null, enforced: false };
 
+  const requireAdminTotp = Boolean(
+    tenantConfigGet("workforce.auth.require_admin_totp", false) ??
+      tenantConfigGet("auth.require_admin_totp", false)
+  );
   try {
-    return { ok: true, session: requireSession(request, { requireTotp: true }), enforced: true };
+    return { ok: true, session: requireSession(request, { requireTotp: requireAdminTotp }), enforced: true };
   } catch (error) {
     return {
       ok: false,
