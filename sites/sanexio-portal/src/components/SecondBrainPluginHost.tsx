@@ -153,6 +153,26 @@ function ensurePluginLoaded(): Promise<void> {
       document.head.appendChild(link);
     }
 
+    // CSS-Override: nur den Canvas-Graph zeigen, alles andere ausblenden.
+    // Stracke-Direktive: keine Toolbar, kein Tutorial, kein Last-Used, keine
+    // Suche, keine Selects. Knoten zeigen Namen (im Canvas gerendert).
+    const overrideId = "second-brain-portal-override";
+    if (!document.getElementById(overrideId)) {
+      const style = document.createElement("style");
+      style.id = overrideId;
+      style.textContent = `
+        .sb-tabs, .sb-tab-list, .sb-tab,
+        .sb-graph-overlay, .sb-toolbar, .sb-toolbar-compact,
+        .sb-scope-toggle, .sb-filter-chip, .sb-search, .sb-select,
+        .sb-action-button, .sb-status, .sb-filter-row,
+        .sb-side, .sb-side-panel, .sb-note-detail, .sb-detail,
+        .sb-tutorial, .sb-recent, .sb-last-used { display: none !important; }
+        .sb-graph-card { width: 100% !important; height: 600px !important; }
+        .sb-graph-canvas { cursor: default !important; pointer-events: none !important; }
+      `;
+      document.head.appendChild(style);
+    }
+
     // JS
     const scriptId = "second-brain-plugin-js";
     const existing = document.getElementById(scriptId) as HTMLScriptElement | null;

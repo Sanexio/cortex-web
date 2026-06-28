@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-28T11:26:00.625Z",
+  "generated_at": "2026-06-28T11:36:04.350Z",
   "stats": {
     "nodes": 343,
     "edges": 1726,
@@ -1997,13 +1997,13 @@
     },
     {
       "id": "__repo/Cortex-Web",
-      "label": "Cortex-Web @ 49a169f",
+      "label": "Cortex-Web @ 6f4ef43",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "49a169f",
-        "head_subject": "feat(sanexio-portal): cortex-harness second-brain-plugin als 1:1 host",
+        "head_sha": "6f4ef43",
+        "head_subject": "fix(sanexio-portal): plugin stats.filtered_nodes set + edges/nodes counts",
         "path": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web"
       }
     },
@@ -2165,13 +2165,13 @@
     },
     {
       "id": "__repo/cortex-prx-kalkulation",
-      "label": "cortex-prx-kalkulation @ 2ba3288",
+      "label": "cortex-prx-kalkulation @ bc5c67b",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "2ba3288",
-        "head_subject": "Welle 6 / Phase B: Interaktives UMV-Algorithmus-Tool",
+        "head_sha": "bc5c67b",
+        "head_subject": "Welle 6 / Phase C: Interaktives PG-Algorithmus-Tool",
         "path": "/Users/cluster-mini-02/Cortex/projects/cortex-prx-kalkulation"
       }
     },
