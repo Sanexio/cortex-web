@@ -1,0 +1,185 @@
+# Sanexio Cyber — User-Theme fuer cortex-harness Dashboard.
+# 1:1 Token-Mapping aus sanexio-portal/cyber.css (Stracke-Direktive 2026-06-28).
+# Deploy: /home/sanexio/.cortex/dashboard-themes/sanexio-cyber.yaml auf VPS,
+#         danach systemctl restart sanexio-cortex-dashboard.
+# Schema: cortex-harness/web_server.py::_normalise_theme_definition.
+
+name: sanexio-cyber
+label: Sanexio Cyber
+description: "Cyber-Look — Portal-Aesthetik mit Barlow Condensed + Neon Yellow/Cyan/Magenta auf tactical Black"
+
+palette:
+  background:
+    hex: "#0c0c0c"
+    alpha: 1.0
+  midground:
+    hex: "#f5c300"   # neon-yellow — primary accent
+    alpha: 1.0
+  foreground:
+    hex: "#00ddf5"   # neon-cyan — secondary accent
+    alpha: 0.0
+  warmGlow: "rgba(245, 195, 0, 0.35)"
+  noiseOpacity: 0.5
+
+typography:
+  fontSans: '"Rajdhani", system-ui, -apple-system, "Segoe UI", sans-serif'
+  fontDisplay: '"Barlow Condensed", "Arial Narrow", sans-serif'
+  fontMono: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
+  fontUrl: "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+  baseSize: "15px"
+  lineHeight: "1.5"
+  letterSpacing: "0"
+
+layout:
+  radius: "6px"
+  density: "comfortable"
+
+layoutVariant: standard
+
+colorOverrides:
+  primary: "#f5c300"
+  primaryForeground: "#000000"
+  secondary: "#00ddf5"
+  secondaryForeground: "#000000"
+  accent: "#ff2878"        # neon-magenta
+  accentForeground: "#ffffff"
+  border: "rgba(255, 255, 255, 0.08)"
+  input: "#141414"
+  ring: "rgba(245, 195, 0, 0.55)"
+  destructive: "#ff2878"
+  success: "#5dff9c"
+  warning: "#f5c300"
+
+componentStyles:
+  card:
+    background: "linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(0, 221, 245, 0.04))"
+    borderColor: "rgba(255, 255, 255, 0.08)"
+    hoverBorderColor: "rgba(245, 195, 0, 0.55)"
+  header:
+    background: "rgba(12, 12, 12, 0.85)"
+    borderColor: "rgba(245, 195, 0, 0.18)"
+  sidebar:
+    background: "#0c0c0c"
+    borderColor: "rgba(255, 255, 255, 0.08)"
+  badge:
+    background: "#f5c300"
+    color: "#000000"
+
+customCSS: |
+  /* Sanexio Cyber — Custom CSS Layer (32 KiB budget) */
+
+  :root {
+    --sx-neon-yellow: #f5c300;
+    --sx-neon-cyan:   #00ddf5;
+    --sx-neon-magenta: #ff2878;
+    --sx-neon-green:  #5dff9c;
+    --sx-line:        rgba(255,255,255,0.08);
+    --sx-corner:      28px;
+    --sx-corner-w:    2px;
+    --sx-glow-y:      0 0 18px rgba(245,195,0,0.5), 0 0 40px rgba(245,195,0,0.2);
+    --sx-glow-c:      0 0 18px rgba(0,221,245,0.5);
+  }
+
+  /* RGB-Split-Glitch auf Headings (h1, h2, h3 mit data-text Attribut).
+   * Pseudo-Elements werden NICHT auf jedem h1 aktiv — die App muss
+   * `data-text` setzen, sonst kein Render. Fail-safe. */
+  h1[data-text], h2[data-text], h3[data-text] {
+    position: relative;
+    isolation: isolate;
+  }
+  h1[data-text]::before, h2[data-text]::before, h3[data-text]::before,
+  h1[data-text]::after,  h2[data-text]::after,  h3[data-text]::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    font: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    white-space: pre-line;
+  }
+  h1[data-text]::before, h2[data-text]::before, h3[data-text]::before {
+    color: var(--sx-neon-magenta);
+    transform: translate(2px, 0);
+    text-shadow: 0 0 6px rgba(255,40,120,0.6);
+  }
+  h1[data-text]::after, h2[data-text]::after, h3[data-text]::after {
+    color: var(--sx-neon-cyan);
+    transform: translate(-2px, 0);
+    text-shadow: 0 0 6px rgba(0,221,245,0.6);
+  }
+  h1[data-text]:hover::before, h2[data-text]:hover::before, h3[data-text]:hover::before {
+    opacity: 0.75; animation: sx-glitch-r 0.42s steps(2) infinite;
+  }
+  h1[data-text]:hover::after, h2[data-text]:hover::after, h3[data-text]:hover::after {
+    opacity: 0.75; animation: sx-glitch-c 0.42s steps(2) infinite;
+  }
+  @keyframes sx-glitch-r {
+    0%,100% { transform: translate(2px,0); }
+    25%     { transform: translate(4px,-1px); }
+    50%     { transform: translate(3px,1px); }
+    75%     { transform: translate(5px,0); }
+  }
+  @keyframes sx-glitch-c {
+    0%,100% { transform: translate(-2px,0); }
+    25%     { transform: translate(-4px,1px); }
+    50%     { transform: translate(-3px,-1px); }
+    75%     { transform: translate(-5px,0); }
+  }
+
+  /* Cyber-Frame Eck-Marker fuer Card-aehnliche Container.
+   * Greift auf Klassen die cortex-harness verwendet (card, panel, surface).
+   * Pseudo-Element ::after wird ggf. vom Theme-System ueberschrieben — wir
+   * nutzen ::before mit hoher Specificity. */
+  .card, [data-component="card"], .panel, .surface {
+    position: relative;
+  }
+  .card::before, [data-component="card"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background:
+      linear-gradient(var(--sx-neon-yellow) 0 0) 0 0 / var(--sx-corner) var(--sx-corner-w) no-repeat,
+      linear-gradient(var(--sx-neon-yellow) 0 0) 0 0 / var(--sx-corner-w) var(--sx-corner) no-repeat,
+      linear-gradient(var(--sx-neon-yellow) 0 0) 100% 0 / var(--sx-corner) var(--sx-corner-w) no-repeat,
+      linear-gradient(var(--sx-neon-yellow) 0 0) 100% 0 / var(--sx-corner-w) var(--sx-corner) no-repeat,
+      linear-gradient(var(--sx-neon-yellow) 0 0) 0 100% / var(--sx-corner) var(--sx-corner-w) no-repeat,
+      linear-gradient(var(--sx-neon-yellow) 0 0) 0 100% / var(--sx-corner-w) var(--sx-corner) no-repeat,
+      linear-gradient(var(--sx-neon-yellow) 0 0) 100% 100% / var(--sx-corner) var(--sx-corner-w) no-repeat,
+      linear-gradient(var(--sx-neon-yellow) 0 0) 100% 100% / var(--sx-corner-w) var(--sx-corner) no-repeat;
+  }
+
+  /* Card-Hover-Glow */
+  .card:hover, [data-component="card"]:hover {
+    box-shadow:
+      0 0 0 1px rgba(245,195,0,0.55),
+      0 22px 60px rgba(0,0,0,0.6),
+      0 0 38px rgba(0,221,245,0.35),
+      0 0 90px rgba(245,195,0,0.3);
+    border-color: rgba(245,195,0,0.8);
+  }
+
+  /* Section-Marker (numerische Praefixe vor Section-Titles in Magenta) */
+  .section-marker, [data-section-marker] {
+    color: var(--sx-neon-magenta) !important;
+    font-weight: 700;
+  }
+
+  /* Background-Grid (subtil, hinter allem) */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,221,245,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,221,245,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
