@@ -4,15 +4,19 @@ import {
   createHash,
   createHmac,
   randomBytes,
+  scryptSync,
   timingSafeEqual
 } from "node:crypto";
-import net from "node:net";
-import tls from "node:tls";
 import { databasePath, db } from "./db.js";
 import { tenantConfigGet, tenantDescribe, tenantIsDemo } from "./tenant.js";
 
 const SESSION_COOKIE = "workforce_session";
-const MAGIC_LINK_TTL_SECONDS = 15 * 60;
+const PASSWORD_SCRYPT_N = 16384;
+const PASSWORD_SCRYPT_R = 8;
+const PASSWORD_SCRYPT_P = 1;
+const PASSWORD_HASH_LEN = 64;
+const PASSWORD_SALT_BYTES = 16;
+const MIN_PASSWORD_LENGTH = 10;
 const SESSION_TTL_SECONDS = 8 * 60 * 60;
 const SESSION_HARD_TTL_SECONDS = 24 * 60 * 60;
 const DEVICE_TOKEN_TTL_SECONDS = 90 * 24 * 60 * 60;
@@ -293,6 +297,19 @@ function ensureAuthSchema() {
   if (!sessionColumns.has("hard_expires_at")) {
     db.exec("ALTER TABLE auth_sessions ADD COLUMN hard_expires_at TEXT");
   }
+
+  const userColumns = new Set(
+    db.prepare("PRAGMA table_info(auth_users)").all().map((column) => column.name)
+  );
+  if (!userColumns.has("password_hash")) {
+    db.exec("ALTER TABLE auth_users ADD COLUMN password_hash TEXT");
+  }
+  if (!userColumns.has("password_set_at")) {
+    db.exec("ALTER TABLE auth_users ADD COLUMN password_set_at TEXT");
+  }
+  if (!userColumns.has("password_must_change")) {
+    db.exec("ALTER TABLE auth_users ADD COLUMN password_must_change INTEGER NOT NULL DEFAULT 0");
+  }
 }
 
 function tenantSlug() {
@@ -419,10 +436,26 @@ function insertAudit(eventType, { userId = null, sessionId = null, deviceId = nu
   );
 }
 
+function assertLoginRateLimit(userId) {
+  // Throttle failed password attempts per user. Dev-mode skips to keep test
+  // loops snappy. In production: 10 failures per 15 min -> RATE_LIMITED.
+  if (isDevelopment()) return;
+  const since = addSeconds(-15 * 60);
+  const count = db
+    .prepare(`
+      SELECT COUNT(*) AS count
+      FROM auth_audit_log
+      WHERE user_id = ?
+        AND event_type IN ('login_fail_password', 'login_fail_totp')
+        AND occurred_at >= ?
+    `)
+    .get(userId, since).count;
+  if (count >= 10) {
+    throw authError("RATE_LIMITED", "Zu viele fehlgeschlagene Login-Versuche. Bitte 15 Minuten warten.");
+  }
+}
+
 function assertMagicLinkRateLimit(userId) {
-  // P.1 (2026-06-13): Dev-Mode skipt das Rate-Limit, sonst blockt die
-  // Test-Schleife (Submit -> Banner -> Klick -> nochmal Submit) nach
-  // 5 Anfragen pro Stunde. In Production bleibt 5/h aktiv.
   if (isDevelopment()) return;
   const since = addSeconds(-60 * 60);
   const count = db
@@ -437,201 +470,76 @@ function assertMagicLinkRateLimit(userId) {
   }
 }
 
-function smtpConfig() {
-  // Default relay differs by environment: dev expects Mailpit on :1025, prod
-  // expects a local submission MTA (Postfix) on :25. A fully external provider
-  // is configured via the tenant's auth.smtp block (host/port/secure/user/...).
-  const prodDefaultPort = 25;
-  const configured = tenantConfigGet("auth.smtp", null) ?? tenantConfigGet("workforce.auth.smtp", null);
-  if (configured && typeof configured === "object") {
-    return {
-      host: configured.host ?? "127.0.0.1",
-      port: Number(configured.port ?? (isDevelopment() ? 1025 : prodDefaultPort)),
-      secure: Boolean(configured.secure),
-      requireTls: Boolean(configured.require_tls ?? configured.starttls),
-      allowSelfSigned: Boolean(configured.allow_self_signed),
-      user: configured.user ? String(configured.user) : "",
-      passwordEnv: configured.password_env ? String(configured.password_env) : ""
-    };
+// Password storage: scrypt with random per-user salt. Format stored in
+// auth_users.password_hash is "scrypt$N$r$p$<base64-salt>$<base64-hash>"
+// so we can rotate parameters later without a schema change.
+function hashPassword(plain) {
+  if (typeof plain !== "string" || plain.length < MIN_PASSWORD_LENGTH) {
+    throw authError(
+      "PASSWORD_TOO_SHORT",
+      `Passwort zu kurz (mindestens ${MIN_PASSWORD_LENGTH} Zeichen).`
+    );
   }
-  return {
-    host: "127.0.0.1",
-    port: isDevelopment() ? 1025 : prodDefaultPort,
-    secure: false,
-    requireTls: false,
-    allowSelfSigned: false,
-    user: "",
-    passwordEnv: ""
-  };
+  const salt = randomBytes(PASSWORD_SALT_BYTES);
+  const derived = scryptSync(plain, salt, PASSWORD_HASH_LEN, {
+    N: PASSWORD_SCRYPT_N,
+    r: PASSWORD_SCRYPT_R,
+    p: PASSWORD_SCRYPT_P
+  });
+  return [
+    "scrypt",
+    PASSWORD_SCRYPT_N,
+    PASSWORD_SCRYPT_R,
+    PASSWORD_SCRYPT_P,
+    salt.toString("base64"),
+    derived.toString("base64")
+  ].join("$");
 }
 
+function verifyPassword(plain, stored) {
+  if (typeof plain !== "string" || typeof stored !== "string") return false;
+  const parts = stored.split("$");
+  if (parts.length !== 6 || parts[0] !== "scrypt") return false;
+  const N = Number(parts[1]);
+  const r = Number(parts[2]);
+  const p = Number(parts[3]);
+  let salt;
+  let expected;
+  try {
+    salt = Buffer.from(parts[4], "base64");
+    expected = Buffer.from(parts[5], "base64");
+  } catch {
+    return false;
+  }
+  if (!Number.isFinite(N) || !Number.isFinite(r) || !Number.isFinite(p)) return false;
+  const derived = scryptSync(plain, salt, expected.length, { N, r, p });
+  if (derived.length !== expected.length) return false;
+  return timingSafeEqual(derived, expected);
+}
+
+function generateInitialPassword() {
+  // 16 chars from a URL-safe alphabet; sufficient entropy (~95 bits) and
+  // easy to dictate verbally. Excludes look-alikes 0/O and 1/l/I.
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+  const buf = randomBytes(16);
+  let out = "";
+  for (let i = 0; i < buf.length; i += 1) {
+    out += alphabet[buf[i] % alphabet.length];
+  }
+  return out;
+}
+
+// mailFrom() retained as no-op for callers (notify-correction.mjs is being
+// refactored to in-app notifications in the same phase). Returning "" lets
+// any leftover caller silently no-op instead of crashing.
 export function mailFrom() {
-  return (
-    tenantConfigGet("auth.mail_from", "") ||
-    tenantConfigGet("workforce.auth.mail_from", "") ||
-    "noreply@workforce.local"
-  );
+  return "";
 }
 
-function escapeSmtpLine(value) {
-  return String(value).replace(/\r?\n/g, "\r\n").replace(/^\./gm, "..");
-}
-
-// Line-based SMTP reply reader. SMTP replies are one or more lines; the final
-// line has a space after the 3-digit code ("250 OK"), continuations a hyphen
-// ("250-PIPELINING"). Resolves one complete reply per read().
-function smtpReader(socket) {
-  let buffer = "";
-  let acc = [];
-  const replies = [];
-  const waiters = [];
-  const pump = () => {
-    while (waiters.length && replies.length) waiters.shift().resolve(replies.shift());
-  };
-  const failAll = (error) => {
-    while (waiters.length) waiters.shift().reject(error);
-  };
-  socket.setEncoding("utf8");
-  socket.on("data", (chunk) => {
-    buffer += chunk;
-    let nl;
-    while ((nl = buffer.indexOf("\r\n")) >= 0) {
-      const line = buffer.slice(0, nl);
-      buffer = buffer.slice(nl + 2);
-      acc.push(line);
-      if (/^\d{3} /.test(line)) {
-        replies.push({ code: Number(line.slice(0, 3)), text: acc.join("\n") });
-        acc = [];
-        pump();
-      }
-    }
-  });
-  socket.on("error", failAll);
-  socket.on("timeout", () => failAll(new Error("SMTP timeout")));
-  socket.on("close", () => failAll(new Error("SMTP-Verbindung vorzeitig geschlossen")));
-  return {
-    read: () => new Promise((resolve, reject) => { waiters.push({ resolve, reject }); pump(); })
-  };
-}
-
-export async function sendSmtpMail(mail) {
-  return deliverViaSmtp(smtpConfig(), mail);
-}
-
-// Exported for tests: the SMTP delivery core with an explicit config so the
-// plain / STARTTLS+AUTH paths can be exercised against a mock server.
-export async function deliverViaSmtp(config, { from, to, subject, text }) {
-  const password = config.passwordEnv ? (process.env[config.passwordEnv] ?? "") : "";
-  if (config.user && !password) {
-    throw new Error(`SMTP-Passwort fehlt: Umgebungsvariable ${config.passwordEnv} ist nicht gesetzt.`);
-  }
-
-  const ehloName = "workforce-time.local";
-  const message = [
-    `From: ${from}`,
-    `To: ${to}`,
-    `Subject: ${subject}`,
-    "MIME-Version: 1.0",
-    "Content-Type: text/plain; charset=utf-8",
-    "",
-    escapeSmtpLine(text)
-  ].join("\r\n");
-
-  // Implicit TLS (e.g. :465) connects via tls; otherwise plain with optional
-  // opportunistic STARTTLS upgrade.
-  let socket = config.secure
-    ? tls.connect({ host: config.host, port: config.port, servername: config.host, rejectUnauthorized: !config.allowSelfSigned })
-    : net.createConnection({ host: config.host, port: config.port });
-  socket.setTimeout(8000);
-
-  await new Promise((resolve, reject) => {
-    socket.once(config.secure ? "secureConnect" : "connect", resolve);
-    socket.once("error", reject);
-  });
-
-  let reader = smtpReader(socket);
-  const expect = async (line, okCodes) => {
-    if (line !== null) socket.write(line + "\r\n");
-    const reply = await reader.read();
-    if (!okCodes.includes(reply.code)) {
-      throw new Error(`SMTP ${reply.code}: ${reply.text.trim()}`);
-    }
-    return reply;
-  };
-
-  try {
-    await expect(null, [220]); // greeting
-    let ehlo = await expect(`EHLO ${ehloName}`, [250]);
-
-    // Opportunistic STARTTLS when not already on TLS and either the server
-    // advertises it together with credentials, or the tenant requires it.
-    if (!config.secure && /STARTTLS/i.test(ehlo.text) && (config.user || config.requireTls)) {
-      await expect("STARTTLS", [220]);
-      socket = tls.connect({ socket, servername: config.host, rejectUnauthorized: !config.allowSelfSigned });
-      socket.setTimeout(8000);
-      await new Promise((resolve, reject) => {
-        socket.once("secureConnect", resolve);
-        socket.once("error", reject);
-      });
-      reader = smtpReader(socket);
-      ehlo = await expect(`EHLO ${ehloName}`, [250]);
-    } else if (!config.secure && config.requireTls) {
-      throw new Error("SMTP-Server bietet kein STARTTLS, require_tls ist aber gesetzt.");
-    }
-
-    if (config.user) {
-      await expect("AUTH LOGIN", [334]);
-      await expect(Buffer.from(config.user, "utf8").toString("base64"), [334]);
-      await expect(Buffer.from(password, "utf8").toString("base64"), [235]);
-    }
-
-    await expect(`MAIL FROM:<${from}>`, [250]);
-    await expect(`RCPT TO:<${to}>`, [250]);
-    await expect("DATA", [354]);
-    await expect(`${message}\r\n.`, [250]);
-    socket.write("QUIT\r\n");
-    socket.end();
-    return { delivered: true, host: config.host, port: config.port, tls: config.secure || (config.user && true) };
-  } catch (error) {
-    socket.destroy();
-    throw error;
-  }
-}
-
-async function sendMagicLinkMail(request, user, token) {
-  const link = `${getOriginBaseUrl(request)}/login/verify?token=${encodeURIComponent(token)}`;
-  const subject =
-    tenantConfigGet("auth.magic_link_subject", "") ||
-    tenantConfigGet("workforce.auth.magic_link_subject", "") ||
-    "Login-Link fuer Workforce-Time";
-  const text = [
-    `Hallo ${user.display_name || user.email},`,
-    "",
-    "hier ist dein Login-Link fuer Workforce-Time:",
-    link,
-    "",
-    "Der Link ist 15 Minuten gueltig und kann nur einmal verwendet werden."
-  ].join("\n");
-
-  if (isDevelopment()) {
-    console.log(`[workforce-auth] Magic-Link fuer ${user.email}: ${link}`);
-  }
-
-  // P.1 (2026-06-13): Dev-Mode liefert den Link auch direkt im API-Response
-  // (delivery.dev_link), damit der Mitarbeiter ihn ohne Mailpit-Inbox-Umweg
-  // direkt klicken kann. Wird in Produktion ausgeblendet — dort kommt der
-  // Link ueber die echte SMTP-Pipeline ins Mitarbeiter-Postfach.
-  const devLink = isDevelopment() ? link : undefined;
-
-  try {
-    const result = await sendSmtpMail({ from: mailFrom(), to: user.email, subject, text });
-    return isDevelopment() ? { ...result, stdout: true, dev_link: devLink } : result;
-  } catch (error) {
-    if (!isDevelopment()) throw error;
-    console.warn(`[workforce-auth] Mailpit nicht erreichbar, Link nur in stdout geloggt: ${error.message}`);
-    return { delivered: false, stdout: true, dev_link: devLink, error: error.message };
-  }
-}
+// SMTP/Magic-Link layer fully removed as of phase-b-auth-refactor 2026-06-28.
+// Server-Authority architecture: workforce-time runs on the central VPS and
+// staff authenticate with username + password inside the app. Magic-Link
+// delivery (which depended on a tenant SMTP block + outbound MTA) is gone.
 
 function base32Encode(buffer) {
   let bits = 0;
@@ -781,6 +689,10 @@ function createSession(userId, request, totpVerified) {
   return sessionId;
 }
 
+function invalidCredentials() {
+  return authError("INVALID_CREDENTIALS", "E-Mail oder Passwort ist ungueltig.");
+}
+
 function sessionFromRequest(request) {
   const sessionId = parseCookies(request)[SESSION_COOKIE];
   if (!sessionId) return null;
@@ -837,85 +749,153 @@ function publicUser(session) {
   };
 }
 
-async function requestMagicLink(request, payload) {
+function loginWithCredentials(request, payload) {
   const tenant = assertTenantHost(request);
   const email = normalizeEmail(payload.email);
-  const user = ensureAuthUser(email);
-  assertMagicLinkRateLimit(user.id);
+  const password = typeof payload.password === "string" ? payload.password : "";
 
-  const token = randomToken(32);
-  const meta = getClientMeta(request);
-  db.prepare(`
-    INSERT INTO auth_magic_links (
-      user_id, token_hash, requested_at, expires_at, request_ip, request_ua
-    )
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(user.id, sha256Hex(token), nowIso(), addSeconds(MAGIC_LINK_TTL_SECONDS), meta.ip, meta.userAgent);
-  insertAudit("magic_link_requested", { userId: user.id, request });
+  if (!isValidEmail(email) || !password) {
+    throw invalidCredentials();
+  }
 
-  const delivery = await sendMagicLinkMail(request, user, token);
-  return { message: "Login-Link wurde verschickt.", delivery, tenant };
+  let user;
+  try {
+    user = ensureAuthUser(email);
+  } catch (error) {
+    if (error?.code === "EMAIL_NOT_ALLOWED" || error?.code === "INVALID_EMAIL") {
+      throw invalidCredentials();
+    }
+    throw error;
+  }
+
+  assertLoginRateLimit(user.id);
+
+  if (!user.password_hash || !verifyPassword(password, user.password_hash)) {
+    insertAudit("login_fail_password", { userId: user.id, request });
+    throw invalidCredentials();
+  }
+
+  if (user.totp_enrolled_at) {
+    const secretRow = currentTotpSecretRow(user.id);
+    if (!secretRow || !payload.totp || !verifyTotpCode(decryptSecret(secretRow.secret_enc), payload.totp)) {
+      insertAudit("login_fail_totp", { userId: user.id, request });
+      const error = authError("TOTP_REQUIRED", "Gueltiger Zwei-Faktor-Code erforderlich.");
+      error.mfaRequired = true;
+      throw error;
+    }
+  }
+
+  const sessionId = createSession(user.id, request, true);
+  db.prepare("UPDATE auth_users SET last_login_at = ? WHERE id = ?").run(nowIso(), user.id);
+  insertAudit("login_success_password", { userId: user.id, sessionId, request });
+
+  const session = sessionFromRequest({
+    ...request,
+    headers: { ...request.headers, cookie: `${SESSION_COOKIE}=${sessionId}` }
+  });
+
+  return {
+    sessionToken: sessionId,
+    user: session ? publicUser(session) : null,
+    tenant
+  };
 }
 
-function consumeMagicLink(request, payload) {
-  const tenant = assertTenantHost(request);
-  const token = String(payload.token ?? "").trim();
-  if (!token) throw authError("TOKEN_REQUIRED", "Magic-Link-Token fehlt.");
-
-  const row = db
-    .prepare(`
-      SELECT
-        auth_magic_links.*,
-        auth_users.email,
-        auth_users.display_name,
-        auth_users.role,
-        auth_users.tenant_slug,
-        auth_users.totp_enrolled_at,
-        auth_users.disabled_at
-      FROM auth_magic_links
-      JOIN auth_users ON auth_users.id = auth_magic_links.user_id
-      WHERE auth_magic_links.token_hash = ?
-    `)
-    .get(sha256Hex(token));
-
-  if (!row || row.used_at || row.expires_at <= nowIso()) {
-    throw authError("TOKEN_INVALID", "Login-Link ist ungueltig oder abgelaufen.");
-  }
-  if (row.disabled_at) {
-    throw authError("USER_DISABLED", "Dieser Zugang ist deaktiviert.");
+export function setAuthUserPassword(authUserId, { password, request = null, actorUserId = null } = {}) {
+  const id = Number(authUserId);
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("Auth-User-ID ist ungueltig.");
   }
 
-  let totpVerified = false;
-  // P.1 (2026-06-13): Dev-Mode = Magic-Link reicht, kein 2FA-Code abfragen.
-  // In Production bleibt der TOTP-Check aktiv.
-  if (row.totp_enrolled_at && !isDevelopment()) {
-    const secretRow = currentTotpSecretRow(row.user_id);
-    if (!secretRow || !payload.totp || !verifyTotpCode(decryptSecret(secretRow.secret_enc), payload.totp)) {
-      insertAudit("login_fail_totp", { userId: row.user_id, request });
-      throw authError("TOTP_REQUIRED", "Gueltiger Zwei-Faktor-Code erforderlich.");
+  const user = db.prepare("SELECT id, email FROM auth_users WHERE id = ?").get(id);
+  if (!user) {
+    throw new Error(`Auth-User nicht gefunden: ${authUserId}`);
+  }
+
+  const generatedPassword = typeof password === "string" && password.length > 0
+    ? null
+    : generateInitialPassword();
+  const plainPassword = generatedPassword ?? password;
+  const passwordHash = hashPassword(plainPassword);
+  const passwordSetAt = nowIso();
+
+  db.prepare(`
+    UPDATE auth_users
+    SET password_hash = ?, password_set_at = ?, password_must_change = 0
+    WHERE id = ?
+  `).run(passwordHash, passwordSetAt, id);
+
+  insertAudit("password_set", {
+    userId: id,
+    request,
+    metadata: {
+      actorUserId,
+      mode: generatedPassword ? "generated" : "explicit"
     }
-    totpVerified = true;
-  } else if (row.totp_enrolled_at && isDevelopment()) {
-    // Im Dev-Mode behandeln wir bereits enrolled-TOTP als verified, damit
-    // der User-Flow nach Magic-Link-Klick durchlaeuft.
-    totpVerified = true;
+  });
+
+  return generatedPassword ? { generatedPassword } : {};
+}
+
+function loginWithPassword(request, payload) {
+  const tenant = assertTenantHost(request);
+  const email = normalizeEmail(payload?.email);
+  if (!isValidEmail(email)) throw authError("EMAIL_INVALID", "E-Mail-Adresse ungueltig.");
+
+  const password = String(payload?.password ?? "");
+  if (!password) throw authError("PASSWORD_REQUIRED", "Passwort fehlt.");
+
+  // Reveal as little as possible to outsiders, but rate-limit per-user so a
+  // single compromised account cannot be brute-forced indefinitely.
+  const user = db
+    .prepare(`
+      SELECT id, email, display_name, role, tenant_slug, password_hash,
+             password_must_change, totp_enrolled_at, disabled_at
+      FROM auth_users WHERE email = ?
+    `)
+    .get(email);
+  if (!user || user.disabled_at) {
+    throw authError("LOGIN_FAILED", "E-Mail oder Passwort falsch.");
+  }
+  assertLoginRateLimit(user.id);
+
+  if (!user.password_hash) {
+    insertAudit("login_fail_no_password", { userId: user.id, request });
+    throw authError(
+      "PASSWORD_NOT_SET",
+      "Fuer diesen Account ist kein Passwort gesetzt. Bitte Admin um Initial-Passwort bitten."
+    );
+  }
+  if (!verifyPassword(password, user.password_hash)) {
+    insertAudit("login_fail_password", { userId: user.id, request });
+    throw authError("LOGIN_FAILED", "E-Mail oder Passwort falsch.");
   }
 
-  const meta = getClientMeta(request);
+  // Admin role requires TOTP; everyone else can log in directly. If the
+  // admin has not enrolled TOTP yet, the session is created with a pending
+  // flag and the client is told to start enrollment.
+  const isAdmin = normalizeRole(user.role) === "admin";
+  const totpEnrolled = Boolean(user.totp_enrolled_at);
+
+  if (isAdmin && totpEnrolled) {
+    const totp = String(payload?.totp ?? "").trim();
+    if (!totp) {
+      throw authError("TOTP_REQUIRED", "Bitte den Zwei-Faktor-Code eingeben.");
+    }
+    const secretRow = currentTotpSecretRow(user.id);
+    if (!secretRow || !verifyTotpCode(decryptSecret(secretRow.secret_enc), totp)) {
+      insertAudit("login_fail_totp", { userId: user.id, request });
+      throw authError("TOTP_INVALID", "Zwei-Faktor-Code ungueltig.");
+    }
+  }
+
+  const totpVerified = isAdmin && totpEnrolled;
+
   db.exec("BEGIN");
   try {
-    db.prepare(`
-      UPDATE auth_magic_links
-      SET used_at = ?, consumed_ip = ?, consumed_ua = ?
-      WHERE id = ?
-    `).run(nowIso(), meta.ip, meta.userAgent, row.id);
-    const sessionId = createSession(row.user_id, request, totpVerified);
-    db.prepare("UPDATE auth_users SET last_login_at = ? WHERE id = ?").run(nowIso(), row.user_id);
-    insertAudit(totpVerified ? "login_success" : "login_success_totp_pending", {
-      userId: row.user_id,
-      sessionId,
-      request
-    });
+    const sessionId = createSession(user.id, request, totpVerified);
+    db.prepare("UPDATE auth_users SET last_login_at = ? WHERE id = ?").run(nowIso(), user.id);
+    insertAudit("login_success_password", { userId: user.id, sessionId, request });
     db.exec("COMMIT");
 
     const session = sessionFromRequest({
@@ -927,15 +907,75 @@ function consumeMagicLink(request, payload) {
       data: {
         user: session ? publicUser(session) : null,
         tenant,
-        // Dev-Mode: kein 2FA-Enrollment-Zwang. In Production bleibt's
-        // an, wenn der User noch nicht enrolled ist.
-        enroll_totp: !isDevelopment() && !row.totp_enrolled_at
+        enroll_totp: isAdmin && !totpEnrolled,
+        password_must_change: Boolean(user.password_must_change)
       }
     };
   } catch (error) {
     db.exec("ROLLBACK");
     throw error;
   }
+}
+
+function setOwnPassword(request, payload) {
+  const session = requireSession(request);
+  const current = String(payload?.current_password ?? "");
+  const next = String(payload?.new_password ?? "");
+  if (!next) throw authError("PASSWORD_REQUIRED", "Neues Passwort fehlt.");
+
+  const row = db
+    .prepare("SELECT password_hash FROM auth_users WHERE id = ?")
+    .get(session.user_id);
+  if (row?.password_hash) {
+    if (!current || !verifyPassword(current, row.password_hash)) {
+      insertAudit("password_change_fail", { userId: session.user_id, sessionId: session.id, request });
+      throw authError("CURRENT_PASSWORD_INVALID", "Aktuelles Passwort falsch.");
+    }
+  }
+  const hash = hashPassword(next);
+  db.prepare(`
+    UPDATE auth_users
+    SET password_hash = ?, password_set_at = ?, password_must_change = 0
+    WHERE id = ?
+  `).run(hash, nowIso(), session.user_id);
+  insertAudit("password_changed_self", { userId: session.user_id, sessionId: session.id, request });
+  return { ok: true };
+}
+
+function adminSetUserPassword(request, params, payload) {
+  const session = requireSession(request, { requireAdmin: true });
+  const targetId = Number(params?.userId);
+  if (!Number.isFinite(targetId) || targetId <= 0) {
+    throw authError("USER_ID_INVALID", "Ziel-User-ID ungueltig.");
+  }
+  const target = db
+    .prepare("SELECT id, email, disabled_at FROM auth_users WHERE id = ?")
+    .get(targetId);
+  if (!target) throw authError("USER_NOT_FOUND", "User nicht gefunden.");
+  if (target.disabled_at) throw authError("USER_DISABLED", "Dieser Zugang ist deaktiviert.");
+
+  // Two modes: admin supplies plaintext (length-validated here), or admin
+  // asks the server to generate a random initial password and return it.
+  const supplied = typeof payload?.password === "string" ? payload.password : "";
+  const generated = supplied ? null : generateInitialPassword();
+  const effective = supplied || generated;
+  const hash = hashPassword(effective);
+  // password_must_change=1 forces a self-change on next login when the admin
+  // generated a one-time password. When the admin set the password directly
+  // we leave the flag alone so they can choose whether to require rotation.
+  const mustChange = generated ? 1 : 0;
+  db.prepare(`
+    UPDATE auth_users
+    SET password_hash = ?, password_set_at = ?, password_must_change = ?
+    WHERE id = ?
+  `).run(hash, nowIso(), mustChange, targetId);
+  insertAudit("password_set_by_admin", {
+    userId: target.id,
+    sessionId: session.id,
+    request,
+    metadata: { admin_user_id: session.user_id, generated: Boolean(generated) }
+  });
+  return generated ? { ok: true, generatedPassword: generated } : { ok: true };
 }
 
 function enrollTotp(request) {
@@ -1102,12 +1142,26 @@ function auditLog(request, url) {
 }
 
 export async function handleAuthRoute({ request, response, url, readJson, sendJson }) {
-  if (!url.pathname.startsWith("/api/auth/")) return false;
+  const isAuthPath = url.pathname.startsWith("/api/auth/");
+  const isAdminUserPasswordPath = /^\/api\/admin\/users\/\d+\/set-password$/.test(url.pathname);
+  if (!isAuthPath && !isAdminUserPasswordPath) return false;
 
   try {
-    if (request.method === "POST" && url.pathname === "/api/auth/magic-link") {
-      const data = await requestMagicLink(request, await readJson(request));
-      jsonOk(sendJson, response, data);
+    if (request.method === "POST" && url.pathname === "/api/auth/login") {
+      const result = loginWithPassword(request, await readJson(request));
+      jsonOk(sendJson, response, result.data, { "Set-Cookie": sessionCookie(result.sessionId) });
+      return true;
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/auth/password/change") {
+      jsonOk(sendJson, response, setOwnPassword(request, await readJson(request)));
+      return true;
+    }
+
+    if (request.method === "POST" && isAdminUserPasswordPath) {
+      const match = url.pathname.match(/^\/api\/admin\/users\/(\d+)\/set-password$/);
+      const userId = match ? match[1] : null;
+      jsonOk(sendJson, response, adminSetUserPassword(request, { userId }, await readJson(request)));
       return true;
     }
 
@@ -1116,9 +1170,19 @@ export async function handleAuthRoute({ request, response, url, readJson, sendJs
       return true;
     }
 
-    if (request.method === "POST" && url.pathname === "/api/auth/magic-link/verify") {
-      const result = consumeMagicLink(request, await readJson(request));
-      jsonOk(sendJson, response, result.data, { "Set-Cookie": sessionCookie(result.sessionId) });
+    // Magic-Link endpoints retired in phase-b-auth-refactor 2026-06-28.
+    // Tell old clients to upgrade rather than silently 404ing.
+    if (
+      request.method === "POST" &&
+      (url.pathname === "/api/auth/magic-link" || url.pathname === "/api/auth/magic-link/verify")
+    ) {
+      jsonFailure(
+        sendJson,
+        response,
+        410,
+        "MAGIC_LINK_RETIRED",
+        "Magic-Link-Login wurde entfernt. Bitte mit E-Mail + Passwort anmelden."
+      );
       return true;
     }
 
@@ -1208,14 +1272,22 @@ export async function handleAuthRoute({ request, response, url, readJson, sendJs
     return true;
   } catch (error) {
     const code = error?.code || "AUTH_ERROR";
-    const status =
-      code === "SESSION_REQUIRED" || code === "TOTP_REQUIRED"
-        ? 401
-        : code === "ADMIN_REQUIRED"
-          ? 403
-          : code === "RATE_LIMITED"
-            ? 429
-            : 400;
+    let status = 400;
+    if (
+      code === "SESSION_REQUIRED" ||
+      code === "TOTP_REQUIRED" ||
+      code === "TOTP_INVALID" ||
+      code === "LOGIN_FAILED" ||
+      code === "CURRENT_PASSWORD_INVALID"
+    ) {
+      status = 401;
+    } else if (code === "ADMIN_REQUIRED") {
+      status = 403;
+    } else if (code === "RATE_LIMITED") {
+      status = 429;
+    } else if (code === "USER_NOT_FOUND") {
+      status = 404;
+    }
     jsonFailure(sendJson, response, status, code, error instanceof Error ? error.message : "Auth-Fehler");
     return true;
   }
