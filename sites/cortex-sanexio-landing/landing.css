@@ -530,6 +530,23 @@ code {
   flex-wrap: wrap;
 }
 
+/* Topbar mit Theme-Switcher — sticky, immer sichtbar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 32px 0;
+  max-width: 1180px;
+  margin: 0 auto;
+  pointer-events: none;
+}
+.topbar > * { pointer-events: auto; }
+@media (max-width: 640px) {
+  .topbar { padding: 10px 16px 0; }
+}
+
 /* Theme-Switcher Toggle */
 .theme-toggle {
   appearance: none;

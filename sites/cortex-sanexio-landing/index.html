@@ -13,7 +13,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
     />
-    <link rel="stylesheet" href="/landing.css?v=2026-06-28-6" />
+    <link rel="stylesheet" href="/landing.css?v=2026-06-28-7" />
     <meta name="robots" content="noindex,nofollow" />
   </head>
   <body>
@@ -21,6 +21,21 @@
     <div class="scanline" aria-hidden="true"></div>
 
     <div class="app">
+      <!-- Theme-Switcher als prominenter Top-Right-Pin (unabhaengig von Scroll) -->
+      <div class="topbar">
+        <button
+          type="button"
+          id="theme-toggle"
+          class="theme-toggle"
+          aria-label="Default-Page umschalten zwischen Cyber-Landing und Dashboard"
+        >
+          <span class="theme-toggle-label">DEFAULT:</span>
+          <span class="theme-toggle-value" id="theme-toggle-value">CYBER</span>
+          <span class="theme-toggle-sep">·</span>
+          <span class="theme-toggle-action">WECHSELN →</span>
+        </button>
+      </div>
+
       <header class="hero section-accents">
         <div class="hero-eyebrow badge badge--dark">
           <span class="hero-dot"></span> SANEXIO · CORTEX · VPS · v1
@@ -158,18 +173,7 @@
 
       <footer class="portal-footer">
         <span>// cortex-sanexio.tech · server-authority · 2026</span>
-        <span class="footer-cluster">
-          <button
-            type="button"
-            id="theme-toggle"
-            class="theme-toggle"
-            aria-label="Default-Page umschalten zwischen Cyber-Landing und Dashboard"
-          >
-            <span class="theme-toggle-label">DEFAULT:</span>
-            <span class="theme-toggle-value" id="theme-toggle-value">CYBER</span>
-            <span class="theme-toggle-sep">·</span>
-            <span class="theme-toggle-action">WECHSELN →</span>
-          </button>
+        <span>
           <a href="https://portal.sanexio.de/" class="footer-link" target="_blank" rel="noopener">
             Portal (Mitarbeitende) →
           </a>

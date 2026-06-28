@@ -33,7 +33,11 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
     @landing_root path / /index.html
     handle @landing_root {
         root * /srv/sanexio/apps/cortex-sanexio-landing
-        header Cache-Control "no-store, no-cache, must-revalidate"
+        header Cache-Control "no-store, no-cache, must-revalidate, private, max-age=0"
+        header Pragma "no-cache"
+        header Expires "0"
+        header -ETag
+        header -Last-Modified
         file_server
     }
     # Landing-Page-Assets (CSS + Favicon) — short cache, immer revalidieren
