@@ -2,6 +2,7 @@ import {
   Activity,
   AlertTriangle,
   BarChart3,
+  Bell,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
@@ -10,6 +11,7 @@ import {
   Clock3,
   Coins,
   Columns3,
+  Copy,
   Database,
   Download,
   Filter,
@@ -282,7 +284,7 @@ type TenantMeta = {
   hostAccepted: boolean;
 };
 
-type AuthStatus = "checking" | "anonymous" | "magic_sent" | "token_pending" | "totp_enroll" | "authenticated" | "offline";
+type AuthStatus = "checking" | "anonymous" | "totp_enroll" | "authenticated" | "offline";
 
 type AuthEnvelope<T> = {
   ok: boolean;
@@ -299,22 +301,37 @@ type AuthMePayload = {
   tenant?: TenantMeta;
 };
 
-type MagicLinkPayload = {
-  message: string;
+type PasswordLoginPayload = {
+  user: AuthUser;
   tenant?: TenantMeta;
-  delivery?: {
-    delivered?: boolean;
-    stdout?: boolean;
-    error?: string;
-    dev_link?: string;
-  };
+  password_must_change?: boolean;
+  enroll_totp?: boolean;
 };
 
-type MagicLinkVerifyPayload = {
-  user: AuthUser | null;
-  tenant?: TenantMeta;
-  enroll_totp: boolean;
+type PasswordChangePayload = {
+  user?: AuthUser;
 };
+
+type NotificationItem = {
+  id: string | number;
+  title?: string | null;
+  message?: string | null;
+  body?: string | null;
+  type?: string | null;
+  createdAt?: string | null;
+  readAt?: string | null;
+};
+
+type NotificationsPayload =
+  | NotificationItem[]
+  | {
+      notifications?: NotificationItem[];
+      items?: NotificationItem[];
+      data?: {
+        notifications?: NotificationItem[];
+        items?: NotificationItem[];
+      };
+    };
 
 type TotpEnrollmentPayload = {
   secret: string;
@@ -1648,6 +1665,15 @@ function isStatus(value: string): value is Status {
   return ["freigegeben", "aenderungsantrag", "konflikt", "entwurf"].includes(value);
 }
 
+function notificationsFromPayload(payload: NotificationsPayload): NotificationItem[] {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.notifications)) return payload.notifications;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.data?.notifications)) return payload.data.notifications;
+  if (Array.isArray(payload.data?.items)) return payload.data.items;
+  return [];
+}
+
 function App() {
   const [data, setData] = useState<BootstrapPayload>(fallbackData);
   const [view, setView] = useState<ViewKey>("plan");
@@ -1664,14 +1690,19 @@ function App() {
   const [tenantMeta, setTenantMeta] = useState<TenantMeta | null>(null);
   const [authMessage, setAuthMessage] = useState("Session wird geprüft");
   const [loginEmail, setLoginEmail] = useState("");
-  const [magicToken, setMagicToken] = useState(() => (
-    typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("token") ?? ""
-  ));
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginNeedsTotp, setLoginNeedsTotp] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const [totpCode, setTotpCode] = useState("");
   const [totpSetup, setTotpSetup] = useState<TotpEnrollmentPayload | null>(null);
-  // Dev-Stage: Backend liefert den Login-Link direkt mit, damit der
-  // Mitarbeiter ihn ohne Mailpit-Umweg klicken kann.
-  const [devLoginUrl, setDevLoginUrl] = useState<string | null>(null);
+  const [forcePasswordChange, setForcePasswordChange] = useState(false);
+  const [pendingTotpEnrollment, setPendingTotpEnrollment] = useState(false);
+  const [passwordChangeCurrent, setPasswordChangeCurrent] = useState("");
+  const [passwordChangeNew, setPasswordChangeNew] = useState("");
+  const [passwordChangeMessage, setPasswordChangeMessage] = useState<string | null>(null);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationsError, setNotificationsError] = useState<string | null>(null);
   const [helpChapterId, setHelpChapterId] = useState<string | null>(null);
   const [theme, setTheme] = useState<ThemeKey>(() => readStoredTheme());
   const visibleWeekStart = activeWeekStart ?? getPrototypeWeekStart(data);
@@ -1743,7 +1774,7 @@ function App() {
     try {
       const payload = await authRequest<AuthMePayload>("/api/auth/me");
       if (payload.tenant) setTenantMeta(payload.tenant);
-      if (payload.authenticated && payload.user?.totpVerified) {
+      if (payload.authenticated && payload.user) {
         setAuthUser(payload.user);
         setAuthStatus("authenticated");
         setAuthMessage("Angemeldet");
@@ -1751,8 +1782,8 @@ function App() {
       }
 
       setAuthUser(payload.user);
-      setAuthStatus(magicToken ? "token_pending" : "anonymous");
-      setAuthMessage(magicToken ? "Login-Link bereit" : "Login erforderlich");
+      setAuthStatus("anonymous");
+      setAuthMessage("Login erforderlich");
     } catch {
       setAuthStatus("offline");
       setAuthMessage("Auth-API offline");
@@ -1786,24 +1817,117 @@ function App() {
     refresh();
   }, []);
 
-  async function requestLoginLink(event: FormEvent<HTMLFormElement>) {
+  async function loadNotifications() {
+    try {
+      const payload = await request<NotificationsPayload>("/api/notifications");
+      setNotifications(notificationsFromPayload(payload));
+      setNotificationsError(null);
+    } catch (error) {
+      setNotificationsError(error instanceof Error ? error.message : "Benachrichtigungen nicht ladbar");
+    }
+  }
+
+  useEffect(() => {
+    if (authStatus !== "authenticated" || typeof window === "undefined") {
+      setNotificationsOpen(false);
+      return;
+    }
+
+    void loadNotifications();
+    const interval = window.setInterval(() => {
+      void loadNotifications();
+    }, 30000);
+    return () => window.clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authStatus]);
+
+  function toggleNotifications() {
+    const nextOpen = !notificationsOpen;
+    setNotificationsOpen(nextOpen);
+    if (nextOpen) void loadNotifications();
+  }
+
+  async function markNotificationRead(item: NotificationItem) {
+    await request(`/api/notifications/${encodeURIComponent(String(item.id))}/read`, {
+      method: "POST"
+    });
+    setNotifications((current) =>
+      current.map((notification) =>
+        String(notification.id) === String(item.id)
+          ? { ...notification, readAt: notification.readAt ?? new Date().toISOString() }
+          : notification
+      )
+    );
+  }
+
+  async function completePasswordLogin(payload: PasswordLoginPayload) {
+    if (payload.tenant) setTenantMeta(payload.tenant);
+    setAuthUser(payload.user);
+    setLoginPassword("");
+    setTotpCode("");
+    setLoginNeedsTotp(false);
+    setLoginError(null);
+    setPendingTotpEnrollment(payload.enroll_totp === true);
+
+    if (payload.password_must_change === true) {
+      setForcePasswordChange(true);
+      setPasswordChangeCurrent("");
+      setPasswordChangeNew("");
+      setPasswordChangeMessage("Bitte ein neues Passwort setzen.");
+      setAuthStatus("authenticated");
+      setAuthMessage("Passwortwechsel erforderlich");
+      await refresh();
+      return;
+    }
+
+    if (payload.enroll_totp === true) {
+      setAuthStatus("totp_enroll");
+      setAuthMessage("Zwei-Faktor-Setup bereit");
+      await startTotpEnrollment();
+      return;
+    }
+
+    setForcePasswordChange(false);
+    setPendingTotpEnrollment(false);
+    setAuthStatus("authenticated");
+    setAuthMessage("Angemeldet");
+    await refresh();
+  }
+
+  async function submitLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
+    setLoginError(null);
     try {
-      const payload = await authRequest<MagicLinkPayload>("/api/auth/magic-link", {
+      const payload = await authRequest<PasswordLoginPayload>("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email: loginEmail })
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword,
+          ...(loginNeedsTotp ? { totp: totpCode } : {})
+        })
       });
-      if (payload.tenant) setTenantMeta(payload.tenant);
-      setAuthStatus("magic_sent");
-      setDevLoginUrl(payload.delivery?.dev_link ?? null);
-      if (payload.delivery?.dev_link) {
-        setAuthMessage("Login-Link bereit — direkt klicken");
-      } else {
-        setAuthMessage(payload.delivery?.delivered ? "Login-Link an Mail-Adresse verschickt" : "Login-Link lokal erzeugt");
-      }
+      await completePasswordLogin(payload);
     } catch (error) {
-      setAuthMessage(error instanceof Error ? error.message : "Login-Link konnte nicht erzeugt werden");
+      const code = (error as Error & { code?: string }).code;
+      const message = error instanceof Error ? error.message : "Login fehlgeschlagen";
+      if (code === "TOTP_REQUIRED") {
+        setLoginNeedsTotp(true);
+        setAuthMessage("TOTP-Code erforderlich");
+        setLoginError(null);
+        return;
+      }
+
+      setTotpCode("");
+      if (code === "LOGIN_FAILED" || code === "PASSWORD_NOT_SET") {
+        setLoginNeedsTotp(false);
+        setLoginError(message);
+        setAuthMessage(message);
+        return;
+      }
+
+      setLoginError(message);
+      setAuthMessage(message);
     } finally {
       setBusy(false);
     }
@@ -1816,40 +1940,36 @@ function App() {
     setTotpSetup(setup);
   }
 
-  async function verifyLoginToken(event: FormEvent<HTMLFormElement>) {
+  async function submitPasswordChange(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
+    setPasswordChangeMessage(null);
     try {
-      const payload = await authRequest<MagicLinkVerifyPayload>("/api/auth/magic-link/verify", {
+      const payload = await authRequest<PasswordChangePayload>("/api/auth/password/change", {
         method: "POST",
-        body: JSON.stringify({ token: magicToken, totp: totpCode || undefined })
+        body: JSON.stringify({
+          current_password: passwordChangeCurrent,
+          new_password: passwordChangeNew
+        })
       });
-      if (payload.tenant) setTenantMeta(payload.tenant);
-      setAuthUser(payload.user);
-      setTotpCode("");
+      if (payload.user) setAuthUser(payload.user);
+      setPasswordChangeCurrent("");
+      setPasswordChangeNew("");
+      setForcePasswordChange(false);
 
-      if (payload.enroll_totp) {
+      if (pendingTotpEnrollment) {
+        setPendingTotpEnrollment(false);
         setAuthStatus("totp_enroll");
         setAuthMessage("Zwei-Faktor-Setup bereit");
         await startTotpEnrollment();
         return;
       }
 
-      // Wenn Backend kein TOTP-Enrollment verlangt und einen User
-      // zurueckliefert, ist die Session aktiv — auch wenn totpVerified
-      // nicht gesetzt ist (Dev-Mode ueberspringt 2FA komplett).
-      if (payload.user) {
-        setAuthStatus("authenticated");
-        setAuthMessage("Angemeldet");
-        setDevLoginUrl(null);
-        setMagicToken("");
-        await refresh();
-        if (typeof window !== "undefined") window.history.replaceState(null, "", window.location.pathname);
-      }
+      setAuthStatus("authenticated");
+      setAuthMessage("Passwort aktualisiert");
+      await refresh();
     } catch (error) {
-      const code = (error as Error & { code?: string }).code;
-      setAuthStatus(code === "TOTP_REQUIRED" ? "token_pending" : "anonymous");
-      setAuthMessage(error instanceof Error ? error.message : "Login-Link konnte nicht geprüft werden");
+      setPasswordChangeMessage(error instanceof Error ? error.message : "Passwort konnte nicht geändert werden");
     } finally {
       setBusy(false);
     }
@@ -1868,6 +1988,7 @@ function App() {
       setAuthMessage("Angemeldet");
       setTotpCode("");
       setTotpSetup(null);
+      setPendingTotpEnrollment(false);
       await refresh();
       if (typeof window !== "undefined") window.history.replaceState(null, "", window.location.pathname);
     } catch (error) {
@@ -1885,6 +2006,19 @@ function App() {
       setAuthUser(null);
       setAuthStatus("anonymous");
       setAuthMessage("Abgemeldet");
+      setLoginPassword("");
+      setLoginNeedsTotp(false);
+      setLoginError(null);
+      setTotpCode("");
+      setTotpSetup(null);
+      setForcePasswordChange(false);
+      setPendingTotpEnrollment(false);
+      setPasswordChangeCurrent("");
+      setPasswordChangeNew("");
+      setPasswordChangeMessage(null);
+      setNotifications([]);
+      setNotificationsOpen(false);
+      setNotificationsError(null);
       setBusy(false);
     }
   }
@@ -2181,21 +2315,23 @@ function App() {
         status={authStatus}
         tenant={tenantMeta}
         email={loginEmail}
-        token={magicToken}
+        password={loginPassword}
         totpCode={totpCode}
+        needsTotp={loginNeedsTotp}
+        loginError={loginError}
         setup={totpSetup}
         message={authMessage}
         busy={busy}
-        devLoginUrl={devLoginUrl}
         onEmailChange={setLoginEmail}
-        onTokenChange={setMagicToken}
+        onPasswordChange={setLoginPassword}
         onTotpChange={setTotpCode}
-        onRequestLink={requestLoginLink}
-        onVerifyToken={verifyLoginToken}
+        onSubmitLogin={submitLogin}
         onConfirmTotp={confirmTotp}
         onRestart={() => {
           setAuthStatus("anonymous");
-          setMagicToken("");
+          setLoginPassword("");
+          setLoginNeedsTotp(false);
+          setLoginError(null);
           setTotpCode("");
           setTotpSetup(null);
           setAuthMessage("Login erforderlich");
@@ -2241,6 +2377,15 @@ function App() {
             <h1>{meta.title}</h1>
           </div>
           <div className="topbar-actions">
+            {authUser ? (
+              <NotificationBell
+                items={notifications}
+                open={notificationsOpen}
+                error={notificationsError}
+                onToggle={toggleNotifications}
+                onRead={markNotificationRead}
+              />
+            ) : null}
             {authUser ? <UserPill user={authUser} /> : null}
             <button
               className="icon-button"
@@ -2478,6 +2623,17 @@ function App() {
           onClose={() => setHelpChapterId(null)}
         />
       ) : null}
+      {forcePasswordChange ? (
+        <ForcePasswordChangeDialog
+          currentPassword={passwordChangeCurrent}
+          newPassword={passwordChangeNew}
+          message={passwordChangeMessage}
+          busy={busy}
+          onCurrentPasswordChange={setPasswordChangeCurrent}
+          onNewPasswordChange={setPasswordChangeNew}
+          onSubmit={submitPasswordChange}
+        />
+      ) : null}
     </div>
     </ShiftConflictContext.Provider>
   );
@@ -2487,17 +2643,17 @@ function AuthShell({
   status,
   tenant,
   email,
-  token,
+  password,
   totpCode,
+  needsTotp,
+  loginError,
   setup,
   message,
   busy,
-  devLoginUrl,
   onEmailChange,
-  onTokenChange,
+  onPasswordChange,
   onTotpChange,
-  onRequestLink,
-  onVerifyToken,
+  onSubmitLogin,
   onConfirmTotp,
   onRestart,
   onHelp
@@ -2505,23 +2661,24 @@ function AuthShell({
   status: AuthStatus;
   tenant: TenantMeta | null;
   email: string;
-  token: string;
+  password: string;
   totpCode: string;
+  needsTotp: boolean;
+  loginError: string | null;
   setup: TotpEnrollmentPayload | null;
   message: string;
   busy: boolean;
-  devLoginUrl: string | null;
   onEmailChange: (value: string) => void;
-  onTokenChange: (value: string) => void;
+  onPasswordChange: (value: string) => void;
   onTotpChange: (value: string) => void;
-  onRequestLink: (event: FormEvent<HTMLFormElement>) => void;
-  onVerifyToken: (event: FormEvent<HTMLFormElement>) => void;
+  onSubmitLogin: (event: FormEvent<HTMLFormElement>) => void;
   onConfirmTotp: (event: FormEvent<HTMLFormElement>) => void;
   onRestart: () => void;
   onHelp: () => void;
 }) {
-  const showTokenForm = status === "magic_sent" || status === "token_pending";
   const showTotpSetup = status === "totp_enroll";
+  const showLoginForm = status === "anonymous";
+  const messageWarn = status === "offline" || Boolean(loginError) || message.includes("fehl") || message.includes("erforderlich");
 
   return (
     <main className="auth-shell">
@@ -2543,7 +2700,7 @@ function AuthShell({
           </div>
         ) : null}
 
-        <span className={message.includes("Fehler") || message.includes("ung") ? "auth-message warn" : "auth-message"}>
+        <span className={messageWarn ? "auth-message warn" : "auth-message"}>
           <KeyRound size={16} />
           {status === "checking" ? "Session wird geprüft" : message}
         </span>
@@ -2555,8 +2712,8 @@ function AuthShell({
           </div>
         ) : null}
 
-        {status === "anonymous" ? (
-          <form className="auth-form" onSubmit={onRequestLink}>
+        {showLoginForm ? (
+          <form className="auth-form" onSubmit={onSubmitLogin}>
             <label className="field">
               <span>E-Mail</span>
               <input
@@ -2568,55 +2725,42 @@ function AuthShell({
                 required
               />
             </label>
-            <button className="primary-button" type="submit" disabled={busy}>
-              <Mail size={17} />
-              Login-Link
-            </button>
-          </form>
-        ) : null}
-
-        {showTokenForm ? (
-          <form className="auth-form" onSubmit={onVerifyToken}>
-            {devLoginUrl ? (
-              <div className="dev-link-banner">
-                <p className="dev-link-headline">Dein Login-Link ist bereit:</p>
-                <a className="primary-button dev-link-button" href={devLoginUrl}>
-                  <Check size={17} />
-                  Jetzt einloggen
-                </a>
-                <p className="dev-link-hint">
-                  Klicken öffnet die Anmeldung und führt dich zurück in Workforce-Time.
-                </p>
-              </div>
-            ) : null}
             <label className="field">
-              <span>Magic-Link-Token</span>
+              <span>Passwort</span>
               <input
-                type="text"
-                autoComplete="one-time-code"
-                value={token}
-                onChange={(event) => onTokenChange(event.target.value)}
-                placeholder="Token"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => onPasswordChange(event.target.value)}
                 required
               />
             </label>
-            <label className="field">
-              <span>TOTP-Code</span>
-              <input
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                value={totpCode}
-                onChange={(event) => onTotpChange(event.target.value)}
-                placeholder="000000"
-              />
-            </label>
+            {needsTotp ? (
+              <label className="field">
+                <span>TOTP-Code</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  value={totpCode}
+                  onChange={(event) => onTotpChange(event.target.value)}
+                  placeholder="000000"
+                  required
+                />
+              </label>
+            ) : null}
+            {loginError ? (
+              <span className="auth-message warn">
+                <AlertTriangle size={15} />
+                {loginError}
+              </span>
+            ) : null}
             <div className="split-actions">
               <button className="primary-button" type="submit" disabled={busy}>
-                <Check size={17} />
-                Einlösen
+                <KeyRound size={17} />
+                Einloggen
               </button>
-              <button className="secondary-button" type="button" onClick={onRestart} disabled={busy}>
+              <button className="secondary-button" type="button" onClick={onRestart} disabled={busy || (!needsTotp && !loginError)}>
                 Zurück
               </button>
             </div>
@@ -2673,6 +2817,74 @@ function AuthShell({
   );
 }
 
+function ForcePasswordChangeDialog({
+  currentPassword,
+  newPassword,
+  message,
+  busy,
+  onCurrentPasswordChange,
+  onNewPasswordChange,
+  onSubmit
+}: {
+  currentPassword: string;
+  newPassword: string;
+  message: string | null;
+  busy: boolean;
+  onCurrentPasswordChange: (value: string) => void;
+  onNewPasswordChange: (value: string) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  const isError = Boolean(message && !message.toLowerCase().includes("bitte"));
+
+  return (
+    <div className="dialog-backdrop" role="dialog" aria-modal="true" aria-labelledby="password-change-title">
+      <form className="time-dialog" onSubmit={onSubmit}>
+        <div className="dialog-header">
+          <div>
+            <p className="eyebrow">Sicherheit</p>
+            <h2 id="password-change-title">Passwort ändern</h2>
+          </div>
+          <ShieldCheck size={20} />
+        </div>
+        {message ? (
+          <span className={isError ? "auth-message warn" : "auth-message"}>
+            {isError ? <AlertTriangle size={15} /> : <KeyRound size={15} />}
+            {message}
+          </span>
+        ) : null}
+        <div className="form-grid" style={{ marginTop: 14 }}>
+          <label className="field">
+            <span>Aktuelles Passwort</span>
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={currentPassword}
+              onChange={(event) => onCurrentPasswordChange(event.target.value)}
+              required
+            />
+          </label>
+          <label className="field">
+            <span>Neues Passwort</span>
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={newPassword}
+              onChange={(event) => onNewPasswordChange(event.target.value)}
+              required
+            />
+          </label>
+        </div>
+        <div className="split-actions" style={{ marginTop: 16 }}>
+          <button className="primary-button" type="submit" disabled={busy}>
+            <KeyRound size={17} />
+            Speichern
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 function UserPill({ user }: { user: AuthUser }) {
   return (
     <span className="user-pill">
@@ -2682,6 +2894,125 @@ function UserPill({ user }: { user: AuthUser }) {
         <small>{user.role}</small>
       </span>
     </span>
+  );
+}
+
+function NotificationBell({
+  items,
+  open,
+  error,
+  onToggle,
+  onRead
+}: {
+  items: NotificationItem[];
+  open: boolean;
+  error: string | null;
+  onToggle: () => void;
+  onRead: (item: NotificationItem) => Promise<void>;
+}) {
+  const unreadCount = items.filter((item) => !item.readAt).length;
+  const badgeText = unreadCount > 99 ? "99+" : String(unreadCount);
+
+  return (
+    <div style={{ position: "relative" }}>
+      <button
+        className="icon-button"
+        type="button"
+        aria-label="Benachrichtigungen"
+        title="Benachrichtigungen"
+        onClick={onToggle}
+      >
+        <Bell size={17} />
+      </button>
+      {unreadCount > 0 ? (
+        <span
+          aria-label={`${unreadCount} ungelesen`}
+          style={{
+            position: "absolute",
+            right: -4,
+            top: -5,
+            minWidth: 18,
+            height: 18,
+            padding: "0 5px",
+            borderRadius: 999,
+            background: "var(--color-danger, #b91c1c)",
+            color: "#fff",
+            fontSize: 11,
+            fontWeight: 900,
+            lineHeight: "18px",
+            textAlign: "center"
+          }}
+        >
+          {badgeText}
+        </span>
+      ) : null}
+      {open ? (
+        <div
+          role="menu"
+          style={{
+            position: "absolute",
+            right: 0,
+            top: "calc(100% + 8px)",
+            zIndex: 20,
+            width: "min(360px, calc(100vw - 32px))",
+            maxHeight: 420,
+            overflow: "auto",
+            padding: 10,
+            border: "1px solid var(--line)",
+            borderRadius: 8,
+            background: "var(--surface)",
+            boxShadow: "var(--shadow)"
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 10, padding: "4px 4px 8px" }}>
+            <strong>Benachrichtigungen</strong>
+            <small style={{ color: "var(--muted)" }}>{unreadCount} ungelesen</small>
+          </div>
+          {error ? (
+            <div className="auth-message warn" style={{ width: "100%", borderRadius: 8 }}>
+              <AlertTriangle size={15} />
+              {error}
+            </div>
+          ) : null}
+          {!error && items.length === 0 ? (
+            <p style={{ margin: 0, padding: 12, color: "var(--muted)", fontSize: 13 }}>
+              Keine Benachrichtigungen.
+            </p>
+          ) : null}
+          {items.map((item) => {
+            const title = item.title || item.message || item.body || item.type || "Benachrichtigung";
+            const detail = item.title ? item.message || item.body || item.type : item.type;
+            return (
+              <button
+                key={String(item.id)}
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  void onRead(item).catch(() => undefined);
+                }}
+                style={{
+                  display: "grid",
+                  gap: 4,
+                  width: "100%",
+                  marginTop: 6,
+                  padding: 10,
+                  border: "1px solid var(--line)",
+                  borderRadius: 8,
+                  background: item.readAt ? "var(--surface)" : "var(--surface-muted)",
+                  color: "var(--text)",
+                  textAlign: "left",
+                  cursor: "pointer"
+                }}
+              >
+                <strong style={{ fontSize: 13 }}>{title}</strong>
+                {detail ? <small style={{ color: "var(--muted)" }}>{detail}</small> : null}
+                {item.createdAt ? <small style={{ color: "var(--muted)" }}>{item.createdAt}</small> : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -8460,6 +8791,12 @@ type AuthUserRow = {
   disabledAt: string | null;
   createdAt: string;
 };
+type SetPasswordResponse = {
+  data?: {
+    generatedPassword?: string;
+  };
+  generatedPassword?: string;
+};
 const ROLE_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "employee", label: "Mitarbeiter" },
   { value: "manager", label: "Manager" },
@@ -8478,6 +8815,12 @@ function AdminRolesView({
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [passwordUser, setPasswordUser] = useState<AuthUserRow | null>(null);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [generatedPassword, setGeneratedPassword] = useState<string | null>(null);
+  const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
+  const [passwordBusy, setPasswordBusy] = useState(false);
+  const [passwordCopied, setPasswordCopied] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -8516,6 +8859,73 @@ function AdminRolesView({
     }
   }
 
+  function openPasswordDialog(user: AuthUserRow) {
+    setPasswordUser(user);
+    setPasswordInput("");
+    setGeneratedPassword(null);
+    setPasswordMessage(null);
+    setPasswordCopied(false);
+  }
+
+  function closePasswordDialog() {
+    setPasswordUser(null);
+    setPasswordInput("");
+    setGeneratedPassword(null);
+    setPasswordMessage(null);
+    setPasswordCopied(false);
+  }
+
+  async function generatePassword() {
+    if (!passwordUser) return;
+    setPasswordBusy(true);
+    setPasswordMessage(null);
+    setPasswordCopied(false);
+    try {
+      const response = await request<SetPasswordResponse>(
+        `/api/admin/users/${encodeURIComponent(String(passwordUser.id))}/set-password`,
+        {
+          method: "POST",
+          body: JSON.stringify({})
+        }
+      );
+      const nextPassword = response.data?.generatedPassword ?? response.generatedPassword ?? "";
+      setGeneratedPassword(nextPassword);
+      setPasswordMessage(nextPassword ? "Passwort generiert." : "Passwort wurde gesetzt.");
+    } catch (err) {
+      setPasswordMessage(err instanceof Error ? err.message : "Passwort konnte nicht gesetzt werden");
+    } finally {
+      setPasswordBusy(false);
+    }
+  }
+
+  async function setPlainPassword() {
+    if (!passwordUser || !passwordInput) return;
+    setPasswordBusy(true);
+    setPasswordMessage(null);
+    try {
+      await request<SetPasswordResponse>(
+        `/api/admin/users/${encodeURIComponent(String(passwordUser.id))}/set-password`,
+        {
+          method: "POST",
+          body: JSON.stringify({ password: passwordInput })
+        }
+      );
+      setGeneratedPassword(null);
+      setPasswordInput("");
+      setPasswordMessage("Passwort gesetzt. User muss beim ersten Login ändern.");
+    } catch (err) {
+      setPasswordMessage(err instanceof Error ? err.message : "Passwort konnte nicht gesetzt werden");
+    } finally {
+      setPasswordBusy(false);
+    }
+  }
+
+  async function copyGeneratedPassword() {
+    if (!generatedPassword || typeof navigator === "undefined" || !navigator.clipboard) return;
+    await navigator.clipboard.writeText(generatedPassword);
+    setPasswordCopied(true);
+  }
+
   const isAdmin = authUser?.role === "admin";
 
   return (
@@ -8552,6 +8962,7 @@ function AdminRolesView({
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>Anzeigename</th>
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>Mitarbeiter-ID</th>
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>Rolle</th>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>Passwort</th>
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>Letzter Login</th>
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>Status</th>
                 </tr>
@@ -8577,6 +8988,17 @@ function AdminRolesView({
                         ))}
                       </select>
                     </td>
+                    <td style={{ padding: "6px 8px" }}>
+                      <button
+                        className="secondary-button compact-action"
+                        type="button"
+                        onClick={() => openPasswordDialog(user)}
+                        disabled={passwordBusy || !isAdmin}
+                      >
+                        <KeyRound size={14} />
+                        Passwort setzen
+                      </button>
+                    </td>
                     <td style={{ padding: "6px 8px", color: "var(--color-muted, #6b7280)" }}>
                       {user.lastLoginAt ?? "nie"}
                     </td>
@@ -8590,7 +9012,7 @@ function AdminRolesView({
                   </tr>
                 ))}
                 {users.length === 0 && !loading ? (
-                  <tr><td colSpan={6} style={{ padding: "12px", textAlign: "center", color: "var(--color-muted, #6b7280)" }}>
+                  <tr><td colSpan={7} style={{ padding: "12px", textAlign: "center", color: "var(--color-muted, #6b7280)" }}>
                     Keine Benutzer.
                   </td></tr>
                 ) : null}
@@ -8599,6 +9021,124 @@ function AdminRolesView({
           </div>
         )}
       </section>
+      {passwordUser ? (
+        <AdminSetPasswordDialog
+          user={passwordUser}
+          password={passwordInput}
+          generatedPassword={generatedPassword}
+          message={passwordMessage}
+          copied={passwordCopied}
+          busy={passwordBusy}
+          onPasswordChange={setPasswordInput}
+          onGenerate={generatePassword}
+          onSet={setPlainPassword}
+          onCopy={copyGeneratedPassword}
+          onClose={closePasswordDialog}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function AdminSetPasswordDialog({
+  user,
+  password,
+  generatedPassword,
+  message,
+  copied,
+  busy,
+  onPasswordChange,
+  onGenerate,
+  onSet,
+  onCopy,
+  onClose
+}: {
+  user: AuthUserRow;
+  password: string;
+  generatedPassword: string | null;
+  message: string | null;
+  copied: boolean;
+  busy: boolean;
+  onPasswordChange: (value: string) => void;
+  onGenerate: () => void;
+  onSet: () => void;
+  onCopy: () => void;
+  onClose: () => void;
+}) {
+  const isError = Boolean(message && message.includes("nicht"));
+
+  return (
+    <div className="dialog-backdrop" role="dialog" aria-modal="true" aria-labelledby="admin-password-title">
+      <div className="time-dialog">
+        <div className="dialog-header">
+          <div>
+            <p className="eyebrow">Admin</p>
+            <h2 id="admin-password-title">Passwort setzen</h2>
+            <p style={{ margin: "4px 0 0", color: "var(--muted)", fontSize: 13 }}>
+              {user.email}
+            </p>
+          </div>
+          <button className="icon-button" type="button" aria-label="Schließen" onClick={onClose} disabled={busy}>
+            <X size={17} />
+          </button>
+        </div>
+
+        {message ? (
+          <span className={isError ? "auth-message warn" : "auth-message"} style={{ marginBottom: 14 }}>
+            {isError ? <AlertTriangle size={15} /> : <KeyRound size={15} />}
+            {message}
+          </span>
+        ) : null}
+
+        <div className="form-grid">
+          <section className="totp-box">
+            <div>
+              <h3 style={{ margin: "0 0 8px" }}>Option A</h3>
+              <p style={{ margin: 0, color: "var(--muted)", fontSize: 13 }}>
+                User muss beim ersten Login ändern.
+              </p>
+            </div>
+            <button className="primary-button" type="button" onClick={onGenerate} disabled={busy}>
+              <RefreshCw size={17} />
+              Generieren
+            </button>
+            {generatedPassword ? (
+              <div style={{ display: "grid", gap: 12, minWidth: 0 }}>
+                <label className="field">
+                  <span>Generiertes Passwort</span>
+                  <input type="text" value={generatedPassword} readOnly />
+                </label>
+                <button className="secondary-button" type="button" onClick={onCopy} disabled={busy}>
+                  <Copy size={17} />
+                  {copied ? "Kopiert" : "Kopieren"}
+                </button>
+              </div>
+            ) : null}
+          </section>
+
+          <section className="totp-box">
+            <div>
+              <h3 style={{ margin: "0 0 8px" }}>Option B</h3>
+              <p style={{ margin: 0, color: "var(--muted)", fontSize: 13 }}>
+                Passwort manuell setzen.
+              </p>
+            </div>
+            <label className="field">
+              <span>Plaintext-Passwort</span>
+              <input
+                type="text"
+                value={password}
+                onChange={(event) => onPasswordChange(event.target.value)}
+                autoComplete="off"
+              />
+            </label>
+            <button className="secondary-button" type="button" onClick={onSet} disabled={busy || !password}>
+              <KeyRound size={17} />
+              Setzen
+            </button>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }

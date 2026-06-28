@@ -790,6 +790,15 @@ function migrate() {
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      kind TEXT NOT NULL,
+      payload_json TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      read_at TEXT
+    );
+
     CREATE INDEX IF NOT EXISTS idx_time_entries_starts_at ON time_entries(starts_at);
     CREATE INDEX IF NOT EXISTS idx_time_entries_employee ON time_entries(employee_id);
     CREATE INDEX IF NOT EXISTS idx_audit_entity ON audit_events(entity_type, entity_id, created_at);
@@ -797,6 +806,7 @@ function migrate() {
     CREATE INDEX IF NOT EXISTS idx_sync_conflicts_status ON sync_conflicts(status);
     CREATE INDEX IF NOT EXISTS idx_corrections_status ON time_entry_corrections(status, created_at);
     CREATE INDEX IF NOT EXISTS idx_corrections_employee ON time_entry_corrections(employee_id);
+    CREATE INDEX IF NOT EXISTS idx_notifications_user_read ON notifications(user_id, read_at, created_at);
     CREATE INDEX IF NOT EXISTS idx_swap_status ON shift_swap_requests(status, created_at);
     CREATE INDEX IF NOT EXISTS idx_swap_requester ON shift_swap_requests(requester_employee_id);
     CREATE INDEX IF NOT EXISTS idx_swap_target ON shift_swap_requests(target_employee_id);
@@ -4443,6 +4453,99 @@ export function getEmailForEmployeeId(employeeId) {
     LIMIT 1
   `).get(employeeId);
   return row?.email ?? null;
+}
+
+function mapNotification(row) {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    kind: row.kind,
+    payload: row.payload_json ? JSON.parse(row.payload_json) : null,
+    createdAt: row.created_at,
+    readAt: row.read_at
+  };
+}
+
+export function listAdminNotificationUserIds() {
+  const rows = db.prepare(`
+    SELECT id FROM auth_users
+    WHERE role = 'admin' AND disabled_at IS NULL
+    ORDER BY id ASC
+  `).all();
+  return rows.map((row) => row.id);
+}
+
+export function getAuthUserIdForEmployeeId(employeeId) {
+  if (!employeeId) return null;
+  const row = db.prepare(`
+    SELECT id FROM auth_users
+    WHERE employee_id = ? AND disabled_at IS NULL
+    ORDER BY id ASC
+    LIMIT 1
+  `).get(employeeId);
+  return row?.id ?? null;
+}
+
+export function createNotification(userId, kind, payload = null) {
+  const normalizedUserId = Number(userId);
+  const normalizedKind = String(kind ?? "").trim();
+  if (!Number.isInteger(normalizedUserId) || normalizedUserId <= 0) {
+    throw new Error("notification user_id ist ungueltig");
+  }
+  if (!normalizedKind) {
+    throw new Error("notification kind fehlt");
+  }
+  const result = db.prepare(`
+    INSERT INTO notifications (user_id, kind, payload_json)
+    VALUES (?, ?, ?)
+  `).run(
+    normalizedUserId,
+    normalizedKind,
+    payload == null ? null : JSON.stringify(payload)
+  );
+  return mapNotification(db.prepare("SELECT * FROM notifications WHERE id = ?").get(result.lastInsertRowid));
+}
+
+export function createNotificationsForUsers(userIds, kind, payload = null) {
+  const uniqueIds = [...new Set((Array.isArray(userIds) ? userIds : []).map((id) => Number(id)).filter((id) => Number.isInteger(id) && id > 0))];
+  return uniqueIds.map((userId) => createNotification(userId, kind, payload));
+}
+
+export function listNotificationsForUser(userId, { limit = 50 } = {}) {
+  const normalizedUserId = Number(userId);
+  if (!Number.isInteger(normalizedUserId) || normalizedUserId <= 0) {
+    throw new Error("notification user_id ist ungueltig");
+  }
+  const rows = db.prepare(`
+    SELECT *
+    FROM notifications
+    WHERE user_id = ?
+      AND (read_at IS NULL OR created_at >= datetime('now', '-14 days'))
+    ORDER BY read_at IS NOT NULL ASC, created_at DESC, id DESC
+    LIMIT ?
+  `).all(normalizedUserId, Math.min(Math.max(Number(limit) || 50, 1), 100));
+  return rows.map(mapNotification);
+}
+
+export function markNotificationReadForUser(notificationId, userId) {
+  const normalizedId = Number(notificationId);
+  const normalizedUserId = Number(userId);
+  if (!Number.isInteger(normalizedId) || normalizedId <= 0) {
+    throw new Error("notification id ist ungueltig");
+  }
+  if (!Number.isInteger(normalizedUserId) || normalizedUserId <= 0) {
+    throw new Error("notification user_id ist ungueltig");
+  }
+  const readAt = new Date().toISOString();
+  const result = db.prepare(`
+    UPDATE notifications
+    SET read_at = COALESCE(read_at, ?)
+    WHERE id = ? AND user_id = ?
+  `).run(readAt, normalizedId, normalizedUserId);
+  if (result.changes === 0) {
+    throw new Error(`Notification nicht gefunden: ${notificationId}`);
+  }
+  return mapNotification(db.prepare("SELECT * FROM notifications WHERE id = ?").get(normalizedId));
 }
 
 export function updateAuthUserRole(authUserId, newRole, actorId, note) {
