@@ -2,6 +2,7 @@ import {
   Activity,
   AlertTriangle,
   BarChart3,
+  Bell,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
@@ -10,6 +11,7 @@ import {
   Clock3,
   Coins,
   Columns3,
+  Copy,
   Database,
   Download,
   Filter,
@@ -309,6 +311,27 @@ type PasswordLoginPayload = {
 type PasswordChangePayload = {
   user?: AuthUser;
 };
+
+type NotificationItem = {
+  id: string | number;
+  title?: string | null;
+  message?: string | null;
+  body?: string | null;
+  type?: string | null;
+  createdAt?: string | null;
+  readAt?: string | null;
+};
+
+type NotificationsPayload =
+  | NotificationItem[]
+  | {
+      notifications?: NotificationItem[];
+      items?: NotificationItem[];
+      data?: {
+        notifications?: NotificationItem[];
+        items?: NotificationItem[];
+      };
+    };
 
 type TotpEnrollmentPayload = {
   secret: string;
@@ -1642,6 +1665,15 @@ function isStatus(value: string): value is Status {
   return ["freigegeben", "aenderungsantrag", "konflikt", "entwurf"].includes(value);
 }
 
+function notificationsFromPayload(payload: NotificationsPayload): NotificationItem[] {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.notifications)) return payload.notifications;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.data?.notifications)) return payload.data.notifications;
+  if (Array.isArray(payload.data?.items)) return payload.data.items;
+  return [];
+}
+
 function App() {
   const [data, setData] = useState<BootstrapPayload>(fallbackData);
   const [view, setView] = useState<ViewKey>("plan");
@@ -1668,6 +1700,9 @@ function App() {
   const [passwordChangeCurrent, setPasswordChangeCurrent] = useState("");
   const [passwordChangeNew, setPasswordChangeNew] = useState("");
   const [passwordChangeMessage, setPasswordChangeMessage] = useState<string | null>(null);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationsError, setNotificationsError] = useState<string | null>(null);
   const [helpChapterId, setHelpChapterId] = useState<string | null>(null);
   const [theme, setTheme] = useState<ThemeKey>(() => readStoredTheme());
   const visibleWeekStart = activeWeekStart ?? getPrototypeWeekStart(data);
@@ -1781,6 +1816,49 @@ function App() {
     checkAuth();
     refresh();
   }, []);
+
+  async function loadNotifications() {
+    try {
+      const payload = await request<NotificationsPayload>("/api/notifications");
+      setNotifications(notificationsFromPayload(payload));
+      setNotificationsError(null);
+    } catch (error) {
+      setNotificationsError(error instanceof Error ? error.message : "Benachrichtigungen nicht ladbar");
+    }
+  }
+
+  useEffect(() => {
+    if (authStatus !== "authenticated" || typeof window === "undefined") {
+      setNotificationsOpen(false);
+      return;
+    }
+
+    void loadNotifications();
+    const interval = window.setInterval(() => {
+      void loadNotifications();
+    }, 30000);
+    return () => window.clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authStatus]);
+
+  function toggleNotifications() {
+    const nextOpen = !notificationsOpen;
+    setNotificationsOpen(nextOpen);
+    if (nextOpen) void loadNotifications();
+  }
+
+  async function markNotificationRead(item: NotificationItem) {
+    await request(`/api/notifications/${encodeURIComponent(String(item.id))}/read`, {
+      method: "POST"
+    });
+    setNotifications((current) =>
+      current.map((notification) =>
+        String(notification.id) === String(item.id)
+          ? { ...notification, readAt: notification.readAt ?? new Date().toISOString() }
+          : notification
+      )
+    );
+  }
 
   async function completePasswordLogin(payload: PasswordLoginPayload) {
     if (payload.tenant) setTenantMeta(payload.tenant);
@@ -1938,6 +2016,9 @@ function App() {
       setPasswordChangeCurrent("");
       setPasswordChangeNew("");
       setPasswordChangeMessage(null);
+      setNotifications([]);
+      setNotificationsOpen(false);
+      setNotificationsError(null);
       setBusy(false);
     }
   }
@@ -2296,6 +2377,15 @@ function App() {
             <h1>{meta.title}</h1>
           </div>
           <div className="topbar-actions">
+            {authUser ? (
+              <NotificationBell
+                items={notifications}
+                open={notificationsOpen}
+                error={notificationsError}
+                onToggle={toggleNotifications}
+                onRead={markNotificationRead}
+              />
+            ) : null}
             {authUser ? <UserPill user={authUser} /> : null}
             <button
               className="icon-button"
@@ -2804,6 +2894,125 @@ function UserPill({ user }: { user: AuthUser }) {
         <small>{user.role}</small>
       </span>
     </span>
+  );
+}
+
+function NotificationBell({
+  items,
+  open,
+  error,
+  onToggle,
+  onRead
+}: {
+  items: NotificationItem[];
+  open: boolean;
+  error: string | null;
+  onToggle: () => void;
+  onRead: (item: NotificationItem) => Promise<void>;
+}) {
+  const unreadCount = items.filter((item) => !item.readAt).length;
+  const badgeText = unreadCount > 99 ? "99+" : String(unreadCount);
+
+  return (
+    <div style={{ position: "relative" }}>
+      <button
+        className="icon-button"
+        type="button"
+        aria-label="Benachrichtigungen"
+        title="Benachrichtigungen"
+        onClick={onToggle}
+      >
+        <Bell size={17} />
+      </button>
+      {unreadCount > 0 ? (
+        <span
+          aria-label={`${unreadCount} ungelesen`}
+          style={{
+            position: "absolute",
+            right: -4,
+            top: -5,
+            minWidth: 18,
+            height: 18,
+            padding: "0 5px",
+            borderRadius: 999,
+            background: "var(--color-danger, #b91c1c)",
+            color: "#fff",
+            fontSize: 11,
+            fontWeight: 900,
+            lineHeight: "18px",
+            textAlign: "center"
+          }}
+        >
+          {badgeText}
+        </span>
+      ) : null}
+      {open ? (
+        <div
+          role="menu"
+          style={{
+            position: "absolute",
+            right: 0,
+            top: "calc(100% + 8px)",
+            zIndex: 20,
+            width: "min(360px, calc(100vw - 32px))",
+            maxHeight: 420,
+            overflow: "auto",
+            padding: 10,
+            border: "1px solid var(--line)",
+            borderRadius: 8,
+            background: "var(--surface)",
+            boxShadow: "var(--shadow)"
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 10, padding: "4px 4px 8px" }}>
+            <strong>Benachrichtigungen</strong>
+            <small style={{ color: "var(--muted)" }}>{unreadCount} ungelesen</small>
+          </div>
+          {error ? (
+            <div className="auth-message warn" style={{ width: "100%", borderRadius: 8 }}>
+              <AlertTriangle size={15} />
+              {error}
+            </div>
+          ) : null}
+          {!error && items.length === 0 ? (
+            <p style={{ margin: 0, padding: 12, color: "var(--muted)", fontSize: 13 }}>
+              Keine Benachrichtigungen.
+            </p>
+          ) : null}
+          {items.map((item) => {
+            const title = item.title || item.message || item.body || item.type || "Benachrichtigung";
+            const detail = item.title ? item.message || item.body || item.type : item.type;
+            return (
+              <button
+                key={String(item.id)}
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  void onRead(item).catch(() => undefined);
+                }}
+                style={{
+                  display: "grid",
+                  gap: 4,
+                  width: "100%",
+                  marginTop: 6,
+                  padding: 10,
+                  border: "1px solid var(--line)",
+                  borderRadius: 8,
+                  background: item.readAt ? "var(--surface)" : "var(--surface-muted)",
+                  color: "var(--text)",
+                  textAlign: "left",
+                  cursor: "pointer"
+                }}
+              >
+                <strong style={{ fontSize: 13 }}>{title}</strong>
+                {detail ? <small style={{ color: "var(--muted)" }}>{detail}</small> : null}
+                {item.createdAt ? <small style={{ color: "var(--muted)" }}>{item.createdAt}</small> : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -8582,6 +8791,12 @@ type AuthUserRow = {
   disabledAt: string | null;
   createdAt: string;
 };
+type SetPasswordResponse = {
+  data?: {
+    generatedPassword?: string;
+  };
+  generatedPassword?: string;
+};
 const ROLE_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "employee", label: "Mitarbeiter" },
   { value: "manager", label: "Manager" },
@@ -8600,6 +8815,12 @@ function AdminRolesView({
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [passwordUser, setPasswordUser] = useState<AuthUserRow | null>(null);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [generatedPassword, setGeneratedPassword] = useState<string | null>(null);
+  const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
+  const [passwordBusy, setPasswordBusy] = useState(false);
+  const [passwordCopied, setPasswordCopied] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -8638,6 +8859,73 @@ function AdminRolesView({
     }
   }
 
+  function openPasswordDialog(user: AuthUserRow) {
+    setPasswordUser(user);
+    setPasswordInput("");
+    setGeneratedPassword(null);
+    setPasswordMessage(null);
+    setPasswordCopied(false);
+  }
+
+  function closePasswordDialog() {
+    setPasswordUser(null);
+    setPasswordInput("");
+    setGeneratedPassword(null);
+    setPasswordMessage(null);
+    setPasswordCopied(false);
+  }
+
+  async function generatePassword() {
+    if (!passwordUser) return;
+    setPasswordBusy(true);
+    setPasswordMessage(null);
+    setPasswordCopied(false);
+    try {
+      const response = await request<SetPasswordResponse>(
+        `/api/admin/users/${encodeURIComponent(String(passwordUser.id))}/set-password`,
+        {
+          method: "POST",
+          body: JSON.stringify({})
+        }
+      );
+      const nextPassword = response.data?.generatedPassword ?? response.generatedPassword ?? "";
+      setGeneratedPassword(nextPassword);
+      setPasswordMessage(nextPassword ? "Passwort generiert." : "Passwort wurde gesetzt.");
+    } catch (err) {
+      setPasswordMessage(err instanceof Error ? err.message : "Passwort konnte nicht gesetzt werden");
+    } finally {
+      setPasswordBusy(false);
+    }
+  }
+
+  async function setPlainPassword() {
+    if (!passwordUser || !passwordInput) return;
+    setPasswordBusy(true);
+    setPasswordMessage(null);
+    try {
+      await request<SetPasswordResponse>(
+        `/api/admin/users/${encodeURIComponent(String(passwordUser.id))}/set-password`,
+        {
+          method: "POST",
+          body: JSON.stringify({ password: passwordInput })
+        }
+      );
+      setGeneratedPassword(null);
+      setPasswordInput("");
+      setPasswordMessage("Passwort gesetzt. User muss beim ersten Login ändern.");
+    } catch (err) {
+      setPasswordMessage(err instanceof Error ? err.message : "Passwort konnte nicht gesetzt werden");
+    } finally {
+      setPasswordBusy(false);
+    }
+  }
+
+  async function copyGeneratedPassword() {
+    if (!generatedPassword || typeof navigator === "undefined" || !navigator.clipboard) return;
+    await navigator.clipboard.writeText(generatedPassword);
+    setPasswordCopied(true);
+  }
+
   const isAdmin = authUser?.role === "admin";
 
   return (
@@ -8674,6 +8962,7 @@ function AdminRolesView({
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>Anzeigename</th>
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>Mitarbeiter-ID</th>
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>Rolle</th>
+                  <th style={{ textAlign: "left", padding: "6px 8px" }}>Passwort</th>
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>Letzter Login</th>
                   <th style={{ textAlign: "left", padding: "6px 8px" }}>Status</th>
                 </tr>
@@ -8699,6 +8988,17 @@ function AdminRolesView({
                         ))}
                       </select>
                     </td>
+                    <td style={{ padding: "6px 8px" }}>
+                      <button
+                        className="secondary-button compact-action"
+                        type="button"
+                        onClick={() => openPasswordDialog(user)}
+                        disabled={passwordBusy || !isAdmin}
+                      >
+                        <KeyRound size={14} />
+                        Passwort setzen
+                      </button>
+                    </td>
                     <td style={{ padding: "6px 8px", color: "var(--color-muted, #6b7280)" }}>
                       {user.lastLoginAt ?? "nie"}
                     </td>
@@ -8712,7 +9012,7 @@ function AdminRolesView({
                   </tr>
                 ))}
                 {users.length === 0 && !loading ? (
-                  <tr><td colSpan={6} style={{ padding: "12px", textAlign: "center", color: "var(--color-muted, #6b7280)" }}>
+                  <tr><td colSpan={7} style={{ padding: "12px", textAlign: "center", color: "var(--color-muted, #6b7280)" }}>
                     Keine Benutzer.
                   </td></tr>
                 ) : null}
@@ -8721,6 +9021,124 @@ function AdminRolesView({
           </div>
         )}
       </section>
+      {passwordUser ? (
+        <AdminSetPasswordDialog
+          user={passwordUser}
+          password={passwordInput}
+          generatedPassword={generatedPassword}
+          message={passwordMessage}
+          copied={passwordCopied}
+          busy={passwordBusy}
+          onPasswordChange={setPasswordInput}
+          onGenerate={generatePassword}
+          onSet={setPlainPassword}
+          onCopy={copyGeneratedPassword}
+          onClose={closePasswordDialog}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function AdminSetPasswordDialog({
+  user,
+  password,
+  generatedPassword,
+  message,
+  copied,
+  busy,
+  onPasswordChange,
+  onGenerate,
+  onSet,
+  onCopy,
+  onClose
+}: {
+  user: AuthUserRow;
+  password: string;
+  generatedPassword: string | null;
+  message: string | null;
+  copied: boolean;
+  busy: boolean;
+  onPasswordChange: (value: string) => void;
+  onGenerate: () => void;
+  onSet: () => void;
+  onCopy: () => void;
+  onClose: () => void;
+}) {
+  const isError = Boolean(message && message.includes("nicht"));
+
+  return (
+    <div className="dialog-backdrop" role="dialog" aria-modal="true" aria-labelledby="admin-password-title">
+      <div className="time-dialog">
+        <div className="dialog-header">
+          <div>
+            <p className="eyebrow">Admin</p>
+            <h2 id="admin-password-title">Passwort setzen</h2>
+            <p style={{ margin: "4px 0 0", color: "var(--muted)", fontSize: 13 }}>
+              {user.email}
+            </p>
+          </div>
+          <button className="icon-button" type="button" aria-label="Schließen" onClick={onClose} disabled={busy}>
+            <X size={17} />
+          </button>
+        </div>
+
+        {message ? (
+          <span className={isError ? "auth-message warn" : "auth-message"} style={{ marginBottom: 14 }}>
+            {isError ? <AlertTriangle size={15} /> : <KeyRound size={15} />}
+            {message}
+          </span>
+        ) : null}
+
+        <div className="form-grid">
+          <section className="totp-box">
+            <div>
+              <h3 style={{ margin: "0 0 8px" }}>Option A</h3>
+              <p style={{ margin: 0, color: "var(--muted)", fontSize: 13 }}>
+                User muss beim ersten Login ändern.
+              </p>
+            </div>
+            <button className="primary-button" type="button" onClick={onGenerate} disabled={busy}>
+              <RefreshCw size={17} />
+              Generieren
+            </button>
+            {generatedPassword ? (
+              <div style={{ display: "grid", gap: 12, minWidth: 0 }}>
+                <label className="field">
+                  <span>Generiertes Passwort</span>
+                  <input type="text" value={generatedPassword} readOnly />
+                </label>
+                <button className="secondary-button" type="button" onClick={onCopy} disabled={busy}>
+                  <Copy size={17} />
+                  {copied ? "Kopiert" : "Kopieren"}
+                </button>
+              </div>
+            ) : null}
+          </section>
+
+          <section className="totp-box">
+            <div>
+              <h3 style={{ margin: "0 0 8px" }}>Option B</h3>
+              <p style={{ margin: 0, color: "var(--muted)", fontSize: 13 }}>
+                Passwort manuell setzen.
+              </p>
+            </div>
+            <label className="field">
+              <span>Plaintext-Passwort</span>
+              <input
+                type="text"
+                value={password}
+                onChange={(event) => onPasswordChange(event.target.value)}
+                autoComplete="off"
+              />
+            </label>
+            <button className="secondary-button" type="button" onClick={onSet} disabled={busy || !password}>
+              <KeyRound size={17} />
+              Setzen
+            </button>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }
