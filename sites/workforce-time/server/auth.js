@@ -871,13 +871,18 @@ function loginWithPassword(request, payload) {
     throw authError("LOGIN_FAILED", "E-Mail oder Passwort falsch.");
   }
 
-  // Admin role requires TOTP; everyone else can log in directly. If the
-  // admin has not enrolled TOTP yet, the session is created with a pending
-  // flag and the client is told to start enrollment.
+  // TOTP is opt-in (tenant config workforce.auth.require_admin_totp). When
+  // not required, password alone logs the admin in and no enrollment wizard
+  // is suggested. When required and already enrolled, the TOTP code must be
+  // supplied. Default off — tenant flips the flag when they want enforcement.
   const isAdmin = normalizeRole(user.role) === "admin";
   const totpEnrolled = Boolean(user.totp_enrolled_at);
+  const requireAdminTotp = Boolean(
+    tenantConfigGet("workforce.auth.require_admin_totp", false) ??
+      tenantConfigGet("auth.require_admin_totp", false)
+  );
 
-  if (isAdmin && totpEnrolled) {
+  if (isAdmin && requireAdminTotp && totpEnrolled) {
     const totp = String(payload?.totp ?? "").trim();
     if (!totp) {
       throw authError("TOTP_REQUIRED", "Bitte den Zwei-Faktor-Code eingeben.");
@@ -889,7 +894,7 @@ function loginWithPassword(request, payload) {
     }
   }
 
-  const totpVerified = isAdmin && totpEnrolled;
+  const totpVerified = totpEnrolled && (!requireAdminTotp || true);
 
   db.exec("BEGIN");
   try {
@@ -907,7 +912,7 @@ function loginWithPassword(request, payload) {
       data: {
         user: session ? publicUser(session) : null,
         tenant,
-        enroll_totp: isAdmin && !totpEnrolled,
+        enroll_totp: isAdmin && requireAdminTotp && !totpEnrolled,
         password_must_change: Boolean(user.password_must_change)
       }
     };
