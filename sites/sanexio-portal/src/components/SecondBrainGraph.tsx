@@ -104,7 +104,8 @@ export function SecondBrainGraph() {
 
   // Render Cytoscape whenever the data signature changes.
   useEffect(() => {
-    if (!data || !containerRef.current) return;
+    const container = containerRef.current;
+    if (!data || !container) return;
 
     const clusterColors = new Map<string, string>();
     for (const c of data.clusters) clusterColors.set(c.id, c.color);
@@ -131,7 +132,7 @@ export function SecondBrainGraph() {
     };
 
     const cy = cytoscape({
-      container: containerRef.current,
+      container,
       elements,
       style: [
         {
@@ -181,12 +182,18 @@ export function SecondBrainGraph() {
       minZoom: 0.18,
       maxZoom: 2.2,
       wheelSensitivity: 0.25,
+      userZoomingEnabled: false,
     });
 
     cyRef.current = cy;
+    const onWheel = (e: WheelEvent) => {
+      cy.userZoomingEnabled(e.ctrlKey || e.metaKey);
+    };
+    container.addEventListener("wheel", onWheel, { capture: true, passive: true });
     cy.fit(undefined, 32);
 
     return () => {
+      container.removeEventListener("wheel", onWheel, { capture: true });
       cy.destroy();
       cyRef.current = null;
     };
