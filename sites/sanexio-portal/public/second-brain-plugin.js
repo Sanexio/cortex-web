@@ -402,6 +402,7 @@
         if (picked && !moved) props.onSelect(picked.id);
       }
       function onWheel(evt) {
+        if (!(evt.ctrlKey || evt.metaKey)) return;
         evt.preventDefault();
         var rect = canvas.getBoundingClientRect();
         var factor = evt.deltaY > 0 ? 0.9 : 1.1;

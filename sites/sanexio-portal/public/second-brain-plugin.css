@@ -151,7 +151,7 @@
   height: 100%;
   display: block;
   cursor: grab;
-  touch-action: none;
+  touch-action: pan-y;
 }
 
 .sb-graph-canvas:active {
