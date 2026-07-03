@@ -109,3 +109,8 @@ article.projects-row:not(.projects-row-disabled):hover {
     0 0 44px rgba(0, 221, 245, 0.1);
 }
 article.projects-row.projects-row-disabled::after { opacity: 0.25; }
+
+/* CyberWhite gilt bewusst NUR fuer die Landing (landing.css): die
+ * Harness-SPA hat zu viele nicht-tokenisierte dunkle Flaechen, ein
+ * Token-Remap ergibt dort einen halb-hellen Mischzustand (Verify
+ * 2026-07-03). Sub-Container bleiben CyberDark. */

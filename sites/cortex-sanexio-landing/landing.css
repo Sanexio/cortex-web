@@ -639,6 +639,96 @@ code {
   color: #000;
 }
 
+/* === CyberWhite — helles Tron-Theme ================================
+ * Aktiv bei html[data-theme="cyber-white"] (Switcher in der Topbar,
+ * gesetzt von cyber-theme.js). Reine Farb-Overrides: Token-Remap +
+ * die Literal-Stellen, die auf dunklen Grund gebaut sind. Layout,
+ * Layer und Animationen bleiben identisch. Palette: helle Flaechen,
+ * fast-schwarze Ink, Tron-Cyan #0089ad, Amber #c77c02. */
+html[data-theme="cyber-white"] {
+  --bg: #e8ecf1;
+  --bg-2: #f3f6f9;
+  --bg-3: #ffffff;
+  --bg-4: #ffffff;
+  --ink: #0b1420;
+  --ink-2: #56626e;
+  --neon-cyan: #0089ad;
+  --neon-magenta: #d81b60;
+  --neon-yellow: #c77c02;
+  --neon-green: #0a9e58;
+  --grid: rgba(0, 137, 173, 0.08);
+  --line: rgba(11, 20, 32, 0.14);
+  --border-yellow: rgba(199, 124, 2, 0.35);
+  --glow-y: 0 0 18px rgba(199, 124, 2, 0.3), 0 0 40px rgba(199, 124, 2, 0.12);
+  --glow-c: 0 0 18px rgba(0, 137, 173, 0.3);
+  --shadow-yellow: 0 0 0 1px rgba(199, 124, 2, 0.4), 0 16px 38px rgba(199, 124, 2, 0.14);
+}
+html[data-theme="cyber-white"] .grid-bg {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    radial-gradient(circle at 20% 10%, rgba(0, 137, 173, 0.1), transparent 60%),
+    radial-gradient(circle at 80% 90%, rgba(216, 27, 96, 0.05), transparent 60%);
+}
+html[data-theme="cyber-white"] .scanline {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(11, 20, 32, 0.02) 3px,
+    rgba(11, 20, 32, 0.02) 4px
+  );
+  mix-blend-mode: normal;
+}
+html[data-theme="cyber-white"] .hero-title { text-shadow: 0 0 22px rgba(0, 137, 173, 0.15); }
+html[data-theme="cyber-white"] .hero-accent { text-shadow: 0 0 24px rgba(199, 124, 2, 0.25); }
+html[data-theme="cyber-white"] .hero-meta li,
+html[data-theme="cyber-white"] .stack-item { background: rgba(11, 20, 32, 0.03); }
+html[data-theme="cyber-white"] .card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(0, 137, 173, 0.06));
+}
+html[data-theme="cyber-white"] .card::before {
+  background: linear-gradient(
+    120deg,
+    transparent 25%,
+    rgba(0, 137, 173, 0.12) 48%,
+    rgba(199, 124, 2, 0.14) 52%,
+    transparent 75%
+  );
+  mix-blend-mode: normal;
+}
+html[data-theme="cyber-white"] .card-aura {
+  background:
+    radial-gradient(circle at 30% 0%, rgba(0, 137, 173, 0.18), transparent 62%),
+    radial-gradient(circle at 70% 100%, rgba(199, 124, 2, 0.16), transparent 62%);
+  mix-blend-mode: normal;
+}
+html[data-theme="cyber-white"] .card:hover {
+  border-color: rgba(199, 124, 2, 0.8);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(199, 124, 2, 0.07));
+  box-shadow:
+    0 0 0 1px rgba(199, 124, 2, 0.5),
+    0 22px 60px rgba(11, 20, 32, 0.18),
+    0 0 38px rgba(0, 137, 173, 0.22),
+    0 0 90px rgba(199, 124, 2, 0.16);
+}
+html[data-theme="cyber-white"] .card-title::before,
+html[data-theme="cyber-white"] .card-title::after { mix-blend-mode: normal; }
+html[data-theme="cyber-white"] .card-tags li {
+  background: rgba(11, 20, 32, 0.04);
+  border-color: rgba(0, 137, 173, 0.3);
+}
+html[data-theme="cyber-white"] .theme-toggle {
+  background: rgba(0, 137, 173, 0.06);
+  border-color: rgba(0, 137, 173, 0.4);
+}
+html[data-theme="cyber-white"] .theme-toggle:hover { background: rgba(199, 124, 2, 0.08); }
+html[data-theme="cyber-white"] .badge--off {
+  background: #d9dee5;
+  color: #56626e;
+}
+html[data-theme="cyber-white"] .badge--link { color: #ffffff; }
+
 /* Responsive */
 @media (max-width: 640px) {
   .hero { padding: 56px 20px 24px; }

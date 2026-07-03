@@ -78,6 +78,32 @@ anzufassen (Direktive 2026-06-28). Mechanik:
    Hover-Lift+Glow. Killzone-Regeln beachtet (kein fixed Layer, kein
    Backdrop).
 
+## Welle 5: CyberWhite-Theme (Tron) + Topbar-Switcher — LIVE (2026-07-03)
+
+1. **Zweites Farbschema „CyberWhite"** (`landing.css`): heller
+   Tron-Look (Disney-Dashboard-Stil) als Token-Block
+   `html[data-theme="cyber-white"]` — helle Flächen (#e8ecf1/#ffffff),
+   dunkle Tinte (#0b1420), Akzente Cyan #0089ad / Amber #c77c02 /
+   Magenta #d81b60. Zusätzlich Literal-Overrides für Grid, Scanline,
+   Hero-Glows, Cards (heller Gradient, Amber-Hover) und Badges.
+   CyberDark bleibt Default (kein Attribut = unverändert).
+2. **Topbar-Switcher** (`index.html`): Button oben rechts
+   „THEME: CYBER-DARK · WECHSELN →" toggelt das
+   `data-theme`-Attribut und persistiert die Wahl in
+   `localStorage` (`cortex_cyber_theme`).
+3. **`cyber-theme.js`** — früher Theme-Boot im `<head>` (kein
+   Flackern): URL-Param `?theme=cyber-white|cyber-dark` gewinnt und
+   wird persistiert, sonst gilt der localStorage-Wert.
+4. **Scope-Entscheidung: CyberWhite gilt NUR für die Landing.** Die
+   Harness-SPA ist nicht vollständig tokenisiert — ein Token-Remap
+   erzeugt dort einen halb-hellen Mischzustand (Verify 2026-07-03,
+   Screenshots `/dashboard/` + `/projects`). Die Sub-Container bleiben
+   deshalb bewusst CyberDark; ein SPA-weites CyberWhite wäre eine
+   eigene Welle als harness-eigenes Theme (dort existiert bereits
+   `sanexio-cyber` im Dashboard-Theme-Switcher). Die zwischenzeitlich
+   getestete Caddy-Script-Injection wurde zurückgenommen — die
+   Injection ist wieder link-only (`cyber-overlay.css`).
+
 ## Files
 
 | File | Zweck |
@@ -85,6 +111,7 @@ anzufassen (Direktive 2026-06-28). Mechanik:
 | `index.html` | Hero + Service-Cards (4 produktive Services) |
 | `landing.css` | Eigenständige Cyber-Tokens + Komponenten (kein React) |
 | `cyber-overlay.css` | Token-Overlay für Sub-Container (Caddy-Injection, Welle 3) |
+| `cyber-theme.js` | Früher Theme-Boot für CyberWhite/CyberDark (Welle 5, nur Landing) |
 | `favicon.svg` | aus `sanexio-portal/public/` übernommen |
 | `deploy/w6-cortex-apex.caddyfile` | Caddy-Vhost-Snapshot für VPS |
 
@@ -94,6 +121,8 @@ anzufassen (Direktive 2026-06-28). Mechanik:
 /srv/sanexio/apps/cortex-sanexio-landing/
 ├── index.html
 ├── landing.css
+├── cyber-overlay.css
+├── cyber-theme.js
 └── favicon.svg
 ```
 

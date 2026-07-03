@@ -13,12 +13,22 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
     />
-    <link rel="stylesheet" href="/landing.css?v=2026-07-03-1" />
+    <link rel="stylesheet" href="/landing.css?v=2026-07-03-2" />
+    <script src="/cyber-theme.js"></script>
     <meta name="robots" content="noindex,nofollow" />
   </head>
   <body>
     <div class="grid-bg" aria-hidden="true"></div>
     <div class="scanline" aria-hidden="true"></div>
+
+    <div class="topbar">
+      <button id="theme-switch" class="theme-toggle" type="button" aria-label="Theme wechseln">
+        <span class="theme-toggle-label">THEME:</span>
+        <span class="theme-toggle-value" id="theme-switch-value">CYBER-DARK</span>
+        <span class="theme-toggle-sep">·</span>
+        <span class="theme-toggle-action">WECHSELN →</span>
+      </button>
+    </div>
 
     <div class="app">
       <header class="hero section-accents">
@@ -179,9 +189,31 @@
       document.getElementById("build-date").textContent =
         new Date().toISOString().slice(0, 10);
 
-      // Page-Toggle entfernt: das Cyber-Theme ist jetzt als 'sanexio-cyber'
-      // im Dashboard-Theme-Switcher selbst auswaehlbar (Welle 3, 2026-06-28).
-      // Die Landing-Page bleibt als informative Startseite erhalten.
+      // === Theme-Switcher CyberDark <-> CyberWhite (Welle 5) ==========
+      // cyber-theme.js (im <head>) hat data-theme bereits gesetzt;
+      // hier nur Toggle + Persistenz (localStorage, origin-weit — die
+      // proxied Sub-Seiten lesen denselben Key via injiziertem Skript).
+      (function () {
+        var KEY = "cortex_cyber_theme";
+        var btn = document.getElementById("theme-switch");
+        var val = document.getElementById("theme-switch-value");
+        function current() {
+          return document.documentElement.getAttribute("data-theme") === "cyber-white"
+            ? "cyber-white" : "cyber-dark";
+        }
+        function apply(theme) {
+          if (theme === "cyber-white")
+            document.documentElement.setAttribute("data-theme", "cyber-white");
+          else document.documentElement.removeAttribute("data-theme");
+          val.textContent = theme === "cyber-white" ? "CYBERWHITE" : "CYBER-DARK";
+        }
+        apply(current());
+        btn.addEventListener("click", function () {
+          var next = current() === "cyber-white" ? "cyber-dark" : "cyber-white";
+          try { localStorage.setItem(KEY, next); } catch (e) {}
+          apply(next);
+        });
+      })();
 
       // === Projekte-Sektion (Welle 4, 2026-07-03) =====================
       // Laedt die Projekt-Registry des Dashboards same-origin: Session-

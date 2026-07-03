@@ -32,7 +32,7 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
         file_server
     }
     # Landing-Page-Assets (CSS + Favicon + Cyber-Overlay) — short cache, immer revalidieren
-    @landing_assets path /landing.css /favicon.svg /cyber-overlay.css
+    @landing_assets path /landing.css /favicon.svg /cyber-overlay.css /cyber-theme.js
     handle @landing_assets {
         root * /srv/sanexio/apps/cortex-sanexio-landing
         header Cache-Control "no-cache, must-revalidate"
