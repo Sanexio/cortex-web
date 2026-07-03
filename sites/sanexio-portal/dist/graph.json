@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-06-28T11:57:56.175Z",
+  "generated_at": "2026-07-03T22:25:55.493Z",
   "stats": {
-    "nodes": 343,
-    "edges": 1726,
-    "files_scanned": 416,
-    "repository_nodes": 23,
-    "repository_edges": 44
+    "nodes": 342,
+    "edges": 1730,
+    "files_scanned": 418,
+    "repository_nodes": 22,
+    "repository_edges": 32
   },
   "clusters": [
     {
@@ -67,7 +67,7 @@
       "id": "30 Tutorials/_MOC Tutorials",
       "label": "_MOC Tutorials",
       "cluster": "30 Tutorials",
-      "degree": 150
+      "degree": 151
     },
     {
       "id": "40 Regeln/_MOC Regeln",
@@ -79,25 +79,25 @@
       "id": "HOME",
       "label": "HOME",
       "cluster": "ROOT",
-      "degree": 72
+      "degree": 73
     },
     {
       "id": "10 Projekte/Juvantis Website",
       "label": "Juvantis Website",
       "cluster": "10 Projekte",
-      "degree": 62
-    },
-    {
-      "id": "10 Projekte/_MOC Projekte",
-      "label": "_MOC Projekte",
-      "cluster": "10 Projekte",
-      "degree": 58
+      "degree": 61
     },
     {
       "id": "DASHBOARD",
       "label": "DASHBOARD",
       "cluster": "ROOT",
-      "degree": 52
+      "degree": 57
+    },
+    {
+      "id": "10 Projekte/_MOC Projekte",
+      "label": "_MOC Projekte",
+      "cluster": "10 Projekte",
+      "degree": 57
     },
     {
       "id": "90 Sessions/_MOC Sessions",
@@ -109,31 +109,31 @@
       "id": "15 Workflows/Telegram-Bridge",
       "label": "Telegram-Bridge",
       "cluster": "15 Workflows",
-      "degree": 51
-    },
-    {
-      "id": "15 Workflows/File-Renamer",
-      "label": "File-Renamer",
-      "cluster": "15 Workflows",
-      "degree": 47
-    },
-    {
-      "id": "15 Workflows/Doc-Workflow",
-      "label": "Doc-Workflow",
-      "cluster": "15 Workflows",
-      "degree": 44
+      "degree": 50
     },
     {
       "id": "30 Tutorials/Cortex/_MOC Cortex",
       "label": "_MOC Cortex",
       "cluster": "30 Tutorials",
-      "degree": 44
+      "degree": 49
+    },
+    {
+      "id": "15 Workflows/File-Renamer",
+      "label": "File-Renamer",
+      "cluster": "15 Workflows",
+      "degree": 48
+    },
+    {
+      "id": "15 Workflows/Doc-Workflow",
+      "label": "Doc-Workflow",
+      "cluster": "15 Workflows",
+      "degree": 45
     },
     {
       "id": "10 Projekte/praxis-webseite",
       "label": "praxis-webseite",
       "cluster": "10 Projekte",
-      "degree": 44
+      "degree": 43
     },
     {
       "id": "50 Fehler/_MOC Fehler",
@@ -208,16 +208,34 @@
       "degree": 25
     },
     {
+      "id": "15 Workflows/Praxis-QM",
+      "label": "Praxis-QM",
+      "cluster": "15 Workflows",
+      "degree": 25
+    },
+    {
+      "id": "30 Tutorials/Cortex/07 Multi-Device-Sync",
+      "label": "07 Multi-Device-Sync",
+      "cluster": "30 Tutorials",
+      "degree": 26
+    },
+    {
       "id": "10 Projekte/Cortex-Web",
       "label": "Cortex-Web",
       "cluster": "10 Projekte",
       "degree": 26
     },
     {
-      "id": "15 Workflows/Praxis-QM",
-      "label": "Praxis-QM",
-      "cluster": "15 Workflows",
+      "id": "30 Tutorials/Cortex/01 Architektur und Schichten",
+      "label": "01 Architektur und Schichten",
+      "cluster": "30 Tutorials",
       "degree": 24
+    },
+    {
+      "id": "30 Tutorials/Cortex/10 Channel-Router",
+      "label": "10 Channel-Router",
+      "cluster": "30 Tutorials",
+      "degree": 25
     },
     {
       "id": "30 Tutorials/Cortex/99 Glossar",
@@ -229,24 +247,6 @@
       "id": "10 Projekte/Juvantis iOS-App",
       "label": "Juvantis iOS-App",
       "cluster": "10 Projekte",
-      "degree": 23
-    },
-    {
-      "id": "30 Tutorials/Cortex/01 Architektur und Schichten",
-      "label": "01 Architektur und Schichten",
-      "cluster": "30 Tutorials",
-      "degree": 23
-    },
-    {
-      "id": "30 Tutorials/Cortex/07 Multi-Device-Sync",
-      "label": "07 Multi-Device-Sync",
-      "cluster": "30 Tutorials",
-      "degree": 23
-    },
-    {
-      "id": "30 Tutorials/Cortex/10 Channel-Router",
-      "label": "10 Channel-Router",
-      "cluster": "30 Tutorials",
       "degree": 23
     },
     {
@@ -277,13 +277,19 @@
       "id": "30 Tutorials/Cortex/00 Was ist Cortex",
       "label": "00 Was ist Cortex",
       "cluster": "30 Tutorials",
-      "degree": 22
+      "degree": 21
     },
     {
       "id": "30 Tutorials/Cortex/02 Datei-Atlas",
       "label": "02 Datei-Atlas",
       "cluster": "30 Tutorials",
       "degree": 21
+    },
+    {
+      "id": "30 Tutorials/Cortex/05 Memory in 4 Schichten",
+      "label": "05 Memory in 4 Schichten",
+      "cluster": "30 Tutorials",
+      "degree": 20
     },
     {
       "id": "40 Regeln/LL-023",
@@ -301,7 +307,7 @@
       "id": "00 Kontext/Goldene Regeln",
       "label": "Goldene Regeln",
       "cluster": "00 Kontext",
-      "degree": 20
+      "degree": 19
     },
     {
       "id": "00 Kontext/Praxiszentrum",
@@ -324,12 +330,6 @@
     {
       "id": "30 Tutorials/Cortex/04 Tier-3 Hardstops",
       "label": "04 Tier-3 Hardstops",
-      "cluster": "30 Tutorials",
-      "degree": 19
-    },
-    {
-      "id": "30 Tutorials/Cortex/05 Memory in 4 Schichten",
-      "label": "05 Memory in 4 Schichten",
       "cluster": "30 Tutorials",
       "degree": 19
     },
@@ -367,13 +367,19 @@
       "id": "00 Kontext/Claude-OS Uebersicht",
       "label": "Claude-OS Uebersicht",
       "cluster": "00 Kontext",
-      "degree": 21
+      "degree": 20
     },
     {
       "id": "10 Projekte/SmartQ-Dashboard",
       "label": "SmartQ-Dashboard",
       "cluster": "10 Projekte",
       "degree": 18
+    },
+    {
+      "id": "10 Projekte/_MOC Projekte nach Gerät",
+      "label": "_MOC Projekte nach Gerät",
+      "cluster": "10 Projekte",
+      "degree": 19
     },
     {
       "id": "30 Tutorials/Cortex/09 Self-Learning-Layer",
@@ -418,12 +424,6 @@
       "degree": 18
     },
     {
-      "id": "10 Projekte/_MOC Projekte nach Gerät",
-      "label": "_MOC Projekte nach Gerät",
-      "cluster": "10 Projekte",
-      "degree": 19
-    },
-    {
       "id": "15 Workflows/_MOC Workflows",
       "label": "_MOC Workflows",
       "cluster": "15 Workflows",
@@ -454,6 +454,12 @@
       "degree": 17
     },
     {
+      "id": "30 Tutorials/Cortex/12 Externe Dienste",
+      "label": "12 Externe Dienste",
+      "cluster": "30 Tutorials",
+      "degree": 15
+    },
+    {
       "id": "30 Tutorials/Cortex/13 Slash-Commands und CLI",
       "label": "13 Slash-Commands und CLI",
       "cluster": "30 Tutorials",
@@ -463,12 +469,6 @@
       "id": "10 Projekte/cortex-agent",
       "label": "cortex-agent",
       "cluster": "10 Projekte",
-      "degree": 15
-    },
-    {
-      "id": "30 Tutorials/Cortex/12 Externe Dienste",
-      "label": "12 Externe Dienste",
-      "cluster": "30 Tutorials",
       "degree": 14
     },
     {
@@ -553,7 +553,7 @@
       "id": "00 Kontext/Dr. Stracke",
       "label": "Dr. Stracke",
       "cluster": "00 Kontext",
-      "degree": 13
+      "degree": 12
     },
     {
       "id": "00 Kontext/Sanexio GmbH",
@@ -566,6 +566,12 @@
       "label": "Juvantis Social Media",
       "cluster": "10 Projekte",
       "degree": 11
+    },
+    {
+      "id": "30 Tutorials/Cortex/22 Projekte und Tenants",
+      "label": "22 Projekte und Tenants",
+      "cluster": "30 Tutorials",
+      "degree": 14
     },
     {
       "id": "30 Tutorials/KI & Claude/KI & Claude Grundlagen",
@@ -628,16 +634,28 @@
       "degree": 10
     },
     {
-      "id": "30 Tutorials/Cortex/22 Projekte und Tenants",
-      "label": "22 Projekte und Tenants",
+      "id": "30 Tutorials/Cortex/21 Plattform-State und Wellen",
+      "label": "21 Plattform-State und Wellen",
       "cluster": "30 Tutorials",
-      "degree": 13
+      "degree": 10
+    },
+    {
+      "id": "30 Tutorials/Cortex/23 Dashboard und GUI",
+      "label": "23 Dashboard und GUI",
+      "cluster": "30 Tutorials",
+      "degree": 11
+    },
+    {
+      "id": "30 Tutorials/Cortex/24 Multi-AI-Kooperation im Alltag",
+      "label": "24 Multi-AI-Kooperation im Alltag",
+      "cluster": "30 Tutorials",
+      "degree": 11
     },
     {
       "id": "30 Tutorials/Gaming/01-doom-im-browser",
       "label": "01-doom-im-browser",
       "cluster": "30 Tutorials",
-      "degree": 11
+      "degree": 10
     },
     {
       "id": "30 Tutorials/Sicherheit & Datenschutz/Sicherheit & Datenschutz Grundlagen",
@@ -682,26 +700,14 @@
       "degree": 9
     },
     {
-      "id": "30 Tutorials/Arbeitsweise & Prozess/09-vault-graph-vernetzung",
-      "label": "09-vault-graph-vernetzung",
-      "cluster": "30 Tutorials",
-      "degree": 10
-    },
-    {
-      "id": "30 Tutorials/Cortex/21 Plattform-State und Wellen",
-      "label": "21 Plattform-State und Wellen",
-      "cluster": "30 Tutorials",
+      "id": "15 Workflows/SmartQ Dashboard",
+      "label": "SmartQ Dashboard",
+      "cluster": "15 Workflows",
       "degree": 9
     },
     {
-      "id": "30 Tutorials/Cortex/23 Dashboard und GUI",
-      "label": "23 Dashboard und GUI",
-      "cluster": "30 Tutorials",
-      "degree": 10
-    },
-    {
-      "id": "30 Tutorials/Cortex/24 Multi-AI-Kooperation im Alltag",
-      "label": "24 Multi-AI-Kooperation im Alltag",
+      "id": "30 Tutorials/Arbeitsweise & Prozess/09-vault-graph-vernetzung",
+      "label": "09-vault-graph-vernetzung",
       "cluster": "30 Tutorials",
       "degree": 10
     },
@@ -775,18 +781,12 @@
       "id": "00 Kontext/Fragen-Backlog",
       "label": "Fragen-Backlog",
       "cluster": "00 Kontext",
-      "degree": 10
+      "degree": 9
     },
     {
       "id": "00 Kontext/Nutzer-Kontext",
       "label": "Nutzer-Kontext",
       "cluster": "00 Kontext",
-      "degree": 8
-    },
-    {
-      "id": "15 Workflows/SmartQ Dashboard",
-      "label": "SmartQ Dashboard",
-      "cluster": "15 Workflows",
       "degree": 8
     },
     {
@@ -910,6 +910,12 @@
       "degree": 7
     },
     {
+      "id": "30 Tutorials/Cortex/26 Decentralized Cortex",
+      "label": "26 Decentralized Cortex",
+      "cluster": "30 Tutorials",
+      "degree": 7
+    },
+    {
       "id": "30 Tutorials/Terminal/Git Konzepte/Git Grundlagen",
       "label": "Git Grundlagen",
       "cluster": "30 Tutorials",
@@ -1021,7 +1027,7 @@
       "id": "10 Projekte/Gaming",
       "label": "Gaming",
       "cluster": "10 Projekte",
-      "degree": 7
+      "degree": 6
     },
     {
       "id": "30 Tutorials/Netzwerk & Sysadmin/09-cortex-mesh-tailscale",
@@ -1678,6 +1684,12 @@
       "degree": 3
     },
     {
+      "id": "30 Tutorials/Cortex/25 Sanexio-Plugins",
+      "label": "25 Sanexio-Plugins",
+      "cluster": "30 Tutorials",
+      "degree": 4
+    },
+    {
       "id": "30 Tutorials/Cortex & Nexus/01-architektur-und-philosophie",
       "label": "01-architektur-und-philosophie",
       "cluster": "30 Tutorials",
@@ -1948,12 +1960,6 @@
       "degree": 2
     },
     {
-      "id": "30 Tutorials/Cortex/25 Sanexio-Plugins",
-      "label": "25 Sanexio-Plugins",
-      "cluster": "30 Tutorials",
-      "degree": 3
-    },
-    {
       "id": "30 Tutorials/Cortex & Nexus/14-cortex-nexus-vollstaendige-arbeitsweise",
       "label": "14-cortex-nexus-vollstaendige-arbei…",
       "cluster": "30 Tutorials",
@@ -1978,69 +1984,15 @@
       "degree": 2
     },
     {
-      "id": "30 Tutorials/Terminal/02-git",
-      "label": "02-git",
-      "cluster": "30 Tutorials",
-      "degree": 2
-    },
-    {
-      "id": "__repo/Cortex-Med-Web",
-      "label": "Cortex-Med-Web @ b763ba6",
-      "cluster": "__repos",
-      "degree": 0,
-      "meta": {
-        "kind": "repository",
-        "head_sha": "b763ba6",
-        "head_subject": "master-commit: WIP @Cluster-Mini-02 2026-06-13T21:25:52Z",
-        "path": "/Users/cluster-mini-02/Cortex/projects/Cortex-Med-Web"
-      }
-    },
-    {
       "id": "__repo/Cortex-Web",
-      "label": "Cortex-Web @ 61a19dc",
+      "label": "Cortex-Web @ 3b582c7",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "61a19dc",
-        "head_subject": "fix(theme): sanexio-cyber ohne customCSS — Dashboard-UI brach",
-        "path": "/Users/cluster-mini-02/Cortex/projects/Cortex-Web"
-      }
-    },
-    {
-      "id": "__repo/Gaming",
-      "label": "Gaming",
-      "cluster": "__repos",
-      "degree": 5,
-      "meta": {
-        "kind": "repository",
-        "head_sha": "",
-        "head_subject": "",
-        "path": "/Users/cluster-mini-02/Cortex/projects/Gaming"
-      }
-    },
-    {
-      "id": "__repo/Juvantis",
-      "label": "Juvantis",
-      "cluster": "__repos",
-      "degree": 5,
-      "meta": {
-        "kind": "repository",
-        "head_sha": "",
-        "head_subject": "",
-        "path": "/Users/cluster-mini-02/Cortex/projects/Juvantis"
-      }
-    },
-    {
-      "id": "__repo/Praxis Monitoring",
-      "label": "Praxis Monitoring",
-      "cluster": "__repos",
-      "degree": 0,
-      "meta": {
-        "kind": "repository",
-        "head_sha": "",
-        "head_subject": "",
-        "path": "/Users/cluster-mini-02/Cortex/projects/Praxis Monitoring"
+        "head_sha": "3b582c7",
+        "head_subject": "style(landing): CyberWhite — Badge-Schrift weiss auf Kobalt-Grund",
+        "path": "/Users/ssmd/Cortex/projects/Cortex-Web"
       }
     },
     {
@@ -2052,31 +2004,31 @@
         "kind": "repository",
         "head_sha": "47eec05",
         "head_subject": "update: Fragenliste Frithjof — Conf-VLAN als DRINGEND, Aruba + Omada-Alerts neu",
-        "path": "/Users/cluster-mini-02/Cortex/projects/Proxmox"
+        "path": "/Users/ssmd/Cortex/projects/Proxmox"
       }
     },
     {
       "id": "__repo/Sanexio-Tenant",
-      "label": "Sanexio-Tenant @ 5d00785",
+      "label": "Sanexio-Tenant @ 99a16ff",
       "cluster": "__repos",
       "degree": 1,
       "meta": {
         "kind": "repository",
-        "head_sha": "5d00785",
-        "head_subject": "chore(workforce-time): tenant.auth Magic-Link-Felder entfernt",
-        "path": "/Users/cluster-mini-02/Cortex/projects/Sanexio-Tenant"
+        "head_sha": "99a16ff",
+        "head_subject": "Theme-Pointer: LifeLinker-Crosslinks live im Theme 181128757515 (per-File-API-Push, GitHub-Kopplung intakt)",
+        "path": "/Users/ssmd/Cortex/projects/Sanexio-Tenant"
       }
     },
     {
       "id": "__repo/_ai-cooperation-outbox",
-      "label": "_ai-cooperation-outbox @ d056b0c",
+      "label": "_ai-cooperation-outbox @ 80f34df",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "d056b0c",
-        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-06-28T11:07:27Z",
-        "path": "/Users/cluster-mini-02/Cortex/projects/_ai-cooperation-outbox"
+        "head_sha": "80f34df",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-03T18:13:54Z",
+        "path": "/Users/ssmd/Cortex/projects/_ai-cooperation-outbox"
       }
     },
     {
@@ -2088,7 +2040,19 @@
         "kind": "repository",
         "head_sha": "",
         "head_subject": "",
-        "path": "/Users/cluster-mini-02/Cortex/projects/_ai-cooperation-outbox.pre-git-2026-06-05"
+        "path": "/Users/ssmd/Cortex/projects/_ai-cooperation-outbox.pre-git-2026-06-05"
+      }
+    },
+    {
+      "id": "__repo/atelier-plugin",
+      "label": "atelier-plugin",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "",
+        "head_subject": "",
+        "path": "/Users/ssmd/Cortex/projects/atelier-plugin"
       }
     },
     {
@@ -2100,31 +2064,7 @@
         "kind": "repository",
         "head_sha": "b446d15",
         "head_subject": "docs: SESSION_RESUME für nächste Session (MH4 = Morphs verdrahten)",
-        "path": "/Users/cluster-mini-02/Cortex/projects/avatar-engine"
-      }
-    },
-    {
-      "id": "__repo/cortex-agent",
-      "label": "cortex-agent",
-      "cluster": "__repos",
-      "degree": 5,
-      "meta": {
-        "kind": "repository",
-        "head_sha": "",
-        "head_subject": "",
-        "path": "/Users/cluster-mini-02/Cortex/projects/cortex-agent"
-      }
-    },
-    {
-      "id": "__repo/cortex-archive",
-      "label": "cortex-archive @ 8fae65e",
-      "cluster": "__repos",
-      "degree": 0,
-      "meta": {
-        "kind": "repository",
-        "head_sha": "8fae65e",
-        "head_subject": "master-commit: WIP @Cluster-Mini-3 2026-06-28T11:04:48Z",
-        "path": "/Users/cluster-mini-02/Cortex/projects/cortex-archive"
+        "path": "/Users/ssmd/Cortex/projects/avatar-engine"
       }
     },
     {
@@ -2136,7 +2076,7 @@
         "kind": "repository",
         "head_sha": "022ea90",
         "head_subject": "master-commit: WIP @Cluster-Mini-04 2026-06-13T09:30:03Z",
-        "path": "/Users/cluster-mini-02/Cortex/projects/cortex-cli"
+        "path": "/Users/ssmd/Cortex/projects/cortex-cli"
       }
     },
     {
@@ -2148,31 +2088,31 @@
         "kind": "repository",
         "head_sha": "26b4caf",
         "head_subject": "master-commit: WIP @Cluster-Mini-04 2026-06-13T09:30:03Z",
-        "path": "/Users/cluster-mini-02/Cortex/projects/cortex-desk"
+        "path": "/Users/ssmd/Cortex/projects/cortex-desk"
       }
     },
     {
       "id": "__repo/cortex-harness",
-      "label": "cortex-harness @ ea48ea0",
+      "label": "cortex-harness @ 5ebc374",
       "cluster": "__repos",
-      "degree": 2,
+      "degree": 4,
       "meta": {
         "kind": "repository",
-        "head_sha": "ea48ea0",
-        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-06-28T11:07:27Z",
-        "path": "/Users/cluster-mini-02/Cortex/projects/cortex-harness"
+        "head_sha": "5ebc374",
+        "head_subject": "master-commit: WIP @Cluster-Mini-04 2026-07-03T18:14:48Z",
+        "path": "/Users/ssmd/Cortex/projects/cortex-harness"
       }
     },
     {
       "id": "__repo/cortex-prx-kalkulation",
-      "label": "cortex-prx-kalkulation @ b9fbac5",
+      "label": "cortex-prx-kalkulation @ a679315",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "b9fbac5",
-        "head_subject": "Welle 6.2 / Phase D2: Reset-Button + Monat-Picker fuer UMV-Tool",
-        "path": "/Users/cluster-mini-02/Cortex/projects/cortex-prx-kalkulation"
+        "head_sha": "a679315",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-03T18:13:54Z",
+        "path": "/Users/ssmd/Cortex/projects/cortex-prx-kalkulation"
       }
     },
     {
@@ -2184,19 +2124,19 @@
         "kind": "repository",
         "head_sha": "b1e84a9",
         "head_subject": "master-commit: WIP @Cluster-Mini-04 2026-06-13T09:30:03Z",
-        "path": "/Users/cluster-mini-02/Cortex/projects/cortex-qm"
+        "path": "/Users/ssmd/Cortex/projects/cortex-qm"
       }
     },
     {
       "id": "__repo/cortex-rename",
-      "label": "cortex-rename @ bc58399",
+      "label": "cortex-rename @ 17cbeea",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "bc58399",
-        "head_subject": "master-commit: WIP @Cluster-Mini-04 2026-06-13T09:30:03Z",
-        "path": "/Users/cluster-mini-02/Cortex/projects/cortex-rename"
+        "head_sha": "17cbeea",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-06-14T18:30:08Z",
+        "path": "/Users/ssmd/Cortex/projects/cortex-rename"
       }
     },
     {
@@ -2208,7 +2148,7 @@
         "kind": "repository",
         "head_sha": "9560d6d",
         "head_subject": "master-commit: WIP @Cluster-Mini-04 2026-06-13T09:30:03Z",
-        "path": "/Users/cluster-mini-02/Cortex/projects/cortex-rename-internal"
+        "path": "/Users/ssmd/Cortex/projects/cortex-rename-internal"
       }
     },
     {
@@ -2220,43 +2160,91 @@
         "kind": "repository",
         "head_sha": "280bb27",
         "head_subject": "master-commit: WIP @Cluster-Mini-04 2026-06-13T09:30:03Z",
-        "path": "/Users/cluster-mini-02/Cortex/projects/cortex-tenant-template"
+        "path": "/Users/ssmd/Cortex/projects/cortex-tenant-template"
       }
     },
     {
-      "id": "__repo/nexus-layer",
-      "label": "nexus-layer @ eb75839",
+      "id": "__repo/mail-connector",
+      "label": "mail-connector",
       "cluster": "__repos",
-      "degree": 0,
-      "meta": {
-        "kind": "repository",
-        "head_sha": "eb75839",
-        "head_subject": "A4: Eval-Set skaliert + modellunabhängige Determinismus-Baseline",
-        "path": "/Users/cluster-mini-02/Cortex/projects/nexus-layer"
-      }
-    },
-    {
-      "id": "__repo/praxis-com-v1-archive",
-      "label": "praxis-com-v1-archive @ 71d03a7",
-      "cluster": "__repos",
-      "degree": 0,
-      "meta": {
-        "kind": "repository",
-        "head_sha": "71d03a7",
-        "head_subject": "master-commit: WIP @Cluster-Mini-02 2026-06-13T09:43:06Z",
-        "path": "/Users/cluster-mini-02/Cortex/projects/praxis-com-v1-archive"
-      }
-    },
-    {
-      "id": "__repo/praxis-webseite",
-      "label": "praxis-webseite",
-      "cluster": "__repos",
-      "degree": 5,
+      "degree": 1,
       "meta": {
         "kind": "repository",
         "head_sha": "",
         "head_subject": "",
-        "path": "/Users/cluster-mini-02/Cortex/projects/praxis-webseite"
+        "path": "/Users/ssmd/Cortex/projects/mail-connector"
+      }
+    },
+    {
+      "id": "__repo/nexus-layer",
+      "label": "nexus-layer @ 86c227f",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "86c227f",
+        "head_subject": "DHT-Backend-Default: Studio-Endpunkt auf User-Level-Tailscale-IP 100.79.129.8 (Peer-Bind 2026-07-03)",
+        "path": "/Users/ssmd/Cortex/projects/nexus-layer"
+      }
+    },
+    {
+      "id": "__repo/praxiszentrum-theme",
+      "label": "praxiszentrum-theme @ f07e27a",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "f07e27a",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-06-13T09:31:52Z",
+        "path": "/Users/ssmd/Cortex/projects/praxiszentrum-theme"
+      }
+    },
+    {
+      "id": "__repo/sanexio.github.io",
+      "label": "sanexio.github.io @ 15ec995",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "15ec995",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-06-28T11:07:27Z",
+        "path": "/Users/ssmd/Cortex/projects/sanexio.github.io"
+      }
+    },
+    {
+      "id": "__repo/scribe-plugin",
+      "label": "scribe-plugin",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "",
+        "head_subject": "",
+        "path": "/Users/ssmd/Cortex/projects/scribe-plugin"
+      }
+    },
+    {
+      "id": "__repo/telegram-bridge",
+      "label": "telegram-bridge @ 79283b1",
+      "cluster": "__repos",
+      "degree": 5,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "79283b1",
+        "head_subject": "Bridge zurueck auf Opus 4.8 — Modell-Limits sind getrennt, Sonnet-Kontingent erschoepft",
+        "path": "/Users/ssmd/Cortex/projects/telegram-bridge"
+      }
+    },
+    {
+      "id": "__repo/test-praxis-tenant",
+      "label": "test-praxis-tenant @ b47df52",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "b47df52",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-06-13T09:31:52Z",
+        "path": "/Users/ssmd/Cortex/projects/test-praxis-tenant"
       }
     }
   ],
@@ -3755,6 +3743,10 @@
     },
     {
       "source": "30 Tutorials/Cortex/07 Multi-Device-Sync",
+      "target": "30 Tutorials/Cortex/10 Channel-Router"
+    },
+    {
+      "source": "30 Tutorials/Cortex/07 Multi-Device-Sync",
       "target": "30 Tutorials/Cortex/02 Datei-Atlas"
     },
     {
@@ -4154,6 +4146,26 @@
       "target": "HOME"
     },
     {
+      "source": "30 Tutorials/Cortex/26 Decentralized Cortex",
+      "target": "30 Tutorials/Cortex/01 Architektur und Schichten"
+    },
+    {
+      "source": "30 Tutorials/Cortex/26 Decentralized Cortex",
+      "target": "30 Tutorials/Cortex/05 Memory in 4 Schichten"
+    },
+    {
+      "source": "30 Tutorials/Cortex/26 Decentralized Cortex",
+      "target": "30 Tutorials/Cortex/07 Multi-Device-Sync"
+    },
+    {
+      "source": "30 Tutorials/Cortex/26 Decentralized Cortex",
+      "target": "30 Tutorials/Cortex/12 Externe Dienste"
+    },
+    {
+      "source": "30 Tutorials/Cortex/26 Decentralized Cortex",
+      "target": "HOME"
+    },
+    {
       "source": "30 Tutorials/Cortex/99 Glossar",
       "target": "30 Tutorials/Cortex/09 Self-Learning-Layer"
     },
@@ -4312,6 +4324,30 @@
     {
       "source": "30 Tutorials/Cortex/_MOC Cortex",
       "target": "30 Tutorials/Cortex/20 Self-Applying-Konvergenz"
+    },
+    {
+      "source": "30 Tutorials/Cortex/_MOC Cortex",
+      "target": "30 Tutorials/Cortex/21 Plattform-State und Wellen"
+    },
+    {
+      "source": "30 Tutorials/Cortex/_MOC Cortex",
+      "target": "30 Tutorials/Cortex/22 Projekte und Tenants"
+    },
+    {
+      "source": "30 Tutorials/Cortex/_MOC Cortex",
+      "target": "30 Tutorials/Cortex/23 Dashboard und GUI"
+    },
+    {
+      "source": "30 Tutorials/Cortex/_MOC Cortex",
+      "target": "30 Tutorials/Cortex/24 Multi-AI-Kooperation im Alltag"
+    },
+    {
+      "source": "30 Tutorials/Cortex/_MOC Cortex",
+      "target": "30 Tutorials/Cortex/25 Sanexio-Plugins"
+    },
+    {
+      "source": "30 Tutorials/Cortex/_MOC Cortex",
+      "target": "30 Tutorials/Cortex/26 Decentralized Cortex"
     },
     {
       "source": "30 Tutorials/Cortex/_MOC Cortex",
@@ -4696,10 +4732,6 @@
     {
       "source": "30 Tutorials/Terminal/Git Konzepte/Git Grundlagen",
       "target": "40 Regeln/LL-049"
-    },
-    {
-      "source": "30 Tutorials/Terminal/Terminal Grundlagen",
-      "target": "30 Tutorials/Terminal/02-git"
     },
     {
       "source": "30 Tutorials/Terminal/Terminal Grundlagen",
@@ -5523,6 +5555,10 @@
     },
     {
       "source": "30 Tutorials/_MOC Tutorials",
+      "target": "30 Tutorials/Cortex/26 Decentralized Cortex"
+    },
+    {
+      "source": "30 Tutorials/_MOC Tutorials",
       "target": "30 Tutorials/Cortex/99 Glossar"
     },
     {
@@ -5644,10 +5680,6 @@
     {
       "source": "30 Tutorials/_MOC Tutorials",
       "target": "30 Tutorials/Netzwerk & Sysadmin/homelab-handbuch"
-    },
-    {
-      "source": "30 Tutorials/_MOC Tutorials",
-      "target": "30 Tutorials/Terminal/02-git"
     },
     {
       "source": "30 Tutorials/_MOC Tutorials",
@@ -8699,11 +8731,31 @@
     },
     {
       "source": "DASHBOARD",
+      "target": "15 Workflows/Doc-Workflow"
+    },
+    {
+      "source": "DASHBOARD",
+      "target": "15 Workflows/File-Renamer"
+    },
+    {
+      "source": "DASHBOARD",
+      "target": "15 Workflows/Praxis-QM"
+    },
+    {
+      "source": "DASHBOARD",
+      "target": "15 Workflows/SmartQ Dashboard"
+    },
+    {
+      "source": "DASHBOARD",
       "target": "HOME"
     },
     {
       "source": "DASHBOARD",
       "target": "10 Projekte/_MOC Projekte"
+    },
+    {
+      "source": "DASHBOARD",
+      "target": "10 Projekte/_MOC Projekte nach Gerät"
     },
     {
       "source": "DASHBOARD",
@@ -9011,46 +9063,6 @@
     },
     {
       "source": "00 Kontext/Claude-OS Uebersicht",
-      "target": "__repo/Gaming"
-    },
-    {
-      "source": "10 Projekte/Gaming",
-      "target": "__repo/Gaming"
-    },
-    {
-      "source": "30 Tutorials/Cortex/22 Projekte und Tenants",
-      "target": "__repo/Gaming"
-    },
-    {
-      "source": "30 Tutorials/Cortex/_MOC Cortex",
-      "target": "__repo/Gaming"
-    },
-    {
-      "source": "30 Tutorials/Gaming/01-doom-im-browser",
-      "target": "__repo/Gaming"
-    },
-    {
-      "source": "00 Kontext/Claude-OS Uebersicht",
-      "target": "__repo/Juvantis"
-    },
-    {
-      "source": "00 Kontext/Dr. Stracke",
-      "target": "__repo/Juvantis"
-    },
-    {
-      "source": "00 Kontext/Fragen-Backlog",
-      "target": "__repo/Juvantis"
-    },
-    {
-      "source": "00 Kontext/GLOBAL_RULES",
-      "target": "__repo/Juvantis"
-    },
-    {
-      "source": "00 Kontext/Goldene Regeln",
-      "target": "__repo/Juvantis"
-    },
-    {
-      "source": "00 Kontext/Claude-OS Uebersicht",
       "target": "__repo/Proxmox"
     },
     {
@@ -9102,26 +9114,6 @@
       "target": "__repo/avatar-engine"
     },
     {
-      "source": "10 Projekte/Cortex-Mesh",
-      "target": "__repo/cortex-agent"
-    },
-    {
-      "source": "10 Projekte/_MOC Projekte",
-      "target": "__repo/cortex-agent"
-    },
-    {
-      "source": "10 Projekte/cortex-agent",
-      "target": "__repo/cortex-agent"
-    },
-    {
-      "source": "15 Workflows/Telegram-Bridge",
-      "target": "__repo/cortex-agent"
-    },
-    {
-      "source": "30 Tutorials/Cortex/00 Was ist Cortex",
-      "target": "__repo/cortex-agent"
-    },
-    {
       "source": "30 Tutorials/Netzwerk & Sysadmin/09-cortex-mesh-tailscale",
       "target": "__repo/cortex-cli"
     },
@@ -9132,6 +9124,14 @@
     {
       "source": "30 Tutorials/Cortex/22 Projekte und Tenants",
       "target": "__repo/cortex-desk"
+    },
+    {
+      "source": "30 Tutorials/Cortex/07 Multi-Device-Sync",
+      "target": "__repo/cortex-harness"
+    },
+    {
+      "source": "30 Tutorials/Cortex/10 Channel-Router",
+      "target": "__repo/cortex-harness"
     },
     {
       "source": "30 Tutorials/Cortex/16 Harness — Wie Claude arbeitet",
@@ -9146,24 +9146,28 @@
       "target": "__repo/cortex-tenant-template"
     },
     {
+      "source": "30 Tutorials/Cortex/22 Projekte und Tenants",
+      "target": "__repo/mail-connector"
+    },
+    {
+      "source": "00 Kontext/Claude-OS Uebersicht",
+      "target": "__repo/telegram-bridge"
+    },
+    {
+      "source": "00 Kontext/GLOBAL_RULES",
+      "target": "__repo/telegram-bridge"
+    },
+    {
+      "source": "10 Projekte/Cortex-Mesh",
+      "target": "__repo/telegram-bridge"
+    },
+    {
       "source": "10 Projekte/Cortex-Web",
-      "target": "__repo/praxis-webseite"
-    },
-    {
-      "source": "10 Projekte/Juvantis Website",
-      "target": "__repo/praxis-webseite"
-    },
-    {
-      "source": "10 Projekte/_MOC Projekte nach Gerät",
-      "target": "__repo/praxis-webseite"
+      "target": "__repo/telegram-bridge"
     },
     {
       "source": "10 Projekte/_MOC Projekte",
-      "target": "__repo/praxis-webseite"
-    },
-    {
-      "source": "10 Projekte/praxis-webseite",
-      "target": "__repo/praxis-webseite"
+      "target": "__repo/telegram-bridge"
     }
   ]
 }

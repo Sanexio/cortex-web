@@ -14,8 +14,30 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
     />
     <meta name="robots" content="noindex,nofollow" />
-    <script type="module" crossorigin src="/assets/index-DinnAbkZ.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-1zEsGqpj.css">
+    <script>
+      /* CyberWhite early boot (kein Flackern). Quelle: ?theme=... >
+       * localStorage "cortex_cyber_theme". Gleiches Schema wie die
+       * cortex-sanexio.tech-Landing (cyber-theme.js). */
+      (function () {
+        var KEY = "cortex_cyber_theme";
+        var theme = null;
+        try {
+          var m = window.location.search.match(/[?&]theme=(cyber-white|cyber-dark)(&|$)/);
+          if (m) {
+            theme = m[1];
+            try { window.localStorage.setItem(KEY, theme); } catch (e) {}
+          }
+          if (!theme) theme = window.localStorage.getItem(KEY);
+        } catch (e) {}
+        if (theme === "cyber-white") {
+          document.documentElement.setAttribute("data-theme", "cyber-white");
+          var mc = document.querySelector('meta[name="color-scheme"]');
+          if (mc) mc.setAttribute("content", "light");
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-03o-OR3s.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DeaaR2Xj.css">
   </head>
   <body>
     <div id="root"></div>
