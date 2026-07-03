@@ -3,6 +3,16 @@
 Login-gated Cortex-Hub mit Workforce-Time-Embed. Cyberpunk-Design, Read-only
 Second-Brain-Graph aus dem Nexus-Vault. Welle P.1 (2026-06-13).
 
+## Themes: CyberDark (Default) + CyberWhite (2026-07-04)
+
+Fixer Theme-Pin oben rechts (`ThemeToggle.tsx`) schaltet zwischen
+CyberDark und CyberWhite (helles Tron-Theme, Tageslicht-Auslegung —
+Palette identisch zur cortex-sanexio.tech-Landing). Persistenz via
+localStorage `cortex_cyber_theme`, früher Boot ohne Flackern als
+Inline-Script in `index.html`, `?theme=cyber-white|cyber-dark`
+überschreibt. Der Second-Brain-Graph bleibt bewusst eine dunkle
+Insel (Cytoscape-Farben sind JS-seitig auf dunklen Grund gebaut).
+
 ## Quick Start
 
 ```bash

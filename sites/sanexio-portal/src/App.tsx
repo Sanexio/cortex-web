@@ -6,10 +6,14 @@ import { SecondBrainPluginHost } from "./components/SecondBrainPluginHost";
 import { LoginGate } from "./components/LoginGate";
 import { AdminAuthModal } from "./components/AdminAuthModal";
 import { ArchivSyncCard } from "./components/ArchivSyncCard";
+import { ThemeToggle } from "./components/ThemeToggle";
 
 export default function App() {
   return (
-    <LoginGate>{({ logout }) => <Hub onLogout={logout} />}</LoginGate>
+    <>
+      <ThemeToggle />
+      <LoginGate>{({ logout }) => <Hub onLogout={logout} />}</LoginGate>
+    </>
   );
 }
 

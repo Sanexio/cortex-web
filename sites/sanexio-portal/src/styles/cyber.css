@@ -1133,3 +1133,167 @@ body {
 @media (max-width: 760px) {
   .archiv-meta { grid-template-columns: 1fr 1fr; }
 }
+
+/* === Theme-Pin (Switcher CyberDark <-> CyberWhite) ================== */
+.theme-pin {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 15; /* ueber Content/Toast, unter Modals (z 20) */
+  appearance: none;
+  border: 1px solid rgba(0, 221, 245, 0.32);
+  background: rgba(6, 6, 12, 0.78);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
+}
+.theme-pin:hover { color: var(--neon-yellow); border-color: var(--neon-yellow); }
+.theme-pin-action { color: var(--neon-cyan); }
+
+/* === CyberWhite — helles Tron-Theme (Tageslicht) =====================
+ * Aktiv bei html[data-theme="cyber-white"] (ThemeToggle + early boot
+ * in index.html). Identische Palette wie die cortex-sanexio.tech-
+ * Landing (landing.css Rev 2026-07-04): fuer helles Umgebungslicht —
+ * grau-blauer Grund, weisse Karten mit kraeftigen Raendern, dunkle
+ * Akzente mit Textkontrast, scharfe 1px-Ringe statt weicher Glows.
+ * Grund #cfd7e0, Ink #06101c, Cyan #006884, Kobalt #1a3fc4. */
+html[data-theme="cyber-white"] {
+  --bg: #cfd7e0;
+  --bg-2: #dde4ec;
+  --bg-3: #ffffff;
+  --bg-4: #ffffff;
+  --ink: #06101c;
+  --ink-2: #3a4550;
+  --neon-cyan: #006884;
+  --neon-magenta: #b0104e;
+  --neon-yellow: #1a3fc4;
+  --neon-green: #077a45;
+  --grid: rgba(0, 104, 132, 0.16);
+  --grid-strong: rgba(0, 104, 132, 0.3);
+  --line: rgba(6, 16, 28, 0.32);
+  --border-yellow: rgba(26, 63, 196, 0.55);
+  --glow-y: 0 0 0 1px rgba(26, 63, 196, 0.5), 0 0 24px rgba(26, 63, 196, 0.12);
+  --glow-p: 0 0 0 1px rgba(176, 16, 78, 0.5), 0 0 24px rgba(176, 16, 78, 0.12);
+  --glow-c: 0 0 0 1px rgba(0, 104, 132, 0.45);
+  --shadow-cyan: 0 0 0 1px rgba(0, 104, 132, 0.35), 0 12px 32px rgba(6, 16, 28, 0.14);
+  --shadow-yellow: 0 0 0 1px rgba(26, 63, 196, 0.55), 0 14px 30px rgba(6, 16, 28, 0.16);
+}
+html[data-theme="cyber-white"] .grid-bg {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    radial-gradient(circle at 20% 10%, rgba(0, 104, 132, 0.08), transparent 60%),
+    radial-gradient(circle at 80% 90%, rgba(176, 16, 78, 0.04), transparent 60%);
+}
+html[data-theme="cyber-white"] .scanline {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(6, 16, 28, 0.025) 3px,
+    rgba(6, 16, 28, 0.025) 4px
+  );
+  mix-blend-mode: normal;
+}
+/* Tageslicht: keine weichen Text-Glows */
+html[data-theme="cyber-white"] .hero-title,
+html[data-theme="cyber-white"] .login-title { text-shadow: none; }
+html[data-theme="cyber-white"] .hero-accent { text-shadow: none; }
+html[data-theme="cyber-white"] .hero-eyebrow {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(0, 104, 132, 0.45);
+}
+html[data-theme="cyber-white"] .hero-logout,
+html[data-theme="cyber-white"] .theme-pin {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 104, 132, 0.55);
+}
+html[data-theme="cyber-white"] .hero-meta li { background: rgba(255, 255, 255, 0.75); }
+/* Schrift auf Kobalt-Grund: weiss statt schwarz (Lesbarkeit) */
+html[data-theme="cyber-white"] .badge:not(.badge--dark),
+html[data-theme="cyber-white"] .card-badge,
+html[data-theme="cyber-white"] .card-badge-admin,
+html[data-theme="cyber-white"] .btn--primary,
+html[data-theme="cyber-white"] .login-submit { color: #ffffff; }
+html[data-theme="cyber-white"] .btn--primary:hover { background: #16359e; color: #ffffff; }
+html[data-theme="cyber-white"] .card {
+  background: #ffffff;
+  border-color: rgba(6, 16, 28, 0.38);
+}
+html[data-theme="cyber-white"] .card::before,
+html[data-theme="cyber-white"] .card.cyber-frame::before {
+  background: linear-gradient(120deg, transparent 30%, rgba(0, 104, 132, 0.08) 50%, transparent 70%);
+}
+html[data-theme="cyber-white"] .card-active.card-hover { border-color: rgba(26, 63, 196, 0.7); }
+html[data-theme="cyber-white"] .card-locked.card-hover { border-color: rgba(176, 16, 78, 0.45); }
+html[data-theme="cyber-white"] .card-badge-locked {
+  color: var(--neon-magenta);
+  border-color: rgba(176, 16, 78, 0.5);
+}
+html[data-theme="cyber-white"] .card-tag { background: rgba(6, 16, 28, 0.05); }
+html[data-theme="cyber-white"] .card-active .card-tag { border-color: rgba(0, 104, 132, 0.4); }
+/* screen-Blend der Glitch-Layer ist auf hellem Grund unsichtbar */
+html[data-theme="cyber-white"] .card-glitch-r,
+html[data-theme="cyber-white"] .card-glitch-c { mix-blend-mode: normal; }
+html[data-theme="cyber-white"] .card-lock-overlay { background: rgba(232, 236, 241, 0.72); }
+html[data-theme="cyber-white"] .graph-refresh { background: rgba(255, 255, 255, 0.8); }
+html[data-theme="cyber-white"] .graph-refresh:hover { background: rgba(26, 63, 196, 0.08); }
+html[data-theme="cyber-white"] .graph-stats code { background: rgba(6, 16, 28, 0.06); }
+/* Graph-Canvas bleibt dunkle Insel: Cytoscape-Farben (JS) sind auf
+ * dunklen Grund gebaut, Node-Labels waeren auf hell unlesbar. */
+html[data-theme="cyber-white"] .graph-canvas {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(0, 221, 245, 0.03), transparent 70%),
+    #141414;
+  border-color: rgba(6, 16, 28, 0.38);
+}
+html[data-theme="cyber-white"] .toast {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(176, 16, 78, 0.5);
+  box-shadow: 0 12px 32px rgba(6, 16, 28, 0.25);
+}
+html[data-theme="cyber-white"] .login-card {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(0, 104, 132, 0.4);
+}
+html[data-theme="cyber-white"] .login-field input {
+  background: rgba(6, 16, 28, 0.04);
+  border-color: rgba(0, 104, 132, 0.35);
+}
+html[data-theme="cyber-white"] .login-field input:focus {
+  border-color: var(--neon-yellow);
+  box-shadow: 0 0 0 2px rgba(26, 63, 196, 0.18);
+  background: rgba(26, 63, 196, 0.05);
+}
+html[data-theme="cyber-white"] .login-error {
+  border-color: rgba(176, 16, 78, 0.5);
+  background: rgba(176, 16, 78, 0.06);
+}
+html[data-theme="cyber-white"] .admin-modal-backdrop { background: rgba(207, 215, 224, 0.75); }
+html[data-theme="cyber-white"] .admin-modal .login-sub code { background: rgba(0, 104, 132, 0.1); }
+html[data-theme="cyber-white"] .admin-meta span::before { color: rgba(6, 16, 28, 0.3); }
+html[data-theme="cyber-white"] .admin-bar { background: rgba(6, 16, 28, 0.08); }
+html[data-theme="cyber-white"] .admin-service,
+html[data-theme="cyber-white"] .admin-cluster-row,
+html[data-theme="cyber-white"] .admin-deploy { background: rgba(255, 255, 255, 0.7); }
+html[data-theme="cyber-white"] .admin-action { background: rgba(26, 63, 196, 0.05); }
+html[data-theme="cyber-white"] .archiv-pill { background: rgba(255, 255, 255, 0.75); }
+html[data-theme="cyber-white"] .archiv-pill--ok { color: #077a45; border-color: rgba(7, 122, 69, 0.6); }
+html[data-theme="cyber-white"] .archiv-pill--err { color: #b0104e; border-color: rgba(176, 16, 78, 0.7); }
+html[data-theme="cyber-white"] .archiv-meta {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(26, 63, 196, 0.35);
+}
+html[data-theme="cyber-white"] .archiv-message { background: rgba(255, 255, 255, 0.65); }
+/* Log bleibt dunkle Terminal-Insel, Schrift explizit hell */
+html[data-theme="cyber-white"] .archiv-log {
+  background: #0c1220;
+  color: #aebbc9;
+  border-color: rgba(26, 63, 196, 0.4);
+}
