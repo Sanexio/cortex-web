@@ -59,6 +59,25 @@ anzufassen (Direktive 2026-06-28). Mechanik:
    Login, unverändert), Injection auf `/dashboard/` + `/second-brain`
    nachgewiesen, Headless-Chrome-Screenshots ohne Layout-Regression.
 
+## Welle 4: Projekt-Übersicht auf der Landing + Kachel-Look — LIVE (2026-07-03)
+
+1. **Landing-Sektion „02 Projekte"** (`index.html`): lädt die
+   Projekt-Registry des Dashboards clientseitig same-origin — Session-
+   Token wird aus dem `/dashboard/`-HTML extrahiert
+   (`window.__CORTEX_SESSION_TOKEN__`, no-store) und als
+   `X-Cortex-Session-Token` an `/api/plugins/projects/list` gesendet.
+   Rendering pro Host-Gruppe (Online-Dot, DNS) + Cluster/Lokal-Buckets;
+   URL-Logik 1:1 gespiegelt aus
+   `Nexus/plugins/projects/dashboard/dist/index.js` (SUB_MAP →
+   Subdomain, live_url, `http://<dns>:<port>`). Offline-Projekte werden
+   gedimmt und nicht verlinkt. Fällt bei Fehler auf einen Hinweis-Text
+   zurück (Landing bleibt intakt).
+2. **SPA-Kacheln im Landing-Card-Look** (`cyber-overlay.css`):
+   `article.projects-row` bekommt Gradient-Fläche, gelbe Corner-Marker
+   (::after, kollisionsfrei — Plugin-CSS nutzt kein ::after) und
+   Hover-Lift+Glow. Killzone-Regeln beachtet (kein fixed Layer, kein
+   Backdrop).
+
 ## Files
 
 | File | Zweck |

@@ -584,6 +584,61 @@ code {
 }
 .theme-toggle:hover .theme-toggle-action { color: var(--neon-yellow); }
 
+/* === Projekte-Sektion (live aus /api/plugins/projects/list) ======== */
+.proj-hint {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.proj-host-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 28px 0 14px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.proj-host-head:first-child { margin-top: 0; }
+.proj-host-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neon-green);
+  box-shadow: 0 0 10px rgba(93, 255, 156, 0.8);
+  flex: 0 0 auto;
+}
+.proj-host-dot--off {
+  background: #4a4a4a;
+  box-shadow: none;
+}
+.proj-host-dns {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--ink-2);
+}
+.card--proj { padding: 16px 16px 14px; }
+.card--proj .card-title { font-size: 21px; }
+.card--proj .card-desc { margin: 4px 0 10px; }
+.card--off { opacity: 0.55; }
+.card--off:hover { transform: none; }
+.badge--off {
+  background: #333333;
+  color: #999999;
+}
+.badge--link {
+  background: var(--neon-cyan);
+  color: #000;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .hero { padding: 56px 20px 24px; }

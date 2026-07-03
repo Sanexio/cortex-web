@@ -66,3 +66,46 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: rgba(245, 195, 0, 0.6); }
 
 ::selection { background: #f5c300; color: #000000; }
+
+/* === Projekt-Kacheln (/projects) im Landing-Card-Look ===============
+ * .projects-row gehoert dem Nexus-eigenen Projects-Plugin (kein
+ * Vendor-Code); das Plugin-CSS nutzt kein ::after auf den Rows, der
+ * Corner-Marker-Layer kollidiert also nicht. Kein fixed Layer, kein
+ * neuer Stacking-Context (Killzone-Regeln). */
+article.projects-row {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(0, 221, 245, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  transition:
+    border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+article.projects-row::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  --corner: 18px;
+  --corner-w: 2px;
+  background:
+    linear-gradient(#f5c300 0 0) 0 0 / var(--corner) var(--corner-w) no-repeat,
+    linear-gradient(#f5c300 0 0) 0 0 / var(--corner-w) var(--corner) no-repeat,
+    linear-gradient(#f5c300 0 0) 100% 0 / var(--corner) var(--corner-w) no-repeat,
+    linear-gradient(#f5c300 0 0) 100% 0 / var(--corner-w) var(--corner) no-repeat,
+    linear-gradient(#f5c300 0 0) 0 100% / var(--corner) var(--corner-w) no-repeat,
+    linear-gradient(#f5c300 0 0) 0 100% / var(--corner-w) var(--corner) no-repeat,
+    linear-gradient(#f5c300 0 0) 100% 100% / var(--corner) var(--corner-w) no-repeat,
+    linear-gradient(#f5c300 0 0) 100% 100% / var(--corner-w) var(--corner) no-repeat;
+  pointer-events: none;
+  opacity: 0.85;
+}
+article.projects-row:not(.projects-row-disabled):hover {
+  border-color: rgba(245, 195, 0, 0.8);
+  transform: translateY(-3px);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.5),
+    0 0 22px rgba(245, 195, 0, 0.14),
+    0 0 44px rgba(0, 221, 245, 0.1);
+}
+article.projects-row.projects-row-disabled::after { opacity: 0.25; }

@@ -13,7 +13,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
     />
-    <link rel="stylesheet" href="/landing.css?v=2026-06-28-8" />
+    <link rel="stylesheet" href="/landing.css?v=2026-07-03-1" />
     <meta name="robots" content="noindex,nofollow" />
   </head>
   <body>
@@ -123,9 +123,18 @@
           </div>
         </section>
 
+        <section class="cards-section" id="projects-section">
+          <h2 class="section-title t-h4">
+            <span class="section-marker">02</span> Projekte
+          </h2>
+          <div id="projects-root">
+            <p class="proj-hint" id="projects-hint">Lade Projekt-Registry &hellip;</p>
+          </div>
+        </section>
+
         <section class="cards-section">
           <h2 class="section-title t-h4">
-            <span class="section-marker">02</span> Stack
+            <span class="section-marker">03</span> Stack
           </h2>
           <div class="stack-grid">
             <div class="stack-item">
@@ -173,6 +182,148 @@
       // Page-Toggle entfernt: das Cyber-Theme ist jetzt als 'sanexio-cyber'
       // im Dashboard-Theme-Switcher selbst auswaehlbar (Welle 3, 2026-06-28).
       // Die Landing-Page bleibt als informative Startseite erhalten.
+
+      // === Projekte-Sektion (Welle 4, 2026-07-03) =====================
+      // Laedt die Projekt-Registry des Dashboards same-origin: Session-
+      // Token steckt im /dashboard/-HTML (no-store), API-Aufruf mit
+      // X-Cortex-Session-Token. URL-Logik 1:1 gespiegelt aus
+      // Nexus/plugins/projects/dashboard/dist/index.js.
+      (function () {
+        var root = document.getElementById("projects-root");
+        var hint = document.getElementById("projects-hint");
+
+        var SUB_MAP = {
+          "kostenkalkulation-grueneburgweg": "pg-kalkulation",
+          "workforce-time": "workforce-time",
+          "workforce-time-staging": "workforce-time"
+        };
+
+        function localWebUrlSelf(project) {
+          var path = project.path || "/";
+          var sd = SUB_MAP[project.id];
+          if (sd) return location.protocol + "//" + sd + ".cortex-sanexio.tech" + path;
+          if (location.hostname.indexOf("cortex-sanexio.tech") !== -1)
+            return location.protocol + "//" + location.hostname + path;
+          return location.protocol + "//" + location.hostname + ":" + project.port + path;
+        }
+
+        function localWebUrlRemote(project, host) {
+          if (project.live_url) return project.live_url;
+          var path = project.path || "/";
+          if (location.hostname.indexOf("cortex-sanexio.tech") !== -1) {
+            var sd = SUB_MAP[project.id];
+            if (sd) return location.protocol + "//" + sd + ".cortex-sanexio.tech" + path;
+            return location.protocol + "//" + location.hostname + path;
+          }
+          var dns = host && host.dns_name ? host.dns_name : (host && host.ip ? host.ip : null);
+          if (!dns) return null;
+          return "http://" + dns + ":" + project.port + path;
+        }
+
+        function projectUrl(project, host) {
+          if (project.kind === "url") return project.url || null;
+          if (project.kind !== "local-web") return null;
+          if (!host || host.is_self) return localWebUrlSelf(project);
+          return localWebUrlRemote(project, host);
+        }
+
+        function el(tag, cls, text) {
+          var node = document.createElement(tag);
+          if (cls) node.className = cls;
+          if (text != null) node.textContent = text;
+          return node;
+        }
+
+        function buildCard(project, host) {
+          var offline =
+            (host && !host.online) ||
+            (project.kind === "local-web" && project.reachable === false);
+          var url = projectUrl(project, host);
+          var tag = url && !offline ? "a" : "div";
+          var card = el(tag, "card card--proj cyber-frame" + (offline ? " card--off" : ""));
+          if (tag === "a") {
+            card.href = url;
+            card.target = "_blank";
+            card.rel = "noopener";
+          }
+          card.appendChild(el("span", "card-aura"));
+
+          var head = el("div", "card-head");
+          var badge = project.kind === "url"
+            ? el("span", "card-badge badge--link", "LINK")
+            : offline
+              ? el("span", "card-badge badge--off", "OFFLINE")
+              : el("span", "card-badge badge--prod", "ONLINE");
+          head.appendChild(badge);
+          head.appendChild(el("span", "card-id", project.id));
+          card.appendChild(head);
+
+          var title = el("h3", "card-title t-h3", project.name);
+          title.setAttribute("data-text", project.name);
+          card.appendChild(title);
+
+          if (project.description) card.appendChild(el("p", "card-desc", project.description));
+
+          if (project.tags && project.tags.length) {
+            var ul = el("ul", "card-tags");
+            project.tags.forEach(function (t) { ul.appendChild(el("li", null, t)); });
+            card.appendChild(ul);
+          }
+          card.appendChild(el("span", "card-cta", offline ? "Offline" : "Starten →"));
+          return card;
+        }
+
+        function buildGroup(label, dot, dns, projects, host) {
+          if (!projects || !projects.length) return null;
+          var frag = document.createDocumentFragment();
+          var head = el("div", "proj-host-head");
+          if (dot !== null) head.appendChild(el("span", "proj-host-dot" + (dot ? "" : " proj-host-dot--off")));
+          head.appendChild(el("span", null, label));
+          if (dns) head.appendChild(el("span", "proj-host-dns", dns));
+          frag.appendChild(head);
+          var grid = el("div", "cards-grid");
+          projects.forEach(function (p) { grid.appendChild(buildCard(p, host)); });
+          frag.appendChild(grid);
+          return frag;
+        }
+
+        function render(data) {
+          root.textContent = "";
+          var any = false;
+          (data.hosts || []).forEach(function (host) {
+            var g = buildGroup(host.hostname, !!host.online, host.dns_name, host.projects, host);
+            if (g) { root.appendChild(g); any = true; }
+          });
+          var gGlobal = buildGroup("Cluster (global)", null, null, data.global || [], null);
+          if (gGlobal) { root.appendChild(gGlobal); any = true; }
+          var gLocal = buildGroup("Lokal (" + (data.host || "vps") + ")", null, null, data.local || [], null);
+          if (gLocal) { root.appendChild(gLocal); any = true; }
+          if (!any) root.appendChild(el("p", "proj-hint", "Keine Projekte im Registry."));
+        }
+
+        fetch("/dashboard/", { credentials: "same-origin" })
+          .then(function (r) {
+            if (!r.ok) throw new Error("dashboard " + r.status);
+            return r.text();
+          })
+          .then(function (html) {
+            var m = html.match(/__CORTEX_SESSION_TOKEN__\s*=\s*"([^"]+)"/);
+            if (!m) throw new Error("kein Session-Token");
+            return fetch("/api/plugins/projects/list", {
+              credentials: "same-origin",
+              headers: { "X-Cortex-Session-Token": m[1] }
+            });
+          })
+          .then(function (r) {
+            if (!r.ok) throw new Error("api " + r.status);
+            return r.json();
+          })
+          .then(render)
+          .catch(function (e) {
+            hint.textContent =
+              "Projekt-Registry nicht erreichbar (" + e.message + ") — Übersicht: /dashboard/projects";
+          });
+      })();
     </script>
   </body>
 </html>
