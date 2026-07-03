@@ -82,11 +82,13 @@ anzufassen (Direktive 2026-06-28). Mechanik:
 
 1. **Zweites Farbschema „CyberWhite"** (`landing.css`): heller
    Tron-Look (Disney-Dashboard-Stil) als Token-Block
-   `html[data-theme="cyber-white"]` — helle Flächen (#e8ecf1/#ffffff),
-   dunkle Tinte (#0b1420), Akzente Cyan #0089ad / Kobalt-Blau #1f4fd8
-   (statt Gelb — Nachjustierung 2026-07-03) / Magenta #d81b60.
-   Zusätzlich Literal-Overrides für Grid, Scanline, Hero-Glows, Cards
-   (heller Gradient, Blau-Hover) und Badges.
+   `html[data-theme="cyber-white"]`. **Auslegung Tageslicht**
+   (Rev 2026-07-04): gedacht für helles Umgebungslicht — grau-blauer
+   Seitengrund #cfd7e0, rein weiße Karten mit kräftigen Rändern
+   (--line 0.32), dunkle Tinte #06101c, Akzente dunkel genug für
+   Textkontrast: Cyan #006884 / Kobalt-Blau #1a3fc4 (statt Gelb —
+   Nachjustierung 2026-07-03) / Magenta #b0104e. Weiche Glows durch
+   scharfe 1px-Ringe ersetzt (saufen bei Sonnenlicht ab).
    CyberDark bleibt Default (kein Attribut = unverändert).
 2. **Topbar-Switcher** (`index.html`): Button oben rechts
    „THEME: CYBER-DARK · WECHSELN →" toggelt das
