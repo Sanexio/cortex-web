@@ -31,8 +31,8 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
         header -Last-Modified
         file_server
     }
-    # Landing-Page-Assets (CSS + Favicon) — short cache, immer revalidieren
-    @landing_assets path /landing.css /favicon.svg
+    # Landing-Page-Assets (CSS + Favicon + Cyber-Overlay) — short cache, immer revalidieren
+    @landing_assets path /landing.css /favicon.svg /cyber-overlay.css
     handle @landing_assets {
         root * /srv/sanexio/apps/cortex-sanexio-landing
         header Cache-Control "no-cache, must-revalidate"
@@ -44,18 +44,34 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
     # X-Forwarded-Prefix sagt der SPA, wo sie wirklich liegt.
     redir /dashboard /dashboard/ permanent
     handle_path /dashboard/* {
+        # Cyber-Overlay-Injection (Welle 3): nur text/html, Upstream
+        # unkomprimiert anfordern, damit replace den Marker findet.
+        replace {
+            match {
+                header Content-Type text/html*
+            }
+            "</head>" "<link rel=stylesheet href=/cyber-overlay.css></head>"
+        }
         reverse_proxy localhost:9119 {
             header_up Host {upstream_hostport}
             header_up X-Forwarded-Host {host}
             header_up X-Forwarded-Prefix /dashboard
+            header_up Accept-Encoding identity
         }
     }
 
     # Alle anderen Routes (/assets, /api, /second-brain, ...) -> cortex-harness
     handle {
+        replace {
+            match {
+                header Content-Type text/html*
+            }
+            "</head>" "<link rel=stylesheet href=/cyber-overlay.css></head>"
+        }
         reverse_proxy localhost:9119 {
             header_up Host {upstream_hostport}
             header_up X-Forwarded-Host {host}
+            header_up Accept-Encoding identity
         }
     }
 }

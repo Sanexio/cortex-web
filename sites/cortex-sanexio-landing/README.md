@@ -21,32 +21,43 @@ Rück-Wechsel: im Dashboard zu `/?` navigieren (löst Cookie-Match aus
 auf Apex), bzw. Cookie über DevTools löschen. Künftig: Toggle auch im
 Dashboard-Header (Welle 3).
 
-## Welle-3-Plan: Cyber-Overlay auf Sub-Containern
+## Welle 3: Cyber-Overlay auf Sub-Containern — LIVE (2026-07-03)
 
-Stracke-Vision: Cyber-Look auch auf `/dashboard/`, Second-Brain,
-Workforce-Time, PG-Kalkulation. Hindernis: cortex-harness und die
-anderen Apps sind Vendor-/Eigen-Code, dürfen nicht angefasst werden
-(Direktive 2026-06-28).
+Cyber-Look liegt auf allen HTML-Sub-Routen des Apex (`/dashboard/`,
+`/second-brain`, `/chat`, …) — ohne den Vendor-Code von cortex-harness
+anzufassen (Direktive 2026-06-28). Mechanik:
 
-Lösungs-Pfad (Welle 3):
-
-1. **xcaddy auf VPS installieren** + Custom-Caddy mit Modul
-   `github.com/caddyserver/replace-response`.
-2. **`cyber-overlay.css`** schreiben — generisches Token-Layer:
-   - `body { background: #0c0c0c; color: #fff; }`
-   - Font-Stack auf Barlow Condensed + Rajdhani + JetBrains Mono
-   - Color-Vars (`--neon-yellow`, `--neon-cyan`, `--neon-magenta`)
-   - Generische Komponenten (Cards, Buttons, Inputs) per generischen
-     Selectors (geht nur soweit die App nicht eigene Specificity hat)
-3. **Caddy `replace_response`** auf den Sub-Routes:
+1. **Custom-Caddy** v2.11.4 mit Modul
+   `github.com/caddyserver/replace-response` vom offiziellen
+   Caddy-Build-Server (kein Build auf dem VPS). APT-Original via
+   `dpkg-divert` auf `/usr/bin/caddy.default` gesichert — apt-Upgrades
+   überschreiben den Custom-Build nicht. Idempotent nachziehbar über
+   `Nexus/tools/hostinger-bootstrap/02_runtime.sh` (Schritt 3b).
+2. **`cyber-overlay.css`** — reines Token-Layer: die Harness-SPA ist
+   über `:root`-Custom-Properties themebar (`--background`,
+   `--midground`, `--theme-accent-*`, `--theme-font-*`, `--radius`).
+   Das Overlay wird als letztes Stylesheet injiziert und gewinnt per
+   Quellreihenfolge. Zusätzlich: Grid+Bloom als `body`-Hintergrundbild
+   (bewusst KEINE fixed Layer/Stacking-Contexts, keine
+   `--component-backdrop-*` — Killzone-Vorfall 2026-06-23),
+   Cyber-Scrollbars, Google-Fonts-Import (Barlow Condensed, Rajdhani,
+   JetBrains Mono).
+3. **Caddy `replace`-Direktive** auf beiden Proxy-Routen
+   (`handle_path /dashboard/*` + Catch-all), gescoped auf
+   `Content-Type: text/html*`; Upstream bekommt
+   `Accept-Encoding: identity`, damit der Marker im Klartext ankommt:
    ```
-   replace_response {
-       stream
+   replace {
+       match {
+           header Content-Type text/html*
+       }
        "</head>" "<link rel=stylesheet href=/cyber-overlay.css></head>"
    }
    ```
-4. **Welle-3-Verify-Plan:** pro Sub-Container CDP-Screenshot vor +
-   nach Overlay. Layout-Regressionen identifizieren.
+   Global in `/etc/caddy/Caddyfile`: `order replace after encode`.
+4. **Verify 2026-07-03:** alle Vhosts 200 (pg-kalkulation 401 =
+   Login, unverändert), Injection auf `/dashboard/` + `/second-brain`
+   nachgewiesen, Headless-Chrome-Screenshots ohne Layout-Regression.
 
 ## Files
 
@@ -54,6 +65,7 @@ Lösungs-Pfad (Welle 3):
 |---|---|
 | `index.html` | Hero + Service-Cards (4 produktive Services) |
 | `landing.css` | Eigenständige Cyber-Tokens + Komponenten (kein React) |
+| `cyber-overlay.css` | Token-Overlay für Sub-Container (Caddy-Injection, Welle 3) |
 | `favicon.svg` | aus `sanexio-portal/public/` übernommen |
 | `deploy/w6-cortex-apex.caddyfile` | Caddy-Vhost-Snapshot für VPS |
 

@@ -1,0 +1,68 @@
+/* cyber-overlay.css — Cyber-Token-Layer fuer die Sub-Container von
+ * cortex-sanexio.tech (/dashboard/, /second-brain, /chat, ...).
+ *
+ * Wird von Caddy (replace-response) als letztes Stylesheet in den
+ * <head> jeder proxied HTML-Antwort injiziert. Der Vendor-Code
+ * (cortex-harness SPA) bleibt unangetastet — das Overlay gewinnt
+ * allein ueber die Quellreihenfolge der :root-Custom-Properties.
+ *
+ * Bewusst NICHT enthalten (Layout-/Killzone-Schutz):
+ * - keine fixed Fullscreen-Layer, keine neuen Stacking-Contexts
+ * - keine --component-backdrop-* Variablen (Vorfall 2026-06-23)
+ * - keine Selektoren auf App-Komponenten */
+
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap");
+
+:root {
+  /* Flaechen — Palette aus landing.css */
+  --background: #0c0c0c;
+  --background-base: #0c0c0c;
+  --theme-terminal-background: #0c0c0c;
+  --theme-surface: #141414;
+
+  /* Akzente: Neon-Gelb primaer, Neon-Cyan sekundaer */
+  --midground: #f5c300;
+  --midground-base: #f5c300;
+  --theme-accent-primary: #f5c300;
+  --theme-accent-secondary: #00ddf5;
+  --theme-text-primary: #ffffff;
+  --theme-text-muted: #888888;
+  --theme-glow-primary: rgba(245, 195, 0, 0.16);
+  --theme-glow-secondary: rgba(0, 221, 245, 0.16);
+  --color-destructive: #ff2878;
+
+  /* Typo-Stack der Landing */
+  --theme-font-sans: "Rajdhani", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --theme-font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --theme-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: var(--theme-font-sans);
+  --font-mono: var(--theme-font-mono);
+
+  /* Landing-Radius (Cards 6px) */
+  --radius: 6px;
+  --theme-radius: 6px;
+}
+
+/* Grid + Radial-Bloom als body-Hintergrundbild — keine Extra-Layer,
+ * background-color der App (var(--background)) bleibt darunter aktiv. */
+body {
+  background-image:
+    linear-gradient(rgba(0, 221, 245, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 221, 245, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 20% 10%, rgba(0, 221, 245, 0.12), transparent 60%),
+    radial-gradient(circle at 80% 90%, rgba(255, 40, 120, 0.08), transparent 60%);
+  background-size: 48px 48px, 48px 48px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+
+/* Scrollbars im Cyber-Look */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 195, 0, 0.45) rgba(255, 255, 255, 0.04);
+}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); }
+::-webkit-scrollbar-thumb { background: rgba(245, 195, 0, 0.35); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(245, 195, 0, 0.6); }
+
+::selection { background: #f5c300; color: #000000; }
