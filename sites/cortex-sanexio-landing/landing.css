@@ -731,6 +731,10 @@ html[data-theme="cyber-white"] .theme-toggle {
   border-color: rgba(0, 104, 132, 0.55);
 }
 html[data-theme="cyber-white"] .theme-toggle:hover { background: rgba(26, 63, 196, 0.08); }
+/* Badges auf Kobalt-Grund (PRODUCTION etc.): weisse Schrift statt
+ * schwarz — schwarz auf #1a3fc4 ist schlecht lesbar. */
+html[data-theme="cyber-white"] .badge,
+html[data-theme="cyber-white"] .card-badge { color: #ffffff; }
 html[data-theme="cyber-white"] .badge--off {
   background: #b9c3ce;
   color: #2e3944;
