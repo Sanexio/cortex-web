@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
     />
     <link rel="stylesheet" href="/cyber-tokens.css?v=2026-07-04-3" />
-    <link rel="stylesheet" href="/landing.css?v=2026-07-04-3" />
+    <link rel="stylesheet" href="/landing.css?v=2026-07-04-4" />
     <script src="/cyber-theme.js"></script>
     <meta name="robots" content="noindex,nofollow" />
   </head>
@@ -249,11 +249,9 @@
         });
       })();
 
-      // === Projekte-Sektion (Welle 4, 2026-07-03) =====================
-      // Laedt die Projekt-Registry des Dashboards same-origin: Session-
-      // Token steckt im /dashboard/-HTML (no-store), API-Aufruf mit
-      // X-Cortex-Session-Token. URL-Logik 1:1 gespiegelt aus
-      // Nexus/plugins/projects/dashboard/dist/index.js.
+      // === Projects section (Wave 4, 2026-07-04) ======================
+      // Loads the Dashboard project registry same-origin and renders the
+      // current host-card format without React.
       (function () {
         var root = document.getElementById("projects-root");
         var hint = document.getElementById("projects-hint");
@@ -301,6 +299,45 @@
           return node;
         }
 
+        function clampPct(value) {
+          var number = Number(value);
+          if (!isFinite(number)) return 0;
+          return Math.max(0, Math.min(100, Math.round(number)));
+        }
+
+        function healthTone(pct) {
+          pct = clampPct(pct);
+          if (pct >= 90) return "ok";
+          if (pct >= 60) return "warn";
+          return "crit";
+        }
+
+        function cleanAndInSyncCount(cluster) {
+          if (!cluster || !cluster.repos_total) return 0;
+          var flagged = {};
+          (cluster.dirty_repos || []).forEach(function (name) { flagged[name] = true; });
+          (cluster.drift_repos || []).forEach(function (name) { flagged[name] = true; });
+          return Math.max(0, Number(cluster.repos_total || 0) - Object.keys(flagged).length);
+        }
+
+        function metricClass(value, badClass) {
+          return Number(value || 0) > 0 ? badClass : "projects-metric-ok";
+        }
+
+        function sortHostsForCards(hosts) {
+          return (hosts || []).slice().sort(function (a, b) {
+            var onlineA = !!a.online;
+            var onlineB = !!b.online;
+            if (onlineA !== onlineB) return onlineA ? -1 : 1;
+            return String(a.hostname || "").localeCompare(String(b.hostname || ""));
+          });
+        }
+
+        function telegramContactUrl(host) {
+          return "https://t.me/sanexio_bot?text=Kontakt%20" +
+            encodeURIComponent((host && host.hostname) || "unbekannt");
+        }
+
         function buildCard(project, host) {
           var offline =
             (host && !host.online) ||
@@ -340,31 +377,151 @@
           return card;
         }
 
-        function buildGroup(label, dot, dns, projects, host) {
-          if (!projects || !projects.length) return null;
-          var frag = document.createDocumentFragment();
-          var head = el("div", "proj-host-head");
-          if (dot !== null) head.appendChild(el("span", "proj-host-dot" + (dot ? "" : " proj-host-dot--off")));
+        function appendProjectItems(parent, projects, host) {
+          var grid = null;
+          (projects || []).forEach(function (project) {
+            if (project.kind === "group") {
+              grid = null;
+              parent.appendChild(el("h3", "projects-group-heading", project.name));
+              var childGrid = el("div", "cards-grid");
+              (project.children || []).forEach(function (child) {
+                childGrid.appendChild(buildCard(child, host));
+              });
+              parent.appendChild(childGrid);
+              return;
+            }
+            if (!grid) {
+              grid = el("div", "cards-grid");
+              parent.appendChild(grid);
+            }
+            grid.appendChild(buildCard(project, host));
+          });
+        }
+
+        function buildMeter(label, value, pct, tone, hasData) {
+          var meter = el("div", "projects-meter");
+          var safePct = hasData ? clampPct(pct) : 0;
+          var safeTone = hasData ? (tone || healthTone(safePct)) : "empty";
+          var head = el("div", "projects-meter-head");
           head.appendChild(el("span", null, label));
-          if (dns) head.appendChild(el("span", "proj-host-dns", dns));
-          frag.appendChild(head);
-          var grid = el("div", "cards-grid");
-          projects.forEach(function (p) { grid.appendChild(buildCard(p, host)); });
-          frag.appendChild(grid);
-          return frag;
+          head.appendChild(el("span", null, value));
+          meter.appendChild(head);
+
+          var bar = el("div", "projects-bar projects-bar--" + safeTone);
+          bar.setAttribute("role", "progressbar");
+          bar.setAttribute("aria-valuemin", "0");
+          bar.setAttribute("aria-valuemax", "100");
+          bar.setAttribute("aria-valuenow", String(safePct));
+          bar.setAttribute("aria-label", label);
+          var fill = el("span", "projects-bar-fill");
+          fill.style.width = safePct + "%";
+          bar.appendChild(fill);
+          meter.appendChild(bar);
+          return meter;
+        }
+
+        function buildDriftRow(cluster) {
+          var row = el("div", "projects-drift-row");
+          if (!cluster) {
+            row.textContent = "Cluster-State fehlt";
+            return row;
+          }
+          var total = Number(cluster.repos_total || 0);
+          var cleanCount = Number(cluster.repos_clean || 0);
+          var dirtyCount = Number(cluster.repos_dirty || 0);
+          var driftCount = Number(cluster.repos_drift || 0);
+          row.appendChild(el("span", "projects-metric-ok", cleanCount + "/" + total + " clean"));
+          row.appendChild(el("span", null, "·"));
+          row.appendChild(el("span", metricClass(dirtyCount, "projects-metric-crit"), dirtyCount + " dirty"));
+          row.appendChild(el("span", null, "·"));
+          row.appendChild(el("span", metricClass(driftCount, "projects-metric-warn"), driftCount + " drift"));
+          return row;
+        }
+
+        function buildHostCard(host) {
+          var cluster = host.cluster || null;
+          var healthPct = cluster ? clampPct(cluster.sync_health_pct) : 0;
+          var total = cluster ? Number(cluster.repos_total || 0) : 0;
+          var cleanInSync = cleanAndInSyncCount(cluster);
+          var completionAvailable =
+            !!cluster && cluster.completion !== null && cluster.completion !== undefined;
+          var completionPct = completionAvailable ? clampPct(cluster.completion) : 0;
+          var card = el(
+            "section",
+            "projects-hostcard cyber-frame" + (host.online ? "" : " projects-hostcard--off")
+          );
+
+          var header = el("div", "projects-host-header");
+          header.appendChild(el(
+            "span",
+            "projects-host-status" + (host.online ? "" : " projects-host-status--off")
+          ));
+          var nameBlock = el("div", "projects-host-copy");
+          var nameLine = el("div", "projects-host-name");
+          nameLine.appendChild(el("h3", null, host.hostname || "unbekannt"));
+          if (host.is_self) nameLine.appendChild(el("span", "projects-host-badge", "dieser Rechner"));
+          nameBlock.appendChild(nameLine);
+          nameBlock.appendChild(el("span", "projects-host-dns", host.dns_name || "kein DNS-Name"));
+          header.appendChild(nameBlock);
+          card.appendChild(header);
+
+          var meters = el("div", "projects-host-meters");
+          meters.appendChild(buildMeter(
+            "Sync-Health",
+            cluster ? cleanInSync + " / " + total + " · " + healthPct + "%" : "keine Daten",
+            healthPct,
+            healthTone(healthPct),
+            !!cluster
+          ));
+          meters.appendChild(buildMeter(
+            "Abschluss",
+            completionAvailable ? completionPct + "%" : "keine Daten",
+            completionPct,
+            healthTone(completionPct),
+            completionAvailable
+          ));
+          card.appendChild(meters);
+          card.appendChild(buildDriftRow(cluster));
+
+          var projects = el("div", "projects-host-projects");
+          if (host.projects && host.projects.length) {
+            appendProjectItems(projects, host.projects, host);
+          } else {
+            projects.appendChild(el("p", "proj-hint", "Keine Projekte gemeldet."));
+          }
+          card.appendChild(projects);
+
+          var contact = el("button", "projects-contact", "Kontakt");
+          contact.type = "button";
+          contact.addEventListener("click", function () {
+            window.open(telegramContactUrl(host), "_blank", "noopener");
+          });
+          card.appendChild(contact);
+          return card;
         }
 
         function render(data) {
           root.textContent = "";
           var any = false;
-          (data.hosts || []).forEach(function (host) {
-            var g = buildGroup(host.hostname, !!host.online, host.dns_name, host.projects, host);
-            if (g) { root.appendChild(g); any = true; }
-          });
-          var gGlobal = buildGroup("Cluster (global)", null, null, data.global || [], null);
-          if (gGlobal) { root.appendChild(gGlobal); any = true; }
-          var gLocal = buildGroup("Lokal (" + (data.host || "vps") + ")", null, null, data.local || [], null);
-          if (gLocal) { root.appendChild(gLocal); any = true; }
+          if (data.global && data.global.length) {
+            appendProjectItems(root, data.global, null);
+            any = true;
+          }
+
+          var hosts = sortHostsForCards(data.hosts);
+          if (hosts.length) {
+            var hostGrid = el("div", "projects-hosts");
+            hosts.forEach(function (host) { hostGrid.appendChild(buildHostCard(host)); });
+            root.appendChild(hostGrid);
+            any = true;
+          }
+
+          if (data.local && data.local.length) {
+            root.appendChild(el("h3", "projects-group-heading", "Lokal (" + (data.host || "vps") + ")"));
+            appendProjectItems(root, data.local, null);
+            any = true;
+          }
+
           if (!any) root.appendChild(el("p", "proj-hint", "Keine Projekte im Registry."));
         }
 

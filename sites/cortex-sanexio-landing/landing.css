@@ -622,6 +622,221 @@ code {
   text-transform: none;
   color: var(--cyber-muted);
 }
+.projects-group-heading {
+  margin: 30px 0 14px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyber-ink);
+}
+.projects-group-heading:first-child { margin-top: 0; }
+.projects-hosts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr));
+  gap: 18px;
+  margin: 30px 0 0;
+}
+.projects-hostcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: 18px;
+  overflow: hidden;
+  border: 1px solid var(--cyber-line);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--cyber-card-bg-start), var(--cyber-card-bg-end));
+}
+.projects-hostcard--off {
+  background: var(--cyber-card-off-bg);
+}
+.projects-hostcard--off .projects-host-name h3,
+.projects-hostcard--off .projects-host-dns,
+.projects-hostcard--off .projects-host-projects {
+  opacity: 0.65;
+}
+.projects-host-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+.projects-host-status {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--cyber-green);
+  box-shadow: 0 0 10px var(--cyber-green-glow);
+}
+.projects-host-status--off {
+  background: var(--cyber-off-dot-bg);
+  box-shadow: none;
+}
+.projects-host-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.projects-host-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+.projects-host-name h3 {
+  margin: 0;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cyber-ink);
+  overflow-wrap: anywhere;
+}
+.projects-host-badge {
+  border: 1px solid var(--cyber-chip-border);
+  border-radius: 3px;
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cyber-green);
+  background: var(--cyber-chip-bg);
+}
+.projects-host-dns {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--cyber-muted);
+  overflow-wrap: anywhere;
+}
+.projects-host-meters {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+.projects-meter {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.projects-meter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyber-muted);
+}
+.projects-meter-head span:last-child {
+  color: var(--cyber-ink);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.projects-bar {
+  width: 100%;
+  height: 9px;
+  overflow: hidden;
+  border: 1px solid var(--cyber-line);
+  border-radius: 999px;
+  background: var(--cyber-chip-bg);
+}
+.projects-bar-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--cyber-green);
+  transition: width 0.18s ease;
+}
+.projects-bar--ok .projects-bar-fill { background: var(--cyber-green); }
+.projects-bar--warn .projects-bar-fill { background: var(--cyber-yellow); }
+.projects-bar--crit .projects-bar-fill { background: var(--cyber-magenta); }
+.projects-bar--empty {
+  opacity: 0.65;
+}
+.projects-bar--empty .projects-bar-fill { background: var(--cyber-off-dot-bg); }
+.projects-drift-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--cyber-muted);
+}
+.projects-metric-ok { color: var(--cyber-green); }
+.projects-metric-warn { color: var(--cyber-yellow); }
+.projects-metric-crit { color: var(--cyber-magenta); }
+.projects-host-projects {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.projects-host-projects .cards-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  gap: 12px;
+}
+.projects-host-projects .projects-group-heading {
+  margin: 8px 0 0;
+  font-size: 15px;
+}
+.projects-contact {
+  position: relative;
+  z-index: 2;
+  align-self: flex-start;
+  appearance: none;
+  border: 1px solid var(--cyber-cyan);
+  border-radius: 3px;
+  background: var(--cyber-cyan);
+  color: var(--cyber-black);
+  padding: 8px 14px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
+}
+.projects-contact:hover,
+.projects-contact:focus-visible {
+  border-color: var(--cyber-yellow);
+  background: var(--cyber-yellow);
+  box-shadow: var(--cyber-glow-yellow);
+  outline: none;
+  transform: translateY(-1px);
+}
 .card--proj { padding: 16px 16px 14px; }
 .card--proj .card-title { font-size: 21px; }
 .card--proj .card-desc { margin: 4px 0 10px; }
@@ -719,6 +934,9 @@ html[data-theme="cyber-white"] .badge--off {
   color: var(--cyber-off-badge-ink);
 }
 html[data-theme="cyber-white"] .badge--link { color: var(--cyber-white); }
+html[data-theme="cyber-white"] .projects-contact {
+  color: var(--cyber-white);
+}
 /* Hero-Badge: .badge bekommt oben weisse Schrift (Kobalt-Grund) —
  * das Eyebrow-Badge hat aber hellen Grund. Dunkle Insel draus machen. */
 html[data-theme="cyber-white"] .hero-eyebrow {
@@ -738,6 +956,7 @@ html[data-theme="cyber-white"] .card--off {
   .hero { padding: 56px 20px 24px; }
   .content { padding: 20px; }
   .cards-grid { grid-template-columns: 1fr; }
+  .projects-hosts { grid-template-columns: 1fr; }
   .hero-meta { gap: 8px; }
   .section-accents::before,
   .section-accents::after { width: 60px; left: 20px; right: 20px; }
