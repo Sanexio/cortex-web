@@ -229,7 +229,12 @@
         apply(current());
         btn.addEventListener("click", function () {
           var next = current() === "cyber-white" ? "cyber-dark" : "cyber-white";
-          try { localStorage.setItem(KEY, next); } catch (e) {}
+          try {
+            localStorage.setItem(KEY, next);
+            // pending: Harness-SPA uebernimmt die Wahl beim naechsten
+            // /dashboard/-Besuch und pusht sie an den Server.
+            localStorage.setItem(KEY + "_pending", "1");
+          } catch (e) {}
           apply(next);
         });
       })();

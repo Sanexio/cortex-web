@@ -8,6 +8,24 @@
  * localStorage "cortex_cyber_theme". */
 (function () {
   var KEY = "cortex_cyber_theme";
+  /* Harness-SPA (/dashboard/) rendert die Cyber-Skins nativ (builtin
+   * sanexio-punk/cyber-white). Dort KEIN Overlay-Attribut setzen —
+   * sonst entsteht ein Hybrid aus Overlay + Builtin-Theme. Stattdessen
+   * bei pending-Auswahl den Boot-Cache der SPA vorbefuellen; die SPA
+   * pusht den Wert selbst (authentifiziert) an den Server und loescht
+   * das pending-Flag. */
+  if (/^\/dashboard(\/|$)/.test(window.location.pathname)) {
+    try {
+      if (window.localStorage.getItem(KEY + "_pending") === "1") {
+        var portal = window.localStorage.getItem(KEY);
+        window.localStorage.setItem(
+          "cortex-dashboard-theme",
+          portal === "cyber-white" ? "cyber-white" : "sanexio-punk"
+        );
+      }
+    } catch (e) {}
+    return;
+  }
   var theme = null;
   try {
     var m = window.location.search.match(/[?&]theme=(cyber-white|cyber-dark)(&|$)/);
