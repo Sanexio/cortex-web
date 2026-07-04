@@ -20,17 +20,6 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
         Referrer-Policy "strict-origin-when-cross-origin"
     }
 
-    @protected {
-      not path /portal-graph.json
-    }
-    # Apex-Gate (Stracke-Direktive 2026-07-04): gesamter Apex nur fuer
-    # Admin, ausser Maschinen-Feed /portal-graph.json. bcrypt-Hash ist
-    # einwegig (safe im Repo); Klartext liegt nur auf dem VPS in
-    # /root/cortex-apex-login.txt (chmod 600).
-    basic_auth @protected {
-      stracke $2a$14$/LvFm3e0JwKshgsQgul3qenW5kbiTLAebXve/lzawGAsPdaO7TixO
-    }
-
     # Statische Landing-Page (Cyber-Look) — exakt auf `/` und `/index.html`
     @landing_root path / /index.html
     handle @landing_root {
