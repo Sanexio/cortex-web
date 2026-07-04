@@ -97,15 +97,41 @@ anzufassen (Direktive 2026-06-28). Mechanik:
 3. **`cyber-theme.js`** — früher Theme-Boot im `<head>` (kein
    Flackern): URL-Param `?theme=cyber-white|cyber-dark` gewinnt und
    wird persistiert, sonst gilt der localStorage-Wert.
-4. **Scope-Entscheidung: CyberWhite gilt NUR für die Landing.** Die
-   Harness-SPA ist nicht vollständig tokenisiert — ein Token-Remap
-   erzeugt dort einen halb-hellen Mischzustand (Verify 2026-07-03,
-   Screenshots `/dashboard/` + `/projects`). Die Sub-Container bleiben
-   deshalb bewusst CyberDark; ein SPA-weites CyberWhite wäre eine
-   eigene Welle als harness-eigenes Theme (dort existiert bereits
-   `sanexio-cyber` im Dashboard-Theme-Switcher). Die zwischenzeitlich
-   getestete Caddy-Script-Injection wurde zurückgenommen — die
-   Injection ist wieder link-only (`cyber-overlay.css`).
+4. ~~Scope-Entscheidung: CyberWhite gilt NUR für die Landing.~~
+   **Revidiert durch Welle 6 (siehe unten).**
+
+## Welle 6: CyberWhite auf den Sub-Containern — LIVE (2026-07-04)
+
+CyberWhite gilt jetzt auch für die proxied Harness-Sub-Seiten
+(`/dashboard/`, `/projects`, `/second-brain`, `/chat`, …):
+
+1. **Root-Cause des Mischzustands vom 2026-07-03 gefunden:** Die SPA
+   setzt ihre Theme-Variablen als *Inline-Styles* auf `<html>`
+   (`applyTheme` → `root.style.setProperty`) — Inline schlägt jede
+   normale Stylesheet-Regel. Gegenmittel: `!important` auf allen
+   Token-Overrides in `cyber-overlay.css` (Author-`!important`
+   gewinnt gegen normale Inline-Styles).
+2. **Vier Token-Ebenen remapped** im Block
+   `html[data-theme="cyber-white"]`: (a) generische Harness-Tokens
+   (`--background`, `--midground`, `--theme-*`), (b) Builtin-Theme
+   `sanexio-cyber` (`--sxs-*`), (c) Builtin-Theme `sanexio-punk`
+   (customCSS-Literale `--sanexio-punk-*` + inline gesetzte
+   `--component-*` aus componentStyles), (d) Tailwind-Vars, die das
+   SPA-CSS nicht definiert (`--color-background/-foreground/-warning`)
+   — Dashboard-Plugins wie `/dashboard-plugins/projects` fallen sonst
+   auf ihre dunklen Fallback-Literale zurück.
+3. **Caddy-Script-Injection reaktiviert:** beide replace-Routen
+   injizieren jetzt `<script src=/cyber-theme.js>` +
+   `<link rel=stylesheet href=/cyber-overlay.css>` — der frühe Boot
+   liest denselben localStorage-Key (`cortex_cyber_theme`) wie die
+   Landing, der Theme-Wechsel auf der Landing wirkt damit
+   site-weit. `?theme=cyber-white|cyber-dark` funktioniert auf jeder
+   Sub-Seite. Kein Konflikt mit dem Harness-Theme-System (nutzt
+   `data-cortex-theme`, nicht `data-theme`).
+4. **Dunkle Inseln bleiben bewusst dunkel:** Chat-Terminal
+   (`--theme-terminal-background`) — analog zum Portal-Graph.
+5. Verify 2026-07-04: Headless-Screenshots `/dashboard/`, `/projects`,
+   `/second-brain`, `/chat` in beiden Themes; CyberDark regressionfrei.
 
 ## Files
 
@@ -113,8 +139,8 @@ anzufassen (Direktive 2026-06-28). Mechanik:
 |---|---|
 | `index.html` | Hero + Service-Cards (4 produktive Services) |
 | `landing.css` | Eigenständige Cyber-Tokens + Komponenten (kein React) |
-| `cyber-overlay.css` | Token-Overlay für Sub-Container (Caddy-Injection, Welle 3) |
-| `cyber-theme.js` | Früher Theme-Boot für CyberWhite/CyberDark (Welle 5, nur Landing) |
+| `cyber-overlay.css` | Token-Overlay für Sub-Container: CyberDark (Welle 3) + CyberWhite-Block (Welle 6) |
+| `cyber-theme.js` | Früher Theme-Boot für CyberWhite/CyberDark (Welle 5 Landing, Welle 6 site-weit injiziert) |
 | `favicon.svg` | aus `sanexio-portal/public/` übernommen |
 | `deploy/w6-cortex-apex.caddyfile` | Caddy-Vhost-Snapshot für VPS |
 

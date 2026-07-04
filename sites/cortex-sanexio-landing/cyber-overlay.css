@@ -110,7 +110,133 @@ article.projects-row:not(.projects-row-disabled):hover {
 }
 article.projects-row.projects-row-disabled::after { opacity: 0.25; }
 
-/* CyberWhite gilt bewusst NUR fuer die Landing (landing.css): die
- * Harness-SPA hat zu viele nicht-tokenisierte dunkle Flaechen, ein
- * Token-Remap ergibt dort einen halb-hellen Mischzustand (Verify
- * 2026-07-03). Sub-Container bleiben CyberDark. */
+/* === CyberWhite (Daylight) fuer die Sub-Container ====================
+ * Aktiviert durch html[data-theme="cyber-white"] (cyber-theme.js,
+ * gleicher localStorage-Key wie die Landing: cortex_cyber_theme).
+ *
+ * Die SPA setzt ihre Theme-Variablen als INLINE-Styles auf <html>
+ * (applyTheme -> root.style.setProperty) — das schlaegt normale
+ * Stylesheet-Regeln und war die Ursache des halb-hellen
+ * Mischzustands vom 2026-07-03. Gegenmittel: !important auf jedem
+ * Token (author-!important gewinnt gegen normale Inline-Styles).
+ *
+ * Zusaetzlich bringt die SPA das Builtin-Theme "sanexio-cyber" mit
+ * eigenem --sxs-* Token-Set (scoped auf [data-cortex-theme]) — wird
+ * hier mit remapped. Palette identisch zu landing.css CyberWhite. */
+html[data-theme="cyber-white"] {
+  /* Generische Harness-Tokens */
+  --background: #cfd7e0 !important;
+  --background-base: #cfd7e0 !important;
+  --midground: #1a3fc4 !important;
+  --midground-base: #1a3fc4 !important;
+  --foreground: #06101c !important;
+  --foreground-base: #06101c !important;
+  --theme-surface: #ffffff !important;
+  --theme-accent-primary: #1a3fc4 !important;
+  --theme-accent-secondary: #006884 !important;
+  --theme-text-primary: #06101c !important;
+  --theme-text-muted: #3a4550 !important;
+  --theme-glow-primary: rgba(26, 63, 196, 0.12) !important;
+  --theme-glow-secondary: rgba(0, 104, 132, 0.12) !important;
+  --color-destructive: #b0104e !important;
+  --warm-glow: transparent !important;
+  /* Tailwind-Vars, die das SPA-CSS NICHT definiert — Plugins
+   * (z. B. /dashboard-plugins/projects) fallen sonst auf ihre
+   * dunklen Fallback-Literale zurueck (#0d1210/#eef4ee). */
+  --color-background: #cfd7e0 !important;
+  --color-foreground: #06101c !important;
+  --color-warning: #1a3fc4 !important;
+  /* Terminal bleibt dunkle Insel (Daylight-Prinzip wie Portal-Graph) */
+  --theme-terminal-background: #0c1220 !important;
+
+  /* Builtin-Theme sanexio-cyber (--sxs-*) */
+  --sxs-bg: #cfd7e0 !important;
+  --sxs-bg-2: #ffffff !important;
+  --sxs-ink: #06101c !important;
+  --sxs-muted: #3a4550 !important;
+  --sxs-cyan: #006884 !important;
+  --sxs-magenta: #b0104e !important;
+  --sxs-yellow: #1a3fc4 !important;
+  --sxs-grid: rgba(0, 104, 132, 0.16) !important;
+  --sxs-line: rgba(6, 16, 28, 0.32) !important;
+  --sxs-border-yellow: rgba(26, 63, 196, 0.55) !important;
+
+  /* Builtin-Theme sanexio-punk: customCSS-Literale (--sanexio-punk-*)
+   * + componentStyles, die applyTheme INLINE auf <html> setzt
+   * (--component-*) — beide muessen fuer Daylight mit remapped werden. */
+  --sanexio-punk-bg: #cfd7e0 !important;
+  --sanexio-punk-bg-2: #ffffff !important;
+  --sanexio-punk-bg-3: #ffffff !important;
+  --sanexio-punk-yellow: #1a3fc4 !important;
+  --sanexio-punk-pink: #b0104e !important;
+  --sanexio-punk-cyan: #006884 !important;
+  --sanexio-punk-border: rgba(26, 63, 196, 0.45) !important;
+  --sanexio-punk-glow-y: 0 0 0 1px rgba(26, 63, 196, 0.5), 0 0 24px rgba(26, 63, 196, 0.12) !important;
+  --sanexio-punk-glow-p: 0 0 0 1px rgba(176, 16, 78, 0.5), 0 0 24px rgba(176, 16, 78, 0.12) !important;
+
+  --component-card-background: #ffffff !important;
+  --component-card-border-color: rgba(6, 16, 28, 0.38) !important;
+  --component-card-box-shadow: 0 0 0 1px rgba(6, 16, 28, 0.18), 0 12px 32px rgba(6, 16, 28, 0.14) !important;
+  --component-sidebar-background: linear-gradient(180deg, #dde4ec, #cfd7e0) !important;
+  --component-sidebar-border-color: #006884 !important;
+  --component-tab-background: rgba(26, 63, 196, 0.12) !important;
+  --component-tab-border-color: #1a3fc4 !important;
+  --component-tab-box-shadow: inset 2px 0 0 #b0104e, 0 0 0 1px rgba(26, 63, 196, 0.35) !important;
+  --component-badge-background: #1a3fc4 !important;
+  --component-badge-border-color: rgba(26, 63, 196, 0.55) !important;
+  --component-badge-color: #ffffff !important;
+  --component-progress-background: #006884 !important;
+}
+
+/* Projects-Plugin: customCSS setzt --cp-box-hover als dunkles Literal */
+html[data-theme="cyber-white"] .projects-root {
+  --cp-box-hover: #eef2f7 !important;
+}
+
+html[data-theme="cyber-white"] body {
+  background-image:
+    linear-gradient(rgba(0, 104, 132, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 104, 132, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 20% 10%, rgba(0, 104, 132, 0.08), transparent 60%),
+    radial-gradient(circle at 80% 90%, rgba(176, 16, 78, 0.04), transparent 60%);
+}
+
+html[data-theme="cyber-white"] * {
+  scrollbar-color: rgba(26, 63, 196, 0.45) rgba(6, 16, 28, 0.06);
+}
+html[data-theme="cyber-white"] ::-webkit-scrollbar-track {
+  background: rgba(6, 16, 28, 0.05);
+}
+html[data-theme="cyber-white"] ::-webkit-scrollbar-thumb {
+  background: rgba(26, 63, 196, 0.4);
+}
+html[data-theme="cyber-white"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(26, 63, 196, 0.65);
+}
+html[data-theme="cyber-white"] ::selection {
+  background: #1a3fc4;
+  color: #ffffff;
+}
+
+/* Projekt-Kacheln (/projects) im Daylight-Card-Look der Landing */
+html[data-theme="cyber-white"] article.projects-row {
+  background: #ffffff;
+  border-color: rgba(6, 16, 28, 0.38);
+}
+html[data-theme="cyber-white"] article.projects-row::after {
+  background:
+    linear-gradient(#1a3fc4 0 0) 0 0 / var(--corner) var(--corner-w) no-repeat,
+    linear-gradient(#1a3fc4 0 0) 0 0 / var(--corner-w) var(--corner) no-repeat,
+    linear-gradient(#1a3fc4 0 0) 100% 0 / var(--corner) var(--corner-w) no-repeat,
+    linear-gradient(#1a3fc4 0 0) 100% 0 / var(--corner-w) var(--corner) no-repeat,
+    linear-gradient(#1a3fc4 0 0) 0 100% / var(--corner) var(--corner-w) no-repeat,
+    linear-gradient(#1a3fc4 0 0) 0 100% / var(--corner-w) var(--corner) no-repeat,
+    linear-gradient(#1a3fc4 0 0) 100% 100% / var(--corner) var(--corner-w) no-repeat,
+    linear-gradient(#1a3fc4 0 0) 100% 100% / var(--corner-w) var(--corner) no-repeat;
+}
+html[data-theme="cyber-white"] article.projects-row:not(.projects-row-disabled):hover {
+  border-color: rgba(26, 63, 196, 0.8);
+  box-shadow:
+    0 0 0 1px rgba(26, 63, 196, 0.7),
+    0 14px 32px rgba(6, 16, 28, 0.22);
+}

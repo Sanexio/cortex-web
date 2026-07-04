@@ -46,11 +46,13 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
     handle_path /dashboard/* {
         # Cyber-Overlay-Injection (Welle 3): nur text/html, Upstream
         # unkomprimiert anfordern, damit replace den Marker findet.
+        # cyber-theme.js (CyberWhite-Boot, Welle 2026-07-04) setzt
+        # data-theme aus localStorage/?theme= vor dem ersten Paint.
         replace {
             match {
                 header Content-Type text/html*
             }
-            "</head>" "<link rel=stylesheet href=/cyber-overlay.css></head>"
+            "</head>" "<script src=/cyber-theme.js></script><link rel=stylesheet href=/cyber-overlay.css></head>"
         }
         reverse_proxy localhost:9119 {
             header_up Host {upstream_hostport}
@@ -66,7 +68,7 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
             match {
                 header Content-Type text/html*
             }
-            "</head>" "<link rel=stylesheet href=/cyber-overlay.css></head>"
+            "</head>" "<script src=/cyber-theme.js></script><link rel=stylesheet href=/cyber-overlay.css></head>"
         }
         reverse_proxy localhost:9119 {
             header_up Host {upstream_hostport}
