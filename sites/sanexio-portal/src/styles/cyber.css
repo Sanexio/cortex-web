@@ -1292,6 +1292,7 @@ body {
  * Grund #cfd7e0, Ink #06101c, Cyan #006884, Kobalt #1a3fc4. */
 html[data-theme="cyber-white"] {
   --bg: #cfd7e0;
+  --bg-1: #ffffff;
   --bg-2: #dde4ec;
   --bg-3: #ffffff;
   --bg-4: #ffffff;
@@ -1403,6 +1404,27 @@ html[data-theme="cyber-white"] .login-error {
   background: rgba(176, 16, 78, 0.06);
 }
 html[data-theme="cyber-white"] .admin-modal-backdrop { background: rgba(207, 215, 224, 0.75); }
+/* Unterkachel-Modal: helle Flaeche statt dunkler Fallback */
+html[data-theme="cyber-white"] .subtile-modal-backdrop {
+  background: rgba(207, 215, 224, 0.75);
+}
+html[data-theme="cyber-white"] .subtile-modal {
+  background: var(--bg-3);
+  border-color: var(--border-yellow);
+  box-shadow: var(--shadow-yellow, 0 4px 24px rgba(26, 63, 196, 0.18));
+}
+html[data-theme="cyber-white"] .subtile-modal-tile {
+  background: rgba(26, 63, 196, 0.07);
+  border-color: rgba(26, 63, 196, 0.25);
+}
+html[data-theme="cyber-white"] .subtile-modal-tile:hover {
+  background: rgba(26, 63, 196, 0.14);
+  border-color: rgba(26, 63, 196, 0.55);
+  box-shadow: 0 0 12px rgba(26, 63, 196, 0.22);
+}
+html[data-theme="cyber-white"] .subtile-modal-close:hover {
+  color: rgba(26, 63, 196, 0.85);
+}
 html[data-theme="cyber-white"] .admin-modal .login-sub code { background: rgba(0, 104, 132, 0.1); }
 html[data-theme="cyber-white"] .admin-meta span::before { color: rgba(6, 16, 28, 0.3); }
 html[data-theme="cyber-white"] .admin-bar { background: rgba(6, 16, 28, 0.08); }

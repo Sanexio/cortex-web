@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T08:22:38.318Z",
+  "generated_at": "2026-07-04T14:28:17.548Z",
   "stats": {
     "nodes": 346,
     "edges": 1730,
@@ -1985,13 +1985,13 @@
     },
     {
       "id": "__repo/Cortex-Web",
-      "label": "Cortex-Web @ 7d41388",
+      "label": "Cortex-Web @ e03a01d",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "7d41388",
-        "head_subject": "feat(portal): Cortex-HR Hauptkachel mit Unterkacheln Dienstplanung + Mitarbeiter",
+        "head_sha": "e03a01d",
+        "head_subject": "Caddy w6: /cyber-tokens.css als Landing-Asset + Live-Drift zurueckgespiegelt",
         "path": "/Users/ssmd/Cortex/projects/Cortex-Web"
       }
     },
@@ -2057,25 +2057,25 @@
     },
     {
       "id": "__repo/avatar-engine",
-      "label": "avatar-engine @ b446d15",
+      "label": "avatar-engine @ 1976b3e",
       "cluster": "__repos",
       "degree": 2,
       "meta": {
         "kind": "repository",
-        "head_sha": "b446d15",
-        "head_subject": "docs: SESSION_RESUME für nächste Session (MH4 = Morphs verdrahten)",
+        "head_sha": "1976b3e",
+        "head_subject": "D1: diversity-matrix.json als Single Source, Gender/Age-Morphs, MPFB-Mixamo-Rig-Gewichte, Contact-Sheet-QA (Codex)",
         "path": "/Users/ssmd/Cortex/projects/avatar-engine"
       }
     },
     {
       "id": "__repo/cortex-banking-core",
-      "label": "cortex-banking-core @ 554e7d1",
+      "label": "cortex-banking-core @ 28f9adb",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "554e7d1",
-        "head_subject": "Initial: Bank-/Ingest-/DB-Fundament aus cortex-prx-kalkulation extrahiert",
+        "head_sha": "28f9adb",
+        "head_subject": "apoBank-Kontoauszug-PDF-Parser (Textlayer) mit Saldo-Arithmetik-Probe",
         "path": "/Users/ssmd/Cortex/projects/cortex-banking-core"
       }
     },
@@ -2105,37 +2105,37 @@
     },
     {
       "id": "__repo/cortex-harness",
-      "label": "cortex-harness @ 06c94f4",
+      "label": "cortex-harness @ 50d369c",
       "cluster": "__repos",
       "degree": 4,
       "meta": {
         "kind": "repository",
-        "head_sha": "06c94f4",
-        "head_subject": "theme: Katalog auf CyberPunk + CyberWhite reduziert, Alt-Themes migrieren via Alias",
+        "head_sha": "50d369c",
+        "head_subject": "Login-Seite: CyberWhite-Inversion auf /login nachgezogen (dunkler Eingangsbildschirm)",
         "path": "/Users/ssmd/Cortex/projects/cortex-harness"
       }
     },
     {
       "id": "__repo/cortex-ledger",
-      "label": "cortex-ledger",
+      "label": "cortex-ledger @ 89768cd",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "",
-        "head_subject": "",
+        "head_sha": "89768cd",
+        "head_subject": "VPS-Tunnel (lokal-first): Proxy-/Readonly-Modus + Standalone-API + LaunchAgents",
         "path": "/Users/ssmd/Cortex/projects/cortex-ledger"
       }
     },
     {
       "id": "__repo/cortex-prx-hr",
-      "label": "cortex-prx-hr @ e56a71d",
+      "label": "cortex-prx-hr @ 335711d",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "e56a71d",
-        "head_subject": "feat: Cortex-HR — Mitarbeiterportal, Cortex-SSO, zentrales Audit-Log",
+        "head_sha": "335711d",
+        "head_subject": "Startbildschirm als Besetzungs-Dashboard: KPI-Kacheln, Praxis/Praxisgemeinschaft, MFA-Pool (Archiv)",
         "path": "/Users/ssmd/Cortex/projects/cortex-prx-hr"
       }
     },
