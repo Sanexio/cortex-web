@@ -13,7 +13,8 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
     />
-    <link rel="stylesheet" href="/landing.css?v=2026-07-04-1" />
+    <link rel="stylesheet" href="/cyber-tokens.css?v=2026-07-04-3" />
+    <link rel="stylesheet" href="/landing.css?v=2026-07-04-3" />
     <script src="/cyber-theme.js"></script>
     <meta name="robots" content="noindex,nofollow" />
   </head>
@@ -218,9 +219,9 @@
         new Date().toISOString().slice(0, 10);
 
       // === Theme-Switcher CyberDark <-> CyberWhite (Welle 5) ==========
-      // cyber-theme.js (im <head>) hat data-theme bereits gesetzt;
-      // hier nur Toggle + Persistenz (localStorage, origin-weit — die
-      // proxied Sub-Seiten lesen denselben Key via injiziertem Skript).
+      // cyber-theme.js (im <head>) hat data-theme fuer die Landing bereits
+      // gesetzt; hier nur Toggle + Persistenz. Die Harness-SPA liest die
+      // Auswahl ueber pending-Prefill und eigenes natives Theme.
       (function () {
         var KEY = "cortex_cyber_theme";
         var btn = document.getElementById("theme-switch");

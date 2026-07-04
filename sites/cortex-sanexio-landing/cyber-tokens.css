@@ -1,0 +1,128 @@
+/* cortex-sanexio.tech — canonical CyberPunk/CyberWhite tokens.
+ * Landing CSS consumes only --cyber-* color tokens; Harness CyberWhite
+ * remains pre-inversion and documents its source complements in
+ * THEME-SCHEMA.md. */
+
+:root {
+  --cyber-bg: #0c0c0c;
+  --cyber-bg-2: #141414;
+  --cyber-bg-3: #1c1c1c;
+  --cyber-bg-4: #242424;
+  --cyber-bg-soft: #141414;
+  --cyber-ink: #ffffff;
+  --cyber-muted: #888888;
+  --cyber-cyan: #00ddf5;
+  --cyber-magenta: #ff2878;
+  --cyber-yellow: #f5c300;
+  --cyber-green: #5dff9c;
+  --cyber-black: #000000;
+  --cyber-white: #ffffff;
+
+  --cyber-grid: rgba(0, 221, 245, 0.05);
+  --cyber-line: rgba(255, 255, 255, 0.08);
+  --cyber-border-yellow: rgba(245, 195, 0, 0.18);
+  --cyber-glow-yellow: 0 0 18px rgba(245, 195, 0, 0.5), 0 0 40px rgba(245, 195, 0, 0.2);
+  --cyber-glow-cyan: 0 0 18px rgba(0, 221, 245, 0.5);
+  --cyber-shadow-yellow: 0 0 0 1px rgba(245, 195, 0, 0.45), 0 16px 38px rgba(245, 195, 0, 0.18);
+
+  --cyber-code-bg: rgba(0, 221, 245, 0.08);
+  --cyber-code-border: rgba(0, 221, 245, 0.18);
+  --cyber-grid-bloom-cyan: rgba(0, 221, 245, 0.12);
+  --cyber-grid-bloom-magenta: rgba(255, 40, 120, 0.08);
+  --cyber-scanline: rgba(255, 255, 255, 0.015);
+  --cyber-eyebrow-border: rgba(0, 221, 245, 0.28);
+  --cyber-eyebrow-bg: rgba(0, 221, 245, 0.05);
+  --cyber-title-shadow: rgba(0, 221, 245, 0.18);
+  --cyber-accent-shadow: rgba(245, 195, 0, 0.35);
+  --cyber-meta-bg: rgba(255, 255, 255, 0.02);
+  --cyber-card-bg-start: rgba(255, 255, 255, 0.02);
+  --cyber-card-bg-end: rgba(0, 221, 245, 0.04);
+  --cyber-card-border: rgba(255, 255, 255, 0.08);
+  --cyber-card-sweep-cyan: rgba(0, 221, 245, 0.22);
+  --cyber-card-sweep-yellow: rgba(245, 195, 0, 0.28);
+  --cyber-card-aura-cyan: rgba(0, 221, 245, 0.40);
+  --cyber-card-aura-yellow: rgba(245, 195, 0, 0.38);
+  --cyber-card-hover-border: rgba(245, 195, 0, 0.8);
+  --cyber-card-hover-bg-cyan: rgba(0, 221, 245, 0.06);
+  --cyber-card-hover-bg-yellow: rgba(245, 195, 0, 0.06);
+  --cyber-card-hover-ring: rgba(245, 195, 0, 0.55);
+  --cyber-card-hover-shadow: rgba(0, 0, 0, 0.6);
+  --cyber-card-hover-glow-cyan: rgba(0, 221, 245, 0.35);
+  --cyber-card-hover-glow-yellow: rgba(245, 195, 0, 0.3);
+  --cyber-glitch-magenta-shadow: rgba(255, 40, 120, 0.6);
+  --cyber-glitch-cyan-shadow: rgba(0, 221, 245, 0.6);
+  --cyber-chip-bg: rgba(255, 255, 255, 0.04);
+  --cyber-chip-border: rgba(0, 221, 245, 0.18);
+  --cyber-stack-bg: rgba(255, 255, 255, 0.02);
+  --cyber-toggle-bg: rgba(0, 221, 245, 0.04);
+  --cyber-toggle-border: rgba(0, 221, 245, 0.28);
+  --cyber-toggle-hover-bg: rgba(245, 195, 0, 0.08);
+  --cyber-toggle-separator: rgba(255, 255, 255, 0.2);
+  --cyber-green-glow: rgba(93, 255, 156, 0.8);
+  --cyber-off-dot-bg: #4a4a4a;
+  --cyber-off-badge-bg: #333333;
+  --cyber-off-badge-ink: #999999;
+  --cyber-card-off-bg: #242424;
+}
+
+html[data-theme="cyber-white"] {
+  --cyber-bg: #cfd7e0;
+  --cyber-bg-2: #ffffff;
+  --cyber-bg-3: #ffffff;
+  --cyber-bg-4: #ffffff;
+  --cyber-bg-soft: #dde4ec;
+  --cyber-ink: #06101c;
+  --cyber-muted: #3a4550;
+  --cyber-cyan: #006884;
+  --cyber-magenta: #b0104e;
+  --cyber-yellow: #1a3fc4;
+  --cyber-green: #077a45;
+  --cyber-black: #000000;
+  --cyber-white: #ffffff;
+
+  --cyber-grid: rgba(0, 104, 132, 0.16);
+  --cyber-line: rgba(6, 16, 28, 0.32);
+  --cyber-border-yellow: rgba(26, 63, 196, 0.55);
+  --cyber-glow-yellow: 0 0 0 1px rgba(26, 63, 196, 0.5), 0 0 24px rgba(26, 63, 196, 0.12);
+  --cyber-glow-cyan: 0 0 0 1px rgba(0, 104, 132, 0.45);
+  --cyber-shadow-yellow: 0 0 0 1px rgba(26, 63, 196, 0.55), 0 14px 30px rgba(6, 16, 28, 0.16);
+
+  --cyber-code-bg: rgba(0, 104, 132, 0.08);
+  --cyber-code-border: rgba(0, 104, 132, 0.18);
+  --cyber-grid-bloom-cyan: rgba(0, 104, 132, 0.08);
+  --cyber-grid-bloom-magenta: rgba(176, 16, 78, 0.04);
+  --cyber-scanline: rgba(6, 16, 28, 0.025);
+  --cyber-title-shadow: rgba(0, 104, 132, 0.12);
+  --cyber-accent-shadow: rgba(26, 63, 196, 0.18);
+  --cyber-meta-bg: rgba(255, 255, 255, 0.75);
+  --cyber-card-bg-start: #ffffff;
+  --cyber-card-bg-end: rgba(0, 104, 132, 0.04);
+  --cyber-card-border: rgba(6, 16, 28, 0.38);
+  --cyber-card-hover-border: #1a3fc4;
+  --cyber-card-hover-bg-cyan: #ffffff;
+  --cyber-card-hover-bg-yellow: rgba(26, 63, 196, 0.05);
+  --cyber-card-hover-ring: rgba(26, 63, 196, 0.7);
+  --cyber-card-hover-shadow: rgba(6, 16, 28, 0.22);
+  --cyber-card-hover-glow-cyan: rgba(0, 104, 132, 0.18);
+  --cyber-card-hover-glow-yellow: rgba(26, 63, 196, 0.16);
+  --cyber-card-sweep-cyan: rgba(0, 104, 132, 0.1);
+  --cyber-card-sweep-yellow: rgba(26, 63, 196, 0.1);
+  --cyber-card-aura-cyan: rgba(0, 104, 132, 0.1);
+  --cyber-card-aura-yellow: rgba(26, 63, 196, 0.08);
+  --cyber-glitch-magenta-shadow: rgba(176, 16, 78, 0.35);
+  --cyber-glitch-cyan-shadow: rgba(0, 104, 132, 0.35);
+  --cyber-chip-bg: rgba(6, 16, 28, 0.05);
+  --cyber-chip-border: rgba(0, 104, 132, 0.5);
+  --cyber-stack-bg: rgba(255, 255, 255, 0.75);
+  --cyber-toggle-bg: rgba(255, 255, 255, 0.85);
+  --cyber-toggle-border: rgba(0, 104, 132, 0.55);
+  --cyber-toggle-hover-bg: rgba(26, 63, 196, 0.08);
+  --cyber-toggle-separator: rgba(6, 16, 28, 0.24);
+  --cyber-green-glow: rgba(7, 122, 69, 0.45);
+  --cyber-eyebrow-bg: #06101c;
+  --cyber-eyebrow-border: rgba(0, 104, 132, 0.5);
+  --cyber-off-dot-bg: #7f8994;
+  --cyber-off-badge-bg: #b9c3ce;
+  --cyber-off-badge-ink: #2e3944;
+  --cyber-card-off-bg: #eef1f5;
+}
