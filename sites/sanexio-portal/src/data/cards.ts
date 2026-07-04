@@ -39,6 +39,18 @@ export const CARDS: ProjectCard[] = [
     tags: ["Kalkulation", "Finanzen"],
   },
   {
+    id: "cortex-qm",
+    title: "Cortex-QM",
+    subtitle: "QM-Plattform Praxiszentrum",
+    description:
+      "Digitales, selbstlernendes Qualitätsmanagement — Module, Glossar, Suche, Anmerkungs-Workflow. Login: Sanexio / Cortex-QM.",
+    status: "production",
+    access: "open",
+    badge: "PRODUCTION",
+    href: "https://qm.cortex-sanexio.tech/",
+    tags: ["QM", "Praxis", "Selbstlernend"],
+  },
+  {
     id: "sanexio-cortex",
     title: "Sanexio Cortex",
     subtitle: "Plattform-Dashboard",
@@ -46,15 +58,6 @@ export const CARDS: ProjectCard[] = [
       "Admin-Dashboard zum Cortex-Ökosystem (Plattform-Fortschritt, Cluster-Sync, Live-Deploys, offene User-Aktionen). Aktuell nicht freigeschaltet.",
     status: "locked",
     tags: ["Dashboard", "Admin", "Cluster"],
-  },
-  {
-    id: "cortex-qm",
-    title: "Cortex-QM",
-    subtitle: "Qualitätsmanagement",
-    description:
-      "QM-Handbuch, Risk-Register, Auditprotokolle für die Praxis. Aktuell intern, nicht freigeschaltet.",
-    status: "locked",
-    tags: ["QM", "Audit"],
   },
   {
     id: "cortex-desk",

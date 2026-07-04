@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-03T22:25:55.493Z",
+  "generated_at": "2026-07-04T06:48:42.774Z",
   "stats": {
-    "nodes": 342,
+    "nodes": 343,
     "edges": 1730,
     "files_scanned": 418,
-    "repository_nodes": 22,
+    "repository_nodes": 23,
     "repository_edges": 32
   },
   "clusters": [
@@ -1985,13 +1985,13 @@
     },
     {
       "id": "__repo/Cortex-Web",
-      "label": "Cortex-Web @ 3b582c7",
+      "label": "Cortex-Web @ 91bd836",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "3b582c7",
-        "head_subject": "style(landing): CyberWhite — Badge-Schrift weiss auf Kobalt-Grund",
+        "head_sha": "91bd836",
+        "head_subject": "feat(landing): CyberWhite auf Harness-Sub-Seiten (Welle 6)",
         "path": "/Users/ssmd/Cortex/projects/Cortex-Web"
       }
     },
@@ -2113,6 +2113,18 @@
         "head_sha": "a679315",
         "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-03T18:13:54Z",
         "path": "/Users/ssmd/Cortex/projects/cortex-prx-kalkulation"
+      }
+    },
+    {
+      "id": "__repo/cortex-prx-qm",
+      "label": "cortex-prx-qm @ f17c24a",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "f17c24a",
+        "head_subject": "deploy.sh: set-e/pipefail-Fallen entschärft ([[ ]]&&-Einzeiler, leere Backup-Rotation)",
+        "path": "/Users/ssmd/Cortex/projects/cortex-prx-qm"
       }
     },
     {
