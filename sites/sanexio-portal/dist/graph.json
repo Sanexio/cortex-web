@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-04T06:48:42.774Z",
+  "generated_at": "2026-07-04T07:58:58.858Z",
   "stats": {
-    "nodes": 343,
+    "nodes": 344,
     "edges": 1730,
     "files_scanned": 418,
-    "repository_nodes": 23,
+    "repository_nodes": 24,
     "repository_edges": 32
   },
   "clusters": [
@@ -1985,13 +1985,13 @@
     },
     {
       "id": "__repo/Cortex-Web",
-      "label": "Cortex-Web @ 91bd836",
+      "label": "Cortex-Web @ 5864a21",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "91bd836",
-        "head_subject": "feat(landing): CyberWhite auf Harness-Sub-Seiten (Welle 6)",
+        "head_sha": "5864a21",
+        "head_subject": "feat(portal+landing): Cortex-QM produktiv — Karte nach Pg-Kalkulation, Login-Hinweis",
         "path": "/Users/ssmd/Cortex/projects/Cortex-Web"
       }
     },
@@ -2104,6 +2104,18 @@
       }
     },
     {
+      "id": "__repo/cortex-prx-hr",
+      "label": "cortex-prx-hr",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "",
+        "head_subject": "",
+        "path": "/Users/ssmd/Cortex/projects/cortex-prx-hr"
+      }
+    },
+    {
       "id": "__repo/cortex-prx-kalkulation",
       "label": "cortex-prx-kalkulation @ a679315",
       "cluster": "__repos",
@@ -2117,13 +2129,13 @@
     },
     {
       "id": "__repo/cortex-prx-qm",
-      "label": "cortex-prx-qm @ f17c24a",
+      "label": "cortex-prx-qm @ 0ab055d",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "f17c24a",
-        "head_subject": "deploy.sh: set-e/pipefail-Fallen entschärft ([[ ]]&&-Einzeiler, leere Backup-Rotation)",
+        "head_sha": "0ab055d",
+        "head_subject": "feat(gaps): Offene Punkte klickbar — Sprung ins Ziel-Modul zum Anmerkungs-Formular",
         "path": "/Users/ssmd/Cortex/projects/cortex-prx-qm"
       }
     },

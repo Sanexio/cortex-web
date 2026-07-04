@@ -116,6 +116,34 @@ export function ProjectCardView({ card, onLockedClick, onAdminClick, onLocalUnav
     );
   }
 
+  if (card.children && card.children.length > 0) {
+    return (
+      <div
+        className={`${className} card-parent`}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+      >
+        {body}
+        <div className="card-subtiles">
+          {card.children.map((sub) => (
+            <a
+              key={sub.id}
+              href={sub.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="card-subtile"
+            >
+              <span className="card-subtile-title">{sub.title}</span>
+              {sub.subtitle && (
+                <span className="card-subtile-sub">{sub.subtitle}</span>
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (isAdmin) {
     return (
       <button

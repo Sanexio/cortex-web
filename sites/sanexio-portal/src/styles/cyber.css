@@ -504,6 +504,45 @@ body {
 }
 .card-active .card-tag { color: var(--neon-cyan); border-color: rgba(0, 221, 245, 0.18); }
 
+/* === Unterkacheln (z.B. Cortex-HR → Dienstplanung / Mitarbeiter) === */
+.card-parent { cursor: default; }
+.card-subtiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+.card-subtile {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 221, 245, 0.25);
+  border-radius: 4px;
+  background: rgba(0, 221, 245, 0.05);
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.card-subtile:hover {
+  border-color: rgba(245, 195, 0, 0.55);
+  background: rgba(245, 195, 0, 0.07);
+  transform: translateY(-1px);
+}
+.card-subtile-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.card-subtile-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--neon-cyan);
+}
+
 /* Glitch-Backdrop on hover (only active cards) */
 .card-glitch {
   position: absolute;

@@ -1,3 +1,10 @@
+export type SubCard = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  href: string;
+};
+
 export type ProjectCard = {
   id: string;
   title: string;
@@ -11,20 +18,36 @@ export type ProjectCard = {
   hrefRequiresLocal?: boolean;
   /** Interne Sub-Routen (z.B. "sanexio-cortex") für Admin-Apps im Portal selbst. */
   internalRoute?: string;
+  /** Unterkacheln — Hauptkachel wird Container, Klickziele sind die Sub-Tiles. */
+  children?: SubCard[];
   tags: string[];
 };
 
 export const CARDS: ProjectCard[] = [
   {
-    id: "workforce-time",
-    title: "Workforce-Time",
-    subtitle: "Arbeitszeit · Schichtplanung",
-    description: "Login mit E-Mail und Passwort.",
+    id: "cortex-hr",
+    title: "Cortex-HR",
+    subtitle: "Mitarbeiter · Dienstplanung · Audit",
+    description:
+      "Zentrale Mitarbeiter-Plattform: Akten, Cortex-SSO-Login (ein Login für alle Projekte), Audit-Log und Dienstplanung.",
     status: "production",
     access: "open",
     badge: "PRODUCTION",
-    href: "https://workforce-time.cortex-sanexio.tech/",
-    tags: ["Workforce", "Login", "Live"],
+    children: [
+      {
+        id: "hr-dienstplanung",
+        title: "Dienstplanung",
+        subtitle: "workforce-time",
+        href: "https://workforce-time.cortex-sanexio.tech/",
+      },
+      {
+        id: "hr-mitarbeiter",
+        title: "Mitarbeiter",
+        subtitle: "Akten · Audit-Log",
+        href: "https://hr.cortex-sanexio.tech/",
+      },
+    ],
+    tags: ["HR", "SSO", "Audit", "Live"],
   },
   {
     id: "pg-kalkulation",
