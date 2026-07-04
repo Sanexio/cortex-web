@@ -740,6 +740,19 @@ html[data-theme="cyber-white"] .badge--off {
   color: #2e3944;
 }
 html[data-theme="cyber-white"] .badge--link { color: #ffffff; }
+/* Hero-Badge: .badge bekommt oben weisse Schrift (Kobalt-Grund) —
+ * das Eyebrow-Badge hat aber hellen Grund. Dunkle Insel draus machen. */
+html[data-theme="cyber-white"] .hero-eyebrow {
+  background: #06101c;
+  border-color: rgba(0, 104, 132, 0.5);
+}
+/* Offline-Karten: opacity-Dimmung wuescht auf hellem Grund alle
+ * Textkontraste unter 4.5:1 — stattdessen entsaettigen. */
+html[data-theme="cyber-white"] .card--off {
+  opacity: 1;
+  filter: saturate(0.2);
+  background: #eef1f5;
+}
 
 /* Responsive */
 @media (max-width: 640px) {

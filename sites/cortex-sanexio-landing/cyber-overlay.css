@@ -133,19 +133,45 @@ html[data-theme="cyber-white"] {
   --foreground-base: #06101c !important;
   --theme-surface: #ffffff !important;
   --theme-accent-primary: #1a3fc4 !important;
-  --theme-accent-secondary: #006884 !important;
+  --theme-accent-secondary: #00566e !important;
   --theme-text-primary: #06101c !important;
   --theme-text-muted: #3a4550 !important;
+  /* SPA-Textstufen: Fallbacks sind 80%/65%/45%-Alpha von
+   * --midground-base — auf hellem Grund zu blass. Volltoene setzen. */
+  --text-primary: #06101c !important;
+  --text-secondary: #0f2d6e !important;
+  --text-tertiary: #3a4550 !important;
+  --text-disabled: rgba(6, 16, 28, 0.5) !important;
   --theme-glow-primary: rgba(26, 63, 196, 0.12) !important;
   --theme-glow-secondary: rgba(0, 104, 132, 0.12) !important;
   --color-destructive: #b0104e !important;
   --warm-glow: transparent !important;
-  /* Tailwind-Vars, die das SPA-CSS NICHT definiert — Plugins
-   * (z. B. /dashboard-plugins/projects) fallen sonst auf ihre
-   * dunklen Fallback-Literale zurueck (#0d1210/#eef4ee). */
+  /* Volle shadcn-Palette (--color-*): aktive Harness-Themes (z. B.
+   * "homebrew") setzen ALLE diese Tokens inline auf <html> — ohne
+   * Remap malen Karten/Buttons/Plugins mit deren Dunkel-Werten
+   * (Regression 2026-07-04, Harness v0.16.0). */
   --color-background: #cfd7e0 !important;
   --color-foreground: #06101c !important;
   --color-warning: #1a3fc4 !important;
+  --color-card: #ffffff !important;
+  --color-card-foreground: #06101c !important;
+  --color-popover: #ffffff !important;
+  --color-popover-foreground: #06101c !important;
+  --color-primary: #1a3fc4 !important;
+  --color-primary-foreground: #ffffff !important;
+  --color-secondary: #dde4ec !important;
+  --color-secondary-foreground: #06101c !important;
+  --color-muted: #e4e9f0 !important;
+  --color-muted-foreground: #3a4550 !important;
+  --color-accent: #dbe2f5 !important;
+  --color-accent-foreground: #1a3fc4 !important;
+  --color-destructive-foreground: #ffffff !important;
+  --color-success: #077a45 !important;
+  --color-border: rgba(6, 16, 28, 0.32) !important;
+  --color-input: rgba(6, 16, 28, 0.32) !important;
+  --color-ring: #1a3fc4 !important;
+  --series-input-token: #006884 !important;
+  --series-output-token: #1a3fc4 !important;
   /* Terminal bleibt dunkle Insel (Daylight-Prinzip wie Portal-Graph) */
   --theme-terminal-background: #0c1220 !important;
 
@@ -191,6 +217,59 @@ html[data-theme="cyber-white"] {
 /* Projects-Plugin: customCSS setzt --cp-box-hover als dunkles Literal */
 html[data-theme="cyber-white"] .projects-root {
   --cp-box-hover: #eef2f7 !important;
+}
+
+/* Harness v0.16.0 CRT-Inversion-Layer: die App-Shell malt einen
+ * schwarzen Container und legt Fullscreen-Layer mit
+ * mix-blend-mode: difference darueber (schwarz + diff(--background)
+ * = --background). Mit heller Palette invertiert das Elemente
+ * zwischen den Layern (Sidebar) ins Dunkle. In CyberWhite:
+ * Blend-Layer aus (rein dekorativ, pointer-events: none) und dem
+ * Container direkt den Seitengrund geben. */
+html[data-theme="cyber-white"] div.pointer-events-none.fixed.inset-0 {
+  display: none !important;
+}
+html[data-theme="cyber-white"] .bg-black {
+  background-color: #cfd7e0 !important;
+}
+
+/* Inline mix-blend-mode: plus-lighter (Sidebar-Logo, Trennlinie,
+ * Footer-Link) addiert auf hellem Grund zu Weiss — neutralisieren. */
+html[data-theme="cyber-white"] [style*="plus-lighter"] {
+  mix-blend-mode: normal !important;
+}
+
+/* midground-Text mit Alpha-Stufen (Badges "telegram"/"cli"/…) faellt
+ * auf hellem Grund unter 4.5 — voll deckend machen. */
+html[data-theme="cyber-white"] .text-midground\/80,
+html[data-theme="cyber-white"] .text-midground\/70,
+html[data-theme="cyber-white"] .text-midground\/60,
+html[data-theme="cyber-white"] .text-midground\/50 {
+  color: #1a3fc4 !important;
+}
+
+/* SPA-Literale: text-destructive/-warning sind hartkodierte
+ * Neon-Werte (#ff3131 / #ff8c00) — auf hell zu blass. */
+html[data-theme="cyber-white"] .text-destructive,
+html[data-theme="cyber-white"] .text-destructive\/70 {
+  color: #b0104e !important;
+}
+html[data-theme="cyber-white"] .text-warning,
+html[data-theme="cyber-white"] .text-warning\/50,
+html[data-theme="cyber-white"] .text-warning\/80 {
+  color: #7a4300 !important;
+}
+
+/* Second-Brain-Toolbar liegt auf der dunklen Graph-Insel:
+ * halbtransparente Buttons werden dort zu Grau-auf-Grau. */
+html[data-theme="cyber-white"] .sb-tab,
+html[data-theme="cyber-white"] .sb-action-button {
+  background: #ffffff !important;
+  color: #06101c !important;
+}
+html[data-theme="cyber-white"] .sb-tab-active {
+  background: #1a3fc4 !important;
+  color: #ffffff !important;
 }
 
 html[data-theme="cyber-white"] body {
