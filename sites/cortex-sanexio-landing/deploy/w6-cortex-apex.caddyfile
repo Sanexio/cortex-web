@@ -32,10 +32,22 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
         file_server
     }
     # Landing-Page-Assets (CSS + Favicon + Cyber-Overlay) — short cache, immer revalidieren
-    @landing_assets path /landing.css /favicon.svg /cyber-overlay.css /cyber-theme.js
+    @landing_assets path /landing.css /favicon.svg /cyber-overlay.css /cyber-theme.js /cyber-tokens.css
     handle @landing_assets {
         root * /srv/sanexio/apps/cortex-sanexio-landing
         header Cache-Control "no-cache, must-revalidate"
+        file_server
+    }
+
+
+    # Portal-Graph public + frisch (systemd-Timer alle 5 Min regeneriert).
+    @portal_graph path /portal-graph.json
+    handle @portal_graph {
+        root * /srv/sanexio/data/portal
+        rewrite * /graph.json
+        header Cache-Control "public, max-age=60"
+        header Access-Control-Allow-Origin "https://portal.sanexio.de"
+        header Access-Control-Allow-Methods "GET, OPTIONS"
         file_server
     }
 
