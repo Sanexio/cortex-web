@@ -10,6 +10,7 @@ type Props = {
 
 export function ProjectCardView({ card, onLockedClick, onAdminClick, onLocalUnavailable }: Props) {
   const [hover, setHover] = useState(false);
+  const [subOpen, setSubOpen] = useState(false);
   const isLocked = card.status === "locked";
   const isAdmin = card.access === "admin";
 
@@ -118,29 +119,91 @@ export function ProjectCardView({ card, onLockedClick, onAdminClick, onLocalUnav
 
   if (card.children && card.children.length > 0) {
     return (
-      <div
-        className={`${className} card-parent`}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-      >
-        {body}
-        <div className="card-subtiles">
-          {card.children.map((sub) => (
-            <a
-              key={sub.id}
-              href={sub.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="card-subtile"
-            >
-              <span className="card-subtile-title">{sub.title}</span>
-              {sub.subtitle && (
-                <span className="card-subtile-sub">{sub.subtitle}</span>
-              )}
-            </a>
-          ))}
+      <>
+        <div
+          className={`${className} card-parent`}
+          role="button"
+          tabIndex={0}
+          aria-label={card.title}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          onClick={() => setSubOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setSubOpen(true);
+            }
+          }}
+        >
+          {body}
+          <div className="card-subtiles">
+            {card.children.map((sub) => (
+              <a
+                key={sub.id}
+                href={sub.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card-subtile"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <span className="card-subtile-title">{sub.title}</span>
+                {sub.subtitle && (
+                  <span className="card-subtile-sub">{sub.subtitle}</span>
+                )}
+              </a>
+            ))}
+          </div>
         </div>
-      </div>
+        {subOpen && (
+          <div
+            className="subtile-modal-backdrop"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSubOpen(false);
+            }}
+          >
+            <div
+              className="subtile-modal cyber-frame"
+              role="dialog"
+              aria-modal="true"
+              aria-label={card.title}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="subtile-modal-head">
+                <div className="subtile-modal-copy">
+                  <span className="card-id">{`// ${card.id}`}</span>
+                  <h3 className="subtile-modal-title t-h4">{card.title}</h3>
+                  <p className="card-subtitle">{card.subtitle}</p>
+                </div>
+                <button
+                  type="button"
+                  className="subtile-modal-close"
+                  aria-label="Schließen"
+                  onClick={() => setSubOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="subtile-modal-grid">
+                {card.children.map((sub) => (
+                  <a
+                    key={sub.id}
+                    href={sub.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="subtile-modal-tile"
+                  >
+                    <span className="card-subtile-title">{sub.title}</span>
+                    {sub.subtitle && (
+                      <span className="card-subtile-sub">{sub.subtitle}</span>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 

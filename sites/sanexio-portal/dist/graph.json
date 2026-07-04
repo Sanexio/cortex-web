@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-04T07:58:58.858Z",
+  "generated_at": "2026-07-04T08:22:38.318Z",
   "stats": {
-    "nodes": 344,
+    "nodes": 346,
     "edges": 1730,
     "files_scanned": 418,
-    "repository_nodes": 24,
+    "repository_nodes": 26,
     "repository_edges": 32
   },
   "clusters": [
@@ -1985,13 +1985,13 @@
     },
     {
       "id": "__repo/Cortex-Web",
-      "label": "Cortex-Web @ 5864a21",
+      "label": "Cortex-Web @ 7d41388",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "5864a21",
-        "head_subject": "feat(portal+landing): Cortex-QM produktiv — Karte nach Pg-Kalkulation, Login-Hinweis",
+        "head_sha": "7d41388",
+        "head_subject": "feat(portal): Cortex-HR Hauptkachel mit Unterkacheln Dienstplanung + Mitarbeiter",
         "path": "/Users/ssmd/Cortex/projects/Cortex-Web"
       }
     },
@@ -2068,6 +2068,18 @@
       }
     },
     {
+      "id": "__repo/cortex-banking-core",
+      "label": "cortex-banking-core @ 554e7d1",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "554e7d1",
+        "head_subject": "Initial: Bank-/Ingest-/DB-Fundament aus cortex-prx-kalkulation extrahiert",
+        "path": "/Users/ssmd/Cortex/projects/cortex-banking-core"
+      }
+    },
+    {
       "id": "__repo/cortex-cli",
       "label": "cortex-cli @ 022ea90",
       "cluster": "__repos",
@@ -2093,25 +2105,37 @@
     },
     {
       "id": "__repo/cortex-harness",
-      "label": "cortex-harness @ 5ebc374",
+      "label": "cortex-harness @ 06c94f4",
       "cluster": "__repos",
       "degree": 4,
       "meta": {
         "kind": "repository",
-        "head_sha": "5ebc374",
-        "head_subject": "master-commit: WIP @Cluster-Mini-04 2026-07-03T18:14:48Z",
+        "head_sha": "06c94f4",
+        "head_subject": "theme: Katalog auf CyberPunk + CyberWhite reduziert, Alt-Themes migrieren via Alias",
         "path": "/Users/ssmd/Cortex/projects/cortex-harness"
       }
     },
     {
-      "id": "__repo/cortex-prx-hr",
-      "label": "cortex-prx-hr",
+      "id": "__repo/cortex-ledger",
+      "label": "cortex-ledger",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
         "head_sha": "",
         "head_subject": "",
+        "path": "/Users/ssmd/Cortex/projects/cortex-ledger"
+      }
+    },
+    {
+      "id": "__repo/cortex-prx-hr",
+      "label": "cortex-prx-hr @ e56a71d",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "e56a71d",
+        "head_subject": "feat: Cortex-HR — Mitarbeiterportal, Cortex-SSO, zentrales Audit-Log",
         "path": "/Users/ssmd/Cortex/projects/cortex-prx-hr"
       }
     },

@@ -505,32 +505,34 @@ body {
 .card-active .card-tag { color: var(--neon-cyan); border-color: rgba(0, 221, 245, 0.18); }
 
 /* === Unterkacheln (z.B. Cortex-HR → Dienstplanung / Mitarbeiter) === */
-.card-parent { cursor: default; }
+.card-parent { cursor: pointer; }
 .card-subtiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 16px;
+  gap: 12px;
+  margin-top: 18px;
 }
 .card-subtile {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 12px 14px;
-  border: 1px solid rgba(0, 221, 245, 0.25);
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid rgba(245, 195, 0, 0.4);
+  border-left: 3px solid rgba(245, 195, 0, 0.85);
   border-radius: 4px;
-  background: rgba(0, 221, 245, 0.05);
+  background: rgba(245, 195, 0, 0.07);
   text-decoration: none;
-  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 .card-subtile:hover {
-  border-color: rgba(245, 195, 0, 0.55);
-  background: rgba(245, 195, 0, 0.07);
+  border-color: rgba(245, 195, 0, 0.85);
+  background: rgba(245, 195, 0, 0.12);
+  box-shadow: 0 0 12px rgba(245, 195, 0, 0.18);
   transform: translateY(-1px);
 }
 .card-subtile-title {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -541,6 +543,92 @@ body {
   font-size: 10px;
   letter-spacing: 0.06em;
   color: var(--neon-cyan);
+}
+
+/* === Unterkachel-Overlay (Klick auf Gruppen-Hauptkachel) === */
+.subtile-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(4, 8, 12, 0.78);
+  backdrop-filter: blur(4px);
+  cursor: default;
+}
+.subtile-modal {
+  width: min(580px, 100%);
+  max-height: min(80vh, 640px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 26px;
+  border: 1px solid rgba(245, 195, 0, 0.55);
+  border-radius: 6px;
+  background: var(--bg-1, #0a0f14);
+  box-shadow: 0 0 36px rgba(245, 195, 0, 0.16);
+}
+.subtile-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.subtile-modal-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.subtile-modal-title {
+  margin: 0;
+  color: var(--ink);
+}
+.subtile-modal-close {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.subtile-modal-close:hover {
+  border-color: rgba(245, 195, 0, 0.85);
+  color: rgba(245, 195, 0, 0.95);
+}
+.subtile-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 14px;
+}
+.subtile-modal-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  border: 1px solid rgba(245, 195, 0, 0.4);
+  border-left: 3px solid rgba(245, 195, 0, 0.85);
+  border-radius: 4px;
+  background: rgba(245, 195, 0, 0.07);
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.subtile-modal-tile:hover {
+  border-color: rgba(245, 195, 0, 0.85);
+  background: rgba(245, 195, 0, 0.12);
+  box-shadow: 0 0 12px rgba(245, 195, 0, 0.18);
+  transform: translateY(-1px);
+}
+.subtile-modal-tile .card-subtile-title {
+  font-size: 16px;
 }
 
 /* Glitch-Backdrop on hover (only active cards) */
