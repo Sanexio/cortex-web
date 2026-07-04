@@ -1,27 +1,27 @@
 @import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap");
 :root {
-  --bg: #0c0c0c;
-  --bg-2: #141414;
-  --bg-3: #1c1c1c;
-  --bg-4: #242424;
-  --ink: #ffffff;
-  --ink-2: #888888;
-  --neon-cyan: #00ddf5;
-  --neon-magenta: #ff2878;
-  --neon-yellow: #f5c300;
-  --neon-green: #5dff9c;
-  --grid: rgba(0, 221, 245, 0.05);
-  --grid-strong: rgba(0, 221, 245, 0.12);
-  --line: rgba(255, 255, 255, 0.08);
-  --border-yellow: rgba(245,195,0,0.18);
+  --bg: var(--cyber-bg);
+  --bg-2: var(--cyber-bg-2);
+  --bg-3: var(--cyber-bg-3);
+  --bg-4: var(--cyber-bg-4);
+  --ink: var(--cyber-ink);
+  --ink-2: var(--cyber-muted);
+  --neon-cyan: var(--cyber-cyan);
+  --neon-magenta: var(--cyber-magenta);
+  --neon-yellow: var(--cyber-yellow);
+  --neon-green: var(--cyber-green);
+  --grid: var(--cyber-grid);
+  --grid-strong: var(--cyber-grid-bloom-cyan);
+  --line: var(--cyber-line);
+  --border-yellow: var(--cyber-border-yellow);
   --radius: 6px;
   --corner: 28px;
   --corner-w: 2px;
-  --glow-y: 0 0 18px rgba(245,195,0,0.5), 0 0 40px rgba(245,195,0,0.2);
-  --glow-p: 0 0 18px rgba(255,40,120,0.5), 0 0 40px rgba(255,40,120,0.2);
-  --glow-c: 0 0 18px rgba(0,221,245,0.5);
-  --shadow-cyan: 0 0 0 1px rgba(0, 221, 245, 0.25), 0 12px 32px rgba(0, 221, 245, 0.08);
-  --shadow-yellow: 0 0 0 1px rgba(245, 195, 0, 0.45), 0 16px 38px rgba(245, 195, 0, 0.18);
+  --glow-y: var(--cyber-glow-yellow);
+  --glow-p: 0 0 18px rgb(from var(--cyber-magenta) r g b / 0.5), 0 0 40px rgb(from var(--cyber-magenta) r g b / 0.2);
+  --glow-c: var(--cyber-glow-cyan);
+  --shadow-cyan: 0 0 0 1px rgb(from var(--cyber-cyan) r g b / 0.25), 0 12px 32px rgb(from var(--cyber-cyan) r g b / 0.08);
+  --shadow-yellow: var(--cyber-shadow-yellow);
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-body: "Rajdhani", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
@@ -566,10 +566,10 @@ body {
   flex-direction: column;
   gap: 18px;
   padding: 26px;
-  border: 1px solid rgba(245, 195, 0, 0.55);
+  border: 1px solid rgb(from var(--cyber-yellow) r g b / 0.55);
   border-radius: 6px;
   background: var(--bg-1, #0a0f14);
-  box-shadow: 0 0 36px rgba(245, 195, 0, 0.16);
+  box-shadow: 0 0 36px rgb(from var(--cyber-yellow) r g b / 0.16);
 }
 .subtile-modal-head {
   display: flex;
@@ -601,8 +601,8 @@ body {
   transition: border-color 0.2s, color 0.2s;
 }
 .subtile-modal-close:hover {
-  border-color: rgba(245, 195, 0, 0.85);
-  color: rgba(245, 195, 0, 0.95);
+  border-color: rgb(from var(--cyber-yellow) r g b / 0.85);
+  color: rgb(from var(--cyber-yellow) r g b / 0.95);
 }
 .subtile-modal-grid {
   display: grid;
@@ -614,17 +614,17 @@ body {
   flex-direction: column;
   gap: 6px;
   padding: 18px 20px;
-  border: 1px solid rgba(245, 195, 0, 0.4);
-  border-left: 3px solid rgba(245, 195, 0, 0.85);
+  border: 1px solid rgb(from var(--cyber-yellow) r g b / 0.4);
+  border-left: 3px solid rgb(from var(--cyber-yellow) r g b / 0.85);
   border-radius: 4px;
-  background: rgba(245, 195, 0, 0.07);
+  background: rgb(from var(--cyber-yellow) r g b / 0.07);
   text-decoration: none;
   transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 .subtile-modal-tile:hover {
-  border-color: rgba(245, 195, 0, 0.85);
-  background: rgba(245, 195, 0, 0.12);
-  box-shadow: 0 0 12px rgba(245, 195, 0, 0.18);
+  border-color: rgb(from var(--cyber-yellow) r g b / 0.85);
+  background: rgb(from var(--cyber-yellow) r g b / 0.12);
+  box-shadow: 0 0 12px rgb(from var(--cyber-yellow) r g b / 0.18);
   transform: translateY(-1px);
 }
 .subtile-modal-tile .card-subtile-title {
@@ -1229,7 +1229,7 @@ body {
   color: var(--ink-2); background: rgba(0, 0, 0, 0.3);
 }
 .archiv-pill--running { color: var(--neon-yellow); border-color: var(--neon-yellow); animation: archiv-pulse 1.4s ease-in-out infinite; }
-.archiv-pill--ok      { color: #6cff9b; border-color: rgba(108, 255, 155, 0.6); }
+.archiv-pill--ok      { color: var(--cyber-green); border-color: rgb(from var(--cyber-green) r g b / 0.6); }
 .archiv-pill--err     { color: #ff4f80; border-color: rgba(255, 79, 128, 0.7); }
 @keyframes archiv-pulse {
   0%, 100% { opacity: 1; }
@@ -1291,26 +1291,26 @@ body {
  * Akzente mit Textkontrast, scharfe 1px-Ringe statt weicher Glows.
  * Grund #cfd7e0, Ink #06101c, Cyan #006884, Kobalt #1a3fc4. */
 html[data-theme="cyber-white"] {
-  --bg: #cfd7e0;
-  --bg-1: #ffffff;
-  --bg-2: #dde4ec;
-  --bg-3: #ffffff;
-  --bg-4: #ffffff;
-  --ink: #06101c;
-  --ink-2: #3a4550;
-  --neon-cyan: #006884;
-  --neon-magenta: #b0104e;
-  --neon-yellow: #1a3fc4;
-  --neon-green: #077a45;
-  --grid: rgba(0, 104, 132, 0.16);
-  --grid-strong: rgba(0, 104, 132, 0.3);
-  --line: rgba(6, 16, 28, 0.32);
-  --border-yellow: rgba(26, 63, 196, 0.55);
-  --glow-y: 0 0 0 1px rgba(26, 63, 196, 0.5), 0 0 24px rgba(26, 63, 196, 0.12);
-  --glow-p: 0 0 0 1px rgba(176, 16, 78, 0.5), 0 0 24px rgba(176, 16, 78, 0.12);
-  --glow-c: 0 0 0 1px rgba(0, 104, 132, 0.45);
-  --shadow-cyan: 0 0 0 1px rgba(0, 104, 132, 0.35), 0 12px 32px rgba(6, 16, 28, 0.14);
-  --shadow-yellow: 0 0 0 1px rgba(26, 63, 196, 0.55), 0 14px 30px rgba(6, 16, 28, 0.16);
+  --bg: var(--cyber-bg);
+  --bg-1: var(--cyber-bg-2);
+  --bg-2: var(--cyber-bg-soft);
+  --bg-3: var(--cyber-bg-3);
+  --bg-4: var(--cyber-bg-4);
+  --ink: var(--cyber-ink);
+  --ink-2: var(--cyber-muted);
+  --neon-cyan: var(--cyber-cyan);
+  --neon-magenta: var(--cyber-magenta);
+  --neon-yellow: var(--cyber-yellow);
+  --neon-green: var(--cyber-green);
+  --grid: var(--cyber-grid);
+  --grid-strong: rgb(from var(--cyber-cyan) r g b / 0.3);
+  --line: var(--cyber-line);
+  --border-yellow: var(--cyber-border-yellow);
+  --glow-y: var(--cyber-glow-yellow);
+  --glow-p: 0 0 0 1px rgb(from var(--cyber-magenta) r g b / 0.5), 0 0 24px rgb(from var(--cyber-magenta) r g b / 0.12);
+  --glow-c: var(--cyber-glow-cyan);
+  --shadow-cyan: 0 0 0 1px rgb(from var(--cyber-cyan) r g b / 0.35), 0 12px 32px rgb(from var(--cyber-ink) r g b / 0.14);
+  --shadow-yellow: var(--cyber-shadow-yellow);
 }
 html[data-theme="cyber-white"] .grid-bg {
   background-image:
@@ -1414,16 +1414,16 @@ html[data-theme="cyber-white"] .subtile-modal {
   box-shadow: var(--shadow-yellow, 0 4px 24px rgba(26, 63, 196, 0.18));
 }
 html[data-theme="cyber-white"] .subtile-modal-tile {
-  background: rgba(26, 63, 196, 0.07);
-  border-color: rgba(26, 63, 196, 0.25);
+  background: rgb(from var(--cyber-yellow) r g b / 0.07);
+  border-color: rgb(from var(--cyber-yellow) r g b / 0.25);
 }
 html[data-theme="cyber-white"] .subtile-modal-tile:hover {
-  background: rgba(26, 63, 196, 0.14);
-  border-color: rgba(26, 63, 196, 0.55);
-  box-shadow: 0 0 12px rgba(26, 63, 196, 0.22);
+  background: rgb(from var(--cyber-yellow) r g b / 0.14);
+  border-color: rgb(from var(--cyber-yellow) r g b / 0.55);
+  box-shadow: 0 0 12px rgb(from var(--cyber-yellow) r g b / 0.22);
 }
 html[data-theme="cyber-white"] .subtile-modal-close:hover {
-  color: rgba(26, 63, 196, 0.85);
+  color: rgb(from var(--cyber-yellow) r g b / 0.85);
 }
 html[data-theme="cyber-white"] .admin-modal .login-sub code { background: rgba(0, 104, 132, 0.1); }
 html[data-theme="cyber-white"] .admin-meta span::before { color: rgba(6, 16, 28, 0.3); }
