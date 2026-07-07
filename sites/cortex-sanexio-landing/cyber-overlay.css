@@ -4,5 +4,5 @@
  * cortex-dashboard-theme, data-cortex-theme="sanexio-cyber" and
  * data-cyber-skin. This file intentionally has no active rules: setting
  * html[data-theme] or component overrides from the landing layer creates
- * mixed overlay/native states and can break the CyberWhite inversion stack.
+ * mixed overlay/native states and can break the CyberWhite direct-light stack.
  */

@@ -69,8 +69,8 @@ html[data-theme="cyber-white"] {
   --cyber-bg-soft: #dde4ec;
   --cyber-black: #000000;
   --cyber-ink: #06101c;
-  --cyber-muted: #3a4550;
-  --cyber-off-badge-ink: #2e3944;
+  --cyber-muted: #000000;
+  --cyber-off-badge-ink: #000000;
   --cyber-white: #ffffff;
   --cyber-border-yellow: rgba(26, 63, 196, 0.55);
   --cyber-card-border: rgba(6, 16, 28, 0.38);
@@ -79,7 +79,7 @@ html[data-theme="cyber-white"] {
   --cyber-eyebrow-border: rgba(0, 104, 132, 0.5);
   --cyber-line: rgba(6, 16, 28, 0.32);
   --cyber-toggle-border: rgba(0, 104, 132, 0.55);
-  --cyber-cyan: #006884;
+  --cyber-cyan: #0a2352;
   --cyber-magenta: #b0104e;
   --cyber-yellow: #1a3fc4;
   --cyber-accent-shadow: rgba(26, 63, 196, 0.18);
@@ -109,7 +109,7 @@ html[data-theme="cyber-white"] {
   --cyber-card-off-bg: #eef1f5;
   --cyber-chip-bg: rgba(6, 16, 28, 0.05);
   --cyber-code-bg: rgba(0, 104, 132, 0.08);
-  --cyber-eyebrow-bg: #06101c;
+  --cyber-eyebrow-bg: rgba(0, 104, 132, 0.08);
   --cyber-grid: rgba(0, 104, 132, 0.16);
   --cyber-meta-bg: rgba(255, 255, 255, 0.75);
   --cyber-off-badge-bg: #b9c3ce;

@@ -925,20 +925,34 @@ html[data-theme="cyber-white"] .theme-toggle {
   border-color: var(--cyber-toggle-border);
 }
 html[data-theme="cyber-white"] .theme-toggle:hover { background: var(--cyber-toggle-hover-bg); }
-/* Badges auf Kobalt-Grund (PRODUCTION etc.): weisse Schrift statt
- * schwarz — schwarz auf dem Light-Akzent ist schlecht lesbar. */
+/* Badges: helle Akzentflaechen mit dunklem Akzenttext. */
 html[data-theme="cyber-white"] .badge,
-html[data-theme="cyber-white"] .card-badge { color: var(--cyber-white); }
+html[data-theme="cyber-white"] .card-badge {
+  background: rgba(26, 63, 196, 0.12);
+  border: 1px solid rgba(26, 63, 196, 0.55);
+  color: #1a3fc4;
+}
 html[data-theme="cyber-white"] .badge--off {
   background: var(--cyber-off-badge-bg);
   color: var(--cyber-off-badge-ink);
 }
-html[data-theme="cyber-white"] .badge--link { color: var(--cyber-white); }
-html[data-theme="cyber-white"] .projects-contact {
-  color: var(--cyber-white);
+html[data-theme="cyber-white"] .badge--link {
+  background: rgba(0, 104, 132, 0.12);
+  border: 1px solid rgba(0, 104, 132, 0.55);
+  color: var(--cyber-cyan);
 }
-/* Hero-Badge: .badge bekommt oben weisse Schrift (Kobalt-Grund) —
- * das Eyebrow-Badge hat aber hellen Grund. Dunkle Insel draus machen. */
+html[data-theme="cyber-white"] .projects-contact {
+  background: rgba(0, 104, 132, 0.12);
+  border-color: rgba(0, 104, 132, 0.55);
+  color: var(--cyber-cyan);
+}
+html[data-theme="cyber-white"] .projects-contact:hover,
+html[data-theme="cyber-white"] .projects-contact:focus-visible {
+  background: rgba(0, 104, 132, 0.18);
+  border-color: rgba(0, 104, 132, 0.65);
+  color: var(--cyber-cyan);
+}
+/* Hero-Badge: helle Cyan-Flaeche statt dunkler Insel. */
 html[data-theme="cyber-white"] .hero-eyebrow {
   background: var(--cyber-eyebrow-bg);
   border-color: var(--cyber-eyebrow-border);

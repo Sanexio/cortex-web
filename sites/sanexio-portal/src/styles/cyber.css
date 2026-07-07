@@ -1343,13 +1343,27 @@ html[data-theme="cyber-white"] .theme-pin {
   border-color: rgba(0, 104, 132, 0.55);
 }
 html[data-theme="cyber-white"] .hero-meta li { background: rgba(255, 255, 255, 0.75); }
-/* Schrift auf Kobalt-Grund: weiss statt schwarz (Lesbarkeit) */
+/* Tageslicht: Kobalt als helle Flaeche mit dunklem Akzenttext. */
 html[data-theme="cyber-white"] .badge:not(.badge--dark),
 html[data-theme="cyber-white"] .card-badge,
 html[data-theme="cyber-white"] .card-badge-admin,
 html[data-theme="cyber-white"] .btn--primary,
-html[data-theme="cyber-white"] .login-submit { color: #ffffff; }
-html[data-theme="cyber-white"] .btn--primary:hover { background: #16359e; color: #ffffff; }
+html[data-theme="cyber-white"] .login-submit {
+  background: rgba(26, 63, 196, 0.12);
+  border: 1px solid rgba(26, 63, 196, 0.55);
+  color: #1a3fc4;
+}
+html[data-theme="cyber-white"] .btn--primary:hover,
+html[data-theme="cyber-white"] .login-submit:hover {
+  background: rgba(26, 63, 196, 0.18);
+  border-color: rgba(26, 63, 196, 0.65);
+  color: #1a3fc4;
+}
+html[data-theme="cyber-white"] .btn--outline:hover {
+  background: rgba(176, 16, 78, 0.12);
+  color: var(--neon-magenta);
+}
+html[data-theme="cyber-white"] .admin-meta span::before { color: rgba(6, 16, 28, 0.35); }
 html[data-theme="cyber-white"] .card {
   background: #ffffff;
   border-color: rgba(6, 16, 28, 0.38);
