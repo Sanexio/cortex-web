@@ -15,8 +15,8 @@
 
   function prefillDashboardTheme() {
     try {
-      if (window.localStorage.getItem(KEY + "_pending") === "1") {
-        var portal = window.localStorage.getItem(KEY);
+      var portal = window.localStorage.getItem(KEY);
+      if (portal) {
         window.localStorage.setItem(
           DASHBOARD_KEY,
           portal === "cyber-white" ? "cyber-white" : "sanexio-punk"
@@ -39,6 +39,10 @@
       try { window.localStorage.setItem(KEY, theme); } catch (e) {}
     }
     if (!theme) theme = window.localStorage.getItem(KEY);
+    if (!theme) {
+      theme = "cyber-dark";
+      try { window.localStorage.setItem(KEY, theme); } catch (e) {}
+    }
   } catch (e) {}
   if (theme === "cyber-white") {
     document.documentElement.setAttribute("data-theme", "cyber-white");
