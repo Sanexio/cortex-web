@@ -157,6 +157,7 @@ mirror -R \
   --exclude-glob 'node_modules/' \
   --exclude-glob '*.log' \
   --exclude-glob '.DS_Store' \
+  --exclude-glob '.well-known/' \
   $DRY_FLAG \
   "$DIST" \
   "$REMOTE_PATH"
