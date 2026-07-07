@@ -13,8 +13,8 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
     />
-    <link rel="stylesheet" href="/cyber-tokens.css?v=2026-07-04-3" />
-    <link rel="stylesheet" href="/landing.css?v=2026-07-04-4" />
+    <link rel="stylesheet" href="/cyber-tokens.css?v=2026-07-05-1" />
+    <link rel="stylesheet" href="/landing.css?v=2026-07-05-6" />
     <script src="/cyber-theme.js"></script>
     <meta name="robots" content="noindex,nofollow" />
   </head>
@@ -226,20 +226,35 @@
         var KEY = "cortex_cyber_theme";
         var btn = document.getElementById("theme-switch");
         var val = document.getElementById("theme-switch-value");
+        function writeThemeCookie(value) {
+          try {
+            var cookie = KEY + "=" + encodeURIComponent(value) + "; Path=/; Max-Age=31536000; SameSite=Lax";
+            var host = window.location.hostname || "";
+            var domain = "cortex-sanexio.tech";
+            if (host.slice(-domain.length) === domain) cookie += "; Domain=.cortex-sanexio.tech";
+            if (window.location.protocol === "https:") cookie += "; Secure";
+            document.cookie = cookie;
+          } catch (e) {}
+        }
+        function labelTheme(theme) {
+          return theme === "praxis2025" ? "PRAXIS 2025" : theme === "cyber-white" ? "CYBERWHITE" : "CYBER-DARK";
+        }
         function current() {
-          return document.documentElement.getAttribute("data-theme") === "cyber-white"
-            ? "cyber-white" : "cyber-dark";
+          var theme = document.documentElement.getAttribute("data-theme");
+          return theme === "praxis2025" ? "praxis2025" : theme === "cyber-white" ? "cyber-white" : "cyber-dark";
         }
         function apply(theme) {
-          if (theme === "cyber-white")
-            document.documentElement.setAttribute("data-theme", "cyber-white");
+          if (theme === "cyber-white" || theme === "praxis2025")
+            document.documentElement.setAttribute("data-theme", theme);
           else document.documentElement.removeAttribute("data-theme");
-          val.textContent = theme === "cyber-white" ? "CYBERWHITE" : "CYBER-DARK";
+          val.textContent = labelTheme(theme);
         }
         apply(current());
         btn.addEventListener("click", function () {
-          var next = current() === "cyber-white" ? "cyber-dark" : "cyber-white";
+          var active = current();
+          var next = active === "cyber-dark" ? "cyber-white" : active === "cyber-white" ? "praxis2025" : "cyber-dark";
           try {
+            writeThemeCookie(next);
             localStorage.setItem(KEY, next);
             // pending: Harness-SPA uebernimmt die Wahl beim naechsten
             // /dashboard/-Besuch und pusht sie an den Server.
@@ -504,15 +519,29 @@
           root.textContent = "";
           var any = false;
           if (data.global && data.global.length) {
-            appendProjectItems(root, data.global, null);
+            var zoneGlobal = el("section", "projects-zone");
+            var head1 = el("div", "projects-zone-head");
+            head1.appendChild(el("span", "projects-zone-title", "PRODUKTIVPROJEKTE · VPS"));
+            zoneGlobal.appendChild(head1);
+            var body1 = el("div", "projects-zone-body");
+            appendProjectItems(body1, data.global, null);
+            zoneGlobal.appendChild(body1);
+            root.appendChild(zoneGlobal);
             any = true;
           }
 
           var hosts = sortHostsForCards(data.hosts);
           if (hosts.length) {
+            var zoneHosts = el("section", "projects-zone");
+            var head2 = el("div", "projects-zone-head");
+            head2.appendChild(el("span", "projects-zone-title", "NEXUS-RECHNER · CLUSTER"));
+            zoneHosts.appendChild(head2);
+            var body2 = el("div", "projects-zone-body");
             var hostGrid = el("div", "projects-hosts");
             hosts.forEach(function (host) { hostGrid.appendChild(buildHostCard(host)); });
-            root.appendChild(hostGrid);
+            body2.appendChild(hostGrid);
+            zoneHosts.appendChild(body2);
+            root.appendChild(zoneHosts);
             any = true;
           }
 
