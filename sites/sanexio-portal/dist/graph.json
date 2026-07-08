@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-04T15:41:37.778Z",
+  "generated_at": "2026-07-08T17:50:01.120Z",
   "stats": {
-    "nodes": 348,
+    "nodes": 352,
     "edges": 1730,
     "files_scanned": 418,
-    "repository_nodes": 28,
+    "repository_nodes": 32,
     "repository_edges": 32
   },
   "clusters": [
@@ -1985,13 +1985,13 @@
     },
     {
       "id": "__repo/Cortex-Web",
-      "label": "Cortex-Web @ 5547c38",
+      "label": "Cortex-Web @ 48e6117",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "5547c38",
-        "head_subject": "Cortex-Design Welle 2: Portal + Landing auf zentrale Theme-Tokens migriert",
+        "head_sha": "48e6117",
+        "head_subject": "portal-deploy: .well-known/ vom mirror --delete ausnehmen",
         "path": "/Users/ssmd/Cortex/projects/Cortex-Web"
       }
     },
@@ -2021,13 +2021,13 @@
     },
     {
       "id": "__repo/_ai-cooperation-outbox",
-      "label": "_ai-cooperation-outbox @ 80f34df",
+      "label": "_ai-cooperation-outbox @ 98074c2",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "80f34df",
-        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-03T18:13:54Z",
+        "head_sha": "98074c2",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-08T04:22:21Z",
         "path": "/Users/ssmd/Cortex/projects/_ai-cooperation-outbox"
       }
     },
@@ -2044,6 +2044,18 @@
       }
     },
     {
+      "id": "__repo/_staging",
+      "label": "_staging",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "",
+        "head_subject": "",
+        "path": "/Users/ssmd/Cortex/projects/_staging"
+      }
+    },
+    {
       "id": "__repo/atelier-plugin",
       "label": "atelier-plugin",
       "cluster": "__repos",
@@ -2057,13 +2069,13 @@
     },
     {
       "id": "__repo/avatar-engine",
-      "label": "avatar-engine @ ee127b1",
+      "label": "avatar-engine @ 5539808",
       "cluster": "__repos",
       "degree": 2,
       "meta": {
         "kind": "repository",
-        "head_sha": "ee127b1",
-        "head_subject": "Frau-Basis schlanker: proportions 1.0 (wie Mann) + weight 0.42 (User-Feedback 'zu fett')",
+        "head_sha": "5539808",
+        "head_subject": "Infra: Auto-Sync Dirty-Check ignoriert untracked Files (blockierten ff unnoetig)",
         "path": "/Users/ssmd/Cortex/projects/avatar-engine"
       }
     },
@@ -2081,13 +2093,13 @@
     },
     {
       "id": "__repo/cortex-banking-core",
-      "label": "cortex-banking-core @ 28f9adb",
+      "label": "cortex-banking-core @ 32227a7",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "28f9adb",
-        "head_subject": "apoBank-Kontoauszug-PDF-Parser (Textlayer) mit Saldo-Arithmetik-Probe",
+        "head_sha": "32227a7",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-07T20:40:21Z",
         "path": "/Users/ssmd/Cortex/projects/cortex-banking-core"
       }
     },
@@ -2105,13 +2117,13 @@
     },
     {
       "id": "__repo/cortex-design",
-      "label": "cortex-design @ e72519d",
+      "label": "cortex-design @ 400b74e",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "e72519d",
-        "head_subject": "Welle 2: sync_consumers (Vendor-Kopien) + Drift-Whitelist + Konsumentenmatrix aktualisiert",
+        "head_sha": "400b74e",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-07T20:40:21Z",
         "path": "/Users/ssmd/Cortex/projects/cortex-design"
       }
     },
@@ -2129,61 +2141,85 @@
     },
     {
       "id": "__repo/cortex-harness",
-      "label": "cortex-harness @ 6bb9e6d",
+      "label": "cortex-harness @ fc77448",
       "cluster": "__repos",
       "degree": 4,
       "meta": {
         "kind": "repository",
-        "head_sha": "6bb9e6d",
-        "head_subject": "cyber-white: Untermenue-/Popover-Kontrast angehoben (pre-inversion Komplemente)",
+        "head_sha": "fc77448",
+        "head_subject": "master-commit: WIP @Cluster-Mini-3 2026-07-08T04:23:30Z",
         "path": "/Users/ssmd/Cortex/projects/cortex-harness"
       }
     },
     {
       "id": "__repo/cortex-ledger",
-      "label": "cortex-ledger @ 89768cd",
+      "label": "cortex-ledger @ eab7197",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "89768cd",
-        "head_subject": "VPS-Tunnel (lokal-first): Proxy-/Readonly-Modus + Standalone-API + LaunchAgents",
+        "head_sha": "eab7197",
+        "head_subject": "fix(config): ARCHIV-Quellpfade $HOME-portabel (M5+Studio)",
         "path": "/Users/ssmd/Cortex/projects/cortex-ledger"
       }
     },
     {
-      "id": "__repo/cortex-prx-hr",
-      "label": "cortex-prx-hr @ 627d9f8",
+      "id": "__repo/cortex-manual",
+      "label": "cortex-manual @ 1bc3e01",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "627d9f8",
-        "head_subject": "Cortex-Design Welle 2: HR-Themes auf zentrale Theme-Tokens migriert",
+        "head_sha": "1bc3e01",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-07T20:40:21Z",
+        "path": "/Users/ssmd/Cortex/projects/cortex-manual"
+      }
+    },
+    {
+      "id": "__repo/cortex-prx-hr",
+      "label": "cortex-prx-hr @ dfd7d12",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "dfd7d12",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-07T20:40:21Z",
         "path": "/Users/ssmd/Cortex/projects/cortex-prx-hr"
       }
     },
     {
       "id": "__repo/cortex-prx-kalkulation",
-      "label": "cortex-prx-kalkulation @ a679315",
+      "label": "cortex-prx-kalkulation @ da3c553",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "a679315",
-        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-03T18:13:54Z",
+        "head_sha": "da3c553",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-07T20:40:21Z",
         "path": "/Users/ssmd/Cortex/projects/cortex-prx-kalkulation"
       }
     },
     {
-      "id": "__repo/cortex-prx-qm",
-      "label": "cortex-prx-qm @ f6faefd",
+      "id": "__repo/cortex-prx-konsil",
+      "label": "cortex-prx-konsil",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "f6faefd",
-        "head_subject": "Cortex-Design Welle 2: QM auf zentrale Theme-Tokens migriert + Drift-Fix",
+        "head_sha": "",
+        "head_subject": "",
+        "path": "/Users/ssmd/Cortex/projects/cortex-prx-konsil"
+      }
+    },
+    {
+      "id": "__repo/cortex-prx-qm",
+      "label": "cortex-prx-qm @ c4d0809",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "c4d0809",
+        "head_subject": "master-commit: WIP @SSMD-MacBookPro-M5 2026-07-07T20:40:21Z",
         "path": "/Users/ssmd/Cortex/projects/cortex-prx-qm"
       }
     },
@@ -2233,6 +2269,18 @@
         "head_sha": "280bb27",
         "head_subject": "master-commit: WIP @Cluster-Mini-04 2026-06-13T09:30:03Z",
         "path": "/Users/ssmd/Cortex/projects/cortex-tenant-template"
+      }
+    },
+    {
+      "id": "__repo/cortex-vsr",
+      "label": "cortex-vsr",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "",
+        "head_subject": "",
+        "path": "/Users/ssmd/Cortex/projects/cortex-vsr"
       }
     },
     {
@@ -2297,13 +2345,13 @@
     },
     {
       "id": "__repo/telegram-bridge",
-      "label": "telegram-bridge @ 79283b1",
+      "label": "telegram-bridge @ ce174f3",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "79283b1",
-        "head_subject": "Bridge zurueck auf Opus 4.8 — Modell-Limits sind getrennt, Sonnet-Kontingent erschoepft",
+        "head_sha": "ce174f3",
+        "head_subject": "feat(node-targeting): Git-Queue-Delegation an Nexus-Rechner aus Telegram",
         "path": "/Users/ssmd/Cortex/projects/telegram-bridge"
       }
     },
