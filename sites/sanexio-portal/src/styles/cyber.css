@@ -1460,3 +1460,168 @@ html[data-theme="cyber-white"] .archiv-log {
   color: #aebbc9;
   border-color: rgba(26, 63, 196, 0.4);
 }
+
+/* === Praxis2025 — helle Praxis-Palette ============================== */
+html[data-theme="praxis2025"] {
+  --bg: var(--cyber-bg);
+  --bg-1: var(--cyber-bg-2);
+  --bg-2: var(--cyber-bg-soft);
+  --bg-3: var(--cyber-bg-3);
+  --bg-4: var(--cyber-bg-4);
+  --ink: var(--cyber-ink);
+  --ink-2: var(--cyber-muted);
+  --neon-cyan: var(--cyber-cyan);
+  --neon-magenta: var(--cyber-magenta);
+  --neon-yellow: var(--cyber-yellow);
+  --neon-green: var(--cyber-green);
+  --grid: var(--cyber-grid);
+  --grid-strong: rgb(from var(--cyber-cyan) r g b / 0.3);
+  --line: var(--cyber-line);
+  --border-yellow: var(--cyber-border-yellow);
+  --glow-y: var(--cyber-glow-yellow);
+  --glow-p: 0 0 0 1px rgb(from var(--cyber-magenta) r g b / 0.5), 0 0 24px rgb(from var(--cyber-magenta) r g b / 0.12);
+  --glow-c: var(--cyber-glow-cyan);
+  --shadow-cyan: 0 0 0 1px rgb(from var(--cyber-cyan) r g b / 0.35), 0 12px 32px rgb(from var(--cyber-ink) r g b / 0.14);
+  --shadow-yellow: var(--cyber-shadow-yellow);
+}
+html[data-theme="praxis2025"] .grid-bg {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    radial-gradient(circle at 20% 10%, rgba(139, 15, 20, 0.08), transparent 60%),
+    radial-gradient(circle at 80% 90%, rgba(232, 72, 79, 0.04), transparent 60%);
+}
+html[data-theme="praxis2025"] .scanline {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(6, 16, 28, 0.025) 3px,
+    rgba(6, 16, 28, 0.025) 4px
+  );
+  mix-blend-mode: normal;
+}
+html[data-theme="praxis2025"] .hero-title,
+html[data-theme="praxis2025"] .login-title { text-shadow: none; }
+html[data-theme="praxis2025"] .hero-accent { text-shadow: none; }
+html[data-theme="praxis2025"] .hero-eyebrow {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(139, 15, 20, 0.45);
+}
+html[data-theme="praxis2025"] .hero-logout,
+html[data-theme="praxis2025"] .theme-pin {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(139, 15, 20, 0.55);
+}
+html[data-theme="praxis2025"] .hero-meta li { background: rgba(255, 255, 255, 0.75); }
+html[data-theme="praxis2025"] .badge:not(.badge--dark),
+html[data-theme="praxis2025"] .card-badge,
+html[data-theme="praxis2025"] .card-badge-admin,
+html[data-theme="praxis2025"] .btn--primary,
+html[data-theme="praxis2025"] .login-submit {
+  background: rgba(200, 22, 29, 0.12);
+  border: 1px solid rgba(200, 22, 29, 0.55);
+  color: #C8161D;
+}
+html[data-theme="praxis2025"] .btn--primary:hover,
+html[data-theme="praxis2025"] .login-submit:hover {
+  background: rgba(200, 22, 29, 0.18);
+  border-color: rgba(200, 22, 29, 0.65);
+  color: #C8161D;
+}
+html[data-theme="praxis2025"] .btn--outline:hover {
+  background: rgba(232, 72, 79, 0.12);
+  color: var(--neon-magenta);
+}
+html[data-theme="praxis2025"] .admin-meta span::before { color: rgba(6, 16, 28, 0.35); }
+html[data-theme="praxis2025"] .card {
+  background: #ffffff;
+  border-color: rgba(6, 16, 28, 0.38);
+}
+html[data-theme="praxis2025"] .card::before,
+html[data-theme="praxis2025"] .card.cyber-frame::before {
+  background: linear-gradient(120deg, transparent 30%, rgba(139, 15, 20, 0.08) 50%, transparent 70%);
+}
+html[data-theme="praxis2025"] .card-active.card-hover { border-color: rgba(200, 22, 29, 0.7); }
+html[data-theme="praxis2025"] .card-locked.card-hover { border-color: rgba(232, 72, 79, 0.45); }
+html[data-theme="praxis2025"] .card-badge-locked {
+  color: var(--neon-magenta);
+  border-color: rgba(232, 72, 79, 0.5);
+}
+html[data-theme="praxis2025"] .card-tag { background: rgba(6, 16, 28, 0.05); }
+html[data-theme="praxis2025"] .card-active .card-tag { border-color: rgba(139, 15, 20, 0.4); }
+html[data-theme="praxis2025"] .card-glitch-r,
+html[data-theme="praxis2025"] .card-glitch-c { mix-blend-mode: normal; }
+html[data-theme="praxis2025"] .card-lock-overlay { background: rgba(232, 236, 241, 0.72); }
+html[data-theme="praxis2025"] .graph-refresh { background: rgba(255, 255, 255, 0.8); }
+html[data-theme="praxis2025"] .graph-refresh:hover { background: rgba(200, 22, 29, 0.08); }
+html[data-theme="praxis2025"] .graph-stats code { background: rgba(6, 16, 28, 0.06); }
+html[data-theme="praxis2025"] .graph-canvas {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(0, 221, 245, 0.03), transparent 70%),
+    #141414;
+  border-color: rgba(6, 16, 28, 0.38);
+}
+html[data-theme="praxis2025"] .toast {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(232, 72, 79, 0.5);
+  box-shadow: 0 12px 32px rgba(6, 16, 28, 0.25);
+}
+html[data-theme="praxis2025"] .login-card {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(139, 15, 20, 0.4);
+}
+html[data-theme="praxis2025"] .login-field input {
+  background: rgba(6, 16, 28, 0.04);
+  border-color: rgba(139, 15, 20, 0.35);
+}
+html[data-theme="praxis2025"] .login-field input:focus {
+  border-color: var(--neon-yellow);
+  box-shadow: 0 0 0 2px rgba(200, 22, 29, 0.18);
+  background: rgba(200, 22, 29, 0.05);
+}
+html[data-theme="praxis2025"] .login-error {
+  border-color: rgba(232, 72, 79, 0.5);
+  background: rgba(232, 72, 79, 0.06);
+}
+html[data-theme="praxis2025"] .admin-modal-backdrop { background: rgba(207, 215, 224, 0.75); }
+html[data-theme="praxis2025"] .subtile-modal-backdrop {
+  background: rgba(207, 215, 224, 0.75);
+}
+html[data-theme="praxis2025"] .subtile-modal {
+  background: var(--bg-3);
+  border-color: var(--border-yellow);
+  box-shadow: var(--shadow-yellow, 0 4px 24px rgba(200, 22, 29, 0.18));
+}
+html[data-theme="praxis2025"] .subtile-modal-tile {
+  background: rgb(from var(--cyber-yellow) r g b / 0.07);
+  border-color: rgb(from var(--cyber-yellow) r g b / 0.25);
+}
+html[data-theme="praxis2025"] .subtile-modal-tile:hover {
+  background: rgb(from var(--cyber-yellow) r g b / 0.14);
+  border-color: rgb(from var(--cyber-yellow) r g b / 0.55);
+  box-shadow: 0 0 12px rgb(from var(--cyber-yellow) r g b / 0.22);
+}
+html[data-theme="praxis2025"] .subtile-modal-close:hover {
+  color: rgb(from var(--cyber-yellow) r g b / 0.85);
+}
+html[data-theme="praxis2025"] .admin-modal .login-sub code { background: rgba(139, 15, 20, 0.1); }
+html[data-theme="praxis2025"] .admin-meta span::before { color: rgba(6, 16, 28, 0.3); }
+html[data-theme="praxis2025"] .admin-bar { background: rgba(6, 16, 28, 0.08); }
+html[data-theme="praxis2025"] .admin-service,
+html[data-theme="praxis2025"] .admin-cluster-row,
+html[data-theme="praxis2025"] .admin-deploy { background: rgba(255, 255, 255, 0.7); }
+html[data-theme="praxis2025"] .admin-action { background: rgba(200, 22, 29, 0.05); }
+html[data-theme="praxis2025"] .archiv-pill { background: rgba(255, 255, 255, 0.75); }
+html[data-theme="praxis2025"] .archiv-pill--ok { color: #077a45; border-color: rgba(7, 122, 69, 0.6); }
+html[data-theme="praxis2025"] .archiv-pill--err { color: #E8484F; border-color: rgba(232, 72, 79, 0.7); }
+html[data-theme="praxis2025"] .archiv-meta {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(200, 22, 29, 0.35);
+}
+html[data-theme="praxis2025"] .archiv-message { background: rgba(255, 255, 255, 0.65); }
+html[data-theme="praxis2025"] .archiv-log {
+  background: #0c1220;
+  color: #aebbc9;
+  border-color: rgba(200, 22, 29, 0.4);
+}

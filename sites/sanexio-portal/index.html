@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0a0a0f" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#FBFBFD" />
+    <meta name="color-scheme" content="light" />
     <title>Sanexio Portal · Cortex</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -68,10 +68,16 @@
           if (!theme) theme = normalize(readThemeCookie());
           if (!theme) theme = normalize(storageGet(KEY));
         } catch (e) {}
-        if (theme === "cyber-white" || theme === "praxis2025") {
-          document.documentElement.setAttribute("data-theme", theme);
+        if (!theme) theme = "praxis2025";
+        document.documentElement.setAttribute("data-theme", theme);
+        if (theme === "cyber-dark") {
           var mc = document.querySelector('meta[name="color-scheme"]');
-          if (mc) mc.setAttribute("content", "light");
+          if (mc) mc.setAttribute("content", "dark");
+          var tc = document.querySelector('meta[name="theme-color"]');
+          if (tc) tc.setAttribute("content", "#0a0a0f");
+        } else if (theme === "cyber-white") {
+          var mc2 = document.querySelector('meta[name="color-scheme"]');
+          if (mc2) mc2.setAttribute("content", "light");
         }
       })();
     </script>
