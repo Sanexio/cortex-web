@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-04T14:28:17.548Z",
+  "generated_at": "2026-07-04T15:41:37.778Z",
   "stats": {
-    "nodes": 346,
+    "nodes": 348,
     "edges": 1730,
     "files_scanned": 418,
-    "repository_nodes": 26,
+    "repository_nodes": 28,
     "repository_edges": 32
   },
   "clusters": [
@@ -1985,13 +1985,13 @@
     },
     {
       "id": "__repo/Cortex-Web",
-      "label": "Cortex-Web @ e03a01d",
+      "label": "Cortex-Web @ 5547c38",
       "cluster": "__repos",
       "degree": 5,
       "meta": {
         "kind": "repository",
-        "head_sha": "e03a01d",
-        "head_subject": "Caddy w6: /cyber-tokens.css als Landing-Asset + Live-Drift zurueckgespiegelt",
+        "head_sha": "5547c38",
+        "head_subject": "Cortex-Design Welle 2: Portal + Landing auf zentrale Theme-Tokens migriert",
         "path": "/Users/ssmd/Cortex/projects/Cortex-Web"
       }
     },
@@ -2057,14 +2057,26 @@
     },
     {
       "id": "__repo/avatar-engine",
-      "label": "avatar-engine @ 1976b3e",
+      "label": "avatar-engine @ ee127b1",
       "cluster": "__repos",
       "degree": 2,
       "meta": {
         "kind": "repository",
-        "head_sha": "1976b3e",
-        "head_subject": "D1: diversity-matrix.json als Single Source, Gender/Age-Morphs, MPFB-Mixamo-Rig-Gewichte, Contact-Sheet-QA (Codex)",
+        "head_sha": "ee127b1",
+        "head_subject": "Frau-Basis schlanker: proportions 1.0 (wie Mann) + weight 0.42 (User-Feedback 'zu fett')",
         "path": "/Users/ssmd/Cortex/projects/avatar-engine"
+      }
+    },
+    {
+      "id": "__repo/cortex-apex-auth",
+      "label": "cortex-apex-auth",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "",
+        "head_subject": "",
+        "path": "/Users/ssmd/Cortex/projects/cortex-apex-auth"
       }
     },
     {
@@ -2092,6 +2104,18 @@
       }
     },
     {
+      "id": "__repo/cortex-design",
+      "label": "cortex-design @ e72519d",
+      "cluster": "__repos",
+      "degree": 0,
+      "meta": {
+        "kind": "repository",
+        "head_sha": "e72519d",
+        "head_subject": "Welle 2: sync_consumers (Vendor-Kopien) + Drift-Whitelist + Konsumentenmatrix aktualisiert",
+        "path": "/Users/ssmd/Cortex/projects/cortex-design"
+      }
+    },
+    {
       "id": "__repo/cortex-desk",
       "label": "cortex-desk @ 26b4caf",
       "cluster": "__repos",
@@ -2105,13 +2129,13 @@
     },
     {
       "id": "__repo/cortex-harness",
-      "label": "cortex-harness @ 50d369c",
+      "label": "cortex-harness @ 6bb9e6d",
       "cluster": "__repos",
       "degree": 4,
       "meta": {
         "kind": "repository",
-        "head_sha": "50d369c",
-        "head_subject": "Login-Seite: CyberWhite-Inversion auf /login nachgezogen (dunkler Eingangsbildschirm)",
+        "head_sha": "6bb9e6d",
+        "head_subject": "cyber-white: Untermenue-/Popover-Kontrast angehoben (pre-inversion Komplemente)",
         "path": "/Users/ssmd/Cortex/projects/cortex-harness"
       }
     },
@@ -2129,13 +2153,13 @@
     },
     {
       "id": "__repo/cortex-prx-hr",
-      "label": "cortex-prx-hr @ 335711d",
+      "label": "cortex-prx-hr @ 627d9f8",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "335711d",
-        "head_subject": "Startbildschirm als Besetzungs-Dashboard: KPI-Kacheln, Praxis/Praxisgemeinschaft, MFA-Pool (Archiv)",
+        "head_sha": "627d9f8",
+        "head_subject": "Cortex-Design Welle 2: HR-Themes auf zentrale Theme-Tokens migriert",
         "path": "/Users/ssmd/Cortex/projects/cortex-prx-hr"
       }
     },
@@ -2153,13 +2177,13 @@
     },
     {
       "id": "__repo/cortex-prx-qm",
-      "label": "cortex-prx-qm @ 0ab055d",
+      "label": "cortex-prx-qm @ f6faefd",
       "cluster": "__repos",
       "degree": 0,
       "meta": {
         "kind": "repository",
-        "head_sha": "0ab055d",
-        "head_subject": "feat(gaps): Offene Punkte klickbar — Sprung ins Ziel-Modul zum Anmerkungs-Formular",
+        "head_sha": "f6faefd",
+        "head_subject": "Cortex-Design Welle 2: QM auf zentrale Theme-Tokens migriert + Drift-Fix",
         "path": "/Users/ssmd/Cortex/projects/cortex-prx-qm"
       }
     },
