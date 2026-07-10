@@ -28,7 +28,7 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
         }
 
         # Protect everything except public portal graph and auth endpoints.
-        @needs_auth not path /portal-graph.json /_apex-auth /_apex-auth/*
+        @needs_auth not path /portal-graph.json /_apex-auth /_apex-auth/* /dashboard/api/plugins/admin-cockpit/terminal/pty /dashboard/api/ws /dashboard/api/pty /dashboard/api/pub /dashboard/api/events
         forward_auth @needs_auth localhost:9200 {
             uri /_apex-auth/verify
             copy_headers X-Apex-User
