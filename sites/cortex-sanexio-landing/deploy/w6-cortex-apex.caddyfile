@@ -4,6 +4,10 @@
 #   Dashboard rueckt auf `/dashboard/`, alle anderen Routes
 #   (assets, api, sub-routes) bleiben direkt am cortex-harness.
 # Wichtig: cortex-dashboard erwartet Host-Header == upstream-hostport.
+# 2026-07-12: PTY-Reverse-Relay — mTLS-Rand (verify_if_given) fuer die
+#   ausgehende Node-Registrierung der Macs. Browser (ohne Client-Cert)
+#   bleiben unberuehrt; nur ein von unserer CA signiertes Client-Cert
+#   fuellt tls.client.subject und darf die Node-Route ansprechen.
 cortex-sanexio.tech, www.cortex-sanexio.tech {
     encode gzip
     log {
@@ -20,18 +24,60 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
         Referrer-Policy "strict-origin-when-cross-origin"
     }
 
+    # mTLS-Rand: Client-Cert optional, aber wenn vorhanden gegen unsere
+    # private CA verifiziert. Kein Cert -> Browser laeuft normal weiter.
+    tls {
+        client_auth {
+            mode verify_if_given
+            trust_pool file {
+                pem_file /etc/cortex/pty-relay/ca.pem
+            }
+        }
+    }
+
     # Explicit request route: auth has to run before the existing handle blocks.
     route {
+        # Spoofing-Schutz: von aussen gesetzte mTLS-Header verwerfen, bevor
+        # irgendein Handler sie sieht. Nur der relay_node-Handler setzt sie
+        # unten proxy-seitig aus dem verifizierten Client-Cert neu.
+        request_header -X-Ssl-Client-Verify
+        request_header -X-Ssl-Client-Cn
+
+        # Aus dem verifizierten Client-Cert abgeleitet (leer = kein/kein
+        # gueltiges Cert). Unter verify_if_given impliziert ein vorhandener
+        # Subject ein bereits verifiziertes Cert.
+        map {http.request.tls.client.subject} {relay_verify} {
+            ~.+         SUCCESS
+            default     FAIL
+        }
+        map {http.request.tls.client.subject} {relay_cn} {
+            ~^CN=(.+)$  ${1}
+            default     ""
+        }
+
         # Apex login gate service.
         handle /_apex-auth* {
             reverse_proxy localhost:9200
         }
 
         # Protect everything except public portal graph and auth endpoints.
-        @needs_auth not path /portal-graph.json /_apex-auth /_apex-auth/* /dashboard/api/plugins/admin-cockpit/terminal/pty /dashboard/api/ws /dashboard/api/pty /dashboard/api/pub /dashboard/api/events
+        @needs_auth not path /portal-graph.json /_apex-auth /_apex-auth/* /dashboard/api/plugins/admin-cockpit/terminal/pty /dashboard/api/ws /dashboard/api/pty /dashboard/api/pub /dashboard/api/events /api/internal/pty-relay/node
         forward_auth @needs_auth localhost:9200 {
             uri /_apex-auth/verify
             copy_headers X-Apex-User
+        }
+
+        # PTY-Reverse-Relay: Node-Registrierung der Macs (ausgehend). Umgeht
+        # das Browser-Gate bewusst — authentifiziert rein ueber mTLS-Client-
+        # Cert (Caddy) PLUS Host-Token (Harness). Muss VOR dem finalen handle
+        # stehen, damit die mTLS-Header gesetzt werden.
+        @relay_node path /api/internal/pty-relay/node
+        handle @relay_node {
+            reverse_proxy localhost:9119 {
+                header_up Host {upstream_hostport}
+                header_up X-Ssl-Client-Verify {relay_verify}
+                header_up X-Ssl-Client-Cn {relay_cn}
+            }
         }
 
         # Statische Landing-Page (Cyber-Look) — exakt auf `/` und `/index.html`
@@ -85,6 +131,17 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
                 header_up X-Forwarded-Host {host}
                 header_up X-Forwarded-Prefix /dashboard
                 header_up Accept-Encoding identity
+            }
+        }
+
+        # Praxis-Topologie (Proxmox-Kartographie) — statisch aus dem
+        # auto-synced Repo, hinter dem Apex-Auth-Gate (interne Infra-Daten).
+        redir /proxmox /proxmox/ permanent
+        handle_path /proxmox/* {
+            root * /srv/sanexio/apps/Proxmox/docs
+            try_files {path} /topologie.html
+            file_server {
+                index topologie.html
             }
         }
 
