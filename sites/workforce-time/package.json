@@ -22,7 +22,8 @@
     "extract-tenant-seed": "node tools/extract-tenant-seed.mjs",
     "build:handbuch": "node tools/build-handbuch.mjs",
     "restore-db": "bash tools/restore-db.sh",
-    "legacy-import:delta": "node tools/legacy-import/legacy-delta.mjs"
+    "legacy-import:delta": "node tools/legacy-import/legacy-delta.mjs",
+    "test:sso": "node --test server/sso.test.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

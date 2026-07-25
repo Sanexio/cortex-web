@@ -8,6 +8,7 @@ import {
   timingSafeEqual
 } from "node:crypto";
 import { databasePath, db } from "./db.js";
+import { SSO_COOKIE, ssoEmailForHrUser, verifyCortexSso } from "./sso.js";
 import { tenantConfigGet, tenantDescribe, tenantIsDemo } from "./tenant.js";
 
 const SESSION_COOKIE = "workforce_session";
@@ -693,9 +694,47 @@ function invalidCredentials() {
   return authError("INVALID_CREDENTIALS", "E-Mail oder Passwort ist ungueltig.");
 }
 
+// Cortex-SSO als Zweitweg: wer bei hr.cortex-sanexio.tech angemeldet ist, gilt
+// hier als identifiziert — aber NIE als zweiter Faktor. HR authentifiziert nur
+// per Passwort, deshalb bleibt totp_verified_at bewusst null; jede Route mit
+// requireTotp blockt SSO-Sitzungen weiterhin.
+// Es wird NICHT automatisch angelegt: nur bereits freigeschaltete auth_users
+// werden erkannt, sonst faellt der Aufrufer auf den lokalen Login zurueck.
+function ssoSessionFromRequest(request) {
+  const claims = verifyCortexSso(parseCookies(request)[SSO_COOKIE]);
+  if (!claims) return null;
+
+  const email = ssoEmailForHrUser(claims.username);
+  if (!email) return null;
+
+  const user = db
+    .prepare("SELECT * FROM auth_users WHERE lower(email) = ?")
+    .get(email);
+  if (!user || user.disabled_at) return null;
+
+  return {
+    id: null,
+    user_id: user.id,
+    email: user.email,
+    display_name: user.display_name,
+    role: user.role,
+    employee_id: user.employee_id,
+    tenant_slug: user.tenant_slug,
+    totp_enrolled_at: user.totp_enrolled_at,
+    totp_verified_at: null,
+    disabled_at: null,
+    revoked_at: null,
+    created_at: null,
+    last_used_at: null,
+    expires_at: null,
+    hard_expires_at: null,
+    sso: true
+  };
+}
+
 function sessionFromRequest(request) {
   const sessionId = parseCookies(request)[SESSION_COOKIE];
-  if (!sessionId) return null;
+  if (!sessionId) return ssoSessionFromRequest(request);
 
   const row = db
     .prepare(`
@@ -717,7 +756,9 @@ function sessionFromRequest(request) {
     `)
     .get(sessionId, nowIso(), nowIso());
 
-  if (!row || row.disabled_at) return null;
+  // Abgelaufene/entzogene lokale Sitzung: nicht hart abweisen, sondern eine
+  // gueltige HR-Anmeldung als Zweitweg pruefen.
+  if (!row || row.disabled_at) return ssoSessionFromRequest(request);
   db.prepare("UPDATE auth_sessions SET last_used_at = ?, expires_at = ? WHERE id = ?")
     .run(nowIso(), addSeconds(SESSION_TTL_SECONDS), sessionId);
   return row;
@@ -1208,17 +1249,33 @@ export async function handleAuthRoute({ request, response, url, readJson, sendJs
 
     if (request.method === "POST" && url.pathname === "/api/auth/session/refresh") {
       const session = requireSession(request);
+      // SSO-Sitzungen haben keine Zeile in auth_sessions und damit keine id —
+      // ein Set-Cookie darauf wuerde ein Cookie erzeugen, das zu nichts passt.
+      if (session.sso) {
+        jsonOk(sendJson, response, { user: publicUser(session) });
+        return true;
+      }
       jsonOk(sendJson, response, { user: publicUser(session) }, { "Set-Cookie": sessionCookie(session.id) });
       return true;
     }
 
     if (request.method === "POST" && url.pathname === "/api/auth/logout") {
       const session = sessionFromRequest(request);
-      if (session) {
+      if (session && !session.sso) {
         db.prepare("UPDATE auth_sessions SET revoked_at = ? WHERE id = ?").run(nowIso(), session.id);
         insertAudit("session_revoked", { userId: session.user_id, sessionId: session.id, request });
       }
-      jsonOk(sendJson, response, { logged_out: true }, { "Set-Cookie": clearSessionCookie() });
+      // Das SSO-Cookie gehoert der uebergeordneten Domain und ist von hier aus
+      // nicht loeschbar — sonst waere man nach dem Abmelden sofort wieder drin.
+      // Der Client muss auf die zentrale Abmeldung verweisen (Env, da die URL
+      // mandantenspezifisch ist).
+      const ssoLogoutUrl = session?.sso ? (process.env.WORKFORCE_SSO_LOGOUT_URL || null) : null;
+      jsonOk(
+        sendJson,
+        response,
+        { logged_out: true, sso_logout_url: ssoLogoutUrl },
+        { "Set-Cookie": clearSessionCookie() }
+      );
       return true;
     }
 
