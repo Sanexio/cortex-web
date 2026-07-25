@@ -13,8 +13,8 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
     />
-    <link rel="stylesheet" href="/cyber-tokens.css?v=2026-07-04-3" />
-    <link rel="stylesheet" href="/landing.css?v=2026-07-04-4" />
+    <link rel="stylesheet" href="/cyber-tokens.css?v=2026-07-05-1" />
+    <link rel="stylesheet" href="/landing.css?v=2026-07-05-6" />
     <script src="/cyber-theme.js"></script>
     <meta name="robots" content="noindex,nofollow" />
   </head>
@@ -504,15 +504,29 @@
           root.textContent = "";
           var any = false;
           if (data.global && data.global.length) {
-            appendProjectItems(root, data.global, null);
+            var zoneGlobal = el("section", "projects-zone");
+            var head1 = el("div", "projects-zone-head");
+            head1.appendChild(el("span", "projects-zone-title", "PRODUKTIVPROJEKTE · VPS"));
+            zoneGlobal.appendChild(head1);
+            var body1 = el("div", "projects-zone-body");
+            appendProjectItems(body1, data.global, null);
+            zoneGlobal.appendChild(body1);
+            root.appendChild(zoneGlobal);
             any = true;
           }
 
           var hosts = sortHostsForCards(data.hosts);
           if (hosts.length) {
+            var zoneHosts = el("section", "projects-zone");
+            var head2 = el("div", "projects-zone-head");
+            head2.appendChild(el("span", "projects-zone-title", "NEXUS-RECHNER · CLUSTER"));
+            zoneHosts.appendChild(head2);
+            var body2 = el("div", "projects-zone-body");
             var hostGrid = el("div", "projects-hosts");
             hosts.forEach(function (host) { hostGrid.appendChild(buildHostCard(host)); });
-            root.appendChild(hostGrid);
+            body2.appendChild(hostGrid);
+            zoneHosts.appendChild(body2);
+            root.appendChild(zoneHosts);
             any = true;
           }
 

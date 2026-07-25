@@ -20,72 +20,87 @@ cortex-sanexio.tech, www.cortex-sanexio.tech {
         Referrer-Policy "strict-origin-when-cross-origin"
     }
 
-    # Statische Landing-Page (Cyber-Look) — exakt auf `/` und `/index.html`
-    @landing_root path / /index.html
-    handle @landing_root {
-        root * /srv/sanexio/apps/cortex-sanexio-landing
-        header Cache-Control "no-store, no-cache, must-revalidate, private, max-age=0"
-        header Pragma "no-cache"
-        header Expires "0"
-        header -ETag
-        header -Last-Modified
-        file_server
-    }
-    # Landing-Page-Assets (CSS + Favicon + Cyber-Overlay) — short cache, immer revalidieren
-    @landing_assets path /landing.css /favicon.svg /cyber-overlay.css /cyber-theme.js /cyber-tokens.css
-    handle @landing_assets {
-        root * /srv/sanexio/apps/cortex-sanexio-landing
-        header Cache-Control "no-cache, must-revalidate"
-        file_server
-    }
+    # Explicit request route: auth has to run before the existing handle blocks.
+    route {
+        # Apex login gate service.
+        handle /_apex-auth* {
+            reverse_proxy localhost:9200
+        }
+
+        # Protect everything except public portal graph and auth endpoints.
+        @needs_auth not path /portal-graph.json /_apex-auth /_apex-auth/*
+        forward_auth @needs_auth localhost:9200 {
+            uri /_apex-auth/verify
+            copy_headers X-Apex-User
+        }
+
+        # Statische Landing-Page (Cyber-Look) — exakt auf `/` und `/index.html`
+        @landing_root path / /index.html
+        handle @landing_root {
+            root * /srv/sanexio/apps/cortex-sanexio-landing
+            header Cache-Control "no-store, no-cache, must-revalidate, private, max-age=0"
+            header Pragma "no-cache"
+            header Expires "0"
+            header -ETag
+            header -Last-Modified
+            file_server
+        }
+        # Landing-Page-Assets (CSS + Favicon + Cyber-Overlay) — short cache, immer revalidieren
+        @landing_assets path /landing.css /favicon.svg /cyber-overlay.css /cyber-theme.js /cyber-tokens.css
+        handle @landing_assets {
+            root * /srv/sanexio/apps/cortex-sanexio-landing
+            header Cache-Control "no-cache, must-revalidate"
+            file_server
+        }
 
 
-    # Portal-Graph public + frisch (systemd-Timer alle 5 Min regeneriert).
-    @portal_graph path /portal-graph.json
-    handle @portal_graph {
-        root * /srv/sanexio/data/portal
-        rewrite * /graph.json
-        header Cache-Control "public, max-age=60"
-        header Access-Control-Allow-Origin "https://portal.sanexio.de"
-        header Access-Control-Allow-Methods "GET, OPTIONS"
-        file_server
-    }
+        # Portal-Graph public + frisch (systemd-Timer alle 5 Min regeneriert).
+        @portal_graph path /portal-graph.json
+        handle @portal_graph {
+            root * /srv/sanexio/data/portal
+            rewrite * /graph.json
+            header Cache-Control "public, max-age=60"
+            header Access-Control-Allow-Origin "https://portal.sanexio.de"
+            header Access-Control-Allow-Methods "GET, OPTIONS"
+            file_server
+        }
 
-    # Dashboard auf /dashboard/* — cortex-harness mit X-Forwarded-Prefix
-    # handle_path strippt das Prefix automatisch fuer den upstream,
-    # X-Forwarded-Prefix sagt der SPA, wo sie wirklich liegt.
-    redir /dashboard /dashboard/ permanent
-    handle_path /dashboard/* {
-        # Cyber-Overlay-Injection (Welle 3): nur text/html, Upstream
-        # unkomprimiert anfordern, damit replace den Marker findet.
-        # cyber-theme.js (CyberWhite-Boot, Welle 2026-07-04) setzt
-        # data-theme aus localStorage/?theme= vor dem ersten Paint.
-        replace {
-            match {
-                header Content-Type text/html*
+        # Dashboard auf /dashboard/* — cortex-harness mit X-Forwarded-Prefix
+        # handle_path strippt das Prefix automatisch fuer den upstream,
+        # X-Forwarded-Prefix sagt der SPA, wo sie wirklich liegt.
+        redir /dashboard /dashboard/ permanent
+        handle_path /dashboard/* {
+            # Cyber-Overlay-Injection (Welle 3): nur text/html, Upstream
+            # unkomprimiert anfordern, damit replace den Marker findet.
+            # cyber-theme.js (CyberWhite-Boot, Welle 2026-07-04) setzt
+            # data-theme aus localStorage/?theme= vor dem ersten Paint.
+            replace {
+                match {
+                    header Content-Type text/html*
+                }
+                "</head>" "<script src=/cyber-theme.js></script><link rel=stylesheet href=/cyber-overlay.css></head>"
             }
-            "</head>" "<script src=/cyber-theme.js></script><link rel=stylesheet href=/cyber-overlay.css></head>"
-        }
-        reverse_proxy localhost:9119 {
-            header_up Host {upstream_hostport}
-            header_up X-Forwarded-Host {host}
-            header_up X-Forwarded-Prefix /dashboard
-            header_up Accept-Encoding identity
-        }
-    }
-
-    # Alle anderen Routes (/assets, /api, /second-brain, ...) -> cortex-harness
-    handle {
-        replace {
-            match {
-                header Content-Type text/html*
+            reverse_proxy localhost:9119 {
+                header_up Host {upstream_hostport}
+                header_up X-Forwarded-Host {host}
+                header_up X-Forwarded-Prefix /dashboard
+                header_up Accept-Encoding identity
             }
-            "</head>" "<script src=/cyber-theme.js></script><link rel=stylesheet href=/cyber-overlay.css></head>"
         }
-        reverse_proxy localhost:9119 {
-            header_up Host {upstream_hostport}
-            header_up X-Forwarded-Host {host}
-            header_up Accept-Encoding identity
+
+        # Alle anderen Routes (/assets, /api, /second-brain, ...) -> cortex-harness
+        handle {
+            replace {
+                match {
+                    header Content-Type text/html*
+                }
+                "</head>" "<script src=/cyber-theme.js></script><link rel=stylesheet href=/cyber-overlay.css></head>"
+            }
+            reverse_proxy localhost:9119 {
+                header_up Host {upstream_hostport}
+                header_up X-Forwarded-Host {host}
+                header_up Accept-Encoding identity
+            }
         }
     }
 }

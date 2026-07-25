@@ -77,22 +77,20 @@ Prefill nach `cortex-dashboard-theme` (`cyber-white` oder `sanexio-punk`),
 dann returnt es. Die Harness-SPA rendert diese Routen nativ ueber
 `data-cortex-theme="sanexio-cyber"` und `data-cyber-skin`.
 
-## Harness-Sonderfall Pre-Inversion
+## Harness-Sonderfall Direct Light
 
-Das Builtin-Theme `cyber-white` ist mit dunklen Quell-Tokens gebaut. Ein
-Fullscreen-Layer `[data-cyber-backdrop="foreground"]` mit `z-200` und
-`mix-blend-mode: difference` invertiert den Screen. CSS-Overrides im
-Light-Skin muessen deshalb als Komplemente der gewuenschten Ziel-Farben
-authoriert werden.
+Das Builtin-Theme `cyber-white` ist direkt mit sichtbaren Light-Tokens gebaut.
+Der Foreground-Difference-Layer bleibt fuer CyberPunk-Dark unveraendert, wird
+im Light-Skin aber ueber `--backdrop-fg-invert: transparent` neutralisiert.
 
 | Ziel-Farbe | Quell-Farbe |
 | --- | --- |
-| `#cfd7e0` | `#30281f` |
-| `#006884` | `#ff977b` |
-| `#b0104e` | `#4fefb1` |
-| `#1a3fc4` | `#e5c03b` |
-| `#06101c` | `#f9efe3` |
+| `#cfd7e0` | `#cfd7e0` |
+| `#006884` | `#006884` |
+| `#b0104e` | `#b0104e` |
+| `#1a3fc4` | `#1a3fc4` |
+| `#06101c` | `#06101c` |
 
-Verbote fuer `cyber-white`: den Backdrop-Layer nie deaktivieren, keinen
-`z-index` auf `#root` im Light-Skin setzen, und
-`--component-backdrop-bg-blend-mode` nie umstellen.
+Verbote: CyberPunk-Dark-Backdrop-Verhalten nicht veraendern, keinen `z-index`
+auf `#root` im Light-Skin setzen, und keine Plugin-Overrides fuer die
+Backdrop-Regeln einfuehren.
