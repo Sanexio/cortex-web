@@ -162,7 +162,12 @@ const server = createServer(async (request, response) => {
     }
 
     if (request.method === "GET" && url.pathname === "/api/health") {
-      sendJson(response, 200, getHealth());
+      // Ohne Anmeldung nur die blanke Lebendmeldung: der volle Bericht nennt
+      // den DB-Pfad und die Zeilenzahlen (Mitarbeiterzahl, Zeiteintraege) und
+      // verriet damit Praxisgroesse und Serveraufbau an jeden Aufrufer.
+      // Uptime-Checks funktionieren unveraendert, weil der Status 200 bleibt.
+      const healthGate = requireWorkforceApiSession(request);
+      sendJson(response, 200, healthGate.ok ? getHealth() : { ok: true });
       return;
     }
 
