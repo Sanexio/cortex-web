@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { mapImportPayload, parseArgs, run, snapshotSummary, validateSnapshot } from "./legacy-delta.mjs";
+import { mapImportPayload, parseArgs, planCaptureEnd, run, snapshotSummary, validateSnapshot } from "./legacy-delta.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixturePath = join(here, "fixtures/legacy-delta.fixture.json");
@@ -16,6 +16,23 @@ test("parseArgs defaults to dry-run fixture mode without credentials", () => {
   assert.equal(options.dryRun, true);
   assert.match(options.fixture, /legacy-delta\.fixture\.json$/);
   assert.equal(options.live, false);
+  assert.equal(options.planWeeksAhead, 6);
+});
+
+test("parseArgs accepts plan scrape horizon", () => {
+  const options = parseArgs(["--plan-weeks-ahead", "8"]);
+  assert.equal(options.planWeeksAhead, 8);
+});
+
+test("parseArgs rejects invalid plan scrape horizon", () => {
+  assert.throws(() => parseArgs(["--plan-weeks-ahead", "-1"]), /--plan-weeks-ahead braucht eine ganze Zahl >= 0/);
+  assert.throws(() => parseArgs(["--plan-weeks-ahead", "abc"]), /--plan-weeks-ahead braucht eine ganze Zahl >= 0/);
+});
+
+test("planCaptureEnd extends to configured future horizon", () => {
+  assert.equal(planCaptureEnd({ to: "2026-07-26", planWeeksAhead: 6 }, "2026-07-26"), "2026-09-06");
+  assert.equal(planCaptureEnd({ to: "2026-12-31", planWeeksAhead: 6 }, "2026-07-26"), "2026-12-31");
+  assert.equal(planCaptureEnd({ to: "2026-07-26", planWeeksAhead: 0 }, "2026-07-26"), "2026-07-26");
 });
 
 test("mapImportPayload creates import snapshot shape expected by db import", () => {

@@ -40,6 +40,7 @@ Options:
   --api-url <url>        API base URL. Default: http://127.0.0.1:5175.
   --from <YYYY-MM-DD>    Delta start. Default: 2026-05-25.
   --to <YYYY-MM-DD>      Delta end. Default: today.
+  --plan-weeks-ahead <N>  Plan-Scrape-Horizont in Wochen ab heute. Default: 6.
   --live                 Capture read-only Legacy-Import browser data via Playwright.
   --secrets-file <path>  Presence gate for live mode. Default: ~/.cortex/secrets/legacy-import.env.
 `;
@@ -62,6 +63,7 @@ export function parseArgs(argv = process.argv.slice(2)) {
     apiUrl: "http://127.0.0.1:5175",
     from: "2026-05-25",
     to: new Date().toISOString().slice(0, 10),
+    planWeeksAhead: 6,
     live: false,
     secretsFile: defaultSecretPath
   };
@@ -77,6 +79,13 @@ export function parseArgs(argv = process.argv.slice(2)) {
     else if (arg === "--api-url") options.apiUrl = requireValue(argv, index++, arg).replace(/\/+$/, "");
     else if (arg === "--from") options.from = requireValue(argv, index++, arg);
     else if (arg === "--to") options.to = requireValue(argv, index++, arg);
+    else if (arg === "--plan-weeks-ahead") {
+      const value = requireValue(argv, index++, arg);
+      if (!Number.isInteger(Number(value)) || Number(value) < 0) {
+        throw new Error("--plan-weeks-ahead braucht eine ganze Zahl >= 0");
+      }
+      options.planWeeksAhead = Number(value);
+    }
     else if (arg === "--secrets-file") options.secretsFile = resolve(requireValue(argv, index++, arg));
     else throw new Error(`Unbekannte Option: ${arg}`);
   }
@@ -179,6 +188,7 @@ export function mapImportPayload(rawInput, options = {}) {
     defaultWorkArea: tenantReconciliation.defaultWorkArea,
     from: options.from,
     to: options.to,
+    planTo: options.planTo,
     employeeRows: asArray(raw.employeeRows),
     existingEmployees: rawEmployees,
     canonicalLocations: [
@@ -673,8 +683,8 @@ async function captureAbsences(page, options) {
   // werden ignoriert; einziger Hebel sind die Navigations-Pfeile mit
   // aria-label="Vorheriger Zeitraum" / "Nächster Zeitraum".
   // Strategie: erst 11 Monate rückwärts (Januar erreichen), dort sammeln,
-  // dann 12 Schritte vorwärts (= jeder Monat des Jahres + 1 Monat in die
-  // Zukunft). Bars werden über sourceId dedupliziert.
+  // dann horizontabhängige Schritte vorwärts (= jeder Monat des Jahres +
+  // Plan-Horizont in die Zukunft). Bars werden über sourceId dedupliziert.
   await page.goto(new URL("/absences", process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
   await page.waitForTimeout(3500);
@@ -726,8 +736,9 @@ async function captureAbsences(page, options) {
     await collectCurrent(`prev-${i}`);
   }
 
-  // Zurück zur Gegenwart + 1 Monat in die Zukunft: 12 Schritte vorwärts
-  for (let i = 1; i <= 12; i += 1) {
+  // Zurück zur Gegenwart + Plan-Horizont in die Zukunft: horizontabhängige
+  // Schritte vorwärts
+  for (let i = 1; i <= 11 + Math.max(1, Math.ceil((options.planWeeksAhead ?? 0) / 4)); i += 1) {
     const ok = await clickArrow("next");
     if (!ok) {
       if (process.env.LEGACY_DEBUG) console.error(`LEGACY_DEBUG next-Pfeil nicht klickbar bei step ${i}`);
@@ -742,7 +753,7 @@ async function captureAbsences(page, options) {
 
 async function capturePlan(page, options) {
   const rows = [];
-  for (const week of isoWeeksInRange(options.from, options.to)) {
+  for (const week of isoWeeksInRange(options.from, planCaptureEnd(options))) {
     await page.goto(new URL(`/plan/9405/${week.label}`, process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(3500);
@@ -778,6 +789,11 @@ export function isoWeeksInRange(from, to) {
     });
   }
   return weeks;
+}
+
+export function planCaptureEnd(options, todayIso = new Date().toISOString().slice(0, 10)) {
+  const horizon = addDays(todayIso, (options.planWeeksAhead ?? 0) * 7);
+  return horizon > options.to ? horizon : options.to;
 }
 
 function mondayOfIsoWeekContaining(dateString) {
@@ -835,7 +851,7 @@ export async function run(options) {
   const raw = options.live
     ? await captureLiveImport(options)
     : readFixture(options.fixture);
-  const snapshot = mapImportPayload(raw, options);
+  const snapshot = mapImportPayload(raw, { ...options, planTo: planCaptureEnd(options) });
   const validation = validateSnapshot(snapshot);
   const summary = snapshotSummary(snapshot);
   if (process.env.LEGACY_DEBUG && snapshot.unresolvedEmployees?.length) {

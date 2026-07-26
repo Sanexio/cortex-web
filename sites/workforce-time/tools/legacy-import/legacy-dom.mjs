@@ -24,6 +24,10 @@ function stableHash(value, length = 16) {
   return createHash("sha256").update(String(value)).digest("hex").slice(0, length);
 }
 
+export function dateFromPlanCellTestid(testid) {
+  return String(testid ?? "").match(/^plan-cell(?:-content)?-\d+-(\d{4}-\d{2}-\d{2})$/)?.[1] || "";
+}
+
 function normalizeName(value) {
   return displayNameFromImportName(value)
     .toLowerCase()
@@ -939,6 +943,8 @@ export async function extractPlanRowsFromPage(page, week = {}) {
     };
     const dateFromAncestor = (el) => {
       for (let current = el; current; current = current.parentElement) {
+        const testidIso = String(current.getAttribute("data-testid") ?? "").match(/^plan-cell(?:-content)?-\d+-(\d{4}-\d{2}-\d{2})$/)?.[1];
+        if (testidIso) return testidIso;
         const attr = current.getAttribute("data-date") || current.getAttribute("aria-label") || "";
         const iso = clean(attr).match(/\b\d{4}-\d{2}-\d{2}\b/)?.[0];
         if (iso) return iso;
@@ -953,8 +959,12 @@ export async function extractPlanRowsFromPage(page, week = {}) {
       const box = el.getBoundingClientRect();
       if (!box.width && !box.height) return "";
       const centerX = box.left + box.width / 2;
-      const headers = [...document.querySelectorAll("[role='columnheader'], [data-date]")]
-        .map((header) => ({ header, box: header.getBoundingClientRect(), date: header.getAttribute("data-date") || "" }))
+      const headers = [...document.querySelectorAll("[role='columnheader'], [data-date], [data-testid^='plan-day-header-']")]
+        .map((header) => {
+          const testid = header.getAttribute("data-testid") || "";
+          const headerDate = header.getAttribute("data-date") || testid.match(/^plan-day-header-(\d{4}-\d{2}-\d{2})$/)?.[1] || "";
+          return { header, box: header.getBoundingClientRect(), date: headerDate };
+        })
         .filter((item) => item.box.width > 0 && item.box.height > 0)
         .sort((left, right) => left.box.left - right.box.left);
       const datedHeader = headers.find((item) => item.date && centerX >= item.box.left && centerX <= item.box.right);
@@ -1259,7 +1269,8 @@ export function mapPlanRows(rows, options = {}) {
     const endTime = hhmm(row.endTime || String(row.rawText ?? "").replace(startTime || "", ""));
     if (!date || !startTime || !endTime) continue;
     if (options.from && date < options.from) continue;
-    if (options.to && date > options.to) continue;
+    const planUpper = options.planTo || options.to;
+    if (planUpper && date > planUpper) continue;
     stats.afterDateFilter += 1;
     const assignmentNames = (row.assignmentNames?.length ? row.assignmentNames : [row.employeeName]).filter(Boolean);
     let areaCandidate = cleanText(row.area || "");

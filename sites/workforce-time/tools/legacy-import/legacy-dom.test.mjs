@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import {
   buildEmployeeResolver,
   buildNameResolver,
+  dateFromPlanCellTestid,
   mapAbsenceRows,
   mapPlanRows,
   mapWorkHoursRows,
@@ -20,6 +21,13 @@ import {
 import { isoWeeksInRange, mapImportPayload, snapshotSummary, validateSnapshot } from "./legacy-delta.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
+
+test("dateFromPlanCellTestid extracts dates from plan cell test ids only", () => {
+  assert.equal(dateFromPlanCellTestid("plan-cell-40080-2026-07-20"), "2026-07-20");
+  assert.equal(dateFromPlanCellTestid("plan-cell-content-40080-2026-07-20"), "2026-07-20");
+  assert.equal(dateFromPlanCellTestid("plan-day-header-2026-07-20"), "");
+  assert.equal(dateFromPlanCellTestid("garbage input"), "");
+});
 
 test("parseWorkHoursHtml extracts synthetic Legacy-Import table rows without real data", async () => {
   const html = await readFile(join(here, "fixtures/work-hours.fixture.html"), "utf8");
@@ -270,6 +278,31 @@ test("plan mapper does not import resolvable employee names as work areas", () =
   assert.equal(mapped.unresolvedAreas.length, 0);
   assert.equal(mapped.shifts[0].location, "Praxis Beispiel und Partner");
   assert.equal(mapped.unresolvedLocations.length, 0);
+});
+
+test("plan mapper keeps rows beyond import to date when planTo covers them", () => {
+  const row = {
+    sourceId: "shift-plan-horizon",
+    date: "2026-07-27",
+    startTime: "08:00",
+    endTime: "12:00",
+    area: "Empfang",
+    location: "Standort Alpha",
+    employeeName: "Alpha, Beta"
+  };
+  const baseOptions = {
+    capturedAt: "2026-07-26T12:00:00.000Z",
+    from: "2026-07-20",
+    to: "2026-07-26",
+    existingEmployees: [{ display_name: "Beta Alpha", source_id: "employee-beta-alpha" }]
+  };
+
+  const kept = mapPlanRows([row], { ...baseOptions, planTo: "2026-08-02" });
+  const dropped = mapPlanRows([row], baseOptions);
+
+  assert.equal(kept.shifts.length, 1);
+  assert.equal(kept.shifts[0].startDate, "2026-07-27");
+  assert.equal(dropped.shifts.length, 0);
 });
 
 test("HTML fixture can flow through existing legacy-import snapshot mapper", async () => {
