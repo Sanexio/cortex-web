@@ -46,6 +46,7 @@ import {
   stampBreakStart,
   stampEnd,
   stampStart,
+  summarizeAbsencesByYear,
   updateAbsenceStatus,
   updateAuthUserRole,
   updateEmployee,
@@ -613,6 +614,38 @@ const server = createServer(async (request, response) => {
       if (!requireAdmin(authGate, response)) return;
       const year = Number(url.searchParams.get("year") || new Date().getFullYear());
       sendJson(response, 200, { ok: true, quotas: calculateAbsenceQuotasForAll(year), year });
+      return;
+    }
+    if (request.method === "GET" && url.pathname === "/api/absence-summary") {
+      const isAdminActor = authGate.enforced === false || authGate.session?.role === "admin";
+      let employeeId = null;
+      if (isAdminActor) {
+        employeeId = url.searchParams.get("employeeId");
+        if (!employeeId) {
+          sendJson(response, 400, { ok: false, error: { code: "bad_request", message: "employeeId fehlt" } }, {}, request);
+          return;
+        }
+      } else if (authGate.session?.role === "employee") {
+        employeeId = actorEmployeeId(authGate, null);
+        if (!employeeId) {
+          sendJson(response, 403, {
+            ok: false,
+            error: { code: "EMPLOYEE_LINK_REQUIRED", message: "Dieses Login ist keinem Mitarbeitenden zugeordnet." }
+          }, {}, request);
+          return;
+        }
+      } else {
+        sendJson(response, 403, {
+          ok: false,
+          error: { code: "ROLE_NOT_ALLOWED", message: "Diese Rolle darf Fehlzeiten nicht abrufen." }
+        }, {}, request);
+        return;
+      }
+      try {
+        sendJson(response, 200, summarizeAbsencesByYear(employeeId), {}, request);
+      } catch (err) {
+        sendJson(response, 404, { ok: false, error: { code: "absence_summary_not_available", message: err.message } }, {}, request);
+      }
       return;
     }
     const quotaMatch = url.pathname.match(/^\/api\/employees\/([^/]+)\/quota$/);

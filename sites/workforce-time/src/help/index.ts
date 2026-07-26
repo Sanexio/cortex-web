@@ -53,6 +53,7 @@ export const helpChapterForView: Record<string, string> = {
   plan: "schichtplan",
   time: "arbeitszeiten",
   absences: "urlaub",
+  "absence-summary": "urlaub",
   approvals: "freigaben",
   employees: "mitarbeiter",
   payroll: "lohnabrechnung",

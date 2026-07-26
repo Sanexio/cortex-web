@@ -12,23 +12,73 @@ test("buildPayrollExport aggregates freigegebene Eintraege pro Tag und Mitarbeit
 
   try {
     const {
+      db,
       buildPayrollExport,
       renderPayrollExportCsv,
       renderPayrollExportDatevLodas,
       setPayrollPersonnelNumber
     } = await import("./db.js");
 
+    db.prepare(`
+      INSERT INTO employees (id, display_name, role_title, initials)
+      VALUES (?, ?, ?, ?)
+    `).run("employee-a", "Employee A", "Role A", "EA");
+    db.prepare(`
+      INSERT INTO employees (id, display_name, role_title, initials)
+      VALUES (?, ?, ?, ?)
+    `).run("employee-b", "Employee B", "Role B", "EB");
+    db.prepare(`
+      INSERT INTO work_areas (id, name)
+      VALUES (?, ?)
+    `).run("area-a", "Area A");
+    db.prepare(`
+      INSERT INTO locations (id, name)
+      VALUES (?, ?)
+    `).run("location-a", "Location A");
+    const insertEntry = db.prepare(`
+      INSERT INTO time_entries (
+        id, employee_id, starts_at, ends_at, work_area_id, location_id,
+        status, entry_type, paid_break_minutes, unpaid_break_minutes
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    insertEntry.run(
+      "time-entry-a",
+      "employee-a",
+      "2026-05-04T08:00:00",
+      "2026-05-04T16:30:00",
+      "area-a",
+      "location-a",
+      "freigegeben",
+      "Arbeitszeit",
+      0,
+      30
+    );
+    insertEntry.run(
+      "time-entry-b",
+      "employee-b",
+      "2026-05-05T09:00:00",
+      "2026-05-05T15:30:00",
+      "area-a",
+      "location-a",
+      "freigegeben",
+      "Arbeitszeit",
+      0,
+      30
+    );
+
     const report = buildPayrollExport({ year: 2026, month: 5 });
     assert.equal(report.period.year, 2026);
     assert.equal(report.period.month, 5);
     assert.equal(report.period.startDate, "2026-05-01");
     assert.ok(Array.isArray(report.employees));
-    assert.ok(report.employees.length > 0, "Demo-Seed soll Mitarbeiter mit freigegebenen Eintraegen liefern");
+    assert.equal(report.employees.length, 2);
 
-    const mfaA = report.employees.find((employee) => employee.employeeId === "mfa-a");
-    assert.ok(mfaA, "Demo-Mitarbeiter mfa-a soll im Mai-Report vorkommen");
-    assert.ok(mfaA.totals.netMinutes > 0);
-    assert.equal(mfaA.personnelNumber, null);
+    const employeeA = report.employees.find((employee) => employee.employeeId === "employee-a");
+    assert.ok(employeeA, "Employee A soll im Mai-Report vorkommen");
+    assert.equal(employeeA.totals.grossMinutes, 510);
+    assert.equal(employeeA.totals.netMinutes, 480);
+    assert.equal(employeeA.personnelNumber, null);
 
     assert.deepEqual(report.warnings.missingPersonnelNumbers.map((entry) => entry.employeeId).sort(),
       report.employees.filter((employee) => employee.totals.netMinutes > 0).map((employee) => employee.employeeId).sort());
@@ -36,22 +86,21 @@ test("buildPayrollExport aggregates freigegebene Eintraege pro Tag und Mitarbeit
     const totalNet = report.employees.reduce((sum, employee) => sum + employee.totals.netMinutes, 0);
     assert.equal(totalNet, report.totals.netMinutes);
 
-    setPayrollPersonnelNumber("mfa-a", "1001");
+    setPayrollPersonnelNumber("employee-a", "1001");
     const reportAfter = buildPayrollExport({ year: 2026, month: 5 });
-    const mfaAfter = reportAfter.employees.find((employee) => employee.employeeId === "mfa-a");
-    assert.equal(mfaAfter.personnelNumber, "1001");
+    const employeeAfter = reportAfter.employees.find((employee) => employee.employeeId === "employee-a");
+    assert.equal(employeeAfter.personnelNumber, "1001");
 
     const csv = renderPayrollExportCsv(reportAfter);
     assert.match(csv, /Personalnummer;Mitarbeitername/);
     assert.match(csv, /1001;/);
 
-    // C3: LODAS verweigert den Export, solange Mitarbeiter ohne Personalnummer
-    // freigegebene Zeiten haben (hier alle ausser mfa-a).
+    // C3: LODAS must reject approved work rows without personnel numbers.
     if (report.employees.filter((e) => e.totals.netMinutes > 0).length > 1) {
       assert.throws(() => renderPayrollExportDatevLodas(reportAfter), /Personalnummer/);
     }
 
-    // Nach Vergabe aller Nummern rendert LODAS sauber.
+    // Once every counted employee has a number, LODAS renders.
     let seq = 1002;
     for (const employee of reportAfter.employees) {
       if (employee.totals.netMinutes > 0 && !employee.personnelNumber) {

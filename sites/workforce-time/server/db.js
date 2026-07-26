@@ -5638,19 +5638,29 @@ function countWeekdaysInRange(startIso, endIso) {
   return count;
 }
 
-function countVacationDaysForYear(employeeId, year, statusFilter) {
+function countAbsenceDaysForYear(employeeId, year, statusFilter, { includeTypes = [], excludeTypes = [] } = {}) {
   const yearStart = `${year}-01-01`;
   const yearEnd = `${year}-12-31`;
-  const placeholders = VACATION_ABSENCE_TYPES.map(() => "?").join(",");
+  const params = [employeeId, statusFilter, yearStart, yearEnd];
+  const typeClauses = [];
+  if (includeTypes.length > 0) {
+    typeClauses.push(`AND absence_type IN (${includeTypes.map(() => "?").join(",")})`);
+    params.push(...includeTypes);
+  }
+  if (excludeTypes.length > 0) {
+    typeClauses.push(`AND absence_type NOT IN (${excludeTypes.map(() => "?").join(",")})`);
+    params.push(...excludeTypes);
+  }
   const rows = db.prepare(`
     SELECT starts_on, ends_on
     FROM absence_requests
     WHERE employee_id = ?
-      AND absence_type IN (${placeholders})
       AND status = ?
+      AND removed_from_source = 0
       AND ends_on >= ?
       AND starts_on <= ?
-  `).all(employeeId, ...VACATION_ABSENCE_TYPES, statusFilter, yearStart, yearEnd);
+      ${typeClauses.join("\n      ")}
+  `).all(...params);
   let totalDays = 0;
   for (const row of rows) {
     const start = row.starts_on < yearStart ? yearStart : row.starts_on;
@@ -5658,6 +5668,12 @@ function countVacationDaysForYear(employeeId, year, statusFilter) {
     totalDays += countWeekdaysInRange(start, end);
   }
   return totalDays;
+}
+
+function countVacationDaysForYear(employeeId, year, statusFilter) {
+  return countAbsenceDaysForYear(employeeId, year, statusFilter, {
+    includeTypes: VACATION_ABSENCE_TYPES
+  });
 }
 
 export function calculateAbsenceQuota(employeeId, year) {
@@ -5687,6 +5703,84 @@ export function calculateAbsenceQuota(employeeId, year) {
 export function calculateAbsenceQuotasForAll(year) {
   const employees = db.prepare(`SELECT id FROM employees`).all();
   return employees.map((e) => calculateAbsenceQuota(e.id, year));
+}
+
+function listAbsenceYearsForEmployee(employeeId) {
+  const rows = db.prepare(`
+    SELECT starts_on, ends_on
+    FROM absence_requests
+    WHERE employee_id = ?
+      AND removed_from_source = 0
+      AND status IN (?, ?)
+    ORDER BY starts_on ASC, id ASC
+  `).all(employeeId, ABSENCE_STATUS.APPROVED, ABSENCE_STATUS.OPEN);
+  const years = new Set([new Date().getFullYear()]);
+  for (const row of rows) {
+    const startYear = Number(String(row.starts_on ?? "").slice(0, 4));
+    const endYear = Number(String(row.ends_on ?? "").slice(0, 4));
+    if (!Number.isInteger(startYear) || !Number.isInteger(endYear)) continue;
+    const firstYear = Math.min(startYear, endYear);
+    const lastYear = Math.max(startYear, endYear);
+    for (let year = firstYear; year <= lastYear; year += 1) {
+      years.add(year);
+    }
+  }
+  return Array.from(years).sort((first, second) => first - second);
+}
+
+function listNonVacationAbsenceTypesForEmployee(employeeId) {
+  const placeholders = VACATION_ABSENCE_TYPES.map(() => "?").join(",");
+  return db.prepare(`
+    SELECT DISTINCT absence_type
+    FROM absence_requests
+    WHERE employee_id = ?
+      AND removed_from_source = 0
+      AND status IN (?, ?)
+      AND absence_type NOT IN (${placeholders})
+    ORDER BY absence_type ASC
+  `).all(employeeId, ABSENCE_STATUS.APPROVED, ABSENCE_STATUS.OPEN, ...VACATION_ABSENCE_TYPES)
+    .map((row) => row.absence_type)
+    .filter(Boolean);
+}
+
+export function summarizeAbsencesByYear(employeeId) {
+  const years = listAbsenceYearsForEmployee(employeeId);
+  const nonVacationTypes = listNonVacationAbsenceTypesForEmployee(employeeId);
+  const quotasByYear = new Map();
+  for (const year of years) {
+    quotasByYear.set(year, calculateAbsenceQuota(employeeId, year));
+  }
+  const employeeName = quotasByYear.get(years[0])?.employeeName ?? "";
+
+  return {
+    employeeId,
+    employeeName,
+    years: years.map((year) => {
+      const quota = quotasByYear.get(year);
+      const byType = {};
+      for (const type of nonVacationTypes) {
+        const approved = countAbsenceDaysForYear(employeeId, year, ABSENCE_STATUS.APPROVED, {
+          includeTypes: [type]
+        });
+        const pending = countAbsenceDaysForYear(employeeId, year, ABSENCE_STATUS.OPEN, {
+          includeTypes: [type]
+        });
+        if (approved > 0 || pending > 0) {
+          byType[type] = { approved, pending };
+        }
+      }
+      return {
+        year,
+        vacation: {
+          allocated: quota.allocated,
+          used: quota.used,
+          pending: quota.pending,
+          remaining: quota.remaining
+        },
+        byType
+      };
+    })
+  };
 }
 
 export function buildPayrollExport({ year, month } = {}) {

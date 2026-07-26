@@ -36,6 +36,7 @@ import {
   X
 } from "lucide-react";
 import { FormEvent, ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
+import { AbsenceSummaryView } from "./views/absence-summary";
 import { EmployeesView } from "./views/employees";
 import { HelpPanel } from "./views/help";
 import { helpChapterForView } from "./help";
@@ -52,7 +53,7 @@ type ShiftConflictCheckPayload = {
 };
 const ShiftConflictContext = createContext<((payload: ShiftConflictCheckPayload) => Promise<ShiftConflict[]>) | null>(null);
 
-type ViewKey = "dashboard" | "plan" | "time" | "absences" | "approvals" | "employees" | "payroll" | "reports" | "audit" | "imports" | "stamp" | "admin" | "settings" | "design";
+type ViewKey = "dashboard" | "plan" | "time" | "absences" | "absence-summary" | "approvals" | "employees" | "payroll" | "reports" | "audit" | "imports" | "stamp" | "admin" | "settings" | "design";
 
 type ThemeKey = "default" | "cyberpunk";
 
@@ -845,6 +846,7 @@ const viewMeta: Record<ViewKey, { title: string; eyebrow: string }> = {
   plan: { title: "Kalenderwoche", eyebrow: "Schichtplanung" },
   time: { title: "Arbeitszeiten", eyebrow: "Zeit & Reporting" },
   absences: { title: "Urlaub & Abwesenheit", eyebrow: "Anträge & Kalender" },
+  "absence-summary": { title: "Fehlzeiten", eyebrow: "Jahresübersicht" },
   approvals: { title: "Freigaben", eyebrow: "Korrekturen · Tausch · Urlaub" },
   employees: { title: "Mitarbeiter", eyebrow: "Stammdaten" },
   payroll: { title: "Lohnabrechnung", eyebrow: "DATEV-Export · Monatsstunden" },
@@ -2259,6 +2261,12 @@ function App() {
         Abwesenheit
       </button>
     ),
+    "absence-summary": (
+      <button className="secondary-button" onClick={refresh}>
+        <RefreshCw size={17} />
+        Aktualisieren
+      </button>
+    ),
     approvals: (
       <button className="secondary-button" onClick={refresh}>
         <RefreshCw size={17} />
@@ -2480,6 +2488,13 @@ function App() {
             activeWeekStart={visibleWeekStart}
             data={data}
             updateStatus={updateAbsenceStatus}
+            request={request}
+          />
+        ) : null}
+        {view === "absence-summary" ? (
+          <AbsenceSummaryView
+            employees={data.employees}
+            authUser={authUser}
             request={request}
           />
         ) : null}
@@ -3045,6 +3060,7 @@ function Sidebar({
     { view: "dashboard", label: "Übersicht", icon: Home },
     { view: "time", label: "Arbeitszeiten", icon: Clock3 },
     { view: "absences", label: "Urlaub", icon: CalendarDays },
+    { view: "absence-summary", label: "Fehlzeiten", icon: AlertTriangle },
     { view: "approvals", label: "Freigaben", icon: ClipboardCheck },
     { view: "employees", label: "Mitarbeiter", icon: Users },
     { view: "payroll", label: "Lohnabrechnung", icon: Coins },

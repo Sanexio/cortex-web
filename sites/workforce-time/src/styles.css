@@ -2878,6 +2878,147 @@ button:disabled {
   margin-left: auto;
 }
 
+.absence-summary-view {
+  display: grid;
+  gap: 14px;
+}
+
+.absence-summary-heading {
+  align-items: flex-start;
+}
+
+.absence-summary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: min(100%, 420px);
+}
+
+.absence-summary-select {
+  min-width: 240px;
+}
+
+.absence-summary-identity {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.absence-year-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.absence-year-card {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 1px 0 rgba(29, 29, 31, 0.03);
+}
+
+.absence-year-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.absence-year-title h3 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.absence-year-title p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.absence-year-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+.absence-summary-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.absence-summary-kpi {
+  min-height: 78px;
+  padding: 12px;
+  box-shadow: none;
+}
+
+.absence-summary-kpi strong {
+  font-size: 22px;
+}
+
+.absence-type-list {
+  display: grid;
+  gap: 8px;
+}
+
+.absence-type-row,
+.absence-type-empty {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: center;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-muted);
+}
+
+.absence-type-row span,
+.absence-type-row strong,
+.absence-type-row small {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.absence-type-row span {
+  font-weight: 800;
+}
+
+.absence-type-row strong {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.absence-type-row small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.absence-type-empty {
+  display: flex;
+  color: var(--muted);
+  font-weight: 750;
+}
+
 .summary-list.four {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -4165,6 +4306,7 @@ tbody tr:hover,
   }
 
   .metric-strip,
+  .absence-summary-metrics,
   .operations-grid,
   .core-strip,
   .core-board,
@@ -4280,6 +4422,7 @@ tbody tr:hover,
   .summary-list.four,
   .form-grid,
   .metric-strip,
+  .absence-summary-metrics,
   .calendar-totals,
   .operations-grid,
   .core-strip,
@@ -4327,6 +4470,18 @@ tbody tr:hover,
   .absence-calendar-panel .section-heading {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .absence-summary-heading,
+  .absence-summary-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .absence-summary-actions,
+  .absence-summary-select,
+  .absence-summary-actions .secondary-button {
+    width: 100%;
   }
 
   .week-pill {

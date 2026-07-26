@@ -75,65 +75,50 @@ async function callAuthRoute(handleAuthRoute, method, path, { cookie, body } = {
   return response;
 }
 
-test("magic-link + TOTP enrollment unlocks protected bootstrap", async () => {
+test("password login + TOTP enrollment unlocks protected bootstrap", async () => {
   const tempDir = await mkdtemp(join(tmpdir(), "workforce-auth-"));
-    process.env.NODE_ENV = "test";
-    process.env.WORKFORCE_AUTH_ENFORCE = "1";
-    process.env.WORKFORCE_TOTP_KEY = "auth-smoke-test-key";
-    process.env.CORTEX_TENANT_DIR = tempDir;
-    process.env.ARBEITSZEITEN_DB = join(tempDir, "arbeitszeiten.sqlite");
+  process.env.NODE_ENV = "test";
+  process.env.WORKFORCE_AUTH_ENFORCE = "1";
+  process.env.WORKFORCE_TOTP_KEY = "auth-smoke-test-key";
+  process.env.CORTEX_TENANT_DIR = tempDir;
+  process.env.ARBEITSZEITEN_DB = join(tempDir, "arbeitszeiten.sqlite");
 
-    await writeFile(join(tempDir, "tenant.config.json"), JSON.stringify({
-      workforce: {
-        slug: "workforce-smoke",
-        tenant: {
-          display_name: "Workforce Smoke Test",
-          allowed_hosts: []
-        },
-        auth: {
-          users: [
-            {
-              email: "admin@workforce.local",
-              display_name: "Workforce Admin",
-              role: "admin"
-            }
-          ]
-        }
+  await writeFile(join(tempDir, "tenant.config.json"), JSON.stringify({
+    workforce: {
+      slug: "workforce-smoke",
+      tenant: {
+        display_name: "Workforce Smoke Test",
+        allowed_hosts: []
+      },
+      auth: {
+        require_admin_totp: true,
+        users: [
+          {
+            email: "admin@workforce.local",
+            display_name: "Workforce Admin",
+            role: "admin"
+          }
+        ]
       }
-    }, null, 2));
+    }
+  }, null, 2));
 
   try {
-    const { handleAuthRoute, requireWorkforceApiSession } = await import("./auth.js");
-    const { getBootstrap } = await import("./db.js");
+    const { handleAuthRoute, requireWorkforceApiSession, setAuthUserPassword } = await import("./auth.js");
+    const { db, getBootstrap } = await import("./db.js");
 
     const blocked = requireWorkforceApiSession(mockRequest("GET", "/api/bootstrap"));
     assert.equal(blocked.ok, false);
     assert.equal(blocked.error.code, "SESSION_REQUIRED");
 
-    const logs = [];
-    const originalLog = console.log;
-    let requested;
-    try {
-      console.log = (...args) => {
-        logs.push(args.join(" "));
-      };
-      requested = await callAuthRoute(handleAuthRoute, "POST", "/api/auth/magic-link", {
-        body: { email: "admin@workforce.local" }
-      });
-    } finally {
-      console.log = originalLog;
-    }
+    const authUserId = db.prepare(`
+      INSERT INTO auth_users (email, display_name, role, tenant_slug)
+      VALUES (?, ?, ?, ?)
+    `).run("admin@workforce.local", "Workforce Admin", "admin", "workforce-smoke").lastInsertRowid;
+    setAuthUserPassword(authUserId, { password: "TestPassword123!" });
 
-    assert.equal(requested.status, 200);
-    const magicLinkLine = logs.find((line) => line.includes("Magic-Link fuer admin@workforce.local"));
-    assert.ok(magicLinkLine);
-    const magicLink = magicLinkLine.match(/(http:\/\/[^\s]+)/)?.[1];
-    assert.ok(magicLink);
-    const token = new URL(magicLink).searchParams.get("token");
-    assert.ok(token);
-
-    const verified = await callAuthRoute(handleAuthRoute, "POST", "/api/auth/magic-link/verify", {
-      body: { token }
+    const verified = await callAuthRoute(handleAuthRoute, "POST", "/api/auth/login", {
+      body: { email: "admin@workforce.local", password: "TestPassword123!" }
     });
     assert.equal(verified.status, 200);
     assert.equal(verified.payload.data.enroll_totp, true);
@@ -162,7 +147,10 @@ test("magic-link + TOTP enrollment unlocks protected bootstrap", async () => {
     assert.equal(gate.ok, true);
     assert.ok(Array.isArray(getBootstrap().employees));
   } finally {
+    delete process.env.WORKFORCE_AUTH_ENFORCE;
+    delete process.env.WORKFORCE_TOTP_KEY;
     delete process.env.CORTEX_TENANT_DIR;
+    delete process.env.ARBEITSZEITEN_DB;
     await rm(tempDir, { recursive: true, force: true });
   }
 });
