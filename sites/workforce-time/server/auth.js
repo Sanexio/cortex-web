@@ -140,14 +140,17 @@ function hostGateBypassed() {
   return isDevelopment() && process.env.WORKFORCE_AUTH_ENFORCE !== "1";
 }
 
-function tenantAuthContext(request = null) {
+// `source` enthaelt den Dateisystempfad des Tenants und gehoert damit nicht in
+// eine unauthentifizierte Antwort — es wird nur fuer angemeldete Aufrufer
+// mitgeliefert (T-LEAK-001, 2026-07-26).
+function tenantAuthContext(request = null, { includeSource = false } = {}) {
   const host = request ? requestHost(request) : "";
   const allowedHosts = tenantAllowedHosts();
   return {
     slug: tenantSlug(),
     displayName: tenantDisplayName(),
     isDemo: tenantIsDemo(),
-    source: tenantDescribe(),
+    ...(includeSource ? { source: tenantDescribe() } : {}),
     host: host || null,
     allowedHosts,
     // Das Tenant-Host-Gate (T-203) ist eine Produktions-Sicherung gegen
@@ -159,7 +162,7 @@ function tenantAuthContext(request = null) {
 }
 
 function assertTenantHost(request) {
-  const context = tenantAuthContext(request);
+  const context = tenantAuthContext(request, { includeSource: true });
   if (!context.hostAccepted) {
     throw authError(
       "TENANT_HOST_MISMATCH",
@@ -1305,7 +1308,7 @@ export async function handleAuthRoute({ request, response, url, readJson, sendJs
       jsonOk(sendJson, response, {
         authenticated: Boolean(session),
         user: session ? publicUser(session) : null,
-        tenant: tenantAuthContext(request)
+        tenant: tenantAuthContext(request, { includeSource: Boolean(session) })
       });
       return true;
     }
