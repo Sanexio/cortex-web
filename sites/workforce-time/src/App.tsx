@@ -973,6 +973,15 @@ function localTodayIso() {
   return today.toISOString().slice(0, 10);
 }
 
+function isPastPlanDay(day: string) {
+  return day < localTodayIso();
+}
+
+function visiblePlanShifts(shifts: Shift[], day: string) {
+  const dayShifts = shifts.filter((shift) => shift.startDate === day);
+  return isPastPlanDay(day) ? dayShifts.filter((shift) => shift.assignments.length > 0) : dayShifts;
+}
+
 function getPrototypeWeekStart(data: BootstrapPayload) {
   const datedRecords = [
     ...data.shifts.map((shift) => shift.startDate),
@@ -4710,7 +4719,7 @@ function PlanView({
   const [selectedPlanDay, setSelectedPlanDay] = useState(weekStart);
   const [showWeekend, setShowWeekend] = useState(false);
   const weekDays = Array.from({ length: 7 }, (_, index) => addDays(weekStart, index));
-  const weekShifts = data.shifts.filter((shift) => dateInRange(shift.startDate, weekStart, weekEnd));
+  const weekShifts = weekDays.flatMap((day) => visiblePlanShifts(data.shifts, day));
   const weekdayDays = weekDays.filter((day) => !isWeekend(day));
   const weekendDaysWithShifts = weekDays.filter(
     (day) => isWeekend(day) && weekShifts.some((shift) => shift.startDate === day)
@@ -5057,7 +5066,7 @@ function FixedWeeklyPlanner({
   const labelColumn = days.length === 1 ? "minmax(112px, 126px)" : "minmax(150px, 220px)";
 
   function openDay(day: string) {
-    const firstShift = data.shifts.find((shift) => shift.startDate === day);
+    const firstShift = visiblePlanShifts(data.shifts, day)[0];
     if (firstShift) {
       onEditShift(firstShift);
       return;
@@ -5093,7 +5102,7 @@ function FixedWeeklyPlanner({
                 {optionalDay ? <span className="optional-shift-label">optional</span> : null}
               </div>
               <small>
-                {data.shifts.filter((shift) => shift.startDate === day).length} besetzt ·{" "}
+                {visiblePlanShifts(data.shifts, day).length} besetzt ·{" "}
                 {data.absences.filter((absence) => absence.startsOn <= day && absence.endsOn >= day).length} abwesend
               </small>
             </button>
@@ -5132,11 +5141,7 @@ function SchemaGroupRows({
   const shiftMatchesGroup = (shift: Shift) => group.shifts.some((template) => shiftMatchesTemplate(shift, template));
 
   function openGroup() {
-    const firstShift = data.shifts.find(
-      (shift) =>
-        days.includes(shift.startDate) &&
-        shiftMatchesGroup(shift)
-    );
+    const firstShift = days.flatMap((day) => visiblePlanShifts(data.shifts, day)).find(shiftMatchesGroup);
 
     if (firstShift) {
       onEditShift(firstShift);
@@ -5147,11 +5152,7 @@ function SchemaGroupRows({
   }
 
   function openGroupDay(day: string) {
-    const firstShift = data.shifts.find(
-      (shift) =>
-        shift.startDate === day &&
-        shiftMatchesGroup(shift)
-    );
+    const firstShift = visiblePlanShifts(data.shifts, day).find(shiftMatchesGroup);
 
     if (firstShift) {
       onEditShift(firstShift);
@@ -5167,11 +5168,7 @@ function SchemaGroupRows({
         {group.category}
       </button>
       {days.map((day) => {
-        const groupDayShifts = data.shifts.filter(
-          (shift) =>
-            shift.startDate === day &&
-            shiftMatchesGroup(shift)
-        );
+        const groupDayShifts = visiblePlanShifts(data.shifts, day).filter(shiftMatchesGroup);
 
         return (
           <button
@@ -5244,7 +5241,7 @@ function SchemaShiftRow({
       </button>
       {days.map((day) => {
         const optionalDay = isWeekend(day);
-        const dayShifts = recordsForTemplateDay(data.shifts, day, template);
+        const dayShifts = recordsForTemplateDay(visiblePlanShifts(data.shifts, day), day, template);
         const dayEntries = recordsForTemplateDay(data.timeEntries, day, template);
 
         return (
@@ -5275,7 +5272,7 @@ function SchemaShiftRow({
                         {entries.length} Zeiten · {formatDuration(entries.reduce((sum, entry) => sum + minutesBetween(entry), 0))}
                       </div>
                     ) : null}
-                    {isOpenSlot ? (
+                    {isOpenSlot && !isPastPlanDay(day) ? (
                       <button
                         className="schema-service-open"
                         type="button"
