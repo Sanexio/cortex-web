@@ -19,6 +19,16 @@ test("parseArgs defaults to dry-run fixture mode without credentials", () => {
   assert.equal(options.planWeeksAhead, 6);
 });
 
+test("parseArgs defaults to full import mode", () => {
+  const options = parseArgs([]);
+  assert.equal(options.planOnly, false);
+});
+
+test("parseArgs accepts plan-only flag", () => {
+  const options = parseArgs(["--plan-only"]);
+  assert.equal(options.planOnly, true);
+});
+
 test("parseArgs accepts plan scrape horizon", () => {
   const options = parseArgs(["--plan-weeks-ahead", "8"]);
   assert.equal(options.planWeeksAhead, 8);

@@ -41,6 +41,7 @@ Options:
   --from <YYYY-MM-DD>    Delta start. Default: 2026-05-25.
   --to <YYYY-MM-DD>      Delta end. Default: today.
   --plan-weeks-ahead <N>  Plan-Scrape-Horizont in Wochen ab heute. Default: 6.
+  --plan-only            Nur Mitarbeiter + Dienstplan scrapen (kein work-hours-Tages-Loop, keine Abwesenheiten).
   --live                 Capture read-only Legacy-Import browser data via Playwright.
   --secrets-file <path>  Presence gate for live mode. Default: ~/.cortex/secrets/legacy-import.env.
 `;
@@ -64,6 +65,7 @@ export function parseArgs(argv = process.argv.slice(2)) {
     from: "2026-05-25",
     to: new Date().toISOString().slice(0, 10),
     planWeeksAhead: 6,
+    planOnly: false,
     live: false,
     secretsFile: defaultSecretPath
   };
@@ -74,6 +76,7 @@ export function parseArgs(argv = process.argv.slice(2)) {
     if (arg === "--dry-run") options.dryRun = true;
     else if (arg === "--post") options.post = true;
     else if (arg === "--live") options.live = true;
+    else if (arg === "--plan-only") options.planOnly = true;
     else if (arg === "--fixture") options.fixture = resolve(requireValue(argv, index++, arg));
     else if (arg === "--out") options.out = resolve(requireValue(argv, index++, arg));
     else if (arg === "--api-url") options.apiUrl = requireValue(argv, index++, arg).replace(/\/+$/, "");
@@ -457,29 +460,31 @@ async function captureLiveImport(options) {
     // (Probe 2026-06-25: 22.-28.06 -> nur 23-26 geliefert). Workaround:
     // pro Tag separat scrapen statt pro Woche. Quell-System fasst
     // Single-Day-Ranges zuverlaessig.
-    const allDays = [];
-    for (const range of isoWeeksInRange(options.from, options.to)) {
-      let cursor = range.start;
-      while (cursor <= range.end) {
-        allDays.push(cursor);
-        cursor = addDays(cursor, 1);
+    if (!options.planOnly) {
+      const allDays = [];
+      for (const range of isoWeeksInRange(options.from, options.to)) {
+        let cursor = range.start;
+        while (cursor <= range.end) {
+          allDays.push(cursor);
+          cursor = addDays(cursor, 1);
+        }
+      }
+      for (const day of allDays) {
+        await page.goto(new URL("/work-hours", process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
+        await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
+        await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
+        await page.waitForTimeout(2000);
+        const defaultRows = await extractWorkHoursRowsFromPage(page);
+        const pickerSet = await applyWorkHoursPickerRange(page, day, day);
+        const pickedRows = pickerSet ? await extractWorkHoursRowsFromPage(page) : [];
+        const usedRows = pickerSet ? pickedRows : defaultRows;
+        if (process.env.LEGACY_DEBUG) {
+          console.error(`LEGACY_DEBUG Day ${day}: pickerSet=${pickerSet}, default=${defaultRows.length}, picked=${pickedRows.length}, used=${usedRows.length}`);
+        }
+        workHoursRows.push(...usedRows);
       }
     }
-    for (const day of allDays) {
-      await page.goto(new URL("/work-hours", process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
-      await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
-      await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
-      await page.waitForTimeout(2000);
-      const defaultRows = await extractWorkHoursRowsFromPage(page);
-      const pickerSet = await applyWorkHoursPickerRange(page, day, day);
-      const pickedRows = pickerSet ? await extractWorkHoursRowsFromPage(page) : [];
-      const usedRows = pickerSet ? pickedRows : defaultRows;
-      if (process.env.LEGACY_DEBUG) {
-        console.error(`LEGACY_DEBUG Day ${day}: pickerSet=${pickerSet}, default=${defaultRows.length}, picked=${pickedRows.length}, used=${usedRows.length}`);
-      }
-      workHoursRows.push(...usedRows);
-    }
-    const absenceRows = await captureAbsences(page, options);
+    const absenceRows = options.planOnly ? [] : await captureAbsences(page, options);
     const planRows = await capturePlan(page, options);
     if (process.env.LEGACY_DEBUG) {
       console.error(`LEGACY_DEBUG Mitarbeiterzeilen: ${employeeRows.length}`);
