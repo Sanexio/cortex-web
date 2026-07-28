@@ -544,6 +544,7 @@ function getWorkforceConfig(): WorkforceConfig {
 type BootstrapPayload = {
   employees: Employee[];
   workAreas: string[];
+  workAreaDetails: WorkAreaDetail[];
   locations: string[];
   timeEntries: TimeEntry[];
   shifts: Shift[];
@@ -560,6 +561,16 @@ type BootstrapPayload = {
     roles: Role[];
   };
   sync: SyncState;
+};
+
+type WorkAreaDetail = {
+  name: string;
+  practice: string | null;
+};
+
+type WorkAreaOptionGroup = {
+  label: string;
+  options: string[];
 };
 
 type CalculationRow = {
@@ -704,6 +715,7 @@ const fallbackEntries: TimeEntry[] = [];
 const fallbackData: BootstrapPayload = {
   employees: fallbackEmployees,
   workAreas: fallbackWorkAreas,
+  workAreaDetails: [],
   locations: fallbackLocations,
   timeEntries: fallbackEntries,
   shifts: [],
@@ -1099,6 +1111,57 @@ function uniqueLabels(labels: string[]) {
       seen.add(key);
       return true;
     });
+}
+
+function groupWorkAreaOptionsByPractice(workAreaDetails: WorkAreaDetail[], areaNames: string[]): WorkAreaOptionGroup[] {
+  const practiceByArea = new Map<string, string | null>();
+  for (const detail of workAreaDetails) {
+    const practice = typeof detail.practice === "string" && detail.practice.trim() ? detail.practice.trim() : null;
+    const detailNames = uniqueLabels([detail.name, canonicalWorkAreaLabel(detail.name)].filter(Boolean));
+    for (const name of detailNames) {
+      const key = normalizeLabel(name);
+      const existing = practiceByArea.get(key);
+      if (!practiceByArea.has(key) || (!existing && practice)) {
+        practiceByArea.set(key, practice);
+      }
+    }
+  }
+
+  const practiceGroups = new Map<string, string[]>();
+  const catchAll: string[] = [];
+  for (const area of uniqueLabels(areaNames.map(canonicalWorkAreaLabel))) {
+    const practice = practiceByArea.get(normalizeLabel(area)) ?? null;
+    if (practice) {
+      practiceGroups.set(practice, [...(practiceGroups.get(practice) ?? []), area]);
+    } else {
+      catchAll.push(area);
+    }
+  }
+
+  const byName = (first: string, second: string) => first.localeCompare(second, "de-DE");
+  const groups = Array.from(practiceGroups.entries())
+    .sort(([first], [second]) => byName(first, second))
+    .map(([practice, options]) => ({
+      label: practice,
+      options: [...options].sort(byName)
+    }));
+
+  const sortedCatchAll = [...catchAll].sort(byName);
+  return sortedCatchAll.length > 0
+    ? [...groups, { label: "Ohne Praxis", options: sortedCatchAll }]
+    : groups;
+}
+
+function renderWorkAreaOptionGroups(optionGroups: WorkAreaOptionGroup[]) {
+  return optionGroups.map((group, index) => (
+    <optgroup label={group.label} key={`${group.label}-${index}`}>
+      {group.options.map((area) => (
+        <option value={area} key={area}>
+          {area}
+        </option>
+      ))}
+    </optgroup>
+  ));
 }
 
 function customTemplateId(area: string) {
@@ -2434,6 +2497,7 @@ function App() {
             setView={navigateView}
             locations={data.locations}
             workAreas={data.workAreas}
+            workAreaDetails={data.workAreaDetails}
             workAreaCategories={data.workforce?.workAreaCategories ?? {}}
           />
         </div>
@@ -2537,6 +2601,7 @@ function App() {
         <AddTimeDialog
           employees={data.employees}
           workAreas={data.workAreas}
+          workAreaDetails={data.workAreaDetails}
           locations={data.locations}
           initialDate={visibleWeekStart}
           onClose={closeDialog}
@@ -2577,6 +2642,7 @@ function App() {
           key={editingShiftId ?? (shiftDefaults ? `${shiftDefaults.area}-${shiftDefaults.startDate}-${shiftDefaults.startTime}` : "blank-shift")}
           employees={data.employees}
           workAreas={data.workAreas}
+          workAreaDetails={data.workAreaDetails}
           locations={data.locations}
           initial={shiftDefaults ?? undefined}
           mode={editingShiftId ? "edit" : "create"}
@@ -3275,6 +3341,7 @@ function LiveTimerBoard({
   setView,
   locations,
   workAreas,
+  workAreaDetails,
   workAreaCategories
 }: {
   request: <T>(path: string, init?: RequestInit) => Promise<T>;
@@ -3283,6 +3350,7 @@ function LiveTimerBoard({
   setView: (view: ViewKey) => void;
   locations: string[];
   workAreas: string[];
+  workAreaDetails: WorkAreaDetail[];
   workAreaCategories: Record<string, string[]>;
 }) {
   const isAdmin = !authUser || authUser.role === "admin";
@@ -3296,6 +3364,7 @@ function LiveTimerBoard({
   const [assignOpen, setAssignOpen] = useState(false);
   const [assignLocation, setAssignLocation] = useState<string>("");
   const [assignArea, setAssignArea] = useState<string>("");
+  const assignAreaGroups = groupWorkAreaOptionsByPractice(workAreaDetails, workAreas);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -3357,7 +3426,7 @@ function LiveTimerBoard({
   async function submitAssignContext() {
     if (!ownEmployeeId) return;
     if (!assignLocation || !assignArea) {
-      setError("Bitte Praxis und Bereich waehlen.");
+      setError("Bitte Standort und Bereich waehlen.");
       return;
     }
     setBusy(true);
@@ -3492,10 +3561,10 @@ function LiveTimerBoard({
               ohne Schicht
             </span>
           )}
-          {/* Zuordnungs-Button: bei keiner Plan-Schicht
-              - kein assigned: "+ Praxis/Bereich zuordnen" (rot)
-              - bereits assigned: "Schichtwechsel" (neutral)
-              Sichtbar wenn aktive Session laeuft oder heute schon gestempelt. */}
+          {/* Manual assignment button when there is no planned shift:
+              - no assignment: "+ Standort/Bereich zuordnen" (red)
+              - existing assignment: "Schichtwechsel" (neutral)
+              Visible during an active session or after today's first stamp. */}
           {!selfState.shift && (selfState.active || (selfState.todayCompletedSeconds ?? 0) > 0) ? (
             <button
               type="button"
@@ -3517,14 +3586,14 @@ function LiveTimerBoard({
                 whiteSpace: "nowrap"
               }}
               title={selfState.assigned?.locationName
-                ? "Andere Praxis / anderen Bereich wählen"
-                : "Praxis und Bereich der aktuellen oder zuletzt abgeschlossenen Session zuweisen"}
+                ? "Anderen Standort / anderen Bereich wählen"
+                : "Standort und Bereich der aktuellen oder zuletzt abgeschlossenen Session zuweisen"}
             >
               {assignOpen
                 ? "× Abbrechen"
                 : selfState.assigned?.locationName
                   ? "⇄ Schichtwechsel"
-                  : "+ Praxis/Bereich zuordnen"}
+                  : "+ Standort/Bereich zuordnen"}
             </button>
           ) : null}
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -3602,7 +3671,7 @@ function LiveTimerBoard({
         </span>
       ) : null}
 
-      {/* Inline-Auswahl: Praxis + Bereich fuer die letzte/laufende Session */}
+      {/* Inline selection for the current or most recent session. */}
       {assignOpen ? (
         <div
           style={{
@@ -3618,26 +3687,16 @@ function LiveTimerBoard({
             border: "1px solid var(--color-danger, #b91c1c)"
           }}
         >
-          <span style={{ fontSize: "0.85em", fontWeight: 600 }}>Praxis</span>
+          <span style={{ fontSize: "0.85em", fontWeight: 600 }}>Standort</span>
           <select
             value={assignLocation}
-            onChange={(e) => {
-              setAssignLocation(e.target.value);
-              // Bei Praxis-Wechsel den Bereich zuruecksetzen, damit kein
-              // praxisfremder Bereich versehentlich ausgewaehlt bleibt.
-              setAssignArea("");
-            }}
+            onChange={(e) => setAssignLocation(e.target.value)}
             style={{ padding: "4px 8px", fontSize: "0.85em", borderRadius: 6 }}
           >
             <option value="">— waehlen —</option>
-            {Object.keys(workAreaCategories).map((category) => (
-              <option
-                key={category}
-                value={category}
-                disabled={!locations.includes(category)}
-                title={!locations.includes(category) ? "Standort im Datenbestand noch nicht angelegt" : ""}
-              >
-                {category}
+            {locations.map((location) => (
+              <option key={location} value={location}>
+                {location}
               </option>
             ))}
           </select>
@@ -3645,13 +3704,10 @@ function LiveTimerBoard({
           <select
             value={assignArea}
             onChange={(e) => setAssignArea(e.target.value)}
-            disabled={!assignLocation}
             style={{ padding: "4px 8px", fontSize: "0.85em", borderRadius: 6 }}
           >
-            <option value="">{assignLocation ? "— waehlen —" : "— erst Praxis waehlen —"}</option>
-            {(workAreaCategories[assignLocation] ?? []).map((area) => (
-              <option key={area} value={area}>{area}</option>
-            ))}
+            <option value="">— waehlen —</option>
+            {renderWorkAreaOptionGroups(assignAreaGroups)}
           </select>
           <button
             type="button"
@@ -5561,6 +5617,7 @@ function TimeView({
             filters={filters}
             locations={data.locations}
             workAreas={data.workAreas}
+            workAreaDetails={data.workAreaDetails}
             setFilters={setFilters}
           />
         ) : null}
@@ -5753,14 +5810,16 @@ function FilterPanel({
   filters,
   locations,
   workAreas,
+  workAreaDetails,
   setFilters
 }: {
   filters: { location: string; area: string; status: string; type: string };
   locations: string[];
   workAreas: string[];
+  workAreaDetails: WorkAreaDetail[];
   setFilters: (filters: { location: string; area: string; status: string; type: string }) => void;
 }) {
-  const workAreaOptions = ["Alle", ...uniqueLabels(workAreas.map(canonicalWorkAreaLabel))];
+  const workAreaOptions = groupWorkAreaOptionsByPractice(workAreaDetails, workAreas);
 
   return (
     <div className="filter-panel">
@@ -5773,7 +5832,8 @@ function FilterPanel({
       <SelectChip
         label="Arbeitsbereich"
         value={filters.area}
-        options={workAreaOptions}
+        options={["Alle"]}
+        optionGroups={workAreaOptions}
         onChange={(area) => setFilters({ ...filters, area })}
       />
       <SelectChip
@@ -5798,12 +5858,14 @@ function SelectChip({
   label,
   value,
   options,
+  optionGroups = [],
   onChange,
   format = (option) => option
 }: {
   label: string;
   value: string;
   options: string[];
+  optionGroups?: WorkAreaOptionGroup[];
   onChange: (value: string) => void;
   format?: (option: string) => string;
 }) {
@@ -5815,6 +5877,15 @@ function SelectChip({
           <option value={option} key={option}>
             {format(option)}
           </option>
+        ))}
+        {optionGroups.map((group, index) => (
+          <optgroup label={group.label} key={`${group.label}-${index}`}>
+            {group.options.map((option) => (
+              <option value={option} key={option}>
+                {format(option)}
+              </option>
+            ))}
+          </optgroup>
         ))}
       </select>
     </label>
@@ -7063,6 +7134,7 @@ function AbsenceBadge({ status }: { status: AbsenceStatus }) {
 function AddTimeDialog({
   employees,
   workAreas,
+  workAreaDetails,
   locations,
   initialDate,
   onClose,
@@ -7070,12 +7142,14 @@ function AddTimeDialog({
 }: {
   employees: Employee[];
   workAreas: string[];
+  workAreaDetails: WorkAreaDetail[];
   locations: string[];
   initialDate?: string;
   onClose: () => void;
   onAdd: (entry: TimeEntry) => void;
 }) {
   const areaOptions = uniqueLabels(workAreas.map(canonicalWorkAreaLabel));
+  const areaOptionGroups = groupWorkAreaOptionsByPractice(workAreaDetails, areaOptions);
   const [form, setForm] = useState({
     employeeId: employees[0]?.id ?? "",
     area: areaOptions[0] ?? "",
@@ -7124,11 +7198,7 @@ function AddTimeDialog({
         </Field>
         <Field label="Arbeitsbereich">
           <select value={form.area} onChange={(event) => setForm({ ...form, area: event.target.value })}>
-            {areaOptions.map((area) => (
-              <option value={area} key={area}>
-                {area}
-              </option>
-            ))}
+            {renderWorkAreaOptionGroups(areaOptionGroups)}
           </select>
         </Field>
         <Field label="Standort">
@@ -7234,6 +7304,7 @@ function AddEmployeeDialog({
 function AddShiftDialog({
   employees,
   workAreas,
+  workAreaDetails,
   locations,
   initial,
   mode = "create",
@@ -7243,6 +7314,7 @@ function AddShiftDialog({
 }: {
   employees: Employee[];
   workAreas: string[];
+  workAreaDetails: WorkAreaDetail[];
   locations: string[];
   initial?: ShiftDialogDefaults;
   mode?: "create" | "edit";
@@ -7261,6 +7333,7 @@ function AddShiftDialog({
     slotOptions.find(({ slot }) => slot.baseLabel === defaultArea) ??
     slotOptions[0];
   const areaOptions = uniqueLabels([defaultArea, ...workAreas.map(canonicalWorkAreaLabel)].filter(Boolean));
+  const areaOptionGroups = groupWorkAreaOptionsByPractice(workAreaDetails, areaOptions);
   const locationOptions = Array.from(new Set([defaultLocation, ...locations].filter(Boolean)));
   const [form, setForm] = useState({
     slotId: initial?.slotId ?? inferredSlot?.slot.id ?? "",
@@ -7382,11 +7455,12 @@ function AddShiftDialog({
             required
           />
           <datalist id="shift-work-area-options">
-            {areaOptions.map((area) => (
-              <option value={area} key={area}>
-                {area}
-              </option>
-            ))}
+            {/* A datalist ignores optgroup, so the practice rides along as the option label. */}
+            {areaOptionGroups.flatMap((group) =>
+              group.options.map((area) => (
+                <option value={area} label={group.label} key={area} />
+              ))
+            )}
           </datalist>
         </Field>
         <Field label="Standort">

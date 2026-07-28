@@ -163,6 +163,25 @@ const workAreaOverrides = (
   }))
   .filter((entry) => entry.matchTokens.length > 0 && entry.canonical);
 
+function workAreaCategoryEntries(categories) {
+  if (!categories || typeof categories !== "object" || Array.isArray(categories)) {
+    return [];
+  }
+
+  return Object.entries(categories)
+    .map(([practiceName, entries]) => ({
+      practiceName: String(practiceName ?? "").trim(),
+      workAreas: Array.from(
+        new Set(
+          (Array.isArray(entries) ? entries : [entries])
+            .map((entry) => String(entry ?? "").trim())
+            .filter(Boolean)
+        )
+      )
+    }))
+    .filter((entry) => entry.practiceName && entry.workAreas.length > 0);
+}
+
 function hashPayload(payload) {
   return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
 }
@@ -401,6 +420,35 @@ function ensureWorkArea(name) {
   return { id, name };
 }
 
+function practiceIdByName(name) {
+  const trimmed = typeof name === "string" && name.trim() ? name.trim() : null;
+  if (!trimmed) return null;
+  const row = db.prepare("SELECT id FROM practices WHERE name = ?").get(trimmed);
+  return row?.id ?? null;
+}
+
+function ensureTenantPractice(name, importedAt = now()) {
+  const trimmed = typeof name === "string" && name.trim() ? name.trim() : null;
+  if (!trimmed) return null;
+  const id = idFromName("practice", trimmed);
+  db.prepare(`
+    INSERT OR IGNORE INTO practices (id, name, source_system, source_id, imported_at)
+    VALUES (?, ?, 'local_schema', ?, ?)
+  `).run(id, trimmed, id, importedAt);
+  return practiceIdByName(trimmed);
+}
+
+function setWorkAreaPracticeId(workAreaId, practiceId, updatedAt = now()) {
+  const row = db.prepare("SELECT practice_id FROM work_areas WHERE id = ?").get(workAreaId);
+  if (!row || row.practice_id === practiceId) return false;
+  db.prepare(`
+    UPDATE work_areas
+    SET practice_id = ?, updated_at = ?
+    WHERE id = ?
+  `).run(practiceId, updatedAt, workAreaId);
+  return true;
+}
+
 function readMigrationBaseline() {
   if (!existsSync(migrationBaselinePath)) {
     return null;
@@ -442,6 +490,7 @@ function applyMigrationBaseline(snapshot) {
   const filtered = {
     ...snapshot,
     locations: snapshot.locations.filter(onlyNew("location")),
+    practices: snapshot.practices.filter(onlyNew("practice")),
     workAreas: snapshot.workAreas.filter(onlyNew("work_area")),
     employees: snapshot.employees.filter(onlyNew("employee")),
     shifts: snapshot.shifts.filter(onlyNew("shift")),
@@ -552,9 +601,22 @@ function migrate() {
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS practices (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL UNIQUE,
+      is_active INTEGER NOT NULL DEFAULT 1,
+      source_system TEXT,
+      source_id TEXT,
+      imported_at TEXT,
+      removed_from_source INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE TABLE IF NOT EXISTS work_areas (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL UNIQUE,
+      practice_id TEXT REFERENCES practices(id),
       is_active INTEGER NOT NULL DEFAULT 1,
       source_system TEXT,
       source_id TEXT,
@@ -838,6 +900,7 @@ function migrate() {
 
   addColumnIfMissing("employees", "email", "TEXT");
   addColumnIfMissing("employees", "weekly_hours", "REAL");
+  addColumnIfMissing("work_areas", "practice_id", "TEXT REFERENCES practices(id)");
   // Ordio liefert eine vorgerechnete Arbeitszeit pro Stempel (Brutto - Pause,
   // capped bei 0 wenn Pause > Brutto). Wir spiegeln das als Source-of-Truth.
   addColumnIfMissing("time_entries", "source_work_minutes", "INTEGER");
@@ -907,6 +970,7 @@ function insertSourceRecord(
 function syncImportedRemovalState(sourceSystem) {
   const linkedEntities = [
     { localEntity: "location", table: "locations", activeColumn: "is_active" },
+    { localEntity: "practice", table: "practices", activeColumn: "is_active" },
     { localEntity: "work_area", table: "work_areas", activeColumn: "is_active" },
     { localEntity: "employee", table: "employees" },
     { localEntity: "shift", table: "shifts" },
@@ -1468,6 +1532,7 @@ function ensureOperationalSeed() {
   const tenantWorkAreaCategories =
     tenantConfigGet("workforce.work_area_categories", null);
   const tenantLocations = tenantConfigGet("workforce.locations", null);
+  const tenantWorkAreaCategoryEntries = workAreaCategoryEntries(tenantWorkAreaCategories);
 
   const schemaLocations = Array.isArray(tenantLocations) && tenantLocations.length > 0
     ? tenantLocations
@@ -1475,17 +1540,16 @@ function ensureOperationalSeed() {
     ? Object.keys(tenantWorkAreaCategories)
     : [];
 
-  const schemaWorkAreas = tenantWorkAreaCategories && typeof tenantWorkAreaCategories === "object"
+  const schemaWorkAreas = tenantWorkAreaCategoryEntries.length > 0
     ? Array.from(
         new Set(
-          Object.values(tenantWorkAreaCategories).flatMap((entries) =>
-            Array.isArray(entries) ? entries.map((v) => String(v).trim()) : []
-          )
+          tenantWorkAreaCategoryEntries.flatMap((entry) => entry.workAreas)
         )
       ).filter(Boolean)
     : [];
+  const schemaPractices = tenantWorkAreaCategoryEntries.map((entry) => entry.practiceName);
 
-  if (schemaLocations.length === 0 && schemaWorkAreas.length === 0) {
+  if (schemaLocations.length === 0 && schemaPractices.length === 0 && schemaWorkAreas.length === 0) {
     return;
   }
 
@@ -1500,12 +1564,48 @@ function ensureOperationalSeed() {
       `).run(id, location, id, importedAt);
     }
 
+    for (const practice of schemaPractices) {
+      const id = idFromName("practice", practice);
+      db.prepare(`
+        INSERT OR IGNORE INTO practices (id, name, source_system, source_id, imported_at)
+        VALUES (?, ?, 'local_schema', ?, ?)
+      `).run(id, practice, id, importedAt);
+    }
+
     for (const area of schemaWorkAreas) {
       const id = idFromName("area", area);
       db.prepare(`
         INSERT OR IGNORE INTO work_areas (id, name, source_system, source_id, imported_at)
         VALUES (?, ?, 'local_schema', ?, ?)
       `).run(id, area, id, importedAt);
+    }
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+}
+
+function backfillWorkAreaPracticesFromTenantConfig() {
+  const categoryEntries = workAreaCategoryEntries(
+    tenantConfigGet("workforce.work_area_categories", null)
+  );
+  if (categoryEntries.length === 0) {
+    return;
+  }
+
+  const importedAt = now();
+  db.exec("BEGIN");
+  try {
+    for (const { practiceName, workAreas } of categoryEntries) {
+      const practiceId = ensureTenantPractice(practiceName, importedAt);
+      if (!practiceId) continue;
+
+      for (const areaName of workAreas) {
+        const workArea = db.prepare("SELECT id FROM work_areas WHERE name = ?").get(areaName);
+        if (!workArea) continue;
+        setWorkAreaPracticeId(workArea.id, practiceId, importedAt);
+      }
     }
     db.exec("COMMIT");
   } catch (error) {
@@ -1676,13 +1776,31 @@ function listLocations() {
 }
 
 function listWorkAreas() {
-  const names = db.prepare(`
-    SELECT name
+  return listWorkAreaDetails().map((area) => area.name);
+}
+
+function listWorkAreaDetails() {
+  const details = db.prepare(`
+    SELECT
+      work_areas.name AS name,
+      practices.name AS practice
     FROM work_areas
-    WHERE is_active = 1 AND removed_from_source = 0
-    ORDER BY name
-  `).all().map((row) => canonicalWorkAreaLabel(row.name));
-  return Array.from(new Set(names)).sort((first, second) => first.localeCompare(second, "de-DE"));
+    LEFT JOIN practices ON practices.id = work_areas.practice_id
+    WHERE work_areas.is_active = 1 AND work_areas.removed_from_source = 0
+    ORDER BY work_areas.name
+  `).all().map((row) => ({
+    name: canonicalWorkAreaLabel(row.name),
+    practice: row.practice ?? null
+  }));
+
+  const byName = new Map();
+  for (const detail of details) {
+    const existing = byName.get(detail.name);
+    if (!existing || (!existing.practice && detail.practice)) {
+      byName.set(detail.name, detail);
+    }
+  }
+  return [...byName.values()].sort((first, second) => first.name.localeCompare(second.name, "de-DE"));
 }
 
 export function listShifts() {
@@ -2248,7 +2366,8 @@ export function getBootstrap() {
   ensureDoctorSprechstundeAssignments();
   const employees = listEmployees();
   const locations = listLocations();
-  const workAreas = listWorkAreas();
+  const workAreaDetails = listWorkAreaDetails();
+  const workAreas = workAreaDetails.map((area) => area.name);
 
   const entries = listTimeEntries();
   const lastBatch = db.prepare(`
@@ -2270,6 +2389,7 @@ export function getBootstrap() {
     employees,
     locations,
     workAreas,
+    workAreaDetails,
     timeEntries: entries,
     shifts: listShifts(),
     absences: listAbsenceRequests(),
@@ -2902,6 +3022,23 @@ function upsertImportedNamedEntity(
   return { id: localId, name };
 }
 
+function upsertImportedWorkArea(batchId, record, summary, sourceSystem, importedAt) {
+  const workArea = upsertImportedNamedEntity(
+    batchId,
+    "work_areas",
+    "work_area",
+    "work_area",
+    "area",
+    record,
+    summary,
+    sourceSystem,
+    importedAt
+  );
+  if (!workArea) return null;
+  setWorkAreaPracticeId(workArea.id, practiceIdByName(record.practice), importedAt);
+  return workArea;
+}
+
 function upsertImportedEmployee(batchId, record, summary, sourceSystem = "legacy_import", importedAt = now()) {
   const sourceId = String(record.sourceId ?? record.id ?? record.displayName);
   const localId = localIdFromSource("emp", sourceId);
@@ -3245,11 +3382,47 @@ function endDateFor(startDate, startTime, endDate, endTime) {
   return endTime <= startTime ? addDays(startDate, 1) : startDate;
 }
 
+function optionalTrimmedString(value) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function practiceNameFromRecord(record) {
+  return optionalTrimmedString(record?.practice ?? record?.practiceName ?? record?.practice_name);
+}
+
+function importPracticeByArea(records) {
+  const candidates = new Map();
+  for (const record of records) {
+    const areaName = optionalTrimmedString(record?.name ?? record?.area ?? record?.workArea);
+    const practiceName = practiceNameFromRecord(record);
+    if (!areaName || !practiceName) continue;
+    const names = candidates.get(areaName) ?? new Set();
+    names.add(practiceName);
+    candidates.set(areaName, names);
+  }
+
+  const resolved = new Map();
+  for (const [areaName, practiceNames] of candidates) {
+    if (practiceNames.size === 1) {
+      resolved.set(areaName, [...practiceNames][0]);
+    }
+  }
+  return resolved;
+}
+
 function normalizeImportSnapshot(snapshot) {
   const importedAt = now();
   const sourceUpdatedAt = String(snapshot.capturedAt ?? snapshot.sourceUpdatedAt ?? snapshot.updatedAt ?? importedAt);
   const sourceSystem = String(snapshot.sourceSystem ?? "legacy_import");
   const defaultLocation = String(snapshot.defaultLocation ?? defaultLocationName);
+  const rawWorkAreas = asArray(snapshot.workAreas ?? snapshot.areas);
+  const rawShifts = asArray(snapshot.shifts);
+  const rawTimeEntries = asArray(snapshot.timeEntries);
+  const practiceByArea = importPracticeByArea([
+    ...rawWorkAreas,
+    ...rawShifts,
+    ...rawTimeEntries
+  ]);
 
   const employees = asArray(snapshot.employees)
     .map((record, index) => {
@@ -3272,10 +3445,28 @@ function normalizeImportSnapshot(snapshot) {
     })
     .filter(Boolean);
 
+  const practices = [
+    ...asArray(snapshot.practices).map((record, index) => {
+      const name = optionalTrimmedString(record?.name ?? record?.practice ?? record);
+      if (!name) return null;
+      return {
+        sourceId: String(record?.sourceId ?? record?.source_id ?? idFromName("practice", name) ?? `practice-${index + 1}`),
+        name,
+        updatedAt: record?.updatedAt ?? record?.updated_at ?? sourceUpdatedAt
+      };
+    }),
+    ...Array.from(practiceByArea.values()).map((name, index) => ({
+      sourceId: idFromName("practice", name) ?? `practice-${index + 1}`,
+      name,
+      updatedAt: sourceUpdatedAt
+    }))
+  ].filter(Boolean)
+    .filter((record, index, records) => records.findIndex((item) => item.name === record.name) === index);
+
   const locations = [
     ...asArray(snapshot.locations),
-    ...asArray(snapshot.shifts).map((record) => ({ name: record.location })),
-    ...asArray(snapshot.timeEntries).map((record) => ({ name: record.location }))
+    ...rawShifts.map((record) => ({ name: record.location })),
+    ...rawTimeEntries.map((record) => ({ name: record.location }))
   ]
     .map((record, index) => {
       const name = String(record.name ?? defaultLocation).trim() || defaultLocation;
@@ -3288,21 +3479,22 @@ function normalizeImportSnapshot(snapshot) {
     .filter((record, index, records) => records.findIndex((item) => item.name === record.name) === index);
 
   const workAreas = [
-    ...asArray(snapshot.workAreas),
-    ...asArray(snapshot.shifts).map((record) => ({ name: record.area })),
-    ...asArray(snapshot.timeEntries).map((record) => ({ name: record.area }))
+    ...rawWorkAreas,
+    ...rawShifts.map((record) => ({ name: record.area, practice: practiceNameFromRecord(record) })),
+    ...rawTimeEntries.map((record) => ({ name: record.area, practice: practiceNameFromRecord(record) }))
   ]
     .map((record, index) => {
       const name = String(record.name ?? record.area ?? "Ohne Bereich").trim() || "Ohne Bereich";
       return {
         sourceId: String(record.sourceId ?? idFromName("area", name) ?? `area-${index + 1}`),
         name,
+        practice: practiceNameFromRecord(record) ?? practiceByArea.get(name) ?? null,
         updatedAt: record.updatedAt ?? sourceUpdatedAt
       };
     })
     .filter((record, index, records) => records.findIndex((item) => item.name === record.name) === index);
 
-  const shifts = asArray(snapshot.shifts)
+  const shifts = rawShifts
     .map((record, index) => {
       const startDate = toIsoDate(record.startDate ?? record.date);
       const startTime = normalizeTime(record.startTime);
@@ -3331,7 +3523,7 @@ function normalizeImportSnapshot(snapshot) {
     })
     .filter(Boolean);
 
-  const timeEntries = asArray(snapshot.timeEntries)
+  const timeEntries = rawTimeEntries
     .map((record, index) => {
       const startDate = toIsoDate(record.startDate ?? record.date);
       const startTime = normalizeTime(record.startTime);
@@ -3392,6 +3584,7 @@ function normalizeImportSnapshot(snapshot) {
     sourceSystem,
     importedAt,
     locations,
+    practices,
     workAreas,
     employees,
     shifts,
@@ -3461,7 +3654,7 @@ function hideDemoDataForRealImport(sourceSystem) {
     `).run(now());
   }
 
-  for (const table of ["locations", "work_areas"]) {
+  for (const table of ["locations", "practices", "work_areas"]) {
     db.prepare(`
       UPDATE ${table}
       SET removed_from_source = 1, updated_at = ?
@@ -3488,6 +3681,7 @@ export function runExternalSnapshotImport(snapshotPath = importSnapshotPath) {
   const summary = {
     recordCount:
       snapshot.locations.length +
+      snapshot.practices.length +
       snapshot.workAreas.length +
       snapshot.employees.length +
       snapshot.shifts.length +
@@ -3533,6 +3727,7 @@ export function runExternalSnapshotImport(snapshotPath = importSnapshotPath) {
         WHERE source_system = ?
           AND source_entity IN (
             'location',
+            'practice',
             'work_area',
             'employee',
             'shift',
@@ -3556,13 +3751,23 @@ export function runExternalSnapshotImport(snapshotPath = importSnapshotPath) {
       );
     }
 
-    for (const workArea of snapshot.workAreas) {
+    for (const practice of snapshot.practices) {
       upsertImportedNamedEntity(
         batchId,
-        "work_areas",
-        "work_area",
-        "work_area",
-        "area",
+        "practices",
+        "practice",
+        "practice",
+        "practice",
+        practice,
+        summary,
+        snapshot.sourceSystem,
+        snapshot.importedAt
+      );
+    }
+
+    for (const workArea of snapshot.workAreas) {
+      upsertImportedWorkArea(
+        batchId,
         workArea,
         summary,
         snapshot.sourceSystem,
@@ -6099,6 +6304,7 @@ ensureSwapRequestStatusGuard();
 ensureCorrectionStatusGuard();
 seed();
 ensureOperationalSeed();
+backfillWorkAreaPracticesFromTenantConfig();
 
 /**
  * Schutzschicht gegen Status-Drift in absence_requests.

@@ -8,6 +8,8 @@ import {
   buildEmployeeResolver,
   buildNameResolver,
   dateFromPlanCellTestid,
+  deduplicateShiftCardElements,
+  extractPlanRowsFromPage,
   mapAbsenceRows,
   mapPlanRows,
   mapWorkHoursRows,
@@ -16,17 +18,216 @@ import {
   parseAbsencesHtml,
   parseEmployeesHtml,
   parsePlanHtml,
-  parseWorkHoursHtml
+  parseWorkHoursHtml,
+  resolvePlanSwimlaneAreas
 } from "./legacy-dom.mjs";
 import { isoWeeksInRange, mapImportPayload, snapshotSummary, validateSnapshot } from "./legacy-delta.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
+function testElement(attrs = {}, options = {}) {
+  return {
+    parentElement: options.parentElement ?? null,
+    tagName: options.tagName ?? "DIV",
+    innerText: options.innerText ?? "",
+    textContent: options.textContent ?? options.innerText ?? "",
+    getAttribute(name) {
+      return Object.prototype.hasOwnProperty.call(attrs, name) ? attrs[name] : null;
+    },
+    getBoundingClientRect() {
+      return { left: 0, right: 0, top: 0, bottom: 0, width: 0, height: 0 };
+    },
+    closest() {
+      return null;
+    }
+  };
+}
+
+function fakePlanPage(elements) {
+  return {
+    async evaluate(callback, arg) {
+      const previousDocument = globalThis.document;
+      globalThis.document = {
+        querySelectorAll(selector) {
+          if (selector === "[data-testid], [data-plan-cell-key]") {
+            return elements.filter((element) =>
+              element.getAttribute("data-testid") || element.getAttribute("data-plan-cell-key")
+            );
+          }
+          if (selector === '[data-testid^="shift-card-"], [data-shift-id]') {
+            return elements.filter((element) =>
+              String(element.getAttribute("data-testid") ?? "").startsWith("shift-card-")
+              || element.getAttribute("data-shift-id")
+            );
+          }
+          if (selector === "[role='columnheader'], [data-date], [data-testid^='plan-day-header-']") {
+            return [];
+          }
+          return [];
+        }
+      };
+      try {
+        return callback(arg);
+      } finally {
+        if (previousDocument === undefined) delete globalThis.document;
+        else globalThis.document = previousDocument;
+      }
+    }
+  };
+}
+
 test("dateFromPlanCellTestid extracts dates from plan cell test ids only", () => {
-  assert.equal(dateFromPlanCellTestid("plan-cell-40080-2026-07-20"), "2026-07-20");
-  assert.equal(dateFromPlanCellTestid("plan-cell-content-40080-2026-07-20"), "2026-07-20");
+  assert.equal(dateFromPlanCellTestid("plan-cell-container-alpha-2026-07-20"), "2026-07-20");
+  assert.equal(dateFromPlanCellTestid("plan-cell-content-container-alpha-2026-07-20"), "2026-07-20");
   assert.equal(dateFromPlanCellTestid("plan-day-header-2026-07-20"), "");
   assert.equal(dateFromPlanCellTestid("garbage input"), "");
+});
+
+test("deduplicateShiftCardElements prefers sourced outer cards and preserves source-only cards", () => {
+  const sourcedOuter = testElement({
+    "data-testid": "shift-card-alpha",
+    "data-shift-id": "shift-source-alpha"
+  });
+  const nestedWithoutSource = testElement({ "data-testid": "shift-card-alpha" }, { parentElement: sourcedOuter });
+  const testidOnly = testElement({ "data-testid": "shift-card-beta" });
+  const sourceOnly = testElement({ "data-shift-id": "shift-source-gamma" });
+
+  const deduped = deduplicateShiftCardElements([
+    nestedWithoutSource,
+    sourcedOuter,
+    testidOnly,
+    sourceOnly
+  ]);
+
+  assert.equal(deduped.length, 3);
+  assert.equal(deduped[0], sourcedOuter);
+  assert.equal(deduped[1], testidOnly);
+  assert.equal(deduped[2], sourceOnly);
+});
+
+test("extractPlanRowsFromPage deduplicates nested shift-card matches without dropping fallback cards", async () => {
+  const outer = testElement({
+    "data-testid": "shift-card-alpha",
+    "data-shift-id": "shift-source-alpha",
+    "data-date": "2026-06-15",
+    "data-start": "08:00",
+    "data-end": "12:00",
+    "data-area": "Desk Alpha",
+    "data-location": "Location One",
+    "data-employee": "Employee Alpha"
+  }, { innerText: "08:00 12:00 Desk Alpha Location One Employee Alpha" });
+  const nested = testElement({
+    "data-testid": "shift-card-alpha"
+  }, { parentElement: outer, innerText: "08:00 12:00" });
+  const testidOnly = testElement({
+    "data-testid": "shift-card-beta",
+    "data-date": "2026-06-16",
+    "data-start": "09:00",
+    "data-end": "11:00",
+    "data-area": "Desk Beta",
+    "data-location": "Location One"
+  }, { innerText: "09:00 11:00 Desk Beta Location One" });
+  const sourceOnly = testElement({
+    "data-shift-id": "shift-source-gamma",
+    "data-date": "2026-06-17",
+    "data-start": "10:00",
+    "data-end": "14:00",
+    "data-area": "Desk Gamma",
+    "data-location": "Location One"
+  }, { innerText: "10:00 14:00 Desk Gamma Location One" });
+
+  const rows = await extractPlanRowsFromPage(fakePlanPage([outer, nested, testidOnly, sourceOnly]));
+
+  assert.equal(rows.length, 3);
+  assert.equal(rows[0].__rowId, "shift-card-alpha");
+  assert.equal(rows[0].sourceId, "shift-source-alpha");
+  assert.equal(rows[0].date, "2026-06-15");
+  assert.equal(rows[1].__rowId, "shift-card-beta");
+  assert.equal(rows[1].sourceId, "");
+  assert.equal(rows[2].__rowId, "");
+  assert.equal(rows[2].sourceId, "shift-source-gamma");
+});
+
+test("plan swimlane resolver maps multiple swimlanes in document order", () => {
+  const resolved = resolvePlanSwimlaneAreas({
+    elements: [
+      { testid: "plan-area-header-area-alpha", text: "Area Alpha Gruppieren nach Zeit..." },
+      { testid: "plan-cell-container-alpha-2026-07-20" },
+      { testid: "plan-cell-container-alpha-2026-07-21" },
+      { testid: "plan-area-header-area-beta", text: "Area Beta" },
+      { testid: "plan-cell-container-beta-2026-07-20" },
+      { testid: "plan-cell-container-beta-2026-07-21" }
+    ],
+    cards: [
+      { sourceId: "shift-alpha", ancestorTestids: ["shift-card-alpha", "plan-cell-container-alpha-2026-07-20"] },
+      { sourceId: "shift-beta", ancestorTestids: ["shift-card-beta", "plan-cell-container-beta-2026-07-21"] }
+    ]
+  });
+
+  assert.deepEqual(resolved.areaByContainer, {
+    "container-alpha": "Area Alpha",
+    "container-beta": "Area Beta"
+  });
+  assert.equal(resolved.cards[0].areaFromSwimlane, "Area Alpha");
+  assert.equal(resolved.cards[0].dateFromCell, "2026-07-20");
+  assert.equal(resolved.cards[0].areaSource, "swimlane");
+  assert.equal(resolved.cards[1].areaFromSwimlane, "Area Beta");
+});
+
+test("plan swimlane resolver marks cards without matching container as none", () => {
+  const resolved = resolvePlanSwimlaneAreas({
+    elements: [
+      { testid: "plan-area-header-area-alpha", text: "Area Alpha" },
+      { testid: "plan-cell-container-alpha-2026-07-20" }
+    ],
+    cards: [
+      { sourceId: "shift-without-cell", ancestorTestids: ["shift-card-without-cell"] }
+    ]
+  });
+
+  assert.equal(resolved.cards[0].planCellContainerId, "");
+  assert.equal(resolved.cards[0].areaFromSwimlane, "");
+  assert.equal(resolved.cards[0].areaSource, "none");
+});
+
+test("plan swimlane resolver supports plan-cell-content variant", () => {
+  const resolved = resolvePlanSwimlaneAreas({
+    elements: [
+      { testid: "plan-area-header-area-gamma", text: "Area Gamma" },
+      { testid: "plan-cell-content-container-gamma-2026-07-22" }
+    ],
+    cards: [
+      { sourceId: "shift-gamma", ancestorTestids: ["shift-card-gamma", "plan-cell-content-container-gamma-2026-07-22"] }
+    ]
+  });
+
+  assert.equal(resolved.areaByContainer["container-gamma"], "Area Gamma");
+  assert.equal(resolved.cards[0].planCellContainerId, "container-gamma");
+  assert.equal(resolved.cards[0].dateFromCell, "2026-07-22");
+  assert.equal(resolved.cards[0].areaSource, "swimlane");
+});
+
+test("plan swimlane resolver ignores shift container attribute as row id", () => {
+  const resolved = resolvePlanSwimlaneAreas({
+    elements: [
+      { testid: "plan-area-header-area-alpha", text: "Area Alpha" },
+      { testid: "plan-cell-container-alpha-2026-07-20" },
+      { testid: "plan-area-header-area-beta", text: "Area Beta" },
+      { testid: "plan-cell-container-beta-2026-07-20" }
+    ],
+    cards: [
+      {
+        sourceId: "shift-alpha",
+        dataShiftContainerId: "container-beta",
+        shiftContainerId: "container-beta",
+        ancestorTestids: ["shift-card-alpha", "plan-cell-container-alpha-2026-07-20"]
+      }
+    ]
+  });
+
+  assert.equal(resolved.cards[0].planCellContainerId, "container-alpha");
+  assert.equal(resolved.cards[0].areaFromSwimlane, "Area Alpha");
+  assert.notEqual(resolved.cards[0].areaFromSwimlane, "Area Beta");
 });
 
 test("parseWorkHoursHtml extracts synthetic Legacy-Import table rows without real data", async () => {
@@ -100,7 +301,7 @@ test("area and location resolver maps aliases to canonical names", async () => {
   assert.equal(mapped.unresolvedLocations[0].name, "Standort B");
 
   const resolver = buildNameResolver({ knownNames: ["Rezeption"], aliases: { Rezeption: ["Empfang"] } });
-  assert.deepEqual(resolver.resolve("Empfang"), { name: "Rezeption", resolved: true, raw: "Empfang" });
+  assert.deepEqual(resolver.resolve("Empfang"), { name: "Rezeption", resolved: true, raw: "Empfang", areaMatch: "alias" });
 });
 
 test("location resolver matches und/ampersand spelling variants", () => {
@@ -109,8 +310,145 @@ test("location resolver matches und/ampersand spelling variants", () => {
   assert.deepEqual(resolver.resolve("Praxis Beispiel & Partner"), {
     name: "Praxis Beispiel und Partner",
     resolved: true,
-    raw: "Praxis Beispiel & Partner"
+    raw: "Praxis Beispiel & Partner",
+    areaMatch: "exact"
   });
+});
+
+test("work-hours mapper resolves work area via token override and preserves source metadata", () => {
+  const mapped = mapWorkHoursRows([{
+    __rowId: "row-area-override",
+    name: "Alpha, Ada",
+    datum: "01.06.2026",
+    start: "08:00",
+    ende: "12:00",
+    arbeitszeit: "4:00",
+    pause: "0",
+    status: "Erfasst",
+    bereich: "Shared counter duty",
+    standort: "Location One"
+  }], {
+    capturedAt: "2026-06-05T12:00:00.000Z",
+    employeeRows: [{ displayName: "Ada Alpha", employeeNumber: "101", sourceId: "employee-number-101" }],
+    canonicalWorkAreas: ["Desk Beta"],
+    workAreaOverrides: [{ match_tokens: ["shared", "counter"], canonical: "Desk Beta" }],
+    practiceByWorkArea: { "Desk Beta": "Practice Alpha" },
+    canonicalLocations: ["Location One"]
+  });
+
+  assert.equal(mapped.timeEntries[0].area, "Desk Beta");
+  assert.equal(mapped.timeEntries[0].sourceArea, "Shared counter duty");
+  assert.equal(mapped.timeEntries[0].areaMatch, "override");
+  assert.equal(mapped.timeEntries[0].practice, "Practice Alpha");
+  assert.equal(mapped.timeEntries[0].practiceMatch, "area");
+  assert.equal(mapped.timeEntries[0].location, "Location One");
+  assert.equal(mapped.timeEntries[0].sourceLocation, "Location One");
+  assert.equal(mapped.timeEntries[0].locationMatch, "exact");
+});
+
+test("work-hours mapper resolves practice from fallback source area without changing work area", () => {
+  const mapped = mapWorkHoursRows([{
+    __rowId: "row-practice-source",
+    name: "Alpha, Ada",
+    datum: "01.06.2026",
+    start: "08:00",
+    ende: "12:00",
+    arbeitszeit: "4:00",
+    pause: "0",
+    status: "Erfasst",
+    bereich: "Practice Source",
+    standort: "Location One"
+  }], {
+    capturedAt: "2026-06-05T12:00:00.000Z",
+    employeeRows: [{ displayName: "Ada Alpha", employeeNumber: "101", sourceId: "employee-number-101" }],
+    canonicalWorkAreas: ["Desk Known"],
+    defaultWorkArea: "No Area",
+    canonicalPractices: ["Practice Source"],
+    practiceByWorkArea: {},
+    canonicalLocations: ["Location One"]
+  });
+
+  assert.equal(mapped.timeEntries[0].area, "No Area");
+  assert.equal(mapped.timeEntries[0].sourceArea, "Practice Source");
+  assert.equal(mapped.timeEntries[0].areaMatch, "fallback");
+  assert.equal(mapped.timeEntries[0].practice, "Practice Source");
+  assert.equal(mapped.timeEntries[0].practiceMatch, "source");
+});
+
+test("work-hours mapper keeps source area when work area falls back", () => {
+  const mapped = mapWorkHoursRows([{
+    __rowId: "row-area-fallback",
+    name: "Alpha, Ada",
+    datum: "01.06.2026",
+    start: "08:00",
+    ende: "12:00",
+    arbeitszeit: "4:00",
+    pause: "0",
+    status: "Erfasst",
+    bereich: "Unlisted station",
+    standort: "Location One"
+  }], {
+    capturedAt: "2026-06-05T12:00:00.000Z",
+    employeeRows: [{ displayName: "Ada Alpha", employeeNumber: "101", sourceId: "employee-number-101" }],
+    canonicalWorkAreas: ["Desk Known"],
+    defaultWorkArea: "No Area",
+    canonicalLocations: ["Location One"]
+  });
+
+  assert.equal(mapped.timeEntries[0].area, "No Area");
+  assert.equal(mapped.timeEntries[0].sourceArea, "Unlisted station");
+  assert.equal(mapped.timeEntries[0].areaMatch, "fallback");
+  assert.equal(mapped.timeEntries[0].practice, null);
+  assert.equal(mapped.timeEntries[0].practiceMatch, null);
+  assert.equal(mapped.unresolvedAreas[0].name, "Unlisted station");
+});
+
+test("plan mapper does not guess practice from unknown fallback source area", () => {
+  const mapped = mapPlanRows([{
+    sourceId: "shift-unknown-practice-source",
+    date: "2026-06-02",
+    startTime: "09:00",
+    endTime: "13:00",
+    area: "Unknown station",
+    location: "Location One",
+    assignmentNames: []
+  }], {
+    capturedAt: "2026-06-05T12:00:00.000Z",
+    canonicalWorkAreas: ["Desk Known"],
+    defaultWorkArea: "No Area",
+    canonicalPractices: ["Practice Source"],
+    canonicalLocations: ["Location One"],
+    practiceByWorkArea: {}
+  });
+
+  assert.equal(mapped.shifts[0].area, "No Area");
+  assert.equal(mapped.shifts[0].sourceArea, "Unknown station");
+  assert.equal(mapped.shifts[0].areaMatch, "fallback");
+  assert.equal(mapped.shifts[0].practice, null);
+  assert.equal(mapped.shifts[0].practiceMatch, null);
+});
+
+test("plan mapper leaves practice null when canonical area is unassigned", () => {
+  const mapped = mapPlanRows([{
+    sourceId: "shift-unassigned-practice",
+    date: "2026-06-02",
+    startTime: "09:00",
+    endTime: "13:00",
+    area: "Desk Known",
+    location: "Location One",
+    assignmentNames: []
+  }], {
+    capturedAt: "2026-06-05T12:00:00.000Z",
+    canonicalWorkAreas: ["Desk Known"],
+    canonicalLocations: ["Location One"],
+    practiceByWorkArea: {}
+  });
+
+  assert.equal(mapped.shifts[0].area, "Desk Known");
+  assert.equal(mapped.shifts[0].sourceArea, "Desk Known");
+  assert.equal(mapped.shifts[0].areaMatch, "exact");
+  assert.equal(mapped.shifts[0].practice, null);
+  assert.equal(mapped.shifts[0].practiceMatch, null);
 });
 
 test("absences DOM rows map through employee reconciliation", async () => {
@@ -315,7 +653,8 @@ test("HTML fixture can flow through existing legacy-import snapshot mapper", asy
       employeeRows: parseEmployeesHtml(html),
       workHoursRows: rows,
       absenceRows: parseAbsencesHtml(html),
-      planRows: parsePlanHtml(html)
+      planRows: parsePlanHtml(html),
+      reconciliation: {}
     },
     { from: "2026-05-25", to: "2026-06-05" }
   );

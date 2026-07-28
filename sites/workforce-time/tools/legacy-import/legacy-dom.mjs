@@ -24,8 +24,103 @@ function stableHash(value, length = 16) {
   return createHash("sha256").update(String(value)).digest("hex").slice(0, length);
 }
 
+const PLAN_CELL_TESTID_PATTERN = /^plan-cell(?:-content)?-(.+)-(\d{4}-\d{2}-\d{2})$/;
+
+export function planCellFromTestid(testid) {
+  const match = String(testid ?? "").match(PLAN_CELL_TESTID_PATTERN);
+  return match ? { containerId: match[1], date: match[2] } : null;
+}
+
 export function dateFromPlanCellTestid(testid) {
-  return String(testid ?? "").match(/^plan-cell(?:-content)?-\d+-(\d{4}-\d{2}-\d{2})$/)?.[1] || "";
+  return planCellFromTestid(testid)?.date || "";
+}
+
+function planCellFromPlanCellKey(value) {
+  const raw = cleanText(value);
+  if (!raw) return null;
+  const fromTestid = planCellFromTestid(raw);
+  if (fromTestid) return fromTestid;
+  const match = raw.match(/^(.+)-(\d{4}-\d{2}-\d{2})$/);
+  return match ? { containerId: match[1], date: match[2] } : null;
+}
+
+function stripPlanAreaHeaderText(value) {
+  const raw = cleanText(value);
+  const stripped = cleanText(raw.replace(/\b(?:Gruppieren\s+nach|Group\s+by)\b.*$/i, ""));
+  return stripped || raw;
+}
+
+function firstPlanCellFromAncestors(testids) {
+  for (const item of Array.isArray(testids) ? testids : []) {
+    const cell = typeof item === "string"
+      ? planCellFromTestid(item)
+      : planCellFromTestid(item?.testid) || planCellFromPlanCellKey(item?.planCellKey);
+    if (cell) return cell;
+  }
+  return null;
+}
+
+export function deduplicateShiftCardElements(elements = []) {
+  const attr = (element, name) => {
+    if (!element) return "";
+    if (typeof element.getAttribute === "function") return String(element.getAttribute(name) ?? "").trim();
+    if (name === "data-testid") return String(element.dataTestid ?? element.testid ?? element.__rowId ?? "").trim();
+    if (name === "data-shift-id") return String(element.dataShiftId ?? element.sourceId ?? element.source_id ?? "").trim();
+    return "";
+  };
+  const groups = new Map();
+  const list = Array.isArray(elements) ? elements : Array.from(elements || []);
+
+  for (const element of list) {
+    const testid = attr(element, "data-testid");
+    const sourceId = attr(element, "data-shift-id");
+    const key = testid ? `testid:${testid}` : sourceId ? `source:${sourceId}` : "";
+    if (!key) continue;
+    const current = groups.get(key);
+    if (!current) {
+      groups.set(key, element);
+      continue;
+    }
+    if (!attr(current, "data-shift-id") && sourceId) {
+      groups.set(key, element);
+    }
+  }
+
+  return [...groups.values()];
+}
+
+export function resolvePlanSwimlaneAreas({ elements = [], cards = [] } = {}) {
+  const areaByContainer = {};
+  let currentArea = "";
+
+  for (const item of Array.isArray(elements) ? elements : []) {
+    const testid = cleanText(typeof item === "string" ? item : item?.testid ?? item?.dataTestid);
+    const planCellKey = cleanText(typeof item === "string" ? "" : item?.planCellKey);
+    if (!testid && !planCellKey) continue;
+    if (/^plan-area-header-/.test(testid)) {
+      currentArea = stripPlanAreaHeaderText(typeof item === "string" ? "" : item?.text ?? item?.innerText);
+      continue;
+    }
+    const cell = planCellFromTestid(testid) || planCellFromPlanCellKey(planCellKey);
+    if (cell && currentArea && !Object.prototype.hasOwnProperty.call(areaByContainer, cell.containerId)) {
+      areaByContainer[cell.containerId] = currentArea;
+    }
+  }
+
+  return {
+    areaByContainer,
+    cards: (Array.isArray(cards) ? cards : []).map((card) => {
+      const cell = firstPlanCellFromAncestors(card?.ancestorTestids);
+      const area = cell ? areaByContainer[cell.containerId] || "" : "";
+      return {
+        ...card,
+        planCellContainerId: cell?.containerId || "",
+        dateFromCell: cell?.date || "",
+        areaFromSwimlane: area,
+        areaSource: area ? "swimlane" : "none"
+      };
+    })
+  };
 }
 
 function normalizeName(value) {
@@ -135,39 +230,122 @@ function displayNameFromImportName(value) {
   return [first, last].filter(Boolean).join(" ");
 }
 
+function nameRosterFromRows(nameRoster = []) {
+  const seen = new Set();
+  const names = [];
+  for (const item of Array.isArray(nameRoster) ? nameRoster : []) {
+    const value = typeof item === "string"
+      ? item
+      : item?.displayName ?? item?.display_name ?? item?.name ?? item?.fullName ?? item?.full_name ?? item?.employeeName ?? item?.employee_name ?? "";
+    const name = displayNameFromImportName(value);
+    const key = normalizeLookup(name);
+    if (!name || seen.has(key)) continue;
+    seen.add(key);
+    names.push(name);
+  }
+  return names.sort((left, right) => right.length - left.length);
+}
+
+function employeeNameFromRoster(text, nameRoster = []) {
+  const haystack = cleanText(text);
+  if (!haystack) return "";
+  return nameRosterFromRows(nameRoster).find((name) => haystack.includes(name)) || "";
+}
+
+function employeeNameFromRosterTokens(value, nameRoster = []) {
+  const candidateTokens = nameTokens(value);
+  if (candidateTokens.length < 2) return "";
+  return nameRosterFromRows(nameRoster).find((name) => {
+    const rosterTokens = nameTokens(name);
+    return rosterTokens.length > 0
+      && rosterTokens.every((token) => candidateTokens.includes(token));
+  }) || "";
+}
+
+function employeeNameFromShiftLine(value, nameRoster = []) {
+  let line = cleanText(value);
+  if (!/\b\d{1,2}:\d{2}\b/.test(line)) return "";
+  line = cleanText(line.replace(/^[^\d]*(?=\b\d{1,2}:\d{2}\b)/, ""));
+  const withoutDuration = cleanText(line.replace(/\s+\b\d{1,2}:\d{2}\b\s*$/, ""));
+  const hasClockDuration = withoutDuration !== line;
+  if (hasClockDuration) line = withoutDuration;
+  const withoutRange = cleanText(line.replace(/^\d{1,2}:\d{2}\s*(?:[-–—]|&ndash;|&mdash;|&#8211;|&#x2013;|&#8212;|&#x2014;|bis|to)\s*\d{1,2}:\d{2}\s*/i, ""));
+  if (withoutRange === line) return "";
+  line = withoutRange;
+  if (!hasClockDuration) {
+    const rosterName = employeeNameFromRosterTokens(line, nameRoster);
+    return rosterName || "";
+  }
+  if (!line || /\d/.test(line) || normalizeName(line).split(" ").filter(Boolean).length < 2) return "";
+  const rosterName = employeeNameFromRosterTokens(line, nameRoster);
+  if (rosterName) return rosterName;
+  return displayNameFromImportName(line);
+}
+
+function employeeNameFromShiftText(value, nameRoster = []) {
+  const candidates = [cleanText(value), ...cleanLines(value)];
+  const seen = new Set();
+  for (const candidate of candidates) {
+    const key = cleanText(candidate);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    const name = employeeNameFromShiftLine(key, nameRoster);
+    if (name) return name;
+  }
+  return "";
+}
+
 function sourceIdFromRecord(record, fallbackPrefix, fallbackValue) {
   const existing = cleanText(record.sourceId ?? record.id ?? record.uuid ?? record.__rowId ?? "");
   return existing || `${fallbackPrefix}_${stableHash(fallbackValue)}`;
 }
 
-export function buildNameResolver({ knownNames = [], aliases = {}, fallbackName = "" } = {}) {
-  const byKey = new Map();
+export function buildNameResolver({ knownNames = [], aliases = {}, overrides = [], fallbackName = "" } = {}) {
+  const exactNames = new Map();
+  const aliasNames = new Map();
   for (const name of knownNames) {
     const clean = cleanText(name);
-    if (clean) byKey.set(normalizeLookup(clean), clean);
+    if (clean) exactNames.set(normalizeLookup(clean), clean);
   }
   for (const [canonical, values] of Object.entries(aliases || {})) {
-    const canonicalName = byKey.get(normalizeLookup(canonical)) || cleanText(canonical);
+    const canonicalName = exactNames.get(normalizeLookup(canonical)) || cleanText(canonical);
     if (!canonicalName) continue;
-    byKey.set(normalizeLookup(canonicalName), canonicalName);
     for (const value of Array.isArray(values) ? values : [values]) {
       const alias = normalizeLookup(value);
-      if (alias) byKey.set(alias, canonicalName);
+      if (alias) aliasNames.set(alias, canonicalName);
     }
   }
+  const overrideRules = (Array.isArray(overrides) ? overrides : [])
+    .map((rule) => {
+      const canonical = exactNames.get(normalizeLookup(rule?.canonical)) || cleanText(rule?.canonical);
+      const matchExact = normalizeLookup(rule?.match_exact ?? "");
+      const matchTokens = Array.isArray(rule?.match_tokens)
+        ? rule.match_tokens.map((token) => normalizeLookup(token)).filter(Boolean)
+        : [];
+      return canonical && (matchExact || matchTokens.length)
+        ? { canonical, matchExact, matchTokens }
+        : null;
+    })
+    .filter(Boolean);
+  const hasConfiguredNames = exactNames.size > 0 || aliasNames.size > 0 || overrideRules.length > 0;
   return {
     resolve(value) {
       const raw = cleanText(value);
-      if (!raw) return { name: fallbackName, resolved: false, raw };
-      const exact = byKey.get(normalizeLookup(raw));
-      if (exact) return { name: exact, resolved: true, raw };
-      if (byKey.size === 0) return { name: raw, resolved: true, raw };
-      const tokens = normalizeLookup(raw).split(" ").filter(Boolean);
-      const fuzzy = [...byKey.entries()].find(([key]) =>
-        tokens.length > 0 && tokens.every((token) => key.includes(token))
-      )?.[1];
-      if (fuzzy) return { name: fuzzy, resolved: true, raw };
-      return { name: fallbackName || raw, resolved: false, raw };
+      if (!raw) return { name: fallbackName, resolved: false, raw, areaMatch: "fallback" };
+      const normalized = normalizeLookup(raw);
+      const exact = exactNames.get(normalized);
+      if (exact) return { name: exact, resolved: true, raw, areaMatch: "exact" };
+      const alias = aliasNames.get(normalized);
+      if (alias) return { name: alias, resolved: true, raw, areaMatch: "alias" };
+      for (const rule of overrideRules) {
+        const exactMatch = rule.matchExact && normalized === rule.matchExact;
+        const tokenMatch = rule.matchTokens.length > 0 && rule.matchTokens.every((token) => normalized.includes(token));
+        if (exactMatch || tokenMatch) {
+          return { name: rule.canonical, resolved: true, raw, areaMatch: "override" };
+        }
+      }
+      if (!hasConfiguredNames) return { name: raw, resolved: true, raw, areaMatch: "fallback" };
+      return { name: fallbackName || raw, resolved: false, raw, areaMatch: "fallback" };
     }
   };
 }
@@ -563,13 +741,17 @@ function planContextDate(html, index) {
   return deDates.at(-1) ?? null;
 }
 
-function planAssignmentNames(text, explicitName) {
+function planAssignmentNames(text, explicitName, nameRoster = []) {
   if (explicitName) return [displayNameFromImportName(explicitName)];
-  const match = text.match(/\b(?:Mitarbeiter|Name):?\s*([^|,;\n]+(?:,\s*[^|,;\n]+)?)/i);
+  const rosterName = employeeNameFromRoster(text, nameRoster);
+  if (rosterName) return [rosterName];
+  const parsedName = employeeNameFromShiftText(text, nameRoster);
+  if (parsedName) return [parsedName];
+  const match = cleanText(text).match(/\b(?:Mitarbeiter|Name):?\s*([^|,;\n]+(?:,\s*[^|,;\n]+)?)/i);
   return match ? [displayNameFromImportName(match[1])] : [];
 }
 
-function parsePlanTextFields(value) {
+function parsePlanTextFields(value, nameRoster = []) {
   const rawLines = cleanLines(value);
   const text = cleanText(value);
   const times = [...text.matchAll(/\b(\d{1,2}:\d{2})\b/g)].map((match) => match[1]);
@@ -578,16 +760,18 @@ function parsePlanTextFields(value) {
   const areaLabeled = text.match(/\b(?:Bereich|Area):\s*([^|,;\n]+)\b/i)?.[1];
   const locationLabeled = text.match(/\b(?:Standort|Location):\s*([^|,;\n]+)\b/i)?.[1];
   const employeeLabeled = text.match(/\b(?:Mitarbeiter|Name):?\s*([^|;\n]+(?:,\s*[^|;\n]+)?)/i)?.[1];
-  const lines = rawLines.filter((line) => !/\b\d{1,2}:\d{2}\b/.test(line));
-  const locationLine = lines.find((line) => /\b(?:Standort|Location)\b/i.test(line));
-  const employeeLine = lines.find((line) => line.includes(",") && line !== locationLine);
-  const areaLine = lines.find((line) => line !== locationLine && line !== employeeLine);
+  const nonTimeLines = rawLines.filter((line) => !/\b\d{1,2}:\d{2}\b/.test(line));
+  const locationLine = nonTimeLines.find((line) => /\b(?:Standort|Location)\b/i.test(line));
+  const rosterName = employeeNameFromRoster(text, nameRoster);
+  const parsedName = employeeNameFromShiftText(value, nameRoster);
+  const employeeLine = nonTimeLines.find((line) => line.includes(",") && line !== locationLine);
+  const areaLine = nonTimeLines.find((line) => line !== locationLine && line !== employeeLine);
   return {
     startTime,
     endTime,
     area: cleanText(areaLabeled || areaLine || ""),
     location: cleanText(locationLabeled || locationLine || ""),
-    employeeName: displayNameFromImportName(employeeLabeled || employeeLine || "")
+    employeeName: displayNameFromImportName(rosterName || parsedName || employeeLabeled || employeeLine || "")
   };
 }
 
@@ -607,7 +791,7 @@ export function parseAbsencesByRowHtml(html) {
     }
   }
   // Fallback-Quelle: Zeit-Selektor-Buttons tragen den Mitarbeiternamen
-  // im aria-label ("Zeitraum fuer Fjolla Statovci am 01.06.2026
+  // im aria-label ("Zeitraum fuer Ada Alpha am 01.06.2026
   // auswaehlen"). Wir sammeln diese als "emp-fallback"-Events, sodass
   // ein Bar, der keinen vorausgehenden <p font-medium>-Header hat,
   // den nächsten benachbarten Slot-Namen erbt.
@@ -685,12 +869,13 @@ export function parseAbsencesHtml(html) {
     .filter((row) => row.employeeName && row.startsOn && row.endsOn);
 }
 
-export function parsePlanHtml(html) {
+export function parsePlanHtml(html, options = {}) {
+  const nameRoster = Array.isArray(options) ? options : options.nameRoster ?? options.employeeRows ?? [];
   const matches = shiftElementMatches(html);
   return matches
     .map(({ block, index }) => {
       const text = cleanText(block);
-      const textFields = parsePlanTextFields(block);
+      const textFields = parsePlanTextFields(block, nameRoster);
       const testId = attrValue(block, "data-testid") || rowId(block);
       const sourceId = attrValue(block, "data-shift-id") || testId;
       const date = isoDateFromText(attrValue(block, "data-date") || text) || planContextDate(html, index);
@@ -699,7 +884,7 @@ export function parsePlanHtml(html) {
       const area = attrValue(block, "data-area") || textFields.area || "Ohne Bereich";
       const location = attrValue(block, "data-location") || textFields.location || "Legacy-Import";
       const employeeRaw = attrValue(block, "data-employee") || textFields.employeeName || "";
-      const assignmentNames = planAssignmentNames(text, employeeRaw);
+      const assignmentNames = planAssignmentNames(text, employeeRaw, nameRoster);
       return { __rowId: testId, sourceId, date, startTime, endTime, area: cleanText(area), location: cleanText(location), assignmentNames };
     })
     .filter((row) => row.date && row.startTime && row.endTime);
@@ -921,30 +1106,114 @@ export async function extractAbsenceRowsFromPage(page) {
 }
 
 export async function extractPlanRowsFromPage(page, week = {}) {
-  return page.evaluate((weekMeta) => {
+  const dom = await page.evaluate((weekMeta) => {
     const clean = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
     const lines = (value) => String(value ?? "").split(/\r?\n/).map(clean).filter(Boolean);
     const timePair = (value) => [...clean(value).matchAll(/\b(\d{1,2}:\d{2})\b/g)].map((match) => match[1]);
+    const displayName = (value) => {
+      const name = clean(value);
+      if (!name.includes(",")) return name;
+      const [last, first] = name.split(",", 2).map((part) => part.trim()).filter(Boolean);
+      return [first, last].filter(Boolean).join(" ");
+    };
+    const normalizeName = (value) => displayName(value)
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+    const rosterNames = (Array.isArray(weekMeta?.nameRoster) ? weekMeta.nameRoster : [])
+      .map(displayName)
+      .filter(Boolean)
+      .sort((left, right) => right.length - left.length);
+    const employeeNameFromRoster = (text) => {
+      const haystack = clean(text);
+      return rosterNames.find((name) => haystack.includes(name)) || "";
+    };
+    const employeeNameFromRosterTokens = (value) => {
+      const candidateTokens = normalizeName(value).split(" ").filter((token) => token.length > 1);
+      if (candidateTokens.length < 2) return "";
+      return rosterNames.find((name) => {
+        const rosterTokens = normalizeName(name).split(" ").filter((token) => token.length > 1);
+        return rosterTokens.length > 0
+          && rosterTokens.every((token) => candidateTokens.includes(token));
+      }) || "";
+    };
+    const employeeNameFromShiftLine = (value) => {
+      let line = clean(value);
+      if (!/\b\d{1,2}:\d{2}\b/.test(line)) return "";
+      line = clean(line.replace(/^[^\d]*(?=\b\d{1,2}:\d{2}\b)/, ""));
+      const withoutDuration = clean(line.replace(/\s+\b\d{1,2}:\d{2}\b\s*$/, ""));
+      const hasClockDuration = withoutDuration !== line;
+      if (hasClockDuration) line = withoutDuration;
+      const withoutRange = clean(line.replace(/^\d{1,2}:\d{2}\s*(?:[-–—]|&ndash;|&mdash;|&#8211;|&#x2013;|&#8212;|&#x2014;|bis|to)\s*\d{1,2}:\d{2}\s*/i, ""));
+      if (withoutRange === line) return "";
+      line = withoutRange;
+      if (!hasClockDuration) {
+        const rosterName = employeeNameFromRosterTokens(line);
+        return rosterName || "";
+      }
+      if (!line || /\d/.test(line) || normalizeName(line).split(" ").filter(Boolean).length < 2) return "";
+      const rosterName = employeeNameFromRosterTokens(line);
+      if (rosterName) return rosterName;
+      return displayName(line);
+    };
+    const employeeNameFromShiftText = (value) => {
+      const candidates = [clean(value), ...lines(value)];
+      const seen = new Set();
+      for (const candidate of candidates) {
+        const key = clean(candidate);
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        const name = employeeNameFromShiftLine(key);
+        if (name) return name;
+      }
+      return "";
+    };
+    const cellFromTestid = (value) => {
+      const raw = String(value ?? "");
+      const testidMatch = raw.match(/^plan-cell(?:-content)?-(.+)-(\d{4}-\d{2}-\d{2})$/);
+      return testidMatch ? { containerId: testidMatch[1], date: testidMatch[2] } : null;
+    };
+    const cellFromPlanCellKey = (value) => {
+      const raw = String(value ?? "");
+      const fromTestid = cellFromTestid(raw);
+      if (fromTestid) return fromTestid;
+      const keyMatch = raw.match(/^(.+)-(\d{4}-\d{2}-\d{2})$/);
+      return keyMatch ? { containerId: keyMatch[1], date: keyMatch[2] } : null;
+    };
     const parseTextFields = (value) => {
       const rawLines = lines(value);
       const text = clean(value);
       const times = timePair(text);
-      const contentLines = rawLines.filter((line) => !/\b\d{1,2}:\d{2}\b/.test(line));
-      const locationLine = contentLines.find((line) => /\b(?:Standort|Location)\b/i.test(line)) || "";
-      const employeeLine = contentLines.find((line) => line.includes(",") && line !== locationLine) || "";
-      const areaLine = contentLines.find((line) => line !== locationLine && line !== employeeLine) || "";
+      const nonTimeLines = rawLines.filter((line) => !/\b\d{1,2}:\d{2}\b/.test(line));
+      const locationLine = nonTimeLines.find((line) => /\b(?:Standort|Location)\b/i.test(line)) || "";
+      const rosterName = employeeNameFromRoster(text);
+      const parsedName = employeeNameFromShiftText(value);
+      const employeeLine = nonTimeLines.find((line) => line.includes(",") && line !== locationLine) || "";
+      const areaLine = nonTimeLines.find((line) => line !== locationLine && line !== employeeLine) || "";
       return {
         startTime: times[0] || "",
         endTime: times[1] || "",
         area: clean(text.match(/\b(?:Bereich|Area):\s*([^|,;\n]+)\b/i)?.[1] || areaLine),
         location: clean(text.match(/\b(?:Standort|Location):\s*([^|,;\n]+)\b/i)?.[1] || locationLine),
-        employeeName: clean(text.match(/\b(?:Mitarbeiter|Name):?\s*([^|;\n]+(?:,\s*[^|;\n]+)?)/i)?.[1] || employeeLine)
+        employeeName: displayName(rosterName
+          || parsedName
+          || text.match(/\b(?:Mitarbeiter|Name):?\s*([^|;\n]+(?:,\s*[^|;\n]+)?)/i)?.[1]
+          || employeeLine)
       };
     };
-    const dateFromAncestor = (el) => {
+    const cellFromAncestor = (el) => {
       for (let current = el; current; current = current.parentElement) {
-        const testidIso = String(current.getAttribute("data-testid") ?? "").match(/^plan-cell(?:-content)?-\d+-(\d{4}-\d{2}-\d{2})$/)?.[1];
-        if (testidIso) return testidIso;
+        const cell = cellFromTestid(current.getAttribute("data-testid")) || cellFromPlanCellKey(current.getAttribute("data-plan-cell-key"));
+        if (cell) return cell;
+      }
+      return null;
+    };
+    const dateFromAncestor = (el) => {
+      const cell = cellFromAncestor(el);
+      if (cell?.date) return cell.date;
+      for (let current = el; current; current = current.parentElement) {
         const attr = current.getAttribute("data-date") || current.getAttribute("aria-label") || "";
         const iso = clean(attr).match(/\b\d{4}-\d{2}-\d{2}\b/)?.[0];
         if (iso) return iso;
@@ -952,8 +1221,6 @@ export async function extractPlanRowsFromPage(page, week = {}) {
       return "";
     };
     const dateFromColumn = (el) => {
-      const inherited = dateFromAncestor(el);
-      if (inherited) return inherited;
       const days = Array.isArray(weekMeta?.days) ? weekMeta.days : [];
       if (!days.length) return "";
       const box = el.getBoundingClientRect();
@@ -980,24 +1247,89 @@ export async function extractPlanRowsFromPage(page, week = {}) {
       const index = Math.max(0, Math.min(6, Math.floor(((centerX - containerBox.left) / containerBox.width) * 7)));
       return days[index] || "";
     };
-    return [...document.querySelectorAll('[data-testid^="shift-card-"], [data-shift-id]')]
-      .map((el) => {
-        const rawText = String(el.innerText || el.getAttribute("aria-label") || "");
-        const textFields = parseTextFields(rawText);
+    const ancestorTestids = (el) => {
+      const ancestors = [];
+      for (let current = el; current; current = current.parentElement) {
+        const testid = current.getAttribute("data-testid") || "";
+        const planCellKey = current.getAttribute("data-plan-cell-key") || "";
+        if (testid || planCellKey) ancestors.push({ testid, planCellKey });
+      }
+      return ancestors;
+    };
+    // Runs inside the page, so it cannot reference the module-scope export of the
+    // same name. Keep both copies in sync — only the export is unit-tested.
+    const deduplicateShiftCardElements = (elements = []) => {
+      const groups = new Map();
+      const list = Array.isArray(elements) ? elements : Array.from(elements || []);
+      for (const element of list) {
+        const testid = String(element.getAttribute("data-testid") || "").trim();
+        const sourceId = String(element.getAttribute("data-shift-id") || "").trim();
+        const key = testid ? `testid:${testid}` : sourceId ? `source:${sourceId}` : "";
+        if (!key) continue;
+        const current = groups.get(key);
+        if (!current) {
+          groups.set(key, element);
+          continue;
+        }
+        if (!String(current.getAttribute("data-shift-id") || "").trim() && sourceId) {
+          groups.set(key, element);
+        }
+      }
+      return [...groups.values()];
+    };
+    return {
+      elements: [...document.querySelectorAll("[data-testid], [data-plan-cell-key]")].map((el) => {
+        const testid = el.getAttribute("data-testid") || "";
+        // innerText forces a reflow per element; only swimlane headers carry a name we need.
+        const isAreaHeader = /^plan-area-header-/.test(testid);
         return {
-          __rowId: el.getAttribute("data-testid") || "",
-          sourceId: el.getAttribute("data-shift-id") || "",
-          ariaLabel: el.getAttribute("aria-label") || "",
-          date: el.getAttribute("data-date") || dateFromColumn(el),
-          startTime: el.getAttribute("data-start") || textFields.startTime,
-          endTime: el.getAttribute("data-end") || textFields.endTime,
-          area: el.getAttribute("data-area") || textFields.area,
-          location: el.getAttribute("data-location") || textFields.location,
-          employeeName: el.getAttribute("data-employee") || textFields.employeeName,
-          rawText: clean(rawText)
+          testid,
+          planCellKey: el.getAttribute("data-plan-cell-key") || "",
+          text: isAreaHeader ? clean(el.innerText || el.textContent || el.getAttribute("aria-label") || "") : ""
         };
-      })
-  }, week);
+      }),
+      cards: deduplicateShiftCardElements([...document.querySelectorAll('[data-testid^="shift-card-"], [data-shift-id]')])
+        .map((el) => {
+          const rawText = String(el.innerText || el.getAttribute("aria-label") || "");
+          const textFields = parseTextFields(rawText);
+          return {
+            __rowId: el.getAttribute("data-testid") || "",
+            sourceId: el.getAttribute("data-shift-id") || "",
+            ariaLabel: el.getAttribute("aria-label") || "",
+            dateAttr: el.getAttribute("data-date") || "",
+            dateFromAncestor: dateFromAncestor(el),
+            dateFromColumn: dateFromColumn(el),
+            startTime: el.getAttribute("data-start") || textFields.startTime,
+            endTime: el.getAttribute("data-end") || textFields.endTime,
+            areaAttr: el.getAttribute("data-area") || "",
+            textArea: textFields.area,
+            location: el.getAttribute("data-location") || textFields.location,
+            employeeName: el.getAttribute("data-employee") || textFields.employeeName,
+            rawText: clean(rawText),
+            ancestorTestids: ancestorTestids(el)
+          };
+        })
+    };
+  }, { ...week, nameRoster: nameRosterFromRows(week?.nameRoster ?? week?.employeeRows ?? []) });
+  const resolved = resolvePlanSwimlaneAreas(dom);
+  return resolved.cards.map((card) => {
+    const fallbackArea = cleanText(card.areaAttr || card.textArea);
+    const swimlaneArea = cleanText(card.areaFromSwimlane);
+    const area = swimlaneArea || fallbackArea;
+    return {
+      __rowId: card.__rowId || "",
+      sourceId: card.sourceId || "",
+      ariaLabel: card.ariaLabel || "",
+      date: card.dateFromCell || card.dateFromAncestor || card.dateAttr || card.dateFromColumn || "",
+      startTime: card.startTime || "",
+      endTime: card.endTime || "",
+      area,
+      areaSource: swimlaneArea ? "swimlane" : fallbackArea ? "text" : "none",
+      location: card.location || "",
+      employeeName: card.employeeName || "",
+      rawText: cleanText(card.rawText)
+    };
+  });
 }
 
 export function buildEmployeeResolver({ employeeRows = [], existingEmployees = [] } = {}) {
@@ -1078,6 +1410,29 @@ function mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmplo
   return { employeeSourceId: null, employee: null };
 }
 
+function buildPracticeResolver(options) {
+  if (options.practiceResolver) return options.practiceResolver;
+  const canonicalPractices = Array.isArray(options.canonicalPractices)
+    ? options.canonicalPractices.map((name) => cleanText(name)).filter(Boolean)
+    : [];
+  if (canonicalPractices.length === 0) return null;
+  return buildNameResolver({ knownNames: canonicalPractices });
+}
+
+function resolvePractice({ area, areaMatch, sourceArea, practiceByWorkArea, practiceResolver }) {
+  const areaPractice = practiceByWorkArea[area];
+  if (areaPractice != null) {
+    return { practice: areaPractice, practiceMatch: "area" };
+  }
+  if (areaMatch === "fallback" && practiceResolver) {
+    const sourcePractice = practiceResolver.resolve(sourceArea);
+    if (sourcePractice.resolved) {
+      return { practice: sourcePractice.name, practiceMatch: "source" };
+    }
+  }
+  return { practice: null, practiceMatch: null };
+}
+
 export function mapWorkHoursRows(rows, options = {}) {
   const capturedAt = options.capturedAt ?? new Date().toISOString();
   const resolver = options.employeeResolver ?? buildEmployeeResolver({
@@ -1095,8 +1450,11 @@ export function mapWorkHoursRows(rows, options = {}) {
   const areaResolver = options.areaResolver ?? buildNameResolver({
     knownNames: options.canonicalWorkAreas ?? [],
     aliases: options.workAreaAliases ?? {},
+    overrides: options.workAreaOverrides ?? [],
     fallbackName: options.defaultWorkArea || "Ohne Bereich"
   });
+  const practiceByWorkArea = options.practiceByWorkArea ?? {};
+  const practiceResolver = buildPracticeResolver(options);
   const timeEntries = [];
   const unresolvedEmployees = new Map();
   const unresolvedAreas = new Map();
@@ -1125,12 +1483,21 @@ export function mapWorkHoursRows(rows, options = {}) {
 
     const resolved = mapResolvedEmployee(resolver, employeeName, capturedAt, unresolvedEmployees);
     const employeeSourceId = resolved.employeeSourceId;
-    const areaResolved = areaResolver.resolve(cellFor(row, ["bereich", "Bereich"], 8) || "Ohne Bereich");
-    const locationResolved = locationResolver.resolve(cellFor(row, ["standort", "Standort"], 9) || options.defaultLocation || "Legacy-Import");
+    const sourceArea = cellFor(row, ["bereich", "Bereich"], 8) || "Ohne Bereich";
+    const sourceLocation = cellFor(row, ["standort", "Standort"], 9) || options.defaultLocation || "Legacy-Import";
+    const areaResolved = areaResolver.resolve(sourceArea);
+    const locationResolved = locationResolver.resolve(sourceLocation);
     if (!areaResolved.resolved) unresolvedAreas.set(areaResolved.raw, { name: areaResolved.raw, mappedTo: areaResolved.name, reason: "no_work_area_match" });
     if (!locationResolved.resolved) unresolvedLocations.set(locationResolved.raw, { name: locationResolved.raw, mappedTo: locationResolved.name, reason: "no_location_match" });
     const area = areaResolved.name;
     const location = locationResolved.name;
+    const { practice, practiceMatch } = resolvePractice({
+      area,
+      areaMatch: areaResolved.areaMatch,
+      sourceArea: sourceArea || areaResolved.raw,
+      practiceByWorkArea,
+      practiceResolver
+    });
     const violationRaw = cleanText(cellFor(row, ["verstoss", "verstoß", "Verstoss", "Verstoß"], 10));
     const violation = violationRaw === "-" || violationRaw === "—" ? "" : violationRaw;
     const rowKey = cleanText(row.__rowId);
@@ -1152,7 +1519,13 @@ export function mapWorkHoursRows(rows, options = {}) {
       endDate: endTime < startTime ? addDays(startDate, 1) : startDate,
       endTime,
       area,
+      sourceArea: areaResolved.raw,
+      areaMatch: areaResolved.areaMatch,
+      practice,
+      practiceMatch,
       location,
+      sourceLocation: locationResolved.raw,
+      locationMatch: locationResolved.areaMatch,
       status: cleanText(cellFor(row, ["status", "Status"], 7)) || "erfasst",
       paidBreakMinutes: 0,
       unpaidBreakMinutes: minutes(cellFor(row, ["pause", "Pause"], 5)),
@@ -1241,6 +1614,7 @@ export function mapAbsenceRows(rows, options = {}) {
 
 export function mapPlanRows(rows, options = {}) {
   const capturedAt = options.capturedAt ?? new Date().toISOString();
+  const nameRoster = nameRosterFromRows(options.nameRoster ?? options.employeeRows ?? []);
   const resolver = options.employeeResolver ?? buildEmployeeResolver({
     employeeRows: options.employeeRows ?? [],
     existingEmployees: options.existingEmployees ?? []
@@ -1251,6 +1625,7 @@ export function mapPlanRows(rows, options = {}) {
   const areaResolver = options.areaResolver ?? buildNameResolver({
     knownNames: options.canonicalWorkAreas ?? [],
     aliases: options.workAreaAliases ?? {},
+    overrides: options.workAreaOverrides ?? [],
     fallbackName: options.defaultWorkArea || "Ohne Bereich"
   });
   const locationResolver = options.locationResolver ?? buildNameResolver({
@@ -1258,6 +1633,8 @@ export function mapPlanRows(rows, options = {}) {
     aliases: options.locationAliases ?? {},
     fallbackName: options.defaultLocation || "Legacy-Import"
   });
+  const practiceByWorkArea = options.practiceByWorkArea ?? {};
+  const practiceResolver = buildPracticeResolver(options);
   const unresolvedEmployees = new Map();
   const unresolvedAreas = new Map();
   const unresolvedLocations = new Map();
@@ -1272,8 +1649,11 @@ export function mapPlanRows(rows, options = {}) {
     const planUpper = options.planTo || options.to;
     if (planUpper && date > planUpper) continue;
     stats.afterDateFilter += 1;
-    const assignmentNames = (row.assignmentNames?.length ? row.assignmentNames : [row.employeeName]).filter(Boolean);
-    let areaCandidate = cleanText(row.area || "");
+    const sourceText = cleanText(row.rawText || row.ariaLabel || "");
+    const rowNames = Array.isArray(row.assignmentNames) ? row.assignmentNames.filter(Boolean) : [];
+    const assignmentNames = (rowNames.length ? rowNames : planAssignmentNames(sourceText, row.employeeName, nameRoster)).filter(Boolean);
+    const sourceArea = cleanText(row.area || "");
+    let areaCandidate = sourceArea;
     const areaAsEmployee = areaCandidate ? resolver.resolve(areaCandidate) : null;
     if (areaAsEmployee?.sourceId) {
       if (!assignmentNames.some((name) => normalizeName(name) === normalizeName(areaCandidate))) {
@@ -1297,6 +1677,13 @@ export function mapPlanRows(rows, options = {}) {
     if (!locationResolved.resolved) unresolvedLocations.set(locationResolved.raw, { name: locationResolved.raw, mappedTo: locationResolved.name, reason: "no_location_match" });
     const area = areaResolved.name;
     const location = locationResolved.name;
+    const { practice, practiceMatch } = resolvePractice({
+      area,
+      areaMatch: areaResolved.areaMatch,
+      sourceArea: sourceArea || areaResolved.raw,
+      practiceByWorkArea,
+      practiceResolver
+    });
     areasByName.set(area, { sourceId: `area_${stableHash(area)}`, name: area, updatedAt: capturedAt });
     locationsByName.set(location, { sourceId: `location_${stableHash(location)}`, name: location, updatedAt: capturedAt });
     shifts.push({
@@ -1306,7 +1693,14 @@ export function mapPlanRows(rows, options = {}) {
       endDate: endTime <= startTime ? addDays(date, 1) : date,
       endTime,
       area,
+      areaSource: cleanText(row.areaSource || "") || null,
+      sourceArea: sourceArea || areaResolved.raw,
+      areaMatch: areaResolved.areaMatch,
+      practice,
+      practiceMatch,
       location,
+      sourceLocation: locationResolved.raw,
+      locationMatch: locationResolved.areaMatch,
       requiredStaff: Math.max(1, assignmentSourceIds.length || assignmentNames.length || Number(row.requiredStaff ?? 1) || 1),
       note: cleanText(row.note) || null,
       assignmentSourceIds,

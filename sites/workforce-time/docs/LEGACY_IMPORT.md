@@ -50,6 +50,7 @@ set +a
 npm run legacy-import:delta -- \
   --live \
   --dry-run \
+  --raw-out private/imports/legacy-raw-export.json \
   --from 2026-05-25 \
   --to 2026-06-05
 ```
@@ -57,6 +58,18 @@ npm run legacy-import:delta -- \
 Playwright wird erst im Live-Pfad dynamisch importiert. Wenn Browser oder
 Chromium noch nicht installiert sind, bleiben Fixture-Dry-Run und Tests
 weiter lauffähig.
+
+Mit `--raw-out` wird der unveraenderte Live-Rohexport direkt nach der
+Erfassung als JSON geschrieben, bevor Mapping oder Validierung laufen. Der
+Rohexport kann danach ohne erneuten Live-Lauf als Fixture verwendet werden:
+
+```bash
+npm run legacy-import:delta -- \
+  --fixture private/imports/legacy-raw-export.json \
+  --out private/imports/import-snapshot.json
+```
+
+`--raw-out` ist nur zusammen mit `--live` gueltig.
 
 ## Import in Workforce-Time
 

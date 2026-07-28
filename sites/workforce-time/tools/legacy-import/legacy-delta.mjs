@@ -36,6 +36,7 @@ Options:
   --dry-run              Map and validate only. Does not write or POST.
   --fixture <path>       Read Import-like JSON or work-hours HTML from a local fixture/export.
   --out <path>           Snapshot file for POST /api/imports/delta-snapshot.
+  --raw-out <path>       Schreibt den unveraenderten Live-Rohexport vor dem Mapping.
   --post                 POST the written snapshot path to the local API.
   --api-url <url>        API base URL. Default: http://127.0.0.1:5175.
   --from <YYYY-MM-DD>    Delta start. Default: 2026-05-25.
@@ -60,6 +61,7 @@ export function parseArgs(argv = process.argv.slice(2)) {
     dryRun: false,
     fixture: null,
     out: defaultSnapshotPath,
+    rawOut: null,
     post: false,
     apiUrl: "http://127.0.0.1:5175",
     from: "2026-05-25",
@@ -79,6 +81,7 @@ export function parseArgs(argv = process.argv.slice(2)) {
     else if (arg === "--plan-only") options.planOnly = true;
     else if (arg === "--fixture") options.fixture = resolve(requireValue(argv, index++, arg));
     else if (arg === "--out") options.out = resolve(requireValue(argv, index++, arg));
+    else if (arg === "--raw-out") options.rawOut = resolve(requireValue(argv, index++, arg));
     else if (arg === "--api-url") options.apiUrl = requireValue(argv, index++, arg).replace(/\/+$/, "");
     else if (arg === "--from") options.from = requireValue(argv, index++, arg);
     else if (arg === "--to") options.to = requireValue(argv, index++, arg);
@@ -93,6 +96,9 @@ export function parseArgs(argv = process.argv.slice(2)) {
     else throw new Error(`Unbekannte Option: ${arg}`);
   }
 
+  if (options.rawOut && !options.live) {
+    throw new Error("Fehler: --raw-out ist nur zusammen mit --live sinnvoll.");
+  }
   if (!options.fixture && !options.live) {
     options.fixture = defaultFixturePath;
     options.dryRun = true;
@@ -107,6 +113,39 @@ function asArray(value) {
 
 function text(value, fallback = "") {
   return String(value ?? fallback).trim();
+}
+
+function uniqueText(values) {
+  return [...new Set(values.map((value) => text(value)).filter(Boolean))];
+}
+
+function employeeNameRoster(employeeRows) {
+  return uniqueText(asArray(employeeRows).map((row) => {
+    if (typeof row === "string") return row;
+    return row?.displayName ?? row?.display_name ?? row?.name ?? row?.fullName ?? row?.full_name ?? row?.employeeName ?? row?.employee_name ?? "";
+  }));
+}
+
+function sourceIdFromName(prefix, value) {
+  const key = text(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return key ? `${prefix}_${key}` : "";
+}
+
+function practiceFieldsForRecord(record, area, practiceByWorkArea) {
+  const areaPractice = practiceByWorkArea[area];
+  if (areaPractice != null) {
+    return { practice: areaPractice, practiceMatch: "area" };
+  }
+  const sourcePractice = text(record.practice);
+  if (sourcePractice && record.practiceMatch === "source") {
+    return { practice: sourcePractice, practiceMatch: "source" };
+  }
+  return { practice: null, practiceMatch: null };
 }
 
 function sourceId(record, fallbackPrefix, index) {
@@ -149,7 +188,7 @@ function tenantConfigPath() {
   return tenantDir ? join(tenantDir, "tenant.config.json") : null;
 }
 
-function loadTenantReconciliationConfig() {
+export function loadTenantReconciliationConfig() {
   const path = tenantConfigPath();
   if (!path || !existsSync(path)) {
     return {};
@@ -158,17 +197,45 @@ function loadTenantReconciliationConfig() {
     const config = JSON.parse(readFileSync(path, "utf8"));
     const workforce = config.workforce ?? {};
     const categories = workforce.work_area_categories ?? {};
-    const workAreaAliases = {};
-    for (const [canonical, values] of Object.entries(categories)) {
-      workAreaAliases[canonical] = Array.isArray(values) ? values : [values];
-    }
+    const categoryEntries = Object.entries(categories)
+      .map(([practice, values]) => [
+        text(practice),
+        (Array.isArray(values) ? values : [values]).map((value) => text(value)).filter(Boolean)
+      ])
+      .filter(([practice]) => practice);
+    const canonicalPractices = uniqueText(categoryEntries.map(([practice]) => practice));
+    const canonicalWorkAreas = uniqueText(categoryEntries.flatMap(([, values]) => values));
+    const practiceByWorkArea = Object.fromEntries(
+      categoryEntries.flatMap(([practice, values]) => values.map((value) => [value, practice]))
+    );
+    const workAreaAliases = Object.fromEntries(
+      Object.entries(workforce.work_area_aliases ?? {})
+        .map(([canonical, values]) => [
+          text(canonical),
+          (Array.isArray(values) ? values : [values]).map((value) => text(value)).filter(Boolean)
+        ])
+        .filter(([canonical, values]) => canonical && values.length > 0)
+    );
+    const workAreaOverrides = asArray(workforce.work_area_overrides)
+      .map((rule) => {
+        const canonical = text(rule?.canonical);
+        const matchTokens = asArray(rule?.match_tokens).map((token) => text(token)).filter(Boolean);
+        const matchExact = text(rule?.match_exact);
+        if (!canonical || (!matchExact && matchTokens.length === 0)) return null;
+        return {
+          ...(matchTokens.length > 0 ? { match_tokens: matchTokens } : {}),
+          ...(matchExact ? { match_exact: matchExact } : {}),
+          canonical
+        };
+      })
+      .filter(Boolean);
     return {
       canonicalLocations: Array.isArray(workforce.locations) ? workforce.locations : [],
-      canonicalWorkAreas: [
-        ...Object.keys(categories),
-        ...Object.values(categories).flatMap((value) => Array.isArray(value) ? value : [value])
-      ],
+      canonicalWorkAreas,
+      canonicalPractices,
+      practiceByWorkArea,
       workAreaAliases,
+      workAreaOverrides,
       defaultLocation: workforce.default_location_name,
       defaultWorkArea: workforce.default_work_area_name
     };
@@ -185,6 +252,23 @@ export function mapImportPayload(rawInput, options = {}) {
   const sourceSystem = text(raw.sourceSystem, "legacy_import");
   const defaultLocation = text(raw.defaultLocation ?? tenantReconciliation.defaultLocation, "Legacy-Import");
   const rawEmployees = asArray(raw.employees ?? raw.staff ?? raw.users);
+  const canonicalLocationNames = uniqueText([
+    ...asArray(raw.locations).map((record) => text(record.name)),
+    ...asArray(tenantReconciliation.canonicalLocations)
+  ]);
+  const canonicalWorkAreaNames = uniqueText([
+    ...asArray(raw.workAreas ?? raw.areas).map((record) => text(record.name ?? record.area)),
+    ...asArray(tenantReconciliation.canonicalWorkAreas)
+  ]);
+  const canonicalPracticeNames = uniqueText([
+    ...asArray(raw.practices).map((record) => text(record.name ?? record.practice ?? record)),
+    ...asArray(tenantReconciliation.canonicalPractices)
+  ]);
+  const practiceByWorkArea = tenantReconciliation.practiceByWorkArea
+    && typeof tenantReconciliation.practiceByWorkArea === "object"
+    && !Array.isArray(tenantReconciliation.practiceByWorkArea)
+      ? tenantReconciliation.practiceByWorkArea
+      : {};
   const commonResolverOptions = {
     capturedAt,
     defaultLocation,
@@ -194,16 +278,13 @@ export function mapImportPayload(rawInput, options = {}) {
     planTo: options.planTo,
     employeeRows: asArray(raw.employeeRows),
     existingEmployees: rawEmployees,
-    canonicalLocations: [
-      ...asArray(raw.locations).map((record) => text(record.name)).filter(Boolean),
-      ...asArray(tenantReconciliation.canonicalLocations)
-    ],
-    canonicalWorkAreas: [
-      ...asArray(raw.workAreas ?? raw.areas).map((record) => text(record.name ?? record.area)).filter(Boolean),
-      ...asArray(tenantReconciliation.canonicalWorkAreas)
-    ],
+    canonicalLocations: canonicalLocationNames,
+    canonicalWorkAreas: canonicalWorkAreaNames,
     locationAliases: tenantReconciliation.locationAliases ?? {},
-    workAreaAliases: tenantReconciliation.workAreaAliases ?? {}
+    workAreaAliases: tenantReconciliation.workAreaAliases ?? {},
+    workAreaOverrides: tenantReconciliation.workAreaOverrides ?? [],
+    canonicalPractices: canonicalPracticeNames,
+    practiceByWorkArea
   };
   const workHours = mapWorkHoursRows(asArray(raw.workHoursRows), {
     ...commonResolverOptions
@@ -247,6 +328,27 @@ export function mapImportPayload(rawInput, options = {}) {
     ...plan.workAreas
   ].filter((record, index, records) => records.findIndex((item) => item.name === record.name) === index);
 
+  const practices = [
+    ...asArray(raw.practices).map((record, index) => {
+      const name = text(record.name ?? record.practice ?? record);
+      if (!name) return null;
+      return {
+        sourceId: text(record.sourceId ?? record.source_id) || sourceIdFromName("practice", name) || `practice-${index + 1}`,
+        name,
+        updatedAt: record.updatedAt ?? capturedAt
+      };
+    }),
+    ...canonicalPracticeNames.map((name, index) => ({
+      sourceId: sourceIdFromName("practice", name) || `practice-${index + 1}`,
+      name,
+      updatedAt: capturedAt
+    }))
+  ].filter(Boolean)
+    .filter((record, index, records) => records.findIndex((item) => item.name === record.name) === index);
+
+  const unassignedPractices = canonicalWorkAreaNames
+    .filter((area) => !Object.prototype.hasOwnProperty.call(practiceByWorkArea, area));
+
   const shifts = [
     ...asArray(raw.shifts),
     ...plan.shifts
@@ -255,14 +357,23 @@ export function mapImportPayload(rawInput, options = {}) {
     const startTime = toTime(record.startTime ?? record.startsAt);
     const endTime = toTime(record.endTime ?? record.endsAt);
     if (!startDate || !startTime || !endTime) return null;
+    const area = text(record.area ?? record.workArea, "Ohne Bereich");
+    const location = text(record.location, defaultLocation);
+    const { practice, practiceMatch } = practiceFieldsForRecord(record, area, practiceByWorkArea);
     return {
       sourceId: sourceId(record, "shift", index),
       startDate,
       startTime,
       endDate: toDate(record.endDate ?? record.endsAt) ?? startDate,
       endTime,
-      area: text(record.area ?? record.workArea, "Ohne Bereich"),
-      location: text(record.location, defaultLocation),
+      area,
+      sourceArea: text(record.sourceArea ?? record.area ?? record.workArea, area),
+      areaMatch: text(record.areaMatch, "fallback"),
+      practice,
+      practiceMatch,
+      location,
+      sourceLocation: text(record.sourceLocation ?? record.location, location),
+      locationMatch: text(record.locationMatch, "fallback"),
       requiredStaff: Number(record.requiredStaff ?? asArray(record.assignments).length) || 1,
       note: text(record.note),
       assignmentSourceIds: asArray(record.assignmentSourceIds ?? record.assignments).map(String),
@@ -279,6 +390,9 @@ export function mapImportPayload(rawInput, options = {}) {
     const startTime = toTime(record.startTime ?? record.startsAt);
     const endTime = toTime(record.endTime ?? record.endsAt);
     if (!startDate || !startTime || !endTime) return null;
+    const area = text(record.area ?? record.workArea, "Ohne Bereich");
+    const location = text(record.location, defaultLocation);
+    const { practice, practiceMatch } = practiceFieldsForRecord(record, area, practiceByWorkArea);
     return {
       sourceId: sourceId(record, "time", index),
       employeeSourceId: text(record.employeeSourceId ?? record.employeeId ?? record.userId) || null,
@@ -287,8 +401,14 @@ export function mapImportPayload(rawInput, options = {}) {
       startTime,
       endDate: toDate(record.endDate ?? record.endsAt) ?? startDate,
       endTime,
-      area: text(record.area ?? record.workArea, "Ohne Bereich"),
-      location: text(record.location, defaultLocation),
+      area,
+      sourceArea: text(record.sourceArea ?? record.area ?? record.workArea, area),
+      areaMatch: text(record.areaMatch, "fallback"),
+      practice,
+      practiceMatch,
+      location,
+      sourceLocation: text(record.sourceLocation ?? record.location, location),
+      locationMatch: text(record.locationMatch, "fallback"),
       status: text(record.status, "erfasst"),
       paidBreakMinutes: Number(record.paidBreakMinutes ?? 0) || 0,
       unpaidBreakMinutes: Number(record.unpaidBreakMinutes ?? record.breakDuration ?? 0) || 0,
@@ -328,6 +448,8 @@ export function mapImportPayload(rawInput, options = {}) {
     defaultLocation,
     locations,
     workAreas,
+    practices,
+    unassignedPractices,
     employees,
     shifts,
     timeEntries,
@@ -485,7 +607,7 @@ async function captureLiveImport(options) {
       }
     }
     const absenceRows = options.planOnly ? [] : await captureAbsences(page, options);
-    const planRows = await capturePlan(page, options);
+    const planRows = await capturePlan(page, { ...options, nameRoster: employeeNameRoster(employeeRows) });
     if (process.env.LEGACY_DEBUG) {
       console.error(`LEGACY_DEBUG Mitarbeiterzeilen: ${employeeRows.length}`);
       console.error(`LEGACY_DEBUG Arbeitszeitzeilen vor Dedupe: ${workHoursRows.length}`);
@@ -758,13 +880,130 @@ async function captureAbsences(page, options) {
 
 async function capturePlan(page, options) {
   const rows = [];
+  const nameRoster = employeeNameRoster(options.nameRoster);
   for (const week of isoWeeksInRange(options.from, planCaptureEnd(options))) {
     await page.goto(new URL(`/plan/9405/${week.label}`, process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(3500);
-    rows.push(...await extractPlanRowsFromPage(page, { label: week.label, days: isoWeekDays(week.label) }));
+    await ensurePlanSwimlanesRendered(page);
+    rows.push(...await extractPlanRowsFromPage(page, { label: week.label, days: isoWeekDays(week.label), nameRoster }));
   }
   return rows;
+}
+
+async function ensurePlanSwimlanesRendered(page) {
+  const initial = await readPlanSwimlaneRenderState(page);
+  if (initial.completeSwimlanes && !initial.canScrollFurther) return initial;
+
+  let previousSignature = "";
+  let stablePasses = 0;
+  let latest = initial;
+  for (let pass = 0; pass < 14; pass += 1) {
+    await page.mouse.wheel(0, 3600).catch(() => {});
+    await page.evaluate((passIndex) => {
+      const candidates = [
+        document.scrollingElement,
+        document.documentElement,
+        document.body,
+        ...document.querySelectorAll("*")
+      ].filter(Boolean);
+      for (const el of candidates) {
+        const style = getComputedStyle(el);
+        if (el.scrollHeight <= el.clientHeight + 4 || !/(auto|scroll|overlay)/.test(style.overflowY)) continue;
+        const step = Math.max(600, Math.floor(el.clientHeight * 0.9));
+        el.scrollTop = passIndex === 0 ? 0 : Math.min(el.scrollHeight, el.scrollTop + step);
+      }
+    }, pass);
+    await page.waitForTimeout(350);
+    latest = await readPlanSwimlaneRenderState(page);
+    const signature = JSON.stringify({
+      headers: latest.headerCount,
+      complete: latest.completeSwimlanes,
+      containers: latest.containerCount,
+      cards: latest.cardCount,
+      canScroll: latest.canScrollFurther
+    });
+    stablePasses = signature === previousSignature ? stablePasses + 1 : 0;
+    previousSignature = signature;
+    if (latest.completeSwimlanes && !latest.canScrollFurther) break;
+    if (stablePasses >= 3) break;
+  }
+
+  await page.evaluate(() => {
+    const candidates = [
+      document.scrollingElement,
+      document.documentElement,
+      document.body,
+      ...document.querySelectorAll("*")
+    ].filter(Boolean);
+    for (const el of candidates) {
+      const style = getComputedStyle(el);
+      if (el.scrollHeight > el.clientHeight + 4 && /(auto|scroll|overlay)/.test(style.overflowY)) {
+        el.scrollTop = el.scrollHeight;
+      }
+    }
+  });
+  await page.waitForTimeout(500);
+  latest = await readPlanSwimlaneRenderState(page);
+  if (process.env.LEGACY_DEBUG) {
+    console.error(`LEGACY_DEBUG Plan-Swimlanes: ${JSON.stringify(latest)}`);
+  }
+  return latest;
+}
+
+async function readPlanSwimlaneRenderState(page) {
+  return page.evaluate(() => {
+    const cellFromTestid = (value) => {
+      const match = String(value ?? "").match(/^plan-cell(?:-content)?-(.+)-(\d{4}-\d{2}-\d{2})$/);
+      return match ? { containerId: match[1], date: match[2] } : null;
+    };
+    const cellFromPlanCellKey = (value) => {
+      const raw = String(value ?? "");
+      const fromTestid = cellFromTestid(raw);
+      if (fromTestid) return fromTestid;
+      const match = raw.match(/^(.+)-(\d{4}-\d{2}-\d{2})$/);
+      return match ? { containerId: match[1], date: match[2] } : null;
+    };
+    const swimlanes = [];
+    let current = null;
+    for (const el of document.querySelectorAll("[data-testid], [data-plan-cell-key]")) {
+      const testid = el.getAttribute("data-testid") || "";
+      if (/^plan-area-header-/.test(testid)) {
+        current = { datesByContainer: new Map() };
+        swimlanes.push(current);
+        continue;
+      }
+      const cell = cellFromTestid(testid) || cellFromPlanCellKey(el.getAttribute("data-plan-cell-key"));
+      if (!current || !cell) continue;
+      if (!current.datesByContainer.has(cell.containerId)) current.datesByContainer.set(cell.containerId, new Set());
+      current.datesByContainer.get(cell.containerId).add(cell.date);
+    }
+    const completeSwimlanes = swimlanes.length > 0
+      && swimlanes.every((lane) => [...lane.datesByContainer.values()].some((dates) => dates.size >= 7));
+    const containerIds = new Set();
+    for (const lane of swimlanes) {
+      for (const containerId of lane.datesByContainer.keys()) containerIds.add(containerId);
+    }
+    const scrollables = [
+      document.scrollingElement,
+      document.documentElement,
+      document.body,
+      ...document.querySelectorAll("*")
+    ].filter(Boolean);
+    const canScrollFurther = scrollables.some((el) => {
+      const style = getComputedStyle(el);
+      return el.scrollHeight > el.clientHeight + 4
+        && /(auto|scroll|overlay)/.test(style.overflowY)
+        && el.scrollTop < el.scrollHeight - el.clientHeight - 4;
+    });
+    return {
+      headerCount: swimlanes.length,
+      completeSwimlanes,
+      containerCount: containerIds.size,
+      cardCount: document.querySelectorAll('[data-testid^="shift-card-"], [data-shift-id]').length,
+      canScrollFurther
+    };
+  });
 }
 
 async function logWorkHoursDiagnostics(page, week) {
@@ -852,10 +1091,41 @@ async function postImportSnapshot(options) {
   return JSON.parse(body);
 }
 
+function writeRawExport(path, raw) {
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(raw, null, 2)}\n`);
+}
+
+function deduplicateFixturePlanRows(rows) {
+  const groups = new Map();
+  for (const [index, row] of asArray(rows).entries()) {
+    const rowId = text(row?.__rowId);
+    const key = rowId ? `row:${rowId}` : `index:${index}`;
+    const current = groups.get(key);
+    if (!current || (!text(current.sourceId) && text(row?.sourceId))) {
+      groups.set(key, row);
+    }
+  }
+  return [...groups.values()];
+}
+
+function normalizeFixtureImport(raw) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !Array.isArray(raw.planRows)) {
+    return raw;
+  }
+  return {
+    ...raw,
+    planRows: deduplicateFixturePlanRows(raw.planRows)
+  };
+}
+
 export async function run(options) {
   const raw = options.live
-    ? await captureLiveImport(options)
+    ? await (options.captureLiveImport ?? captureLiveImport)(options)
     : readFixture(options.fixture);
+  if (options.live && options.rawOut) {
+    writeRawExport(options.rawOut, raw);
+  }
   const snapshot = mapImportPayload(raw, { ...options, planTo: planCaptureEnd(options) });
   const validation = validateSnapshot(snapshot);
   const summary = snapshotSummary(snapshot);
@@ -893,16 +1163,17 @@ export async function run(options) {
 function readFixture(path) {
   const content = readFileSync(path, "utf8");
   if (/\.html?$/i.test(path) || /^\s*<!doctype html/i.test(content) || /^\s*<html[\s>]/i.test(content)) {
-    return {
+    const employeeRows = parseEmployeesHtml(content);
+    return normalizeFixtureImport({
       sourceSystem: "legacy_import",
       capturedAt: new Date().toISOString(),
-      employeeRows: parseEmployeesHtml(content),
+      employeeRows,
       workHoursRows: parseWorkHoursHtml(content),
       absenceRows: parseAbsencesHtml(content),
-      planRows: parsePlanHtml(content)
-    };
+      planRows: parsePlanHtml(content, { nameRoster: employeeNameRoster(employeeRows) })
+    });
   }
-  return JSON.parse(content);
+  return normalizeFixtureImport(JSON.parse(content));
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

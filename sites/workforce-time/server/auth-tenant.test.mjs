@@ -35,7 +35,7 @@ async function callAuthRoute(handleAuthRoute, method, path, { host, body } = {})
   return response;
 }
 
-test("auth tenant endpoint exposes tenant metadata and magic-link enforces allowed host", async () => {
+test("auth tenant endpoint exposes tenant metadata, login enforces allowed host, and magic-link is retired", async () => {
   const tempDir = await mkdtemp(join(tmpdir(), "workforce-auth-tenant-"));
   process.env.NODE_ENV = "test";
   process.env.WORKFORCE_AUTH_ENFORCE = "1";
@@ -73,19 +73,19 @@ test("auth tenant endpoint exposes tenant metadata and magic-link enforces allow
     assert.equal(tenant.payload.data.tenant.displayName, "Demo Praxis");
     assert.equal(tenant.payload.data.tenant.hostAccepted, true);
 
-    const rejected = await callAuthRoute(handleAuthRoute, "POST", "/api/auth/magic-link", {
+    const rejected = await callAuthRoute(handleAuthRoute, "POST", "/api/auth/login", {
       host: "falsch.localhost",
-      body: { email: "admin@example.test" }
+      body: { email: "admin@example.test", password: "secret" }
     });
     assert.equal(rejected.status, 400);
     assert.equal(rejected.payload.error.code, "TENANT_HOST_MISMATCH");
 
-    const accepted = await callAuthRoute(handleAuthRoute, "POST", "/api/auth/magic-link", {
-      host: "arbeitszeiten.localhost",
+    const retired = await callAuthRoute(handleAuthRoute, "POST", "/api/auth/magic-link", {
+      host: "falsch.localhost",
       body: { email: "admin@example.test" }
     });
-    assert.equal(accepted.status, 200);
-    assert.equal(accepted.payload.data.tenant.slug, "demo-praxis");
+    assert.equal(retired.status, 410);
+    assert.equal(retired.payload.error.code, "MAGIC_LINK_RETIRED");
   } finally {
     delete process.env.CORTEX_TENANT_DIR;
     await rm(tempDir, { recursive: true, force: true });
