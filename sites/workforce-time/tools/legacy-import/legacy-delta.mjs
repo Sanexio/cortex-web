@@ -23,6 +23,25 @@ import {
 const LEGACY_SOURCE_HOST = process.env.LEGACY_SOURCE_HOST || "";
 const LEGACY_SOURCE_DOMAIN = process.env.LEGACY_SOURCE_DOMAIN || "";
 
+// Navigate with automatic retries. Returns true on success, false if all
+// attempts are exhausted (never throws, so callers can decide to skip).
+async function gotoWithRetry(page, url, { attempts = 3, timeout = 60000 } = {}) {
+  for (let i = 0; i < attempts; i += 1) {
+    try {
+      await page.goto(url, { waitUntil: "domcontentloaded", timeout });
+      return true;
+    } catch (err) {
+      if (i < attempts - 1) {
+        console.error(`WARNUNG: Navigation zu ${url} fehlgeschlagen (Versuch ${i + 1}/${attempts}), erneuter Versuch in 2 s …`);
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+    }
+  }
+  console.error(`WARNUNG: Navigation zu ${url} ist nach ${attempts} Versuchen endgueltig fehlgeschlagen.`);
+  return false;
+}
+
+
 const here = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(here, "../..");
 const defaultFixturePath = resolve(here, "fixtures/legacy-delta.fixture.json");
@@ -577,6 +596,7 @@ async function captureLiveImport(options) {
     const employeeRows = await extractEmployeeRowsFromPage(page);
 
     const workHoursRows = [];
+    const skippedDays = [];
     // T-LIVE-025 — Picker-Range-Drift fix: bei Wochen-Ranges mit Tag-am-
     // Wochenrand (Mo/So) verliert Ordio's Picker Tage am Range-Anfang
     // (Probe 2026-06-25: 22.-28.06 -> nur 23-26 geliefert). Workaround:
@@ -592,7 +612,12 @@ async function captureLiveImport(options) {
         }
       }
       for (const day of allDays) {
-        await page.goto(new URL("/work-hours", process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
+        const navOk = await gotoWithRetry(page, new URL("/work-hours", process.env.LEGACY_BASE_URL).href);
+        if (!navOk) {
+          console.error(`WARNUNG: Tag ${day} konnte nicht geladen werden, wird uebersprungen.`);
+          skippedDays.push(day);
+          continue;
+        }
         await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
         await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
         await page.waitForTimeout(2000);
@@ -607,14 +632,14 @@ async function captureLiveImport(options) {
       }
     }
     const absenceRows = options.planOnly ? [] : await captureAbsences(page, options);
-    const planRows = await capturePlan(page, { ...options, nameRoster: employeeNameRoster(employeeRows) });
+    const { rows: planRows, skippedWeeks } = await capturePlan(page, { ...options, nameRoster: employeeNameRoster(employeeRows) });
     if (process.env.LEGACY_DEBUG) {
       console.error(`LEGACY_DEBUG Mitarbeiterzeilen: ${employeeRows.length}`);
       console.error(`LEGACY_DEBUG Arbeitszeitzeilen vor Dedupe: ${workHoursRows.length}`);
       console.error(`LEGACY_DEBUG Abwesenheitszeilen: ${absenceRows.length}`);
       console.error(`LEGACY_DEBUG Planzeilen: ${planRows.length}`);
     }
-    return { sourceSystem: "legacy_import", capturedAt: new Date().toISOString(), employeeRows, workHoursRows, absenceRows, planRows };
+    return { sourceSystem: "legacy_import", capturedAt: new Date().toISOString(), employeeRows, workHoursRows, absenceRows, planRows, skipped: { days: skippedDays, weeks: skippedWeeks } };
   } finally {
     await browser.close();
   }
@@ -812,7 +837,11 @@ async function captureAbsences(page, options) {
   // Strategie: erst 11 Monate rückwärts (Januar erreichen), dort sammeln,
   // dann horizontabhängige Schritte vorwärts (= jeder Monat des Jahres +
   // Plan-Horizont in die Zukunft). Bars werden über sourceId dedupliziert.
-  await page.goto(new URL("/absences", process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
+  const absNavOk = await gotoWithRetry(page, new URL("/absences", process.env.LEGACY_BASE_URL).href);
+  if (!absNavOk) {
+    console.error("WARNUNG: Abwesenheitsseite konnte nicht geladen werden, Abwesenheiten werden uebersprungen.");
+    return [];
+  }
   await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
   await page.waitForTimeout(3500);
 
@@ -880,15 +909,21 @@ async function captureAbsences(page, options) {
 
 async function capturePlan(page, options) {
   const rows = [];
+  const skippedWeeks = [];
   const nameRoster = employeeNameRoster(options.nameRoster);
   for (const week of isoWeeksInRange(options.from, planCaptureEnd(options))) {
-    await page.goto(new URL(`/plan/9405/${week.label}`, process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
+    const planNavOk = await gotoWithRetry(page, new URL(`/plan/9405/${week.label}`, process.env.LEGACY_BASE_URL).href);
+    if (!planNavOk) {
+      console.error(`WARNUNG: Woche ${week.label} konnte nicht geladen werden, wird uebersprungen.`);
+      skippedWeeks.push(week.label);
+      continue;
+    }
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(3500);
     await ensurePlanSwimlanesRendered(page);
     rows.push(...await extractPlanRowsFromPage(page, { label: week.label, days: isoWeekDays(week.label), nameRoster }));
   }
-  return rows;
+  return { rows, skippedWeeks };
 }
 
 async function ensurePlanSwimlanesRendered(page) {
