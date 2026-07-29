@@ -159,8 +159,8 @@ type TimeEntry = {
   type: EntryType;
   paidBreakMinutes: number;
   unpaidBreakMinutes: number;
-  // Quell-System-Arbeitszeit (z.B. Ordio "Arbeitszeit"-Spalte). Wenn
-  // gesetzt: Ground-Truth fuer Reporting; sonst Fallback auf
+  // Source-system work minutes, if present.
+  // Used as reporting ground truth; otherwise fallback to
   // grossMinutes - unpaidBreakMinutes.
   sourceWorkMinutes?: number | null;
   note?: string;
@@ -876,8 +876,8 @@ function parseDateTime(date: string, time: string) {
 }
 
 function minutesBetween(entry: TimeEntry) {
-  // Quell-System-Arbeitszeit (Ordio "Arbeitszeit"-Spalte) ist Ground-Truth,
-  // wenn vorhanden. Sonst lokale Berechnung: Brutto minus unbezahlte Pause.
+  // Source-system work minutes are ground truth when present.
+  // Otherwise local calculation: gross time minus unpaid break.
   if (entry.sourceWorkMinutes != null && Number.isFinite(entry.sourceWorkMinutes)) {
     return Math.max(0, entry.sourceWorkMinutes);
   }
@@ -904,11 +904,10 @@ function grossMinutes(entry: TimeEntry) {
   return Math.max(0, Math.round((end - start) / 60000));
 }
 
-// Netto-Arbeitsminuten. Wenn das Quell-System (z.B. Ordio) eine eigene
-// Arbeitszeit liefert (entry.sourceWorkMinutes), gilt das als
-// Ground-Truth — damit Reporting in workforce-time exakt mit der
-// Quell-UI uebereinstimmt. Sonst Fallback: Brutto minus unbezahlte
-// Pause. Backend macht das gleiche in netWorkedMinutes (server/db.js).
+// Net work minutes. If the source system provides sourceWorkMinutes,
+// treat it as ground truth so reporting matches the imported source UI.
+// Otherwise fallback to gross time minus unpaid break. Backend does the
+// same in netWorkedMinutes (server/db.js).
 function netMinutes(entry: TimeEntry) {
   if (entry.sourceWorkMinutes != null && Number.isFinite(entry.sourceWorkMinutes)) {
     return Math.max(0, entry.sourceWorkMinutes);
@@ -1113,7 +1112,7 @@ function uniqueLabels(labels: string[]) {
     });
 }
 
-function groupWorkAreaOptionsByPractice(workAreaDetails: WorkAreaDetail[], areaNames: string[]): WorkAreaOptionGroup[] {
+function practiceByWorkAreaLabel(workAreaDetails: WorkAreaDetail[]) {
   const practiceByArea = new Map<string, string | null>();
   for (const detail of workAreaDetails) {
     const practice = typeof detail.practice === "string" && detail.practice.trim() ? detail.practice.trim() : null;
@@ -1127,6 +1126,11 @@ function groupWorkAreaOptionsByPractice(workAreaDetails: WorkAreaDetail[], areaN
     }
   }
 
+  return practiceByArea;
+}
+
+function groupWorkAreaOptionsByPractice(workAreaDetails: WorkAreaDetail[], areaNames: string[]): WorkAreaOptionGroup[] {
+  const practiceByArea = practiceByWorkAreaLabel(workAreaDetails);
   const practiceGroups = new Map<string, string[]>();
   const catchAll: string[] = [];
   for (const area of uniqueLabels(areaNames.map(canonicalWorkAreaLabel))) {
@@ -1169,27 +1173,79 @@ function customTemplateId(area: string) {
   return `custom-${slug || "planfeld"}`;
 }
 
-function schemaGroupsForWorkAreas(workAreas: string[] = []) {
-  const fixedTemplates = resolveShiftSchema().flatMap((group) => group.shifts);
+function schemaGroupsForWorkAreas(workAreas: string[] = [], workAreaDetails: WorkAreaDetail[] = []) {
+  const schemaGroups = resolveShiftSchema();
+  const fixedTemplates = schemaGroups.flatMap((group) => group.shifts);
   const customAreas = uniqueLabels(workAreas.map(canonicalWorkAreaLabel)).filter(
     (area) => !fixedTemplates.some((template) => templateMatchesArea(area, template))
   );
 
   if (customAreas.length === 0) {
-    return resolveShiftSchema();
+    return schemaGroups;
   }
 
-  return [
-    ...resolveShiftSchema(),
-    {
-      category: "Weitere Planfelder",
-      shifts: customAreas.map((area) => ({
-        id: customTemplateId(area),
-        label: area,
-        aliases: [area],
-        eligibility: "lokal angelegtes Planfeld"
-      }))
+  const practiceByArea = practiceByWorkAreaLabel(workAreaDetails);
+  const existingCategoryIndexes = new Map<string, number>();
+  schemaGroups.forEach((group, index) => {
+    const categoryKey = normalizeLabel(group.category);
+    if (!existingCategoryIndexes.has(categoryKey)) {
+      existingCategoryIndexes.set(categoryKey, index);
     }
+  });
+
+  let groupsWithCustoms = schemaGroups;
+  const additionalPracticeGroups = new Map<string, { category: string; shifts: ShiftTemplate[] }>();
+  const catchAllTemplates: ShiftTemplate[] = [];
+
+  const groupsForAppend = () => {
+    if (groupsWithCustoms === schemaGroups) {
+      groupsWithCustoms = schemaGroups.map((group) => ({ ...group, shifts: [...group.shifts] }));
+    }
+
+    return groupsWithCustoms;
+  };
+
+  for (const area of customAreas) {
+    const practice = practiceByArea.get(normalizeLabel(area)) ?? null;
+    const customTemplate: ShiftTemplate = {
+      id: customTemplateId(area),
+      label: area,
+      aliases: [area],
+      eligibility: "lokal angelegtes Planfeld"
+    };
+
+    if (practice === null) {
+      catchAllTemplates.push(customTemplate);
+      continue;
+    }
+
+    const existingCategoryIndex = existingCategoryIndexes.get(normalizeLabel(practice));
+    if (existingCategoryIndex !== undefined) {
+      groupsForAppend()[existingCategoryIndex].shifts.push(customTemplate);
+      continue;
+    }
+
+    const practiceKey = normalizeLabel(practice);
+    const additionalGroup = additionalPracticeGroups.get(practiceKey);
+    if (additionalGroup) {
+      additionalGroup.shifts.push(customTemplate);
+    } else {
+      additionalPracticeGroups.set(practiceKey, { category: practice, shifts: [customTemplate] });
+    }
+  }
+
+  const byName = (first: string, second: string) => first.localeCompare(second, "de-DE");
+  const sortedAdditionalGroups = Array.from(additionalPracticeGroups.values()).sort((first, second) =>
+    byName(first.category, second.category)
+  );
+
+  return [
+    ...groupsWithCustoms,
+    ...sortedAdditionalGroups,
+    ...(catchAllTemplates.length > 0 ? [{
+      category: "Weitere Planfelder",
+      shifts: catchAllTemplates
+    }] : [])
   ];
 }
 
@@ -1198,7 +1254,15 @@ function schemaGroupsForData(data: BootstrapPayload) {
     ...data.workAreas,
     ...data.shifts.map((shift) => shift.area),
     ...data.timeEntries.map((entry) => entry.area)
-  ]);
+  ], data.workAreaDetails);
+}
+
+// Returns shifts in the displayed week that match this template.
+// visiblePlanShifts already drops unstaffed shifts on past days.
+function weekShiftsForTemplate(data: BootstrapPayload, days: string[], template: ShiftTemplate): Shift[] {
+  return days
+    .flatMap((day) => visiblePlanShifts(data.shifts, day))
+    .filter((shift) => shiftMatchesTemplate(shift, template));
 }
 
 function shiftSegmentForTime(startTime: string): ShiftSegmentKey {
@@ -5133,7 +5197,22 @@ function FixedWeeklyPlanner({
   onEditShift: (shift: Shift) => void;
   onPlanShift: (template: ShiftSlotTemplate, day: string) => void;
 }) {
+  const [showIdle, setShowIdle] = useState(false);
+  const planningAllowed = days.some((day) => !isPastPlanDay(day));
   const schemaGroups = schemaGroupsForData(data);
+  const partitionedGroups = schemaGroups.map((group) => {
+    const activeTemplates = group.shifts.filter((template) => weekShiftsForTemplate(data, days, template).length > 0);
+    const idleTemplates = group.shifts.filter((template) => !activeTemplates.includes(template));
+
+    return { group, activeTemplates, idleTemplates };
+  });
+  const activeGroups = partitionedGroups
+    .filter(({ activeTemplates }) => activeTemplates.length > 0)
+    .map(({ group, activeTemplates }) => ({ ...group, shifts: activeTemplates }));
+  const idleGroups = partitionedGroups
+    .filter(({ idleTemplates }) => idleTemplates.length > 0)
+    .map(({ group, idleTemplates }) => ({ ...group, shifts: idleTemplates }));
+  const idleTemplateCount = idleGroups.reduce((sum, group) => sum + group.shifts.length, 0);
   const defaultSlot = shiftSlotsForTemplate(schemaGroups[0]?.shifts[0] ?? resolveShiftSchema()[0]?.shifts[0])[0];
   const labelColumn = days.length === 1 ? "minmax(112px, 126px)" : "minmax(150px, 220px)";
 
@@ -5181,16 +5260,41 @@ function FixedWeeklyPlanner({
           );
         })}
 
-        {schemaGroups.map((group) => (
+        {activeGroups.map((group) => (
           <SchemaGroupRows
             data={data}
             days={days}
             group={group}
             key={group.category}
+            templates={group.shifts}
             onEditShift={onEditShift}
             onPlanShift={onPlanShift}
           />
         ))}
+        {planningAllowed && idleGroups.length > 0 ? (
+          <button
+            style={{ gridColumn: "1 / -1" }}
+            className="schema-expand-row interactive"
+            type="button"
+            aria-expanded={showIdle}
+            onClick={() => setShowIdle(!showIdle)}
+          >
+            {showIdle ? "Weitere Bereiche ausblenden" : `Weitere Bereiche planen (${idleTemplateCount})`}
+          </button>
+        ) : null}
+        {planningAllowed && showIdle
+          ? idleGroups.map((group) => (
+              <SchemaGroupRows
+                data={data}
+                days={days}
+                group={group}
+                key={`idle-${group.category}`}
+                templates={group.shifts}
+                onEditShift={onEditShift}
+                onPlanShift={onPlanShift}
+              />
+            ))
+          : null}
       </div>
     </section>
   );
@@ -5200,17 +5304,19 @@ function SchemaGroupRows({
   data,
   days,
   group,
+  templates,
   onEditShift,
   onPlanShift
 }: {
   data: BootstrapPayload;
   days: string[];
   group: ShiftSchemaGroup;
+  templates: ShiftTemplate[];
   onEditShift: (shift: Shift) => void;
   onPlanShift: (template: ShiftSlotTemplate, day: string) => void;
 }) {
-  const groupSlots = group.shifts.flatMap(shiftSlotsForTemplate);
-  const shiftMatchesGroup = (shift: Shift) => group.shifts.some((template) => shiftMatchesTemplate(shift, template));
+  const groupSlots = templates.flatMap(shiftSlotsForTemplate);
+  const shiftMatchesGroup = (shift: Shift) => templates.some((template) => shiftMatchesTemplate(shift, template));
 
   function openGroup() {
     const firstShift = days.flatMap((day) => visiblePlanShifts(data.shifts, day)).find(shiftMatchesGroup);
@@ -5220,6 +5326,7 @@ function SchemaGroupRows({
       return;
     }
 
+    if (groupSlots.length === 0) return;
     onPlanShift(groupSlots[0], days[0]);
   }
 
@@ -5231,6 +5338,7 @@ function SchemaGroupRows({
       return;
     }
 
+    if (groupSlots.length === 0) return;
     onPlanShift(groupSlots[0], day);
   }
 
@@ -5254,7 +5362,7 @@ function SchemaGroupRows({
           </button>
         );
       })}
-      {group.shifts.map((shiftTemplate) => (
+      {templates.map((shiftTemplate) => (
         <SchemaShiftRow
           data={data}
           days={days}
@@ -6916,7 +7024,7 @@ const THEME_OPTIONS: ThemeOption[] = [
     key: "default",
     label: "Standard",
     description:
-      "Heller Apple-naher Look mit weicher Tiefe und Sanexio-Rot als Akzent. Ruhiges Default-Design für den Praxisbetrieb.",
+      "Heller Apple-naher Look mit weicher Tiefe und rotem Akzent. Ruhiges Default-Design für den Praxisbetrieb.",
     preview: {
       background: "#fbfbfd",
       surface: "#ffffff",
@@ -6929,7 +7037,7 @@ const THEME_OPTIONS: ThemeOption[] = [
     key: "cyberpunk",
     label: "Cyberpunk",
     description:
-      "CP2077-Style aus dem Sanexio-Cortex-Dashboard: tactical black mit gelb-cyaner Akzentführung und Display-Font Orbitron / Chakra Petch.",
+      "CP2077-Style aus dem internen Dashboard: tactical black mit gelb-cyaner Akzentführung und Display-Font Orbitron / Chakra Petch.",
     preview: {
       background: "#0A0C10",
       surface: "#11151C",

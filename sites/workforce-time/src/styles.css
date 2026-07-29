@@ -1009,6 +1009,7 @@ button:disabled {
 .schema-corner.interactive,
 .schema-day-head.interactive,
 .schema-group-row.interactive,
+.schema-expand-row.interactive,
 .schema-group-fill.interactive,
 .schema-shift-label.interactive,
 .interactive-cell {
@@ -1024,6 +1025,7 @@ button:disabled {
 .schema-corner.interactive:hover,
 .schema-day-head.interactive:hover,
 .schema-group-row.interactive:hover,
+.schema-expand-row.interactive:hover,
 .schema-group-fill.interactive:hover,
 .schema-shift-label.interactive:hover,
 .interactive-cell:hover {
@@ -2385,6 +2387,25 @@ button:disabled {
   text-transform: uppercase;
   overflow-wrap: break-word;
   hyphens: auto;
+}
+
+.schema-expand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  width: 100%;
+  padding: 8px 14px;
+  appearance: none;
+  border-top: 1px dashed var(--line);
+  border-right: none;
+  border-bottom: none;
+  border-left: none;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .schema-group-fill {
