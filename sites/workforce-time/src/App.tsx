@@ -5208,13 +5208,20 @@ function FixedWeeklyPlanner({
   });
   const activeGroups = partitionedGroups
     .filter(({ activeTemplates }) => activeTemplates.length > 0)
-    .map(({ group, activeTemplates }) => ({ ...group, shifts: activeTemplates }));
+    .map(({ group, activeTemplates }) => ({ group, templates: [...activeTemplates] }));
   const idleGroups = partitionedGroups
     .filter(({ idleTemplates }) => idleTemplates.length > 0)
-    .map(({ group, idleTemplates }) => ({ ...group, shifts: idleTemplates }));
-  const idleTemplateCount = idleGroups.reduce((sum, group) => sum + group.shifts.length, 0);
+    .map(({ group, idleTemplates }) => ({ group, templates: [...idleTemplates] }));
+  const mergedGroups = partitionedGroups
+    .filter(({ activeTemplates, idleTemplates }) => activeTemplates.length > 0 || idleTemplates.length > 0)
+    .map(({ group, activeTemplates, idleTemplates }) => ({
+      group,
+      templates: [...activeTemplates, ...idleTemplates]
+    }));
+  const idleTemplateCount = idleGroups.reduce((sum, { templates }) => sum + templates.length, 0);
   const defaultSlot = shiftSlotsForTemplate(schemaGroups[0]?.shifts[0] ?? resolveShiftSchema()[0]?.shifts[0])[0];
   const labelColumn = days.length === 1 ? "minmax(112px, 126px)" : "minmax(150px, 220px)";
+  const visibleGroups = planningAllowed && showIdle ? mergedGroups : activeGroups;
 
   function openDay(day: string) {
     const firstShift = visiblePlanShifts(data.shifts, day)[0];
@@ -5260,13 +5267,13 @@ function FixedWeeklyPlanner({
           );
         })}
 
-        {activeGroups.map((group) => (
+        {visibleGroups.map(({ group, templates }) => (
           <SchemaGroupRows
             data={data}
             days={days}
             group={group}
             key={group.category}
-            templates={group.shifts}
+            templates={templates}
             onEditShift={onEditShift}
             onPlanShift={onPlanShift}
           />
@@ -5282,19 +5289,6 @@ function FixedWeeklyPlanner({
             {showIdle ? "Weitere Bereiche ausblenden" : `Weitere Bereiche planen (${idleTemplateCount})`}
           </button>
         ) : null}
-        {planningAllowed && showIdle
-          ? idleGroups.map((group) => (
-              <SchemaGroupRows
-                data={data}
-                days={days}
-                group={group}
-                key={`idle-${group.category}`}
-                templates={group.shifts}
-                onEditShift={onEditShift}
-                onPlanShift={onPlanShift}
-              />
-            ))
-          : null}
       </div>
     </section>
   );
