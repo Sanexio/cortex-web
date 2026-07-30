@@ -1176,6 +1176,10 @@ export async function run(options) {
     const names = snapshot.unresolvedLocations.map((entry) => entry.name).filter(Boolean);
     console.error(`LEGACY_DEBUG unaufgeloeste Standorte: ${[...new Set(names)].join(", ")}`);
   }
+  const droppedWorkHoursRows = snapshot.debugStats?.plan?.droppedWorkHoursRows ?? 0;
+  if (droppedWorkHoursRows > 0) {
+    console.error(`WARNUNG: ${droppedWorkHoursRows} Planzeilen verworfen, weil die Bereichsspalte auf einen Mitarbeiter aufloeste (moeglicherweise Arbeitszeiten-Ansicht statt Dienstplan).`);
+  }
   if (process.env.LEGACY_DEBUG && snapshot.debugStats) {
     console.error("LEGACY_DEBUG Mapping-Stats:", JSON.stringify(snapshot.debugStats, null, 2));
   }

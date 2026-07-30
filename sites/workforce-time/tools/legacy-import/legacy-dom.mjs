@@ -1639,7 +1639,7 @@ export function mapPlanRows(rows, options = {}) {
   const unresolvedAreas = new Map();
   const unresolvedLocations = new Map();
   const shifts = [];
-  const stats = { extracted: rows.length, afterDateFilter: 0, afterResolve: 0, mapped: 0 };
+  const stats = { extracted: rows.length, afterDateFilter: 0, afterResolve: 0, mapped: 0, droppedWorkHoursRows: 0 };
   for (const row of rows) {
     const date = isoDateFromText(row.date || row.ariaLabel || row.rawText, options.from?.slice(0, 4));
     const startTime = hhmm(row.startTime || row.rawText);
@@ -1656,10 +1656,8 @@ export function mapPlanRows(rows, options = {}) {
     let areaCandidate = sourceArea;
     const areaAsEmployee = areaCandidate ? resolver.resolve(areaCandidate) : null;
     if (areaAsEmployee?.sourceId) {
-      if (!assignmentNames.some((name) => normalizeName(name) === normalizeName(areaCandidate))) {
-        assignmentNames.push(areaCandidate);
-      }
-      areaCandidate = options.defaultWorkArea || "Ohne Bereich";
+      stats.droppedWorkHoursRows += 1;
+      continue;
     }
     const assignmentSourceIds = [];
     for (const name of assignmentNames) {

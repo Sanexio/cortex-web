@@ -610,11 +610,42 @@ test("plan mapper does not import resolvable employee names as work areas", () =
     defaultWorkArea: "Ohne Bereich"
   });
 
+  assert.equal(mapped.stats.afterDateFilter, 1);
+  assert.equal(mapped.stats.afterResolve, 0);
+  assert.equal(mapped.stats.droppedWorkHoursRows, 1);
+  assert.equal(mapped.stats.mapped, 0);
+  assert.equal(mapped.shifts.length, 0);
+  assert.equal(mapped.workAreas.length, 0);
+  assert.equal(mapped.unresolvedAreas.length, 0);
+  assert.equal(mapped.unresolvedLocations.length, 0);
+});
+
+test("plan mapper keeps empty work area rows on the default work area", () => {
+  const mapped = mapPlanRows([{
+    sourceId: "shift-fixture-empty-area",
+    date: "2026-05-28",
+    startTime: "09:00",
+    endTime: "12:00",
+    area: "",
+    location: "Praxis Beispiel & Partner",
+    assignmentNames: ["Ada Alpha"]
+  }], {
+    capturedAt: "2026-06-05T12:00:00.000Z",
+    existingEmployees: [{ display_name: "Ada Alpha", source_id: "employee-number-101" }],
+    canonicalLocations: ["Praxis Beispiel und Partner"],
+    defaultWorkArea: "Ohne Bereich"
+  });
+
+  assert.equal(mapped.stats.afterDateFilter, 1);
   assert.equal(mapped.stats.afterResolve, 1);
+  assert.equal(mapped.stats.droppedWorkHoursRows, 0);
+  assert.equal(mapped.stats.mapped, 1);
+  assert.equal(mapped.shifts.length, 1);
   assert.equal(mapped.shifts[0].assignmentSourceIds[0], "employee-number-101");
   assert.equal(mapped.shifts[0].area, "Ohne Bereich");
-  assert.equal(mapped.unresolvedAreas.length, 0);
+  assert.equal(mapped.shifts[0].sourceArea, "Ohne Bereich");
   assert.equal(mapped.shifts[0].location, "Praxis Beispiel und Partner");
+  assert.equal(mapped.unresolvedAreas.length, 0);
   assert.equal(mapped.unresolvedLocations.length, 0);
 });
 
