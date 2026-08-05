@@ -208,7 +208,7 @@ Wird **nicht** in Phase 1 gebaut:
 ## 6. Freigabe-Erwartung
 
 Bei **„Go"**:
-- Claude startet Phase 3 Umsetzung deterministisch in der Reihenfolge §2.1 (Schema → Content → Adapter → Tools → ENV-Template → .gitignore).
+- Nexus-KI startet Phase 3 Umsetzung deterministisch in der Reihenfolge §2.1 (Schema → Content → Adapter → Tools → ENV-Template → .gitignore).
 - Dr. Stracke legt parallel (oder vorher) das Application-Password an (§2.5).
 - Abschluss mit Selbstprüfung §4 + Ergebnis-Report.
 

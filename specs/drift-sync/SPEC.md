@@ -10,7 +10,7 @@
 
 ### Kern-Ziele
 
-1. **Drift-Erkennung:** Auf Befehl scannt Claude alle relevanten Upstream-Sources (Bluttests-Collection, Body-Checks-Collection, Pages) und listet was seit dem letzten Sync neu/geändert/entfernt ist.
+1. **Drift-Erkennung:** Auf Befehl scannt Nexus-KI alle relevanten Upstream-Sources (Bluttests-Collection, Body-Checks-Collection, Pages) und listet was seit dem letzten Sync neu/geändert/entfernt ist.
 2. **Auto-Curation:** Pro neuer Quelle wird ein Trunk-YAML mit HWG-Cleanup (Preise raus, Sie-Form, Praxis-CTA) generiert.
 3. **Auto-Push:** Trunk-YAML wird über bestehende `cw-transfer push wp:page`-Pipeline auf die Praxis-WP gepusht (initial als `draft` für Review-Gate).
 4. **Provenance-Stabilität:** Auch bei lokal editiertem Praxis-Content bleibt der Bezug zur Upstream-Source erhalten — über stabile `upstream_source`-Markierung im Trunk-YAML.
@@ -319,7 +319,7 @@ Existierende Trunk-YAMLs (Stand 2026-04-29):
 | **DS-F1** | Stufe (D1/D2/D3/D4)? | **D3** (Auto-Sync mit Review-Gate via WP-Draft) |
 | **DS-F2** | Welche Scopes initial aktiv? | `labor` + `untersuchungen` + `body-checks` (siehe §4 config.json) |
 | **DS-F3** | Backfill für bestehende 24+ Trunk-YAMLs jetzt durchführen? | **Ja** (für stabile Provenance) |
-| **DS-F4** | HWG-Vocab-Liste — Wer definiert? | initial Claude (medizinische Werbe-Standardwörter), Sie reviewen |
+| **DS-F4** | HWG-Vocab-Liste — Wer definiert? | initial Nexus-KI (medizinische Werbe-Standardwörter), Sie reviewen |
 | **DS-F5** | Drift-Bericht-Cadence | **on-demand** (Sie sagen „mach Abgleich") + optional: `cw-transfer drift status` als Hook bei Session-Init |
 
 ---

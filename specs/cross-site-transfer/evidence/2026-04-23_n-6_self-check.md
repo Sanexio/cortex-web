@@ -149,4 +149,4 @@ neuen Spec + Code zu verifizieren.)
 
 ---
 
-*Autor: Claude (Architekten-Modus, Session 26, autonom Cluster-Mini-02). Selbstprüfung 12/12 = 100 %.*
+*Autor: Nexus-KI (Architekten-Modus, Session 26, autonom Cluster-Mini-02). Selbstprüfung 12/12 = 100 %.*

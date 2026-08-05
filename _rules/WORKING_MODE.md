@@ -25,7 +25,7 @@ Der Architekten-Modus gilt für JEDE Cortex-Web-Session, unabhängig von Phase:
 wenn der Tenant lokal unter `~/Cortex/projects/Sanexio-Tenant/` ausgecheckt ist.)
 
 Enthält:
-- Rollen (Tenant-Operator = Projektleiter, Claude = Architekt)
+- Rollen (Tenant-Operator = Projektleiter, Nexus-KI = Architekt)
 - 4-Phasen-Prozess (Verständnis → Lösungsdesign → Umsetzung → Selbstprüfung)
 - Fehlerklassen FK-1 bis FK-5
 - Verbotene Muster

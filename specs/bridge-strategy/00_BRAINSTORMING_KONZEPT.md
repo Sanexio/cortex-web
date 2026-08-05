@@ -3,7 +3,7 @@
 
 > **Typ:** Architekten-Modus Phase 1 (Verständnis) + Phase 2 (Lösungsdesign)
 > **Stand:** 2026-04-18
-> **Autor:** Claude (im Auftrag Dr. Stracke)
+> **Autor:** Nexus-KI (im Auftrag Dr. Stracke)
 > **Regel:** LL-034 — Optionen + Trade-offs, keine Empfehlung. Entscheidung trifft Dr. Stracke.
 > **Nächster Schritt nach Entscheidung:** Sprint-Plan anpassen (`_rules/ARCHITECTURE.md`), Bridge-Spec schreiben.
 
@@ -401,4 +401,4 @@ Wenn die Schnittmenge klein ist (<20 Items), ist **B-A Git-basiert** völlig aus
 
 ---
 
-**Nächster Chat-Schritt:** Dr. Stracke beantwortet F1–F6 (auch stichpunkthaft). Claude erstellt dann die passende Detail-Spec und den angepassten Sprint-Plan.
+**Nächster Chat-Schritt:** Dr. Stracke beantwortet F1–F6 (auch stichpunkthaft). Nexus-KI erstellt dann die passende Detail-Spec und den angepassten Sprint-Plan.

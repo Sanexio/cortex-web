@@ -167,7 +167,7 @@ kann Wochen an Admin-Edits zerstören.
 
 ## CW-PRIO-001 — Holistische System-Priorität (seit 2026-04-23, Session 31)
 
-**Regel:** Vor jeder Front-Wahl innerhalb Cortex-Web prüft Claude, auf
+**Regel:** Vor jeder Front-Wahl innerhalb Cortex-Web prüft Nexus-KI, auf
 welcher Prio-Stufe (P1–P6 / Ppol / Popt / Pios) die vorgeschlagene Front
 liegt. Fronten der Stufen **P1–P5** dominieren. Stufen **Popt** (Adapter-
 Suite-Vervollständigung) und **Pios** (iOS-Integration / N-3 Design-
@@ -203,7 +203,7 @@ Registry und die Prod-Deploy-Pipelines existieren noch nicht.
   (welcher Block ist dran, welcher als nächstes).
 - `§5 Sofort-Status-Frage` schlägt als Default den nächsten P1–P5-Schritt
   vor, nicht eine Liste gleichrangiger Fronten.
-- Wenn Claude eine Popt-/Pios-Front vorschlägt, muss der konkrete
+- Wenn Nexus-KI eine Popt-/Pios-Front vorschlägt, muss der konkrete
   Pain-Point (was wird heute blockiert, weil das fehlt?) explizit
   benannt werden. Ohne benannten Pain-Point ist die Antwort: verschieben.
 - Der Tenant-Operator kann jederzeit über die Prio hinweg entscheiden

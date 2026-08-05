@@ -1,4 +1,4 @@
-# Cortex-Web — Claude-Kontext
+# Cortex-Web — Nexus-KI-Kontext
 
 > Projekt-spezifische Instruktionen. Zusätzlich zu Nexus-Pflicht-Init
 > (CLAUDE.md, AUTONOMY_CONTRACT.md, AI_COOPERATION.md, MULTI_AI_BOUNDARIES.md —
@@ -86,7 +86,7 @@ nach Phase 5 übernehmen die subsumierten Site-Sprints ihre eigene Nummerierung 
 
 Details in `_config/RULES.md`.
 
-## Hinweise für Claude
+## Hinweise für Nexus-KI
 
 - Dr. Stracke ist Arzt, kein IT-Experte. LL-024 (WAS / WARUM / WAS BEDEUTET DAS) gilt.
 - Deutsch in Output, Englisch in Code-Kommentaren.

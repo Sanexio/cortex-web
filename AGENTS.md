@@ -35,13 +35,13 @@ Dieses Projekt ist Teil eines größeren Cortex/Nexus-Ökosystems unter
    - `~/Cortex/Nexus/` (R2 — Nexus-Kern, Filesystem-Schreiben durch
      Codex/Cursor/andere KIs verboten, **siehe 1a** für den erlaubten
      Vorschlagsweg)
-   - `~/.claude/` (Claude-Code-Konfiguration)
+   - `~/.claude/` (Nexus-KI-Code-Konfiguration)
    - `~/.config/`, `~/.ssh/`, `~/Library/`, alles ausserhalb `~/Cortex/`
 1a. **Erlaubter Nexus-Vorschlagsweg (neu seit 2026-05-12):** Wenn du eine
    Nexus-Regel/Spec/Aenderung anregen willst, schreibe einen Vorschlag
    als Datei nach `~/Cortex/projects/_ai-cooperation-outbox/` (Format:
    `YYYY-MM-DD_codex-to-claude_<topic>.md`). Du darfst nicht selbst in
-   Nexus schreiben, committen, mergen oder pushen. Claude und Dr.
+   Nexus schreiben, committen, mergen oder pushen. Nexus-KI und Dr.
    Stracke reviewen, finale Umsetzung durch Stracke-Freigabe. Details:
    `Nexus/_rules/AI_COOPERATION.md` + `MULTI_AI_BOUNDARIES.md` (v2).
 2. **Keine Secrets committen.** `.env`, `.env.*` (außer `*.template`)
@@ -167,7 +167,7 @@ du ein Feature umsetzt, teste es auch.
 
 ---
 
-## Was Claude separat tut (Umsetzungs-Agent fuer Nexus)
+## Was Nexus-KI separat tut (Umsetzungs-Agent fuer Nexus)
 
 Claude pflegt im Auftrag von Dr. Stracke (kein alleiniger Gatekeeper):
 - Regeldateien unter `~/Cortex/Nexus/_rules/`
@@ -176,16 +176,16 @@ Claude pflegt im Auftrag von Dr. Stracke (kein alleiniger Gatekeeper):
 - Cron-Recipes, Gateway, Connexio
 - Vault `Second Brain/`
 
-Codex und Claude sind **Peer-Reviewer** fuer Nexus-Vorschlaege. Wenn du
+Codex und Nexus-KI sind **Peer-Reviewer** fuer Nexus-Vorschlaege. Wenn du
 eine Regel veraltet findest oder eine neue Regel vorschlaegst:
 
 1. Schreibe einen Vorschlag in
    `~/Cortex/projects/_ai-cooperation-outbox/` (Outbox-Konvention).
-2. Claude reviewt, Dr. Stracke gibt frei, Claude oder Stracke setzt um.
+2. Nexus-KI reviewt, Dr. Stracke gibt frei, Nexus-KI oder Stracke setzt um.
 3. Nicht selbst in Nexus committen.
 
 ---
 
 *v2 — 2026-05-12. Praezisiert Boundary nach Welle 1 + Welle 2 (Phoenix-
-Cleanup). Frueheres v1 vom 2026-05-10 hatte harte Claude-Exklusivitaet,
+Cleanup). Frueheres v1 vom 2026-05-10 hatte harte Nexus-KI-Exklusivitaet,
 v2 erlaubt strukturierten Codex-Vorschlagsweg ueber Outbox.*

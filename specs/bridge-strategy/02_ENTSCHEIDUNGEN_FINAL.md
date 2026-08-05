@@ -17,7 +17,7 @@
 | Plattform | P1 (WP bleiben) oder P3 (Hybrid) | **P1 mit Option auf P3 pro Produkt** | Common Trunk macht beide äquivalent |
 | Bridge-Prinzip | Runtime-Webhook vs. Build-Pipeline | **Common Trunk = Build-Pipeline** | Plattform-Unabhängigkeit |
 | G1 / N1 | Name + Struktur-Rolle | **Cortex-Web** als Dach-Projekt | Passt ins Cortex-Ökosystem |
-| G2 | CMS-Layer | Später (Directus/Decap-Option offen); Start mit direkten YAML/MD-Edits + Claude als Editor-Partner | Pragmatik |
+| G2 | CMS-Layer | Später (Directus/Decap-Option offen); Start mit direkten YAML/MD-Edits + Nexus-KI als Editor-Partner | Pragmatik |
 | G3 / N3 | Medien-Strategie | **M-3c Shopify Files als Master** + lokale `_media-source/` als Backup → perspektivisch M-3d (NAS) | Null neue Infra, Migrations-Pfad definiert |
 | G4 / N4 | Mehrsprachigkeit-Schema | **I-2 hybrid**: Top-Level sprach-invariant, Unter-Felder `.de/.en/.fr/.es` | CMS-/Validierungs-Freundlichkeit |
 | G5 / N5 | Trunk-Tiefe | **Maximal** (inkl. UI-Komponenten-Specs) | Zukunftsfähigkeit + Figma-Code-Connect-Option |
@@ -349,5 +349,5 @@ Bei **"Stop"** oder Nachfrage:
 
 ---
 
-*Erstellt: 2026-04-18, Claude im Auftrag Dr. Stracke*
+*Erstellt: 2026-04-18, Nexus-KI im Auftrag Dr. Stracke*
 *Architekten-Modus Phase 2 abgeschlossen — bereit für Phase 3*

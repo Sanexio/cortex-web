@@ -133,7 +133,7 @@ Payload { asset.key: "sections/<name>.liquid", asset.value: "<liquid>" }
 **Warum gefährlich:**
 - Shopify's GitHub-Integration kann nach dem Push einen Theme-Commit triggern → Merge-Konflikte
 - Liquid-Syntax-Fehler im Asset brechen die gesamte Storefront
-- Theme-Entwicklung parallel durch Claude + Shopify-Admin = Divergenz
+- Theme-Entwicklung parallel durch Nexus-KI + Shopify-Admin = Divergenz
 
 **Regel:** Nur anwenden, wenn klar ist, dass Theme im Trunk-Mode läuft (keine
 parallelen Admin-Edits). **Nicht für produktive Custom-Sections empfohlen.**

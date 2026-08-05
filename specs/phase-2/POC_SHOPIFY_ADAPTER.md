@@ -241,7 +241,7 @@ Wird in der Folge-Phase aufgesetzt, sobald Phase 2 abgenommen ist:
 ## 8. Freigabe-Erwartung
 
 Bei **„Go"**:
-- Claude startet Phase 3 Umsetzung deterministisch in Reihenfolge §2.1
+- Nexus-KI startet Phase 3 Umsetzung deterministisch in Reihenfolge §2.1
   (Shopify-REST-Client → Renderer → build.mjs → products-to-shopify.mjs → sync-shopify.sh → validate.sh-Erweiterung → README aktualisieren).
 - Der Token-Smoke-Test (`CHECK_SHOPIFY=1 bash tools/validate.sh`) wird vor dem ersten echten Push einmal manuell ausgeführt.
 - Abschluss mit Selbstprüfung §4 + Ergebnis-Report + Empfehlung „Session beenden" (LL-042).

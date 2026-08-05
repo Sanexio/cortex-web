@@ -4,7 +4,7 @@
 **Aufwand:** ~30 Min
 **Abhängigkeiten:** N-5 (`PUBLISH=1`) ✅ · N-7 (CW-008-Backup) ✅ · N-6 (`cw-transfer diff`) ✅
 **Auslöser:** Session 26 Live-Test — N-6-Diff gegen `<distribution-domain>/pages/uber-uns` zeigte `template_suffix DIFFER` (live="uber-uns" ↔ trunk=null/""). Ein naiver Re-Push via `cw-transfer push shopify:page` würde die Pattern-B-Page mit Pattern-A-Content überschreiben.
-**Freigabe:** „du darfst entscheiden" (Tenant-Operator, Session 27) — autonome Front-Wahl Claude.
+**Freigabe:** „du darfst entscheiden" (Tenant-Operator, Session 27) — autonome Front-Wahl Nexus-KI.
 
 ---
 

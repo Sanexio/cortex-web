@@ -209,4 +209,4 @@ Push-Pendant. Pattern-Anlage in Session-Ende prüfen.
 
 ---
 
-*Autor: Claude (Architekten-Modus, Session 26, autonom auf Cluster-Mini-02). Operator-Freigabe: „JA" auf Plan Block 1+2 + Scope MVP shopify:page.*
+*Autor: Nexus-KI (Architekten-Modus, Session 26, autonom auf Cluster-Mini-02). Operator-Freigabe: „JA" auf Plan Block 1+2 + Scope MVP shopify:page.*

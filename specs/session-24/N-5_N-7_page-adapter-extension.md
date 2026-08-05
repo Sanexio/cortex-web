@@ -1,7 +1,7 @@
 # Session 24 — N-5 (Publish-Helper) + N-7 (Backup-Automatik)
 
 > Spec + Selbstprüfung. Architekten-Modus Phase 1–4.
-> Datum: 2026-04-22 · Ausführung: Claude (autonom, auf Dr.-Stracke-Freigabe
+> Datum: 2026-04-22 · Ausführung: Nexus-KI (autonom, auf Dr.-Stracke-Freigabe
 > „nach eigenem Ermessen und ohne Rückfragen fortsetzen").
 
 ---

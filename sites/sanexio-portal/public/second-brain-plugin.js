@@ -944,7 +944,7 @@
       var status = String(entry.status);
       var label = null;
       var detail = "";
-      if (status === "approved") label = "✓ Freigegeben — in Warteschlange, wird von Claude bearbeitet";
+      if (status === "approved") label = "✓ Freigegeben — in Warteschlange, wird von der Nexus-KI bearbeitet";
       if (status === "in_progress") label = "⟳ Wird gerade umgesetzt…";
       if (status === "done") {
         label = "✓ Erledigt";
@@ -996,7 +996,7 @@
         });
         updateArchUi(index, {
           approving: false,
-          status: "✓ Freigegeben — in Warteschlange, wird von Claude bearbeitet"
+          status: "✓ Freigegeben — in Warteschlange, wird von der Nexus-KI bearbeitet"
         });
       }).catch(function (err) {
         updateArchUi(index, { approving: false, status: (err && err.message) || "Fehler bei der Freigabe" });

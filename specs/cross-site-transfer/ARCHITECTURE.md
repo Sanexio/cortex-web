@@ -195,7 +195,7 @@ UI-Verb-Layer für Konsistenz und Entdeckbarkeit.
 ```
 
 Wichtig: Der Extractor schreibt **niemals direkt** in `trunk/`. Stattdessen gibt
-er Proto-JSON aus, das Tenant-Operator (oder Claude) **bewusst** in eine YAML
+er Proto-JSON aus, das Tenant-Operator (oder Nexus-KI) **bewusst** in eine YAML
 überführt — inklusive Kuration, Schema-Anpassung, i18n-Split.
 
 ### 6.2 Warum kein Direct-Overwrite des Trunks

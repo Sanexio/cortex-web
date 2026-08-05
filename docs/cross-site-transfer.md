@@ -152,7 +152,7 @@ steht isoliert"). Um das auf Shopify zu bekommen:
 **Herausforderung:**
 PHP- und Liquid-Logik sind nicht direkt übersetzbar. Der Trunk kann nur die
 *Form* beschreiben, die plattform-spezifische *Implementierung* bleibt manuell.
-Praktisch: Adapter generieren Skelette, Dr. Stracke (oder Claude) passt sie an.
+Praktisch: Adapter generieren Skelette, Dr. Stracke (oder Nexus-KI) passt sie an.
 
 ---
 
