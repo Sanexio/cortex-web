@@ -613,8 +613,15 @@ async function captureLiveImport(options) {
       await page.waitForTimeout(2000);
     }
 
+    const ordioTenantId = new URL(page.url()).hash.match(/^#\/(\d+)(?:\/|$)/)?.[1] || "";
+    if (ordioTenantId) {
+      console.error("INFO: Ordio-Tenant-ID erkannt: " + ordioTenantId);
+    }
 
-    await page.goto(new URL("/e", process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
+    const employeesUrl = ordioTenantId
+      ? new URL(`/#/${ordioTenantId}/e/`, process.env.LEGACY_BASE_URL).href
+      : new URL("/e", process.env.LEGACY_BASE_URL).href;
+    await page.goto(employeesUrl, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(2500);
     // /e is a virtualized table: without scrolling only ~2 of N rows
@@ -650,6 +657,24 @@ async function captureLiveImport(options) {
         }
       }
       for (const day of allDays) {
+        if (ordioTenantId) {
+          const reportUrl = new URL(`/report/reporting/table/${day}/to/${day}`, process.env.LEGACY_BASE_URL).href;
+          const navOk = await gotoWithRetry(page, reportUrl);
+          if (!navOk) {
+            console.error(`WARNUNG: Tag ${day} konnte nicht geladen werden, wird uebersprungen.`);
+            skippedDays.push(day);
+            continue;
+          }
+          await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
+          await page.waitForSelector("table tbody tr", { timeout: 30000 }).catch(() => {});
+          await page.waitForTimeout(2000);
+          const usedRows = await extractWorkHoursRowsFromPage(page);
+          if (process.env.LEGACY_DEBUG) {
+            console.error(`LEGACY_DEBUG Day ${day}: ordioTenantId=${ordioTenantId}, used=${usedRows.length}`);
+          }
+          workHoursRows.push(...usedRows);
+          continue;
+        }
         const navOk = await gotoWithRetry(page, new URL("/work-hours", process.env.LEGACY_BASE_URL).href);
         if (!navOk) {
           console.error(`WARNUNG: Tag ${day} konnte nicht geladen werden, wird uebersprungen.`);

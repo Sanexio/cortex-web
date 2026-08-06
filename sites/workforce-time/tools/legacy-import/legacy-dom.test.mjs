@@ -13,6 +13,8 @@ import {
   mapAbsenceRows,
   mapPlanRows,
   mapWorkHoursRows,
+  normalizeOrdioReportWorkHoursRow,
+  ordioDisplayNameFromSplitNameCells,
   parseAbsencePayloadHtml,
   parseAbsencesByRowHtml,
   parseAbsencesHtml,
@@ -238,6 +240,51 @@ test("parseWorkHoursHtml extracts synthetic Legacy-Import table rows without rea
   assert.equal(rows[0].name, "Alpha, Ada");
   assert.equal(rows[0].datum, "25.05.2026");
   assert.equal(rows[0].status, "Genehmigt");
+});
+
+test("Ordio split-name cells resolve avatar initials to Nachname Vorname", () => {
+  assert.equal(ordioDisplayNameFromSplitNameCells(["EB", "Emily"], "Boehne"), "Boehne Emily");
+  assert.equal(ordioDisplayNameFromSplitNameCells(["Luana Emily"], "Weigel"), "Weigel Luana Emily");
+});
+
+test("Ordio report work-hours row maps split names and unpaid break", () => {
+  const row = normalizeOrdioReportWorkHoursRow({
+    __cells: [],
+    __rawCellLinesByHeader: { vorname: ["PB", "Petra"] },
+    vorname: "PB Petra",
+    nachname: "Boehne",
+    start: "Mo. 03.08.2026 08:13",
+    ende: "Mo. 03.08.2026 17:24",
+    arbeitsbereich: "Praxis",
+    standort: "Praef",
+    status: "Genehmigt",
+    typ: "Arbeitseinsatz",
+    zeit: "09:11",
+    pause_bezahlt: "00:00",
+    pause_unbezahlt: "00:31",
+    wert: "09:11"
+  });
+
+  assert.equal(row.name, "Boehne Petra");
+  assert.match(row.datum, /03\.08\.2026/);
+  assert.equal(row.arbeitszeit, "09:11");
+  assert.equal(row.pause, "00:31");
+});
+
+test("Ordio report work-hours row drops non-Arbeitseinsatz types", () => {
+  const row = normalizeOrdioReportWorkHoursRow({
+    __cells: [],
+    __rawCellLinesByHeader: { vorname: ["PB", "Petra"] },
+    vorname: "PB Petra",
+    nachname: "Boehne",
+    start: "Mo. 03.08.2026 08:13",
+    ende: "Mo. 03.08.2026 17:24",
+    typ: "Abwesenheit",
+    zeit: "09:11",
+    pause_unbezahlt: "00:31"
+  });
+
+  assert.equal(row, null);
 });
 
 test("work-hours DOM rows map to snapshot time_entries with stable source ids", async () => {

@@ -162,6 +162,11 @@ function employeeNumberSourceId(value) {
   return match ? `employee-number-${Number(match[1])}` : null;
 }
 
+function employeeNumberFromText(value) {
+  const match = cleanText(value).match(/\b(?:pnr|personal(?:nummer)?|mitarbeiter(?:nummer)?|employee)?\s*#?\s*([0-9]{1,8})\b/i);
+  return match ? match[1] : "";
+}
+
 function isoDate(value) {
   const raw = cleanText(value);
   const iso = raw.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
@@ -395,6 +400,106 @@ function rowId(rowHtml) {
 function isWorkHoursHeaders(normalizedHeaders) {
   const has = (needle) => normalizedHeaders.some((header) => header.includes(needle));
   return has("name") && has("datum") && has("start") && has("ende");
+}
+
+function hasNormalizedHeader(normalizedHeaders, needle) {
+  return normalizedHeaders.some((header) => header.includes(needle));
+}
+
+function hasExactNormalizedHeader(normalizedHeaders, needle) {
+  return normalizedHeaders.some((header) => header === needle);
+}
+
+function isOrdioReportWorkHoursHeaders(normalizedHeaders) {
+  return hasNormalizedHeader(normalizedHeaders, "start")
+    && hasNormalizedHeader(normalizedHeaders, "ende")
+    && hasExactNormalizedHeader(normalizedHeaders, "vorname")
+    && hasExactNormalizedHeader(normalizedHeaders, "nachname");
+}
+
+function isSplitNameEmployeeHeaders(normalizedHeaders) {
+  return hasExactNormalizedHeader(normalizedHeaders, "vorname")
+    && hasExactNormalizedHeader(normalizedHeaders, "nachname");
+}
+
+function isEmployeeNumberKey(key) {
+  return key.includes("personal") || key.includes("nummer") || key === "pnr" || key.includes("pnr");
+}
+
+function cleanCellLines(value) {
+  const items = Array.isArray(value) ? value : [value];
+  return items.flatMap((item) => cleanLines(item));
+}
+
+function cellLinesFor(row, names, fallbackIndex = null) {
+  const lineMap = row?.__rawCellLinesByHeader || {};
+  const dataKeys = Object.keys(row ?? {}).filter((key) => key !== "__cells" && key !== "__rowId");
+  for (const name of names) {
+    const key = normalizeKey(name);
+    if (Array.isArray(lineMap[key]) && lineMap[key].length) return lineMap[key];
+    const hit = dataKeys.find((candidate) => candidate.includes(key) && Array.isArray(lineMap[candidate]) && lineMap[candidate].length);
+    if (hit) return lineMap[hit];
+  }
+  if (fallbackIndex !== null && Array.isArray(row?.__rawCellLines?.[fallbackIndex])) {
+    return row.__rawCellLines[fallbackIndex];
+  }
+  return cleanCellLines(cellFor(row ?? {}, names, fallbackIndex));
+}
+
+export function ordioFirstNameFromVornameCell(value) {
+  return cleanCellLines(value).at(-1) || "";
+}
+
+export function ordioDisplayNameFromSplitNameCells(vornameCell, nachnameCell) {
+  const firstName = ordioFirstNameFromVornameCell(vornameCell);
+  const lastName = cleanText(nachnameCell);
+  return [lastName, firstName].filter(Boolean).join(" ");
+}
+
+export function normalizeOrdioReportWorkHoursRow(row) {
+  const type = cellFor(row, ["typ", "type"], null);
+  if (!/arbeitseinsatz/i.test(type)) return null;
+
+  const start = cellFor(row, ["start"], null);
+  const end = cellFor(row, ["ende"], null);
+  const name = ordioDisplayNameFromSplitNameCells(
+    cellLinesFor(row, ["vorname"], null),
+    cellFor(row, ["nachname"], null)
+  );
+  if (!name || !start || !end) return null;
+
+  const unpaidBreak = cellFor(row, ["pause_unbezahlt", "pause unbezahlt", "unbezahlt"], null)
+    || cellFor(row, ["pause"], null);
+  return {
+    ...row,
+    name,
+    datum: start,
+    start,
+    ende: end,
+    arbeitszeit: cellFor(row, ["zeit", "arbeitszeit"], null),
+    pause: unpaidBreak,
+    bereich: cellFor(row, ["arbeitsbereich", "bereich"], null),
+    standort: cellFor(row, ["standort"], null),
+    status: cellFor(row, ["status"], null),
+    typ: type
+  };
+}
+
+export function normalizeOrdioSplitEmployeeRow(row) {
+  const employeeNumber = employeeNumberFromText(
+    cellFor(row, ["pnr", "personalnummer", "personal", "nummer", "Personalnummer"], null)
+      || row?.__cells?.join(" ")
+      || ""
+  );
+  const displayName = ordioDisplayNameFromSplitNameCells(
+    cellLinesFor(row, ["vorname"], null),
+    cellFor(row, ["nachname"], null)
+  );
+  return {
+    displayName,
+    employeeNumber,
+    sourceId: employeeNumber ? `employee-number-${Number(employeeNumber)}` : ""
+  };
 }
 
 export function parseWorkHoursHtml(html) {
@@ -894,6 +999,46 @@ export function parsePlanHtml(html, options = {}) {
 // /work-hours-Tabelle. Bei Range "01.06.-30.06." sind ~150 rows verfuegbar,
 // aber der DOM zeigt nur ~35 gleichzeitig (Virtual Scrolling). Wir scrollen
 // in Schritten und sammeln rows per __rowId (de-dupliziert).
+async function extractTableSnapshotsFromPage(page) {
+  return page.evaluate(() => {
+    const clean = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
+    const normalize = (value) => clean(value)
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+    const cellSnapshot = (cell) => {
+      const raw = String(cell.innerText ?? cell.textContent ?? "");
+      return {
+        text: clean(raw),
+        lines: raw.split(/\r?\n/).map(clean).filter(Boolean)
+      };
+    };
+
+    return [...document.querySelectorAll("table")].map((table) => {
+      const headers = [...table.querySelectorAll("thead th")].map((cell) => clean(cell.innerText));
+      const keys = headers.map(normalize);
+      const rows = [...table.querySelectorAll("tbody tr")].map((tr) => {
+        const cellData = [...tr.querySelectorAll("td, th")].map(cellSnapshot);
+        const row = {
+          __cells: cellData.map((cell) => cell.text),
+          __rawCellLines: cellData.map((cell) => cell.lines),
+          __rawCellLinesByHeader: {},
+          __rowId: tr.getAttribute("data-row-key") || tr.getAttribute("data-id") || tr.id || tr.getAttribute("data-testid") || ""
+        };
+        headers.forEach((header, index) => {
+          const key = normalize(header);
+          row[key] = cellData[index]?.text || "";
+          row.__rawCellLinesByHeader[key] = cellData[index]?.lines || [];
+        });
+        return row;
+      }).filter((row) => row.__cells.some(Boolean));
+      return { headers, keys, rows };
+    });
+  });
+}
+
 export async function extractWorkHoursRowsFromPage(page) {
   const collected = new Map();
   const collectOnce = async () => {
@@ -925,79 +1070,53 @@ export async function extractWorkHoursRowsFromPage(page) {
 }
 
 async function extractWorkHoursRowsFromPageSingle(page) {
-  return page.evaluate(() => {
-    const clean = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
-    const normalize = (value) => clean(value)
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "_")
-      .replace(/^_+|_+$/g, "");
-
-    // Three tables render on /work-hours; require start+ende and keep the
-    // one with the most rows (the empty summary tables also have name+datum).
-    let best = [];
-    for (const table of document.querySelectorAll("table")) {
-      const headers = [...table.querySelectorAll("thead th")].map((cell) => clean(cell.innerText));
-      const keys = headers.map(normalize);
-      const has = (needle) => keys.some((key) => key.includes(needle));
-      if (!(has("name") && has("datum") && has("start") && has("ende"))) continue;
-
-      const rows = [...table.querySelectorAll("tbody tr")].map((tr) => {
-        const cells = [...tr.querySelectorAll("td, th")].map((cell) => clean(cell.innerText));
-        const row = {
-          __cells: cells,
-          __rowId: tr.getAttribute("data-row-key") || tr.getAttribute("data-id") || tr.id || tr.getAttribute("data-testid") || ""
-        };
-        headers.forEach((header, index) => {
-          row[normalize(header)] = cells[index] || "";
-        });
-        return row;
-      }).filter((row) => row.__cells.some(Boolean));
-      if (rows.length > best.length) best = rows;
+  const tables = await extractTableSnapshotsFromPage(page);
+  let best = [];
+  for (const table of tables) {
+    let rows = [];
+    if (isOrdioReportWorkHoursHeaders(table.keys)) {
+      rows = table.rows.map(normalizeOrdioReportWorkHoursRow).filter(Boolean);
+    } else if (isWorkHoursHeaders(table.keys)) {
+      rows = table.rows;
     }
-    return best;
-  });
+    if (rows.length > best.length) best = rows;
+  }
+  return best;
 }
 
 export async function extractEmployeeRowsFromPage(page) {
+  const tables = await extractTableSnapshotsFromPage(page);
+  for (const table of tables) {
+    if (!isSplitNameEmployeeHeaders(table.keys)) continue;
+    const rows = table.rows
+      .map(normalizeOrdioSplitEmployeeRow)
+      .filter((row) => row.displayName);
+    if (rows.length) return rows;
+  }
+
+  for (const table of tables) {
+    const hasName = table.keys.some((key) => key.includes("name"));
+    const hasNumber = table.keys.some(isEmployeeNumberKey);
+    if (!hasName || !hasNumber) continue;
+    const rows = table.rows.map((row) => {
+      const nameKey = Object.keys(row).find((key) => key.includes("name"));
+      const numberKey = Object.keys(row).find(isEmployeeNumberKey);
+      const employeeNumber = employeeNumberFromText(row[numberKey] || row.__cells.join(" "));
+      return {
+        displayName: row[nameKey] || row.__cells[0] || "",
+        employeeNumber,
+        sourceId: employeeNumber ? `employee-number-${Number(employeeNumber)}` : ""
+      };
+    }).filter((row) => row.displayName && row.sourceId);
+    if (rows.length) return rows;
+  }
+
   return page.evaluate(() => {
     const clean = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
-    const normalize = (value) => clean(value)
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "_")
-      .replace(/^_+|_+$/g, "");
     const numberFrom = (value) => {
       const match = clean(value).match(/\b(?:pnr|personal(?:nummer)?|mitarbeiter(?:nummer)?|employee)?\s*#?\s*([0-9]{1,8})\b/i);
       return match ? match[1] : "";
     };
-
-    // Legacy-Import's personnel-number column header is "PNr." (→ "pnr"), not
-    // "Personalnummer" (verified live 2026-06-05).
-    const isNumberKey = (key) => key.includes("personal") || key.includes("nummer") || key.includes("pnr");
-    for (const table of document.querySelectorAll("table")) {
-      const headers = [...table.querySelectorAll("thead th")].map((cell) => clean(cell.innerText));
-      const keys = headers.map(normalize);
-      const hasName = keys.some((key) => key.includes("name"));
-      const hasNumber = keys.some(isNumberKey);
-      if (!hasName || !hasNumber) continue;
-      const rows = [...table.querySelectorAll("tbody tr")].map((tr) => {
-        const cells = [...tr.querySelectorAll("td, th")].map((cell) => clean(cell.innerText));
-        const row = {};
-        headers.forEach((header, index) => { row[normalize(header)] = cells[index] || ""; });
-        const nameKey = Object.keys(row).find((key) => key.includes("name"));
-        const numberKey = Object.keys(row).find(isNumberKey);
-        const employeeNumber = numberFrom(row[numberKey] || cells.join(" "));
-        return {
-          displayName: row[nameKey] || cells[0] || "",
-          employeeNumber,
-          sourceId: employeeNumber ? `employee-number-${Number(employeeNumber)}` : ""
-        };
-      }).filter((row) => row.displayName && row.sourceId);
-      if (rows.length) return rows;
-    }
 
     return [...document.querySelectorAll("[data-testid*='employee'], [role='listitem'], article")]
       .map((el) => {
