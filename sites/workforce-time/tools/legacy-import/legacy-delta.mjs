@@ -544,7 +544,7 @@ async function captureLiveImport(options) {
     // Wide viewport: at the default 1280px Quell-UI collapses /work-hours
     // into a responsive card layout without a <table> (verified 2026-06-05,
     // probe at 1680px renders the 14-column table with all rows).
-    const page = await browser.newPage({ viewport: { width: 1680, height: 1050 } });
+    let page = await browser.newPage({ viewport: { width: 1680, height: 1050 } });
     await page.goto(process.env.LEGACY_BASE_URL, { waitUntil: "domcontentloaded" });
     // T-LIVE-017 — Page muss voll geladen sein, bevor wir den Mode-Switch
     // suchen. Ohne Wait greift `pwModeButton.count() === 0` noch und wir
@@ -575,6 +575,44 @@ async function captureLiveImport(options) {
     // erreicht. Timeout + Fallback-Wait, sonst haengt der Lauf vor /e.
     await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
     await page.waitForTimeout(3000);
+
+    // 2026-08-05: Ordio now redirects to accounts.ordio.com/dashboard after login.
+    // If the portal is detected, click 'Open workspace' and adopt the tenant origin.
+    if (new URL(page.url()).hostname === "accounts.ordio.com") {
+      const openWorkspaceControl = page
+        .getByRole("button", { name: /open workspace|workspace öffnen/i })
+        .or(page.getByRole("link", { name: /open workspace|workspace öffnen/i }))
+        .first();
+      try {
+        await openWorkspaceControl.waitFor({ timeout: 15000 });
+      } catch {
+        throw new Error("Ordio-Accounts-Portal erkannt, aber kein Open workspace-Button gefunden — Selektor pruefen.");
+      }
+
+      // Arm popup listener BEFORE clicking — workspace may open in a new tab.
+      const popupPromise = page.context().waitForEvent("page", { timeout: 15000 }).catch(() => null);
+      await openWorkspaceControl.click();
+      const popup = await popupPromise;
+      if (popup) {
+        page = popup;
+      }
+
+      await page.waitForLoadState("domcontentloaded", { timeout: 30000 }).catch(() => {});
+      try {
+        await page.waitForURL((u) => new URL(u).hostname !== "accounts.ordio.com", { timeout: 30000 });
+      } catch {
+        throw new Error("Ordio-Workspace-Navigation fehlgeschlagen: haengt auf accounts.ordio.com");
+      }
+      // captureAbsences/capturePlan read process.env.LEGACY_BASE_URL; this short-lived
+      // process can adopt the workspace origin without threading a parameter through both signatures.
+      process.env.LEGACY_BASE_URL = new URL(page.url()).origin;
+      console.error("INFO: Ordio-Workspace-Origin uebernommen: " + process.env.LEGACY_BASE_URL);
+
+      // Let workspace app finish booting before /e navigation.
+      await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
+      await page.waitForTimeout(2000);
+    }
+
 
     await page.goto(new URL("/e", process.env.LEGACY_BASE_URL).href, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
